@@ -137,7 +137,7 @@ FTWindowMatches::~FTWindowMatches()
 bool FTWindowMatches::next(DynamicContext *context)
 {
   excludes_.clear();
-  if(!arg_) return false;
+  if(!arg_ || !found_) return false;
 
   unsigned int unitVal;
   while(found_) {

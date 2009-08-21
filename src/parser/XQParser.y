@@ -3244,6 +3244,12 @@ LetBinding:
   }
   | _SCORE_ _DOLLAR_ VarName _COLON_EQUALS_ ExprSingle
   {
+    ASTNode *literal = WRAP(@1, new (MEMMGR) XQLiteral(
+                  SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
+                  SchemaSymbols::fgDT_INTEGER,
+                  X("0"), AnyAtomicType::DECIMAL,
+                  MEMMGR));
+    $$ = WRAP(@1, new (MEMMGR) LetTuple(0, $3, literal, MEMMGR));
   }
   ;
 

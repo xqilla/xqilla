@@ -141,9 +141,11 @@ Item::Ptr FTContains::FTContainsResult::getSingleResult(DynamicContext *context)
         if(fail) continue;
 
         delete matches;
+        matches = 0;
         return context->getItemFactory()->createBoolean(true, context);
       }
       delete matches;
+      matches = 0;
     }
   }
 

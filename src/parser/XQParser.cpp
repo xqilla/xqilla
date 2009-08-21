@@ -1822,67 +1822,67 @@ static const yytype_uint16 yyrline[] =
     3103,  3110,  3111,  3112,  3113,  3114,  3115,  3116,  3117,  3118,
     3119,  3120,  3121,  3126,  3137,  3141,  3145,  3149,  3153,  3159,
     3165,  3166,  3172,  3179,  3183,  3187,  3199,  3202,  3213,  3216,
-    3226,  3233,  3237,  3241,  3245,  3252,  3260,  3265,  3273,  3277,
-    3283,  3290,  3305,  3322,  3325,  3329,  3337,  3345,  3349,  3358,
-    3366,  3377,  3381,  3385,  3396,  3403,  3408,  3416,  3420,  3428,
-    3432,  3440,  3448,  3457,  3462,  3471,  3481,  3485,  3489,  3489,
-    3493,  3497,  3501,  3505,  3509,  3513,  3517,  3521,  3525,  3529,
-    3533,  3537,  3541,  3546,  3550,  3554,  3559,  3563,  3568,  3572,
-    3576,  3581,  3585,  3589,  3593,  3597,  3602,  3606,  3610,  3615,
-    3619,  3623,  3628,  3632,  3637,  3642,  3647,  3651,  3656,  3660,
-    3665,  3671,  3677,  3682,  3683,  3684,  3692,  3696,  3700,  3708,
-    3715,  3724,  3724,  3728,  3748,  3749,  3757,  3758,  3764,  3785,
-    3789,  3803,  3809,  3822,  3826,  3826,  3830,  3834,  3843,  3855,
-    3866,  3870,  3874,  3878,  3882,  3886,  3890,  3894,  3902,  3910,
-    3927,  3935,  3944,  3948,  3952,  3956,  3960,  3968,  3980,  3985,
-    3990,  3997,  4002,  4009,  4016,  4027,  4037,  4040,  4051,  4052,
-    4053,  4054,  4055,  4056,  4057,  4058,  4059,  4060,  4064,  4064,
-    4067,  4067,  4067,  4071,  4078,  4082,  4086,  4094,  4102,  4112,
-    4122,  4126,  4133,  4138,  4147,  4151,  4160,  4160,  4160,  4164,
-    4170,  4179,  4179,  4184,  4187,  4196,  4207,  4207,  4212,  4216,
-    4223,  4227,  4238,  4241,  4246,  4257,  4260,  4264,  4278,  4281,
-    4286,  4297,  4300,  4304,  4322,  4325,  4330,  4335,  4342,  4355,
-    4369,  4372,  4377,  4396,  4397,  4410,  4411,  4412,  4413,  4414,
-    4415,  4420,  4428,  4436,  4440,  4448,  4452,  4461,  4469,  4477,
-    4485,  4492,  4502,  4509,  4513,  4521,  4532,  4535,  4544,  4547,
-    4557,  4564,  4574,  4575,  4577,  4579,  4585,  4589,  4593,  4594,
-    4595,  4599,  4611,  4612,  4613,  4614,  4615,  4616,  4617,  4618,
-    4619,  4624,  4632,  4636,  4641,  4650,  4658,  4666,  4670,  4674,
-    4682,  4686,  4690,  4698,  4699,  4707,  4715,  4720,  4724,  4728,
-    4732,  4741,  4742,  4750,  4757,  4760,  4763,  4766,  4770,  4782,
-    4798,  4800,  4807,  4810,  4819,  4831,  4836,  4848,  4853,  4857,
-    4862,  4867,  4872,  4873,  4882,  4887,  4891,  4897,  4901,  4909,
-    4914,  4924,  4927,  4931,  4935,  4939,  4943,  4951,  4953,  4964,
-    4970,  4976,  4982,  4997,  5001,  5005,  5009,  5013,  5017,  5021,
-    5025,  5033,  5037,  5041,  5049,  5053,  5061,  5062,  5074,  5075,
-    5076,  5077,  5078,  5079,  5080,  5081,  5089,  5093,  5097,  5101,
-    5110,  5114,  5122,  5126,  5136,  5140,  5144,  5148,  5152,  5160,
-    5162,  5169,  5173,  5177,  5181,  5191,  5195,  5199,  5207,  5209,
-    5217,  5221,  5228,  5232,  5240,  5244,  5252,  5260,  5264,  5272,
-    5279,  5287,  5292,  5297,  5309,  5313,  5317,  5321,  5325,  5331,
-    5331,  5336,  5342,  5342,  5347,  5351,  5361,  5369,  5376,  5381,
-    5389,  5398,  5410,  5422,  5435,  5446,  5455,  5467,  5471,  5475,
-    5480,  5485,  5490,  5499,  5502,  5510,  5514,  5522,  5526,  5534,
-    5539,  5548,  5552,  5556,  5564,  5568,  5576,  5580,  5584,  5588,
-    5596,  5600,  5604,  5612,  5617,  5627,  5640,  5640,  5644,  5652,
-    5661,  5666,  5675,  5679,  5683,  5690,  5695,  5704,  5713,  5713,
-    5713,  5713,  5713,  5713,  5713,  5713,  5714,  5714,  5714,  5714,
-    5714,  5714,  5715,  5719,  5719,  5719,  5719,  5719,  5719,  5719,
-    5719,  5719,  5719,  5720,  5720,  5720,  5720,  5720,  5720,  5720,
-    5721,  5721,  5721,  5721,  5721,  5721,  5721,  5721,  5722,  5722,
-    5722,  5722,  5722,  5722,  5722,  5722,  5722,  5722,  5722,  5723,
-    5723,  5723,  5723,  5723,  5723,  5723,  5723,  5723,  5723,  5723,
-    5723,  5724,  5724,  5724,  5724,  5724,  5724,  5724,  5724,  5724,
-    5724,  5725,  5725,  5725,  5725,  5725,  5725,  5725,  5725,  5725,
+    3226,  3233,  3237,  3241,  3245,  3258,  3266,  3271,  3279,  3283,
+    3289,  3296,  3311,  3328,  3331,  3335,  3343,  3351,  3355,  3364,
+    3372,  3383,  3387,  3391,  3402,  3409,  3414,  3422,  3426,  3434,
+    3438,  3446,  3454,  3463,  3468,  3477,  3487,  3491,  3495,  3495,
+    3499,  3503,  3507,  3511,  3515,  3519,  3523,  3527,  3531,  3535,
+    3539,  3543,  3547,  3552,  3556,  3560,  3565,  3569,  3574,  3578,
+    3582,  3587,  3591,  3595,  3599,  3603,  3608,  3612,  3616,  3621,
+    3625,  3629,  3634,  3638,  3643,  3648,  3653,  3657,  3662,  3666,
+    3671,  3677,  3683,  3688,  3689,  3690,  3698,  3702,  3706,  3714,
+    3721,  3730,  3730,  3734,  3754,  3755,  3763,  3764,  3770,  3791,
+    3795,  3809,  3815,  3828,  3832,  3832,  3836,  3840,  3849,  3861,
+    3872,  3876,  3880,  3884,  3888,  3892,  3896,  3900,  3908,  3916,
+    3933,  3941,  3950,  3954,  3958,  3962,  3966,  3974,  3986,  3991,
+    3996,  4003,  4008,  4015,  4022,  4033,  4043,  4046,  4057,  4058,
+    4059,  4060,  4061,  4062,  4063,  4064,  4065,  4066,  4070,  4070,
+    4073,  4073,  4073,  4077,  4084,  4088,  4092,  4100,  4108,  4118,
+    4128,  4132,  4139,  4144,  4153,  4157,  4166,  4166,  4166,  4170,
+    4176,  4185,  4185,  4190,  4193,  4202,  4213,  4213,  4218,  4222,
+    4229,  4233,  4244,  4247,  4252,  4263,  4266,  4270,  4284,  4287,
+    4292,  4303,  4306,  4310,  4328,  4331,  4336,  4341,  4348,  4361,
+    4375,  4378,  4383,  4402,  4403,  4416,  4417,  4418,  4419,  4420,
+    4421,  4426,  4434,  4442,  4446,  4454,  4458,  4467,  4475,  4483,
+    4491,  4498,  4508,  4515,  4519,  4527,  4538,  4541,  4550,  4553,
+    4563,  4570,  4580,  4581,  4583,  4585,  4591,  4595,  4599,  4600,
+    4601,  4605,  4617,  4618,  4619,  4620,  4621,  4622,  4623,  4624,
+    4625,  4630,  4638,  4642,  4647,  4656,  4664,  4672,  4676,  4680,
+    4688,  4692,  4696,  4704,  4705,  4713,  4721,  4726,  4730,  4734,
+    4738,  4747,  4748,  4756,  4763,  4766,  4769,  4772,  4776,  4788,
+    4804,  4806,  4813,  4816,  4825,  4837,  4842,  4854,  4859,  4863,
+    4868,  4873,  4878,  4879,  4888,  4893,  4897,  4903,  4907,  4915,
+    4920,  4930,  4933,  4937,  4941,  4945,  4949,  4957,  4959,  4970,
+    4976,  4982,  4988,  5003,  5007,  5011,  5015,  5019,  5023,  5027,
+    5031,  5039,  5043,  5047,  5055,  5059,  5067,  5068,  5080,  5081,
+    5082,  5083,  5084,  5085,  5086,  5087,  5095,  5099,  5103,  5107,
+    5116,  5120,  5128,  5132,  5142,  5146,  5150,  5154,  5158,  5166,
+    5168,  5175,  5179,  5183,  5187,  5197,  5201,  5205,  5213,  5215,
+    5223,  5227,  5234,  5238,  5246,  5250,  5258,  5266,  5270,  5278,
+    5285,  5293,  5298,  5303,  5315,  5319,  5323,  5327,  5331,  5337,
+    5337,  5342,  5348,  5348,  5353,  5357,  5367,  5375,  5382,  5387,
+    5395,  5404,  5416,  5428,  5441,  5452,  5461,  5473,  5477,  5481,
+    5486,  5491,  5496,  5505,  5508,  5516,  5520,  5528,  5532,  5540,
+    5545,  5554,  5558,  5562,  5570,  5574,  5582,  5586,  5590,  5594,
+    5602,  5606,  5610,  5618,  5623,  5633,  5646,  5646,  5650,  5658,
+    5667,  5672,  5681,  5685,  5689,  5696,  5701,  5710,  5719,  5719,
+    5719,  5719,  5719,  5719,  5719,  5719,  5720,  5720,  5720,  5720,
+    5720,  5720,  5721,  5725,  5725,  5725,  5725,  5725,  5725,  5725,
     5725,  5725,  5725,  5726,  5726,  5726,  5726,  5726,  5726,  5726,
-    5726,  5726,  5726,  5726,  5726,  5727,  5727,  5727,  5727,  5727,
-    5727,  5727,  5727,  5727,  5728,  5728,  5728,  5728,  5728,  5728,
-    5728,  5728,  5729,  5729,  5729,  5729,  5729,  5729,  5729,  5729,
+    5727,  5727,  5727,  5727,  5727,  5727,  5727,  5727,  5728,  5728,
+    5728,  5728,  5728,  5728,  5728,  5728,  5728,  5728,  5728,  5729,
+    5729,  5729,  5729,  5729,  5729,  5729,  5729,  5729,  5729,  5729,
     5729,  5730,  5730,  5730,  5730,  5730,  5730,  5730,  5730,  5730,
-    5731,  5731,  5731,  5731,  5731,  5731,  5731,  5731,  5731,  5731,
-    5732,  5732,  5732,  5732,  5732,  5732,  5732,  5732,  5732,  5732,
-    5732,  5733,  5733,  5733,  5733,  5733,  5733,  5733,  5733,  5733,
-    5733,  5733,  5734,  5734,  5734
+    5730,  5731,  5731,  5731,  5731,  5731,  5731,  5731,  5731,  5731,
+    5731,  5731,  5731,  5732,  5732,  5732,  5732,  5732,  5732,  5732,
+    5732,  5732,  5732,  5732,  5732,  5733,  5733,  5733,  5733,  5733,
+    5733,  5733,  5733,  5733,  5734,  5734,  5734,  5734,  5734,  5734,
+    5734,  5734,  5735,  5735,  5735,  5735,  5735,  5735,  5735,  5735,
+    5735,  5736,  5736,  5736,  5736,  5736,  5736,  5736,  5736,  5736,
+    5737,  5737,  5737,  5737,  5737,  5737,  5737,  5737,  5737,  5737,
+    5738,  5738,  5738,  5738,  5738,  5738,  5738,  5738,  5738,  5738,
+    5738,  5739,  5739,  5739,  5739,  5739,  5739,  5739,  5739,  5739,
+    5739,  5739,  5740,  5740,  5740
 };
 #endif
 
@@ -5382,13 +5382,13 @@ yyreduce:
     FunctionExists *exists = WRAP((yylsp[(1) - (1)]), new (MEMMGR) FunctionExists(args, MEMMGR));
 
     QP->_query->setQueryBody(WRAP((yylsp[(1) - (1)]), new (MEMMGR) XQIf(exists, call, apply, MEMMGR)));
-  }
+  ;}
     break;
 
   case 9:
 #line 790 "../src/parser/XQParser.y"
     {
-  }
+  ;}
     break;
 
   case 10:
@@ -5410,21 +5410,21 @@ yyreduce:
     func->setModeList(modelist);
 
     QP->_query->addFunction(func);
-  }
+  ;}
     break;
 
   case 12:
 #line 816 "../src/parser/XQParser.y"
     {
     // TBD Check the value - jpcs
-  }
+  ;}
     break;
 
   case 13:
 #line 820 "../src/parser/XQParser.y"
     {
     // TBD implement exclude-result-prefixes - jpcs
-  }
+  ;}
     break;
 
   case 21:
@@ -5443,14 +5443,14 @@ yyreduce:
     (yyvsp[(1) - (4)].functDecl)->setArgumentSpecs((yyvsp[(2) - (4)].argSpecs));
     (yyvsp[(1) - (4)].functDecl)->setFunctionBody((yyvsp[(3) - (4)].parenExpr));
     QP->_query->addFunction((yyvsp[(1) - (4)].functDecl));
-  }
+  ;}
     break;
 
   case 22:
 #line 857 "../src/parser/XQParser.y"
     {
     (yyval.functDecl) = WRAP((yylsp[(1) - (1)]), new (MEMMGR) XQUserFunction(0, 0, 0, 0, 0, MEMMGR));
-  }
+  ;}
     break;
 
   case 23:
@@ -5458,7 +5458,7 @@ yyreduce:
     {
     (yyval.functDecl) = (yyvsp[(1) - (3)].functDecl);
     (yyval.functDecl)->setPattern((yyvsp[(3) - (3)].itemList));
-  }
+  ;}
     break;
 
   case 24:
@@ -5468,7 +5468,7 @@ yyreduce:
     RESOLVE_QNAME((yylsp[(2) - (2)]), (yyvsp[(2) - (2)].str));
     (yyval.functDecl)->setURI(uri);
     (yyval.functDecl)->setName(name);
-  }
+  ;}
     break;
 
   case 25:
@@ -5476,7 +5476,7 @@ yyreduce:
     {
     (yyval.functDecl) = (yyvsp[(1) - (3)].functDecl);
     // TBD priority - jpcs
-  }
+  ;}
     break;
 
   case 26:
@@ -5484,7 +5484,7 @@ yyreduce:
     {
     (yyval.functDecl) = (yyvsp[(1) - (3)].functDecl);
     (yyval.functDecl)->setModeList((yyvsp[(3) - (3)].modeList));
-  }
+  ;}
     break;
 
   case 27:
@@ -5492,14 +5492,14 @@ yyreduce:
     {
     (yyval.functDecl) = (yyvsp[(1) - (3)].functDecl);
     (yyval.functDecl)->setReturnType((yyvsp[(3) - (3)].sequenceType));
-  }
+  ;}
     break;
 
   case 28:
 #line 891 "../src/parser/XQParser.y"
     {
     (yyval.modeList) = new (MEMMGR) XQUserFunction::ModeList(XQillaAllocator<XQUserFunction::Mode*>(MEMMGR));
-  }
+  ;}
     break;
 
   case 29:
@@ -5508,7 +5508,7 @@ yyreduce:
     RESOLVE_QNAME((yylsp[(2) - (2)]), (yyvsp[(2) - (2)].str));
     (yyvsp[(1) - (2)].modeList)->push_back(WRAP((yylsp[(2) - (2)]), new (MEMMGR) XQUserFunction::Mode(uri, name)));
     (yyval.modeList) = (yyvsp[(1) - (2)].modeList);
-  }
+  ;}
     break;
 
   case 30:
@@ -5516,7 +5516,7 @@ yyreduce:
     {
     (yyvsp[(1) - (2)].modeList)->push_back(WRAP((yylsp[(2) - (2)]), new (MEMMGR) XQUserFunction::Mode(XQUserFunction::Mode::DEFAULT)));
     (yyval.modeList) = (yyvsp[(1) - (2)].modeList);
-  }
+  ;}
     break;
 
   case 31:
@@ -5524,7 +5524,7 @@ yyreduce:
     {
     (yyvsp[(1) - (2)].modeList)->push_back(WRAP((yylsp[(2) - (2)]), new (MEMMGR) XQUserFunction::Mode(XQUserFunction::Mode::ALL)));
     (yyval.modeList) = (yyvsp[(1) - (2)].modeList);
-  }
+  ;}
     break;
 
   case 35:
@@ -5537,14 +5537,14 @@ yyreduce:
     (yyvsp[(1) - (4)].functDecl)->setArgumentSpecs((yyvsp[(2) - (4)].argSpecs));
     (yyvsp[(1) - (4)].functDecl)->setFunctionBody((yyvsp[(3) - (4)].parenExpr));
     QP->_query->addFunction((yyvsp[(1) - (4)].functDecl));
-  }
+  ;}
     break;
 
   case 36:
 #line 929 "../src/parser/XQParser.y"
     {
     (yyval.functDecl) = WRAP((yylsp[(1) - (1)]), new (MEMMGR) XQUserFunction(0, 0, 0, 0, false, true, MEMMGR));
-  }
+  ;}
     break;
 
   case 37:
@@ -5554,7 +5554,7 @@ yyreduce:
     RESOLVE_QNAME((yylsp[(2) - (2)]), (yyvsp[(2) - (2)].str));
     (yyval.functDecl)->setURI(uri);
     (yyval.functDecl)->setName(name);
-  }
+  ;}
     break;
 
   case 38:
@@ -5562,7 +5562,7 @@ yyreduce:
     {
     (yyval.functDecl) = (yyvsp[(1) - (3)].functDecl);
     (yyval.functDecl)->setReturnType((yyvsp[(3) - (3)].sequenceType));
-  }
+  ;}
     break;
 
   case 39:
@@ -5570,14 +5570,14 @@ yyreduce:
     {
     (yyval.functDecl) = (yyvsp[(1) - (2)].functDecl);
     // TBD override - jpcs
-  }
+  ;}
     break;
 
   case 40:
 #line 953 "../src/parser/XQParser.y"
     {
     (yyval.argSpecs) = new (MEMMGR) XQUserFunction::ArgumentSpecs(XQillaAllocator<XQUserFunction::ArgumentSpec*>(MEMMGR));
-  }
+  ;}
     break;
 
   case 41:
@@ -5585,7 +5585,7 @@ yyreduce:
     {
     (yyval.argSpecs) = (yyvsp[(1) - (2)].argSpecs);
     (yyval.argSpecs)->push_back((yyvsp[(2) - (2)].argSpec));
-  }
+  ;}
     break;
 
   case 42:
@@ -5612,14 +5612,14 @@ yyreduce:
 /*     else if($$->value == 0) { */
 /*       yyerror(@1, "The xsl:with-param instruction has neither a select attribute nor a sequence constructor [err:XTSE0870]"); */
 /*     } */
-  }
+  ;}
     break;
 
   case 43:
 #line 992 "../src/parser/XQParser.y"
     {
     (yyval.argSpec) = WRAP((yylsp[(1) - (1)]), new (MEMMGR) XQUserFunction::ArgumentSpec(0, 0, MEMMGR));
-  }
+  ;}
     break;
 
   case 44:
@@ -5629,7 +5629,7 @@ yyreduce:
     RESOLVE_QNAME((yylsp[(2) - (2)]), (yyvsp[(2) - (2)].str));
     (yyval.argSpec)->setURI(uri);
     (yyval.argSpec)->setName(name);
-  }
+  ;}
     break;
 
   case 45:
@@ -5638,7 +5638,7 @@ yyreduce:
     (yyval.argSpec) = (yyvsp[(1) - (3)].argSpec);
     // TBD default parameter values - jpcs
 /*     $$->value = PRESERVE_NS(@2, $3); */
-  }
+  ;}
     break;
 
   case 46:
@@ -5646,7 +5646,7 @@ yyreduce:
     {
     (yyval.argSpec) = (yyvsp[(1) - (3)].argSpec);
     (yyval.argSpec)->setType((yyvsp[(3) - (3)].sequenceType));
-  }
+  ;}
     break;
 
   case 47:
@@ -5654,7 +5654,7 @@ yyreduce:
     {
     (yyval.argSpec) = (yyvsp[(1) - (2)].argSpec);
     // TBD required - jpcs
-  }
+  ;}
     break;
 
   case 48:
@@ -5662,7 +5662,7 @@ yyreduce:
     {
     (yyval.argSpec) = (yyvsp[(1) - (2)].argSpec);
     // TBD tunnel parameters - jpcs
-  }
+  ;}
     break;
 
   case 49:
@@ -5686,14 +5686,14 @@ yyreduce:
     }
 
     QP->_query->addVariable((yyvsp[(1) - (3)].globalVar));
-  }
+  ;}
     break;
 
   case 50:
 #line 1052 "../src/parser/XQParser.y"
     {
     (yyval.globalVar) = WRAP((yylsp[(1) - (1)]), new (MEMMGR) XQGlobalVariable(0, 0, 0, MEMMGR, /*isParam*/true));
-  }
+  ;}
     break;
 
   case 51:
@@ -5703,7 +5703,7 @@ yyreduce:
     (yyvsp[(1) - (2)].globalVar)->setVariableURI(uri);
     (yyvsp[(1) - (2)].globalVar)->setVariableLocalName(name);
     (yyval.globalVar) = (yyvsp[(1) - (2)].globalVar);
-  }
+  ;}
     break;
 
   case 52:
@@ -5711,7 +5711,7 @@ yyreduce:
     {
     (yyvsp[(1) - (3)].globalVar)->setVariableExpr(PRESERVE_NS((yylsp[(2) - (3)]), (yyvsp[(3) - (3)].astNode)));
     (yyval.globalVar) = (yyvsp[(1) - (3)].globalVar);
-  }
+  ;}
     break;
 
   case 53:
@@ -5719,7 +5719,7 @@ yyreduce:
     {
     (yyvsp[(1) - (3)].globalVar)->setSequenceType((yyvsp[(3) - (3)].sequenceType));
     (yyval.globalVar) = (yyvsp[(1) - (3)].globalVar);
-  }
+  ;}
     break;
 
   case 54:
@@ -5727,7 +5727,7 @@ yyreduce:
     {
     (yyval.globalVar) = (yyvsp[(1) - (2)].globalVar);
     (yyval.globalVar)->setRequired((yyvsp[(2) - (2)].boolean));
-  }
+  ;}
     break;
 
   case 55:
@@ -5737,7 +5737,7 @@ yyreduce:
     if((yyvsp[(2) - (2)].boolean)) {
       yyerror((yylsp[(2) - (2)]), "An xsl:param declaration cannot have a {}tunnel attribute with a value of \"yes\"");
     }
-  }
+  ;}
     break;
 
   case 56:
@@ -5755,14 +5755,14 @@ yyreduce:
     }
 
     QP->_query->addVariable((yyvsp[(1) - (3)].globalVar));
-  }
+  ;}
     break;
 
   case 57:
 #line 1107 "../src/parser/XQParser.y"
     {
     (yyval.globalVar) = WRAP((yylsp[(1) - (1)]), new (MEMMGR) XQGlobalVariable(0, 0, 0, MEMMGR));
-  }
+  ;}
     break;
 
   case 58:
@@ -5772,7 +5772,7 @@ yyreduce:
     (yyvsp[(1) - (2)].globalVar)->setVariableURI(uri);
     (yyvsp[(1) - (2)].globalVar)->setVariableLocalName(name);
     (yyval.globalVar) = (yyvsp[(1) - (2)].globalVar);
-  }
+  ;}
     break;
 
   case 59:
@@ -5780,7 +5780,7 @@ yyreduce:
     {
     (yyvsp[(1) - (3)].globalVar)->setVariableExpr(PRESERVE_NS((yylsp[(2) - (3)]), (yyvsp[(3) - (3)].astNode)));
     (yyval.globalVar) = (yyvsp[(1) - (3)].globalVar);
-  }
+  ;}
     break;
 
   case 60:
@@ -5788,122 +5788,122 @@ yyreduce:
     {
     (yyvsp[(1) - (3)].globalVar)->setSequenceType((yyvsp[(3) - (3)].sequenceType));
     (yyval.globalVar) = (yyvsp[(1) - (3)].globalVar);
-  }
+  ;}
     break;
 
   case 61:
 #line 1131 "../src/parser/XQParser.y"
     {
     // TBD Add the output to the static context - jpcs
-  }
+  ;}
     break;
 
   case 62:
 #line 1156 "../src/parser/XQParser.y"
     {
-  }
+  ;}
     break;
 
   case 63:
 #line 1159 "../src/parser/XQParser.y"
     {
-  }
+  ;}
     break;
 
   case 64:
 #line 1162 "../src/parser/XQParser.y"
     {
-  }
+  ;}
     break;
 
   case 65:
 #line 1165 "../src/parser/XQParser.y"
     {
-  }
+  ;}
     break;
 
   case 66:
 #line 1168 "../src/parser/XQParser.y"
     {
-  }
+  ;}
     break;
 
   case 67:
 #line 1171 "../src/parser/XQParser.y"
     {
-  }
+  ;}
     break;
 
   case 68:
 #line 1174 "../src/parser/XQParser.y"
     {
-  }
+  ;}
     break;
 
   case 69:
 #line 1177 "../src/parser/XQParser.y"
     {
-  }
+  ;}
     break;
 
   case 70:
 #line 1180 "../src/parser/XQParser.y"
     {
-  }
+  ;}
     break;
 
   case 71:
 #line 1183 "../src/parser/XQParser.y"
     {
-  }
+  ;}
     break;
 
   case 72:
 #line 1186 "../src/parser/XQParser.y"
     {
-  }
+  ;}
     break;
 
   case 73:
 #line 1189 "../src/parser/XQParser.y"
     {
-  }
+  ;}
     break;
 
   case 74:
 #line 1192 "../src/parser/XQParser.y"
     {
-  }
+  ;}
     break;
 
   case 75:
 #line 1195 "../src/parser/XQParser.y"
     {
-  }
+  ;}
     break;
 
   case 76:
 #line 1198 "../src/parser/XQParser.y"
     {
-  }
+  ;}
     break;
 
   case 77:
 #line 1201 "../src/parser/XQParser.y"
     {
-  }
+  ;}
     break;
 
   case 78:
 #line 1204 "../src/parser/XQParser.y"
     {
-  }
+  ;}
     break;
 
   case 79:
 #line 1207 "../src/parser/XQParser.y"
     {
-  }
+  ;}
     break;
 
   case 84:
@@ -5915,19 +5915,19 @@ yyreduce:
     if(*p == 0) {
       yyerror((yylsp[(1) - (1)]), "The method for the xsl:output declaration does not have a prefix");
     }
-  }
+  ;}
     break;
 
   case 85:
 #line 1229 "../src/parser/XQParser.y"
     {
-  }
+  ;}
     break;
 
   case 86:
 #line 1232 "../src/parser/XQParser.y"
     {
-  }
+  ;}
     break;
 
   case 88:
@@ -5935,7 +5935,7 @@ yyreduce:
     {
     LOCATION((yylsp[(1) - (1)]), loc);
     CONTEXT->addSchemaLocation(XMLUni::fgZeroLenString, 0, &loc);
-  }
+  ;}
     break;
 
   case 89:
@@ -5943,7 +5943,7 @@ yyreduce:
     {
     LOCATION((yylsp[(1) - (2)]), loc);
     CONTEXT->addSchemaLocation((yyvsp[(2) - (2)].str), 0, &loc);
-  }
+  ;}
     break;
 
   case 90:
@@ -5954,7 +5954,7 @@ yyreduce:
 
     LOCATION((yylsp[(1) - (2)]), loc);
     CONTEXT->addSchemaLocation(XMLUni::fgZeroLenString, &schemaLoc, &loc);
-  }
+  ;}
     break;
 
   case 91:
@@ -5965,7 +5965,7 @@ yyreduce:
 
     LOCATION((yylsp[(1) - (3)]), loc);
     CONTEXT->addSchemaLocation((yyvsp[(2) - (3)].str), &schemaLoc, &loc);
-  }
+  ;}
     break;
 
   case 92:
@@ -5976,7 +5976,7 @@ yyreduce:
 
     LOCATION((yylsp[(1) - (3)]), loc);
     CONTEXT->addSchemaLocation((yyvsp[(3) - (3)].str), &schemaLoc, &loc);
-  }
+  ;}
     break;
 
   case 93:
@@ -5986,14 +5986,14 @@ yyreduce:
     *children = (yyvsp[(3) - (4)].parenExpr)->getChildren();
 
     (yyval.astNode) = WRAP((yylsp[(1) - (4)]), new (MEMMGR) XQElementConstructor((yyvsp[(1) - (4)].astNode), (yyvsp[(2) - (4)].itemList), children, MEMMGR));
-  }
+  ;}
     break;
 
   case 94:
 #line 1287 "../src/parser/XQParser.y"
     {
     (yyval.itemList) = new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR)); 
-  }
+  ;}
     break;
 
   case 95:
@@ -6003,7 +6003,7 @@ yyreduce:
 
     ASTNode *attrItem = WRAP((yylsp[(2) - (3)]), new (MEMMGR) XQAttributeConstructor((yyvsp[(2) - (3)].astNode), (yyvsp[(3) - (3)].itemList), MEMMGR));
     (yyval.itemList)->push_back(attrItem);
-  }
+  ;}
     break;
 
   case 96:
@@ -6011,14 +6011,14 @@ yyreduce:
     {
     (yyval.itemList) = (yyvsp[(1) - (2)].itemList);
     (yyval.itemList)->insert((yyval.itemList)->begin(), (yyvsp[(2) - (2)].astNode));
-  }
+  ;}
     break;
 
   case 97:
 #line 1307 "../src/parser/XQParser.y"
     { 
     (yyval.itemList) = new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR));
-  }
+  ;}
     break;
 
   case 98:
@@ -6026,7 +6026,7 @@ yyreduce:
     {
     (yyval.itemList) = (yyvsp[(1) - (2)].itemList);
     (yyval.itemList)->push_back(PRESERVE_NS((yylsp[(2) - (2)]), (yyvsp[(2) - (2)].astNode)));
-  }
+  ;}
     break;
 
   case 99:
@@ -6036,14 +6036,14 @@ yyreduce:
     (yyval.itemList)->push_back(WRAP((yylsp[(2) - (2)]), new (MEMMGR) XQLiteral(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
                                SchemaSymbols::fgDT_STRING,
                                (yyvsp[(2) - (2)].str), AnyAtomicType::STRING, MEMMGR)));
-  }
+  ;}
     break;
 
   case 100:
 #line 1326 "../src/parser/XQParser.y"
     {
     (yyval.parenExpr) = WRAP((yyloc), new (MEMMGR) XQSequence(MEMMGR));
-  }
+  ;}
     break;
 
   case 101:
@@ -6051,7 +6051,7 @@ yyreduce:
     {
     (yyval.parenExpr) = (yyvsp[(1) - (2)].parenExpr);
     (yyval.parenExpr)->addItem(WRAP((yylsp[(1) - (2)]), new (MEMMGR) XQTextConstructor((yyvsp[(2) - (2)].astNode), MEMMGR)));
-  }
+  ;}
     break;
 
   case 102:
@@ -6059,7 +6059,7 @@ yyreduce:
     {
     (yyval.parenExpr) = (yyvsp[(1) - (2)].parenExpr);
     (yyval.parenExpr)->addItem((yyvsp[(2) - (2)].astNode));
-  }
+  ;}
     break;
 
   case 103:
@@ -6067,7 +6067,7 @@ yyreduce:
     {
     (yyval.parenExpr) = (yyvsp[(1) - (2)].parenExpr);
     (yyval.parenExpr)->addItem((yyvsp[(2) - (2)].astNode));
-  }
+  ;}
     break;
 
   case 122:
@@ -6085,14 +6085,14 @@ yyreduce:
     else if(text->getValue() == 0) {
       yyerror((yylsp[(1) - (3)]), "The xsl:value-of instruction has neither a select attribute nor a sequence constructor [err:XTSE0870]");
     }
-  }
+  ;}
     break;
 
   case 123:
 #line 1387 "../src/parser/XQParser.y"
     {
     (yyval.astNode) = WRAP((yylsp[(1) - (1)]), new (MEMMGR) XQTextConstructor(0, MEMMGR));
-  }
+  ;}
     break;
 
   case 124:
@@ -6100,7 +6100,7 @@ yyreduce:
     {
     (yyval.astNode) = (yyvsp[(1) - (3)].astNode);
     ((XQTextConstructor*)(yyval.astNode))->setValue(PRESERVE_NS((yylsp[(2) - (3)]), (yyvsp[(3) - (3)].astNode)));
-  }
+  ;}
     break;
 
   case 125:
@@ -6109,14 +6109,14 @@ yyreduce:
     (yyval.astNode) = (yyvsp[(1) - (3)].astNode);
     // TBD separator - jpcs
 /*     ((XQTextConstructor*)$$)->setValue(PRESERVE_NS(@2, $3)); */
-  }
+  ;}
     break;
 
   case 126:
 #line 1405 "../src/parser/XQParser.y"
     {
     (yyval.astNode) = WRAP((yylsp[(1) - (3)]), new (MEMMGR) XQTextConstructor((yyvsp[(2) - (3)].astNode), MEMMGR));
-  }
+  ;}
     break;
 
   case 129:
@@ -6136,14 +6136,14 @@ yyreduce:
 
       apply->setExpression(WRAP((yylsp[(1) - (3)]), new (MEMMGR) XQStep(XQStep::CHILD, nt, MEMMGR)));
     }
-  }
+  ;}
     break;
 
   case 130:
 #line 1434 "../src/parser/XQParser.y"
     {
     (yyval.astNode) = WRAP((yylsp[(1) - (1)]), new (MEMMGR) XQApplyTemplates(0, 0, 0, MEMMGR));
-  }
+  ;}
     break;
 
   case 131:
@@ -6151,7 +6151,7 @@ yyreduce:
     {
     (yyval.astNode) = (yyvsp[(1) - (3)].astNode);
     ((XQApplyTemplates*)(yyval.astNode))->setExpression(PRESERVE_NS((yylsp[(2) - (3)]), (yyvsp[(3) - (3)].astNode)));
-  }
+  ;}
     break;
 
   case 132:
@@ -6159,7 +6159,7 @@ yyreduce:
     {
     (yyval.astNode) = (yyvsp[(1) - (3)].astNode);
     ((XQApplyTemplates*)(yyval.astNode))->setMode((yyvsp[(3) - (3)].mode));
-  }
+  ;}
     break;
 
   case 133:
@@ -6167,28 +6167,28 @@ yyreduce:
     {
     RESOLVE_QNAME((yylsp[(1) - (1)]), (yyvsp[(1) - (1)].str));
     (yyval.mode) = WRAP((yylsp[(1) - (1)]), new (MEMMGR) XQUserFunction::Mode(uri, name));
-  }
+  ;}
     break;
 
   case 134:
 #line 1456 "../src/parser/XQParser.y"
     {
     (yyval.mode) = WRAP((yylsp[(1) - (1)]), new (MEMMGR) XQUserFunction::Mode(XQUserFunction::Mode::DEFAULT));
-  }
+  ;}
     break;
 
   case 135:
 #line 1460 "../src/parser/XQParser.y"
     {
     (yyval.mode) = WRAP((yylsp[(1) - (1)]), new (MEMMGR) XQUserFunction::Mode(XQUserFunction::Mode::CURRENT));
-  }
+  ;}
     break;
 
   case 136:
 #line 1467 "../src/parser/XQParser.y"
     {
     (yyval.templateArgs) = new (MEMMGR) TemplateArguments(XQillaAllocator<XQTemplateArgument*>(MEMMGR));
-  }
+  ;}
     break;
 
   case 137:
@@ -6196,7 +6196,7 @@ yyreduce:
     {
     (yyval.templateArgs) = (yyvsp[(1) - (2)].templateArgs);
     (yyval.templateArgs)->push_back((yyvsp[(2) - (2)].templateArg));
-  }
+  ;}
     break;
 
   case 138:
@@ -6209,14 +6209,14 @@ yyreduce:
     if(call->getName() == 0) {
       yyerror((yylsp[(1) - (3)]), "The xsl:call-template instruction does not have a {}name attribute");
     }
-  }
+  ;}
     break;
 
   case 139:
 #line 1492 "../src/parser/XQParser.y"
     {
     (yyval.astNode) = WRAP((yylsp[(1) - (1)]), new (MEMMGR) XQCallTemplate((const XMLCh*)0, 0, MEMMGR));
-  }
+  ;}
     break;
 
   case 140:
@@ -6226,14 +6226,14 @@ yyreduce:
     RESOLVE_QNAME((yylsp[(2) - (2)]), (yyvsp[(2) - (2)].str));
     ((XQCallTemplate*)(yyval.astNode))->setURI(uri);
     ((XQCallTemplate*)(yyval.astNode))->setName(name);
-  }
+  ;}
     break;
 
   case 141:
 #line 1506 "../src/parser/XQParser.y"
     {
     (yyval.templateArgs) = new (MEMMGR) TemplateArguments(XQillaAllocator<XQTemplateArgument*>(MEMMGR));
-  }
+  ;}
     break;
 
   case 142:
@@ -6241,7 +6241,7 @@ yyreduce:
     {
     (yyval.templateArgs) = (yyvsp[(1) - (2)].templateArgs);
     (yyval.templateArgs)->push_back((yyvsp[(2) - (2)].templateArg));
-  }
+  ;}
     break;
 
   case 143:
@@ -6259,14 +6259,14 @@ yyreduce:
     if((yyvsp[(1) - (3)].templateArg)->value == 0) {
       yyerror((yylsp[(1) - (3)]), "The xsl:with-param instruction has both a select attribute and a sequence constructor [err:XTSE0870]");
     }
-  }
+  ;}
     break;
 
   case 144:
 #line 1536 "../src/parser/XQParser.y"
     {
     (yyval.templateArg) = WRAP((yylsp[(1) - (1)]), new (MEMMGR) XQTemplateArgument(0, 0, MEMMGR));
-  }
+  ;}
     break;
 
   case 145:
@@ -6276,7 +6276,7 @@ yyreduce:
     RESOLVE_QNAME((yylsp[(2) - (2)]), (yyvsp[(2) - (2)].str));
     (yyval.templateArg)->uri = uri;
     (yyval.templateArg)->name = name;
-  }
+  ;}
     break;
 
   case 146:
@@ -6284,7 +6284,7 @@ yyreduce:
     {
     (yyval.templateArg) = (yyvsp[(1) - (3)].templateArg);
     (yyval.templateArg)->value = PRESERVE_NS((yylsp[(2) - (3)]), (yyvsp[(3) - (3)].astNode));
-  }
+  ;}
     break;
 
   case 147:
@@ -6292,7 +6292,7 @@ yyreduce:
     {
     (yyval.templateArg) = (yyvsp[(1) - (3)].templateArg);
     (yyval.templateArg)->seqType = (yyvsp[(3) - (3)].sequenceType);
-  }
+  ;}
     break;
 
   case 148:
@@ -6300,14 +6300,14 @@ yyreduce:
     {
     (yyval.templateArg) = (yyvsp[(1) - (2)].templateArg);
     // TBD tunnel parameters - jpcs
-  }
+  ;}
     break;
 
   case 149:
 #line 1565 "../src/parser/XQParser.y"
     {
     (yyval.astNode) = (yyvsp[(1) - (2)].astNode);
-  }
+  ;}
     break;
 
   case 150:
@@ -6315,7 +6315,7 @@ yyreduce:
     {
     // TBD xsl:fallback - jpcs
     (yyval.astNode) = PRESERVE_NS((yylsp[(2) - (3)]), (yyvsp[(3) - (3)].astNode));
-  }
+  ;}
     break;
 
   case 151:
@@ -6323,14 +6323,14 @@ yyreduce:
     {
     ASTNode *empty = WRAP((yylsp[(1) - (3)]), new (MEMMGR) XQSequence(MEMMGR));
     (yyval.astNode) = WRAP((yylsp[(1) - (3)]), new (MEMMGR) XQIf((yyvsp[(1) - (3)].astNode), (yyvsp[(2) - (3)].parenExpr), empty, MEMMGR));
-  }
+  ;}
     break;
 
   case 152:
 #line 1587 "../src/parser/XQParser.y"
     {
     (yyval.astNode) = PRESERVE_NS((yylsp[(2) - (3)]), (yyvsp[(3) - (3)].astNode));
-  }
+  ;}
     break;
 
   case 153:
@@ -6344,14 +6344,14 @@ yyreduce:
     iff->setWhenFalse((yyvsp[(3) - (4)].astNode));
 
     (yyval.astNode) = (yyvsp[(2) - (4)].astNode);
-  }
+  ;}
     break;
 
   case 154:
 #line 1608 "../src/parser/XQParser.y"
     {
     (yyval.astNode) = (yyvsp[(1) - (1)].astNode);
-  }
+  ;}
     break;
 
   case 155:
@@ -6365,7 +6365,7 @@ yyreduce:
     iff->setWhenFalse((yyvsp[(2) - (2)].astNode));
 
     (yyval.astNode) = (yyvsp[(1) - (2)].astNode);
-  }
+  ;}
     break;
 
   case 156:
@@ -6374,28 +6374,28 @@ yyreduce:
     XQIf *iff = (XQIf*)(yyvsp[(1) - (3)].astNode);
     iff->setWhenTrue((yyvsp[(2) - (3)].parenExpr));
     (yyval.astNode) = (yyvsp[(1) - (3)].astNode);
-  }
+  ;}
     break;
 
   case 157:
 #line 1635 "../src/parser/XQParser.y"
     {
     (yyval.astNode) = WRAP((yylsp[(1) - (3)]), new (MEMMGR) XQIf(PRESERVE_NS((yylsp[(2) - (3)]), (yyvsp[(3) - (3)].astNode)), 0, 0, MEMMGR));
-  }
+  ;}
     break;
 
   case 158:
 #line 1642 "../src/parser/XQParser.y"
     {
     (yyval.astNode) = WRAP((yyloc), new (MEMMGR) XQSequence(MEMMGR));
-  }
+  ;}
     break;
 
   case 159:
 #line 1646 "../src/parser/XQParser.y"
     {
     (yyval.astNode) = (yyvsp[(2) - (3)].parenExpr);
-  }
+  ;}
     break;
 
   case 160:
@@ -6430,14 +6430,14 @@ yyreduce:
     else {
       as->setNonMatch((yyvsp[(3) - (4)].astNode));
     }
-  }
+  ;}
     break;
 
   case 161:
 #line 1688 "../src/parser/XQParser.y"
     {
     (yyval.astNode) = WRAP((yyloc), new (MEMMGR) XQAnalyzeString(MEMMGR));
-  }
+  ;}
     break;
 
   case 162:
@@ -6445,7 +6445,7 @@ yyreduce:
     {
     (yyval.astNode) = (yyvsp[(1) - (3)].astNode);
     ((XQAnalyzeString*)(yyval.astNode))->setExpression(PRESERVE_NS((yylsp[(2) - (3)]), (yyvsp[(3) - (3)].astNode)));
-  }
+  ;}
     break;
 
   case 163:
@@ -6454,7 +6454,7 @@ yyreduce:
     (yyval.astNode) = (yyvsp[(1) - (3)].astNode);
     ASTNode *content = WRAP((yylsp[(3) - (3)]), new (MEMMGR) XQSimpleContent((yyvsp[(3) - (3)].itemList), MEMMGR));
     ((XQAnalyzeString*)(yyval.astNode))->setRegex(PRESERVE_NS((yylsp[(2) - (3)]), content));
-  }
+  ;}
     break;
 
   case 164:
@@ -6463,35 +6463,35 @@ yyreduce:
     (yyval.astNode) = (yyvsp[(1) - (3)].astNode);
     ASTNode *content = WRAP((yylsp[(3) - (3)]), new (MEMMGR) XQSimpleContent((yyvsp[(3) - (3)].itemList), MEMMGR));
     ((XQAnalyzeString*)(yyval.astNode))->setFlags(PRESERVE_NS((yylsp[(2) - (3)]), content));
-  }
+  ;}
     break;
 
   case 165:
 #line 1712 "../src/parser/XQParser.y"
     {
     (yyval.astNode) = 0;
-  }
+  ;}
     break;
 
   case 166:
 #line 1716 "../src/parser/XQParser.y"
     {
     (yyval.astNode) = (yyvsp[(2) - (3)].parenExpr);
-  }
+  ;}
     break;
 
   case 167:
 #line 1723 "../src/parser/XQParser.y"
     {
     (yyval.astNode) = 0;
-  }
+  ;}
     break;
 
   case 168:
 #line 1727 "../src/parser/XQParser.y"
     {
     (yyval.astNode) = (yyvsp[(2) - (3)].parenExpr);
-  }
+  ;}
     break;
 
   case 169:
@@ -6509,14 +6509,14 @@ yyreduce:
     }
 
     (yyval.astNode) = WRAP((yylsp[(1) - (4)]), new (MEMMGR) XQReturn((yyvsp[(1) - (4)].letTuple), (yyvsp[(4) - (4)].parenExpr), MEMMGR));
-  }
+  ;}
     break;
 
   case 170:
 #line 1752 "../src/parser/XQParser.y"
     {
     (yyval.letTuple) = WRAP((yylsp[(1) - (1)]), new (MEMMGR) LetTuple(WRAP((yylsp[(1) - (1)]), new (MEMMGR) ContextTuple(MEMMGR)), 0, 0, MEMMGR));
-  }
+  ;}
     break;
 
   case 171:
@@ -6526,7 +6526,7 @@ yyreduce:
     (yyvsp[(1) - (2)].letTuple)->setVarURI(uri);
     (yyvsp[(1) - (2)].letTuple)->setVarName(name);
     (yyval.letTuple) = (yyvsp[(1) - (2)].letTuple);
-  }
+  ;}
     break;
 
   case 172:
@@ -6534,7 +6534,7 @@ yyreduce:
     {
     (yyvsp[(1) - (3)].letTuple)->setExpression((yyvsp[(3) - (3)].astNode));
     (yyval.letTuple) = (yyvsp[(1) - (3)].letTuple);
-  }
+  ;}
     break;
 
   case 173:
@@ -6542,7 +6542,7 @@ yyreduce:
     {
     (yyvsp[(1) - (3)].letTuple)->seqType = (yyvsp[(3) - (3)].sequenceType);
     (yyval.letTuple) = (yyvsp[(1) - (3)].letTuple);
-  }
+  ;}
     break;
 
   case 174:
@@ -6560,14 +6560,14 @@ yyreduce:
     else if(comment->getValue() == 0) {
       comment->setValue(WRAP((yylsp[(1) - (3)]), new (MEMMGR) XQSequence(MEMMGR)));
     }
-  }
+  ;}
     break;
 
   case 175:
 #line 1794 "../src/parser/XQParser.y"
     {
     (yyval.astNode) = WRAP((yylsp[(1) - (1)]), new (MEMMGR) XQCommentConstructor(0, MEMMGR, /*xslt*/true));
-  }
+  ;}
     break;
 
   case 176:
@@ -6575,7 +6575,7 @@ yyreduce:
     {
     (yyval.astNode) = (yyvsp[(1) - (3)].astNode);
     ((XQCommentConstructor*)(yyval.astNode))->setValue(PRESERVE_NS((yylsp[(2) - (3)]), (yyvsp[(3) - (3)].astNode)));
-  }
+  ;}
     break;
 
   case 177:
@@ -6597,14 +6597,14 @@ yyreduce:
     else if(pi->getValue() == 0) {
       pi->setValue(WRAP((yylsp[(1) - (3)]), new (MEMMGR) XQSequence(MEMMGR)));
     }
-  }
+  ;}
     break;
 
   case 178:
 #line 1828 "../src/parser/XQParser.y"
     {
     (yyval.astNode) = WRAP((yylsp[(1) - (1)]), new (MEMMGR) XQPIConstructor(0, 0, MEMMGR, /*xslt*/true));
-  }
+  ;}
     break;
 
   case 179:
@@ -6614,7 +6614,7 @@ yyreduce:
 
     ASTNode *content = WRAP((yylsp[(3) - (3)]), new (MEMMGR) XQSimpleContent((yyvsp[(3) - (3)].itemList), MEMMGR));
     ((XQPIConstructor*)(yyval.astNode))->setName(PRESERVE_NS((yylsp[(2) - (3)]), content));
-  }
+  ;}
     break;
 
   case 180:
@@ -6622,7 +6622,7 @@ yyreduce:
     {
     (yyval.astNode) = (yyvsp[(1) - (3)].astNode);
     ((XQPIConstructor*)(yyval.astNode))->setValue(PRESERVE_NS((yylsp[(2) - (3)]), (yyvsp[(3) - (3)].astNode)));
-  }
+  ;}
     break;
 
   case 181:
@@ -6631,14 +6631,14 @@ yyreduce:
     XQDocumentConstructor *doc = (XQDocumentConstructor*)(yyvsp[(1) - (3)].astNode);
     doc->setValue((yyvsp[(2) - (3)].parenExpr));
     (yyval.astNode) = doc;
-  }
+  ;}
     break;
 
   case 182:
 #line 1856 "../src/parser/XQParser.y"
     {
     (yyval.astNode) = WRAP((yylsp[(1) - (1)]), new (MEMMGR) XQDocumentConstructor(0, MEMMGR));
-  }
+  ;}
     break;
 
   case 183:
@@ -6675,14 +6675,14 @@ yyreduce:
       children->push_back(WRAP((yylsp[(1) - (3)]), new (MEMMGR) XQSequence(MEMMGR)));
       attr->setChildren(children);
     }
-  }
+  ;}
     break;
 
   case 184:
 #line 1901 "../src/parser/XQParser.y"
     {
     (yyval.astNode) = WRAP((yylsp[(1) - (1)]), new (MEMMGR) XQAttributeConstructor(0, 0, MEMMGR));
-  }
+  ;}
     break;
 
   case 185:
@@ -6692,7 +6692,7 @@ yyreduce:
 
     ASTNode *content = WRAP((yylsp[(3) - (3)]), new (MEMMGR) XQSimpleContent((yyvsp[(3) - (3)].itemList), MEMMGR));
     ((XQAttributeConstructor*)(yyval.astNode))->setName(PRESERVE_NS((yylsp[(2) - (3)]), content));
-  }
+  ;}
     break;
 
   case 186:
@@ -6702,7 +6702,7 @@ yyreduce:
 
     ASTNode *content = WRAP((yylsp[(3) - (3)]), new (MEMMGR) XQSimpleContent((yyvsp[(3) - (3)].itemList), MEMMGR));
     ((XQAttributeConstructor*)(yyval.astNode))->namespaceExpr = PRESERVE_NS((yylsp[(2) - (3)]), content);
-  }
+  ;}
     break;
 
   case 187:
@@ -6714,7 +6714,7 @@ yyreduce:
     children->push_back(PRESERVE_NS((yylsp[(2) - (3)]), (yyvsp[(3) - (3)].astNode)));
 
     ((XQAttributeConstructor*)(yyval.astNode))->setChildren(children);
-  }
+  ;}
     break;
 
   case 188:
@@ -6723,7 +6723,7 @@ yyreduce:
     (yyval.astNode) = (yyvsp[(1) - (3)].astNode);
     // TBD separator - jpcs
 /*     ((XQAttributeConstructor*)$$)->setChildren(children); */
-  }
+  ;}
     break;
 
   case 189:
@@ -6750,14 +6750,14 @@ yyreduce:
       children->push_back(WRAP((yylsp[(1) - (3)]), new (MEMMGR) XQSequence(MEMMGR)));
       ns->setChildren(children);
     }
-  }
+  ;}
     break;
 
   case 190:
 #line 1964 "../src/parser/XQParser.y"
     {
     (yyval.astNode) = WRAP((yylsp[(1) - (1)]), new (MEMMGR) XQNamespaceConstructor(0, 0, MEMMGR));
-  }
+  ;}
     break;
 
   case 191:
@@ -6767,7 +6767,7 @@ yyreduce:
 
     ASTNode *content = WRAP((yylsp[(3) - (3)]), new (MEMMGR) XQSimpleContent((yyvsp[(3) - (3)].itemList), MEMMGR));
     ((XQNamespaceConstructor*)(yyval.astNode))->setName(PRESERVE_NS((yylsp[(2) - (3)]), content));
-  }
+  ;}
     break;
 
   case 192:
@@ -6779,7 +6779,7 @@ yyreduce:
     children->push_back(PRESERVE_NS((yylsp[(2) - (3)]), (yyvsp[(3) - (3)].astNode)));
 
     ((XQNamespaceConstructor*)(yyval.astNode))->setChildren(children);
-  }
+  ;}
     break;
 
   case 193:
@@ -6805,14 +6805,14 @@ yyreduce:
     VectorOfASTNodes *children = new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR));
     *children = (yyvsp[(2) - (3)].parenExpr)->getChildren();
     elem->setChildren(children);
-  }
+  ;}
     break;
 
   case 194:
 #line 2013 "../src/parser/XQParser.y"
     {
     (yyval.astNode) = WRAP((yylsp[(1) - (1)]), new (MEMMGR) XQElementConstructor(0, 0, 0, MEMMGR));
-  }
+  ;}
     break;
 
   case 195:
@@ -6822,7 +6822,7 @@ yyreduce:
 
     ASTNode *content = WRAP((yylsp[(3) - (3)]), new (MEMMGR) XQSimpleContent((yyvsp[(3) - (3)].itemList), MEMMGR));
     ((XQElementConstructor*)(yyval.astNode))->setName(PRESERVE_NS((yylsp[(2) - (3)]), content));
-  }
+  ;}
     break;
 
   case 196:
@@ -6832,7 +6832,7 @@ yyreduce:
 
     ASTNode *content = WRAP((yylsp[(3) - (3)]), new (MEMMGR) XQSimpleContent((yyvsp[(3) - (3)].itemList), MEMMGR));
     ((XQElementConstructor*)(yyval.astNode))->namespaceExpr = PRESERVE_NS((yylsp[(2) - (3)]), content);
-  }
+  ;}
     break;
 
   case 197:
@@ -6844,14 +6844,14 @@ yyreduce:
     if(as->getExpression() == 0) {
       yyerror((yylsp[(1) - (2)]), "The xsl:copy-of instruction does not have a {}select attribute");
     }
-  }
+  ;}
     break;
 
   case 198:
 #line 2046 "../src/parser/XQParser.y"
     {
     (yyval.astNode) = WRAP((yyloc), new (MEMMGR) XQCopyOf(MEMMGR));
-  }
+  ;}
     break;
 
   case 199:
@@ -6859,7 +6859,7 @@ yyreduce:
     {
     (yyval.astNode) = (yyvsp[(1) - (3)].astNode);
     ((XQCopyOf*)(yyval.astNode))->setExpression(PRESERVE_NS((yylsp[(2) - (3)]), (yyvsp[(3) - (3)].astNode)));
-  }
+  ;}
     break;
 
   case 200:
@@ -6867,7 +6867,7 @@ yyreduce:
     {
     (yyval.astNode) = (yyvsp[(1) - (2)].astNode);
     ((XQCopyOf*)(yyval.astNode))->setCopyNamespaces((yyvsp[(2) - (2)].boolean));
-  }
+  ;}
     break;
 
   case 201:
@@ -6880,14 +6880,14 @@ yyreduce:
     as->setExpression(ci);
 
     as->setChildren((yyvsp[(2) - (3)].parenExpr)->getChildren());
-  }
+  ;}
     break;
 
   case 202:
 #line 2077 "../src/parser/XQParser.y"
     {
     (yyval.astNode) = WRAP((yyloc), new (MEMMGR) XQCopy(MEMMGR));
-  }
+  ;}
     break;
 
   case 203:
@@ -6895,7 +6895,7 @@ yyreduce:
     {
     (yyval.astNode) = (yyvsp[(1) - (2)].astNode);
     ((XQCopy*)(yyval.astNode))->setCopyNamespaces((yyvsp[(2) - (2)].boolean));
-  }
+  ;}
     break;
 
   case 204:
@@ -6903,7 +6903,7 @@ yyreduce:
     {
     (yyval.astNode) = (yyvsp[(1) - (2)].astNode);
     ((XQCopy*)(yyval.astNode))->setInheritNamespaces((yyvsp[(2) - (2)].boolean));
-  }
+  ;}
     break;
 
   case 205:
@@ -6917,14 +6917,14 @@ yyreduce:
     if(map->getArg1() == 0) {
       yyerror((yylsp[(1) - (3)]), "The xsl:for-each instruction does not have a {}select attribute");
     }
-  }
+  ;}
     break;
 
   case 206:
 #line 2109 "../src/parser/XQParser.y"
     {
     (yyval.astNode) = WRAP((yylsp[(1) - (1)]), new (MEMMGR) XQMap(0, 0, MEMMGR));
-  }
+  ;}
     break;
 
   case 207:
@@ -6932,7 +6932,7 @@ yyreduce:
     {
     (yyval.astNode) = (yyvsp[(1) - (3)].astNode);
     ((XQMap*)(yyval.astNode))->setArg1(PRESERVE_NS((yylsp[(2) - (3)]), (yyvsp[(3) - (3)].astNode)));
-  }
+  ;}
     break;
 
   case 208:
@@ -6940,7 +6940,7 @@ yyreduce:
     {
     (yyval.itemList) = (yyvsp[(1) - (3)].itemList);
     (yyval.itemList)->push_back(PRESERVE_NS((yylsp[(3) - (3)]), (yyvsp[(3) - (3)].astNode)));
-  }
+  ;}
     break;
 
   case 209:
@@ -6948,14 +6948,14 @@ yyreduce:
     {
     (yyval.itemList) = new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR));
     (yyval.itemList)->push_back(PRESERVE_NS((yylsp[(1) - (1)]), (yyvsp[(1) - (1)].astNode)));
-  }
+  ;}
     break;
 
   case 210:
 #line 2143 "../src/parser/XQParser.y"
     {
     (yyval.astNode) = (yyvsp[(1) - (1)].astNode);
-  }
+  ;}
     break;
 
   case 211:
@@ -6966,7 +6966,7 @@ yyreduce:
     nt->setNameWildcard();
     nt->setNamespaceWildcard();
     (yyval.astNode) = WRAP((yylsp[(1) - (1)]), new (MEMMGR) XQStep(XQStep::SELF, nt, MEMMGR));
-  }
+  ;}
     break;
 
   case 212:
@@ -6979,7 +6979,7 @@ yyreduce:
     oargs.push_back((yyvsp[(1) - (1)].astNode));
 
     (yyval.astNode) = WRAP((yylsp[(1) - (1)]), new (MEMMGR) Intersect(oargs, MEMMGR));
-  }
+  ;}
     break;
 
   case 213:
@@ -6990,7 +6990,7 @@ yyreduce:
     nt->setNameWildcard();
     nt->setNamespaceWildcard();
     (yyval.astNode) = WRAP((yylsp[(1) - (1)]), new (MEMMGR) XQStep(XQStep::PARENT, nt, MEMMGR));
-  }
+  ;}
     break;
 
   case 214:
@@ -7001,7 +7001,7 @@ yyreduce:
     nt->setNameWildcard();
     nt->setNamespaceWildcard();
     (yyval.astNode) = WRAP((yylsp[(1) - (1)]), new (MEMMGR) XQStep(XQStep::ANCESTOR, nt, MEMMGR));
-  }
+  ;}
     break;
 
   case 215:
@@ -7011,7 +7011,7 @@ yyreduce:
     fargs.push_back((yyvsp[(3) - (4)].astNode));
 
     (yyval.astNode) = WRAP((yylsp[(1) - (4)]), new (MEMMGR) FunctionId(fargs, MEMMGR));
-  }
+  ;}
     break;
 
   case 216:
@@ -7025,21 +7025,21 @@ yyreduce:
 
     // TBD key() - jpcs
     (yyval.astNode) = WRAP((yylsp[(1) - (6)]), new (MEMMGR) XQContextItem(MEMMGR));
-  }
+  ;}
     break;
 
   case 221:
 #line 2235 "../src/parser/XQParser.y"
     {
     (yyval.astNode) = (yyvsp[(1) - (1)].astNode);
-  }
+  ;}
     break;
 
   case 222:
 #line 2239 "../src/parser/XQParser.y"
     {
     (yyval.astNode) = WRAP((yylsp[(1) - (2)]), new (MEMMGR) XQPredicate((yyvsp[(2) - (2)].astNode), (yyvsp[(1) - (2)].astNode), MEMMGR));
-  }
+  ;}
     break;
 
   case 223:
@@ -7060,7 +7060,7 @@ yyreduce:
     Intersect *intersect = WRAP((yylsp[(1) - (3)]), new (MEMMGR) Intersect(oargs, MEMMGR));
 
     (yyval.astNode) = WRAP((yylsp[(1) - (3)]), new (MEMMGR) XQPredicate((yyvsp[(3) - (3)].astNode), intersect, MEMMGR));
-  }
+  ;}
     break;
 
   case 224:
@@ -7081,7 +7081,7 @@ yyreduce:
     Intersect *intersect = WRAP((yylsp[(1) - (3)]), new (MEMMGR) Intersect(oargs, MEMMGR));
 
     (yyval.astNode) = WRAP((yylsp[(1) - (3)]), new (MEMMGR) XQPredicate((yyvsp[(3) - (3)].astNode), intersect, MEMMGR));
-  }
+  ;}
     break;
 
   case 225:
@@ -7094,7 +7094,7 @@ yyreduce:
     ((XQStep*)step)->setAxis(XQStep::PARENT);
 
     (yyval.astNode) = WRAP((yylsp[(2) - (3)]), new (MEMMGR) XQPredicate((yyvsp[(3) - (3)].astNode), (yyvsp[(1) - (3)].astNode), MEMMGR));
-  }
+  ;}
     break;
 
   case 226:
@@ -7107,14 +7107,14 @@ yyreduce:
     ((XQStep*)step)->setAxis(XQStep::ANCESTOR);
 
     (yyval.astNode) = WRAP((yylsp[(2) - (3)]), new (MEMMGR) XQPredicate((yyvsp[(3) - (3)].astNode), (yyvsp[(1) - (3)].astNode), MEMMGR));
-  }
+  ;}
     break;
 
   case 227:
 #line 2303 "../src/parser/XQParser.y"
     {
     (yyval.astNode) = XQPredicate::addPredicates(WRAP((yylsp[(1) - (2)]), new (MEMMGR) XQStep(XQStep::SELF, (yyvsp[(1) - (2)].nodeTest), MEMMGR)), (yyvsp[(2) - (2)].predicates));
-  }
+  ;}
     break;
 
   case 228:
@@ -7123,7 +7123,7 @@ yyreduce:
     if(!(yyvsp[(1) - (1)].nodeTest)->isNodeTypeSet())
       (yyvsp[(1) - (1)].nodeTest)->setNodeType(Node::element_string);
     (yyval.nodeTest) = (yyvsp[(1) - (1)].nodeTest);
-  }
+  ;}
     break;
 
   case 229:
@@ -7132,7 +7132,7 @@ yyreduce:
     if(!(yyvsp[(3) - (3)].nodeTest)->isNodeTypeSet())
       (yyvsp[(3) - (3)].nodeTest)->setNodeType(Node::element_string);
     (yyval.nodeTest) = (yyvsp[(3) - (3)].nodeTest);
-  }
+  ;}
     break;
 
   case 230:
@@ -7141,7 +7141,7 @@ yyreduce:
     if(!(yyvsp[(3) - (3)].nodeTest)->isNodeTypeSet())
       (yyvsp[(3) - (3)].nodeTest)->setNodeType(Node::attribute_string);
     (yyval.nodeTest) = (yyvsp[(3) - (3)].nodeTest);
-  }
+  ;}
     break;
 
   case 231:
@@ -7150,14 +7150,14 @@ yyreduce:
     if(!(yyvsp[(2) - (2)].nodeTest)->isNodeTypeSet())
       (yyvsp[(2) - (2)].nodeTest)->setNodeType(Node::attribute_string);
     (yyval.nodeTest) = (yyvsp[(2) - (2)].nodeTest);
-  }
+  ;}
     break;
 
   case 232:
 #line 2340 "../src/parser/XQParser.y"
     {
     (yyval.predicates) = new (MEMMGR) VectorOfPredicates(MEMMGR);
-  }
+  ;}
     break;
 
   case 233:
@@ -7166,42 +7166,42 @@ yyreduce:
     XQPredicate *pred = WRAP((yylsp[(2) - (4)]), new (MEMMGR) XQPredicate((yyvsp[(3) - (4)].astNode), MEMMGR));
     (yyvsp[(1) - (4)].predicates)->push_back(pred);
     (yyval.predicates) = (yyvsp[(1) - (4)].predicates); 
-  }
+  ;}
     break;
 
   case 241:
 #line 2374 "../src/parser/XQParser.y"
     {
     CHECK_SECOND_STEP((yylsp[(2) - (3)]), "a setter");
-  }
+  ;}
     break;
 
   case 242:
 #line 2378 "../src/parser/XQParser.y"
     {
     CHECK_SECOND_STEP((yylsp[(2) - (3)]), "an import");
-  }
+  ;}
     break;
 
   case 243:
 #line 2382 "../src/parser/XQParser.y"
     {
     CHECK_SECOND_STEP((yylsp[(2) - (3)]), "a namespace");
-  }
+  ;}
     break;
 
   case 244:
 #line 2386 "../src/parser/XQParser.y"
     {
     CHECK_SECOND_STEP((yylsp[(2) - (3)]), "a default namespace");
-  }
+  ;}
     break;
 
   case 245:
 #line 2390 "../src/parser/XQParser.y"
     {
     QP->_flags.set(BIT_DECLARE_SECOND_STEP);
-  }
+  ;}
     break;
 
   case 246:
@@ -7210,7 +7210,7 @@ yyreduce:
     QP->_flags.set(BIT_DECLARE_SECOND_STEP);
     XQUserFunction* decl=(yyvsp[(2) - (3)].functDecl);
     QP->_query->addFunction(decl);
-  }
+  ;}
     break;
 
   case 247:
@@ -7219,77 +7219,77 @@ yyreduce:
     QP->_flags.set(BIT_DECLARE_SECOND_STEP);
     XQUserFunction* decl=(yyvsp[(2) - (3)].functDecl);
     QP->_query->addFunction(decl);
-  }
+  ;}
     break;
 
   case 248:
 #line 2406 "../src/parser/XQParser.y"
     {
     QP->_flags.set(BIT_DECLARE_SECOND_STEP);
-  }
+  ;}
     break;
 
   case 256:
 #line 2432 "../src/parser/XQParser.y"
     {
     (yyval.functDecl) = WRAP((yylsp[(1) - (5)]), new (MEMMGR) XQUserFunction((yyvsp[(3) - (5)].str), (yyvsp[(4) - (5)].argSpecs), (yyvsp[(5) - (5)].astNode), NULL, false, true, MEMMGR));
-  }
+  ;}
     break;
 
   case 257:
 #line 2436 "../src/parser/XQParser.y"
     {
     (yyval.functDecl) = WRAP((yylsp[(1) - (7)]), new (MEMMGR) XQUserFunction((yyvsp[(3) - (7)].str), (yyvsp[(4) - (7)].argSpecs), (yyvsp[(7) - (7)].astNode), (yyvsp[(6) - (7)].sequenceType), false, true, MEMMGR));
-  }
+  ;}
     break;
 
   case 258:
 #line 2440 "../src/parser/XQParser.y"
     {
     (yyval.functDecl) = WRAP((yylsp[(1) - (5)]), new (MEMMGR) XQUserFunction((yyvsp[(3) - (5)].str), (yyvsp[(4) - (5)].argSpecs), NULL, NULL, false, true, MEMMGR));
-  }
+  ;}
     break;
 
   case 259:
 #line 2444 "../src/parser/XQParser.y"
     {
     (yyval.functDecl) = WRAP((yylsp[(1) - (7)]), new (MEMMGR) XQUserFunction((yyvsp[(3) - (7)].str), (yyvsp[(4) - (7)].argSpecs), NULL, (yyvsp[(6) - (7)].sequenceType), false, true, MEMMGR));
-  }
+  ;}
     break;
 
   case 269:
 #line 2473 "../src/parser/XQParser.y"
     {
     CHECK_SECOND_STEP((yylsp[(2) - (3)]), "a setter");
-  }
+  ;}
     break;
 
   case 270:
 #line 2477 "../src/parser/XQParser.y"
     {
     CHECK_SECOND_STEP((yylsp[(2) - (3)]), "an import");
-  }
+  ;}
     break;
 
   case 271:
 #line 2481 "../src/parser/XQParser.y"
     {
     CHECK_SECOND_STEP((yylsp[(2) - (3)]), "a namespace");
-  }
+  ;}
     break;
 
   case 272:
 #line 2485 "../src/parser/XQParser.y"
     {
     CHECK_SECOND_STEP((yylsp[(2) - (3)]), "a default namespace");
-  }
+  ;}
     break;
 
   case 273:
 #line 2489 "../src/parser/XQParser.y"
     {
     QP->_flags.set(BIT_DECLARE_SECOND_STEP);
-  }
+  ;}
     break;
 
   case 274:
@@ -7298,7 +7298,7 @@ yyreduce:
     QP->_flags.set(BIT_DECLARE_SECOND_STEP);
     XQUserFunction* decl=(yyvsp[(2) - (3)].functDecl);
     QP->_query->addFunction(decl);
-  }
+  ;}
     break;
 
   case 275:
@@ -7307,56 +7307,56 @@ yyreduce:
     QP->_flags.set(BIT_DECLARE_SECOND_STEP);
     XQUserFunction* decl=(yyvsp[(2) - (3)].functDecl);
     QP->_query->addFunction(decl);
-  }
+  ;}
     break;
 
   case 276:
 #line 2505 "../src/parser/XQParser.y"
     {
     QP->_flags.set(BIT_DECLARE_SECOND_STEP);
-  }
+  ;}
     break;
 
   case 277:
 #line 2509 "../src/parser/XQParser.y"
     {
     CHECK_SECOND_STEP((yylsp[(2) - (3)]), "an ftoption declaration");
-  }
+  ;}
     break;
 
   case 285:
 #line 2536 "../src/parser/XQParser.y"
     {
     CHECK_SECOND_STEP((yylsp[(2) - (3)]), "a setter");
-  }
+  ;}
     break;
 
   case 286:
 #line 2540 "../src/parser/XQParser.y"
     {
     CHECK_SECOND_STEP((yylsp[(2) - (3)]), "an import");
-  }
+  ;}
     break;
 
   case 287:
 #line 2544 "../src/parser/XQParser.y"
     {
     CHECK_SECOND_STEP((yylsp[(2) - (3)]), "a namespace");
-  }
+  ;}
     break;
 
   case 288:
 #line 2548 "../src/parser/XQParser.y"
     {
     CHECK_SECOND_STEP((yylsp[(2) - (3)]), "a default namespace");
-  }
+  ;}
     break;
 
   case 289:
 #line 2552 "../src/parser/XQParser.y"
     {
     QP->_flags.set(BIT_DECLARE_SECOND_STEP);
-  }
+  ;}
     break;
 
   case 290:
@@ -7365,7 +7365,7 @@ yyreduce:
     QP->_flags.set(BIT_DECLARE_SECOND_STEP);
     XQUserFunction* decl=(yyvsp[(2) - (3)].functDecl);
     QP->_query->addFunction(decl);
-  }
+  ;}
     break;
 
   case 291:
@@ -7374,14 +7374,14 @@ yyreduce:
     QP->_flags.set(BIT_DECLARE_SECOND_STEP);
     XQUserFunction* decl=(yyvsp[(2) - (3)].functDecl);
     QP->_query->addFunction(decl);
-  }
+  ;}
     break;
 
   case 292:
 #line 2568 "../src/parser/XQParser.y"
     {
     QP->_flags.set(BIT_DECLARE_SECOND_STEP);
-  }
+  ;}
     break;
 
   case 297:
@@ -7389,7 +7389,7 @@ yyreduce:
     {
     if(!XPath2Utils::equals((yyvsp[(3) - (4)].str),sz1_0))
       yyerror((yylsp[(2) - (4)]), "This XQuery processor only supports version 1.0 of the specs [err:XQST0031]");
-  }
+  ;}
     break;
 
   case 298:
@@ -7411,7 +7411,7 @@ yyreduce:
     }
 
     // TODO: store the encoding somewhere
-  }
+  ;}
     break;
 
   case 301:
@@ -7422,42 +7422,42 @@ yyreduce:
     QP->_query->setIsLibraryModule();
     QP->_query->setModuleTargetNamespace((yyvsp[(5) - (6)].str));
     SET_NAMESPACE((yylsp[(3) - (6)]), (yyvsp[(3) - (6)].str), (yyvsp[(5) - (6)].str));
-  }
+  ;}
     break;
 
   case 303:
 #line 2635 "../src/parser/XQParser.y"
     {
     CHECK_SECOND_STEP((yylsp[(2) - (3)]), "a setter");
-  }
+  ;}
     break;
 
   case 304:
 #line 2639 "../src/parser/XQParser.y"
     {
     CHECK_SECOND_STEP((yylsp[(2) - (3)]), "an import");
-  }
+  ;}
     break;
 
   case 305:
 #line 2643 "../src/parser/XQParser.y"
     {
     CHECK_SECOND_STEP((yylsp[(2) - (3)]), "a namespace");
-  }
+  ;}
     break;
 
   case 306:
 #line 2647 "../src/parser/XQParser.y"
     {
     CHECK_SECOND_STEP((yylsp[(2) - (3)]), "a default namespace");
-  }
+  ;}
     break;
 
   case 307:
 #line 2651 "../src/parser/XQParser.y"
     {
     QP->_flags.set(BIT_DECLARE_SECOND_STEP);
-  }
+  ;}
     break;
 
   case 308:
@@ -7466,7 +7466,7 @@ yyreduce:
     QP->_flags.set(BIT_DECLARE_SECOND_STEP);
     XQUserFunction* decl=(yyvsp[(2) - (3)].functDecl);
     QP->_query->addFunction(decl);
-  }
+  ;}
     break;
 
   case 309:
@@ -7475,28 +7475,28 @@ yyreduce:
     QP->_flags.set(BIT_DECLARE_SECOND_STEP);
     XQUserFunction* decl=(yyvsp[(2) - (3)].functDecl);
     QP->_query->addFunction(decl);
-  }
+  ;}
     break;
 
   case 310:
 #line 2667 "../src/parser/XQParser.y"
     {
     QP->_flags.set(BIT_DECLARE_SECOND_STEP);
-  }
+  ;}
     break;
 
   case 311:
 #line 2671 "../src/parser/XQParser.y"
     {
     CHECK_SECOND_STEP((yylsp[(2) - (3)]), "an ftoption declaration");
-  }
+  ;}
     break;
 
   case 323:
 #line 2703 "../src/parser/XQParser.y"
     {
     SET_NAMESPACE((yylsp[(3) - (5)]), (yyvsp[(3) - (5)].str), (yyvsp[(5) - (5)].str));
-  }
+  ;}
     break;
 
   case 324:
@@ -7504,7 +7504,7 @@ yyreduce:
     {
     CHECK_SPECIFIED((yylsp[(1) - (3)]), BIT_BOUNDARY_SPECIFIED, "boundary space", "XQST0068");
     CONTEXT->setPreserveBoundarySpace(true);
-  }
+  ;}
     break;
 
   case 325:
@@ -7512,7 +7512,7 @@ yyreduce:
     {
     CHECK_SPECIFIED((yylsp[(1) - (3)]), BIT_BOUNDARY_SPECIFIED, "boundary space", "XQST0068");
     CONTEXT->setPreserveBoundarySpace(false);
-  }
+  ;}
     break;
 
   case 326:
@@ -7520,7 +7520,7 @@ yyreduce:
     {
     CHECK_SPECIFIED((yylsp[(1) - (5)]), BIT_DEFAULTELEMENTNAMESPACE_SPECIFIED, "default element namespace", "XQST0066");
     CONTEXT->setDefaultElementAndTypeNS((yyvsp[(5) - (5)].str));
-  }
+  ;}
     break;
 
   case 327:
@@ -7528,7 +7528,7 @@ yyreduce:
     { 
     CHECK_SPECIFIED((yylsp[(1) - (5)]), BIT_DEFAULTFUNCTIONNAMESPACE_SPECIFIED, "default function namespace", "XQST0066");
     CONTEXT->setDefaultFuncNS((yyvsp[(5) - (5)].str));
-  }
+  ;}
     break;
 
   case 328:
@@ -7587,14 +7587,14 @@ yyreduce:
         yyerror((yylsp[(3) - (4)]), "Unknown option name in the xqilla namespace [err:XQILLA]");
       }
     }
-  }
+  ;}
     break;
 
   case 329:
 #line 2799 "../src/parser/XQParser.y"
     {
     // TBD FTOptionDecl
-  }
+  ;}
     break;
 
   case 330:
@@ -7602,7 +7602,7 @@ yyreduce:
     {
     CHECK_SPECIFIED((yylsp[(1) - (3)]), BIT_ORDERING_SPECIFIED, "ordering mode", "XQST0065");
     CONTEXT->setNodeSetOrdering(StaticContext::ORDERING_ORDERED);
-  }
+  ;}
     break;
 
   case 331:
@@ -7610,7 +7610,7 @@ yyreduce:
     {
     CHECK_SPECIFIED((yylsp[(1) - (3)]), BIT_ORDERING_SPECIFIED, "ordering mode", "XQST0065");
     CONTEXT->setNodeSetOrdering(StaticContext::ORDERING_UNORDERED);
-  }
+  ;}
     break;
 
   case 332:
@@ -7618,7 +7618,7 @@ yyreduce:
     { 
     CHECK_SPECIFIED((yylsp[(1) - (5)]), BIT_EMPTYORDERING_SPECIFIED, "empty ordering mode", "XQST0069");
     CONTEXT->setDefaultFLWOROrderingMode(StaticContext::FLWOR_ORDER_EMPTY_GREATEST);
-  }
+  ;}
     break;
 
   case 333:
@@ -7626,7 +7626,7 @@ yyreduce:
     { 
     CHECK_SPECIFIED((yylsp[(1) - (5)]), BIT_EMPTYORDERING_SPECIFIED, "empty ordering mode", "XQST0069");
     CONTEXT->setDefaultFLWOROrderingMode(StaticContext::FLWOR_ORDER_EMPTY_LEAST);
-  }
+  ;}
     break;
 
   case 334:
@@ -7635,35 +7635,35 @@ yyreduce:
     CHECK_SPECIFIED((yylsp[(1) - (5)]), BIT_COPYNAMESPACE_SPECIFIED, "copy namespace", "XQST0055");
     CONTEXT->setPreserveNamespaces((yyvsp[(3) - (5)].boolean));
     CONTEXT->setInheritNamespaces((yyvsp[(5) - (5)].boolean));
-  }
+  ;}
     break;
 
   case 335:
 #line 2845 "../src/parser/XQParser.y"
     {
     (yyval.boolean) = true;
-  }
+  ;}
     break;
 
   case 336:
 #line 2849 "../src/parser/XQParser.y"
     {
     (yyval.boolean) = false;
-  }
+  ;}
     break;
 
   case 337:
 #line 2857 "../src/parser/XQParser.y"
     {
     (yyval.boolean) = true;
-  }
+  ;}
     break;
 
   case 338:
 #line 2861 "../src/parser/XQParser.y"
     {
     (yyval.boolean) = false;
-  }
+  ;}
     break;
 
   case 339:
@@ -7678,7 +7678,7 @@ yyreduce:
       yyerror((yylsp[(4) - (4)]), "The specified collation does not exist [err:XQST0038]");
     }
     CONTEXT->setDefaultCollation((yyvsp[(4) - (4)].str));
-  }
+  ;}
     break;
 
   case 340:
@@ -7686,7 +7686,7 @@ yyreduce:
     {
     CHECK_SPECIFIED((yylsp[(1) - (3)]), BIT_BASEURI_SPECIFIED, "base URI", "XQST0032");
     CONTEXT->setBaseURI((yyvsp[(3) - (3)].str));
-  }
+  ;}
     break;
 
   case 341:
@@ -7701,7 +7701,7 @@ yyreduce:
     }
     LOCATION((yylsp[(1) - (5)]), loc);
     CONTEXT->addSchemaLocation((yyvsp[(4) - (5)].str), (yyvsp[(5) - (5)].stringList), &loc);
-  }
+  ;}
     break;
 
   case 342:
@@ -7709,14 +7709,14 @@ yyreduce:
     {
     LOCATION((yylsp[(1) - (4)]), loc);
     CONTEXT->addSchemaLocation((yyvsp[(3) - (4)].str), (yyvsp[(4) - (4)].stringList), &loc);
-  }
+  ;}
     break;
 
   case 343:
 #line 2914 "../src/parser/XQParser.y"
     {
     (yyval.stringList) = NULL;
-  }
+  ;}
     break;
 
   case 344:
@@ -7724,7 +7724,7 @@ yyreduce:
     {
     (yyval.stringList) = new (MEMMGR) VectorOfStrings(XQillaAllocator<const XMLCh*>(MEMMGR));
     (yyval.stringList)->push_back((yyvsp[(2) - (2)].str));
-  }
+  ;}
     break;
 
   case 345:
@@ -7732,21 +7732,21 @@ yyreduce:
     {
     (yyvsp[(1) - (3)].stringList)->push_back((yyvsp[(3) - (3)].str));
     (yyval.stringList) = (yyvsp[(1) - (3)].stringList);
-  }
+  ;}
     break;
 
   case 346:
 #line 2932 "../src/parser/XQParser.y"
     {
     (yyval.str) = (yyvsp[(2) - (3)].str);
-  }
+  ;}
     break;
 
   case 347:
 #line 2936 "../src/parser/XQParser.y"
     {
     (yyval.str) = (XMLCh*)XMLUni::fgZeroLenString;
-  }
+  ;}
     break;
 
   case 348:
@@ -7759,7 +7759,7 @@ yyreduce:
 
     LOCATION((yylsp[(1) - (7)]), loc);
     QP->_query->importModule((yyvsp[(6) - (7)].str), (yyvsp[(7) - (7)].stringList), CONTEXT, &loc);
-  }
+  ;}
     break;
 
   case 349:
@@ -7770,28 +7770,28 @@ yyreduce:
 
     LOCATION((yylsp[(1) - (4)]), loc);
     QP->_query->importModule((yyvsp[(3) - (4)].str), (yyvsp[(4) - (4)].stringList), CONTEXT, &loc);
-  }
+  ;}
     break;
 
   case 350:
 #line 2966 "../src/parser/XQParser.y"
     {
     QP->_query->addVariable(WRAP((yylsp[(1) - (6)]), new (MEMMGR) XQGlobalVariable((yyvsp[(4) - (6)].str), (yyvsp[(5) - (6)].sequenceType), (yyvsp[(6) - (6)].astNode), MEMMGR)));
-  }
+  ;}
     break;
 
   case 351:
 #line 2973 "../src/parser/XQParser.y"
     {
     (yyval.astNode) = (yyvsp[(2) - (2)].astNode);
-  }
+  ;}
     break;
 
   case 352:
 #line 2977 "../src/parser/XQParser.y"
     {
     (yyval.astNode) = NULL;
-  }
+  ;}
     break;
 
   case 353:
@@ -7799,7 +7799,7 @@ yyreduce:
     {
     CHECK_SPECIFIED((yylsp[(1) - (3)]), BIT_CONSTRUCTION_SPECIFIED, "construction mode", "XQST0067");
     CONTEXT->setConstructionMode(StaticContext::CONSTRUCTION_MODE_PRESERVE);
-  }
+  ;}
     break;
 
   case 354:
@@ -7807,63 +7807,63 @@ yyreduce:
     {
     CHECK_SPECIFIED((yylsp[(1) - (3)]), BIT_CONSTRUCTION_SPECIFIED, "construction mode", "XQST0067");
     CONTEXT->setConstructionMode(StaticContext::CONSTRUCTION_MODE_STRIP);
-  }
+  ;}
     break;
 
   case 355:
 #line 3000 "../src/parser/XQParser.y"
     {
       (yyval.functDecl) = WRAP((yylsp[(1) - (6)]), new (MEMMGR) XQUserFunction((yyvsp[(4) - (6)].str),(yyvsp[(5) - (6)].argSpecs),WRAP((yylsp[(6) - (6)]), (yyvsp[(6) - (6)].astNode)),NULL, (yyvsp[(2) - (6)].boolean), true, MEMMGR));
-    }
+    ;}
     break;
 
   case 356:
 #line 3004 "../src/parser/XQParser.y"
     {
       (yyval.functDecl) = WRAP((yylsp[(1) - (8)]), new (MEMMGR) XQUserFunction((yyvsp[(4) - (8)].str),(yyvsp[(5) - (8)].argSpecs),WRAP((yylsp[(8) - (8)]), (yyvsp[(8) - (8)].astNode)),(yyvsp[(7) - (8)].sequenceType), (yyvsp[(2) - (8)].boolean), true, MEMMGR));
-    }
+    ;}
     break;
 
   case 357:
 #line 3008 "../src/parser/XQParser.y"
     {
       (yyval.functDecl) = WRAP((yylsp[(1) - (6)]), new (MEMMGR) XQUserFunction((yyvsp[(4) - (6)].str),(yyvsp[(5) - (6)].argSpecs),NULL,NULL, (yyvsp[(2) - (6)].boolean), true, MEMMGR));
-    }
+    ;}
     break;
 
   case 358:
 #line 3012 "../src/parser/XQParser.y"
     {
       (yyval.functDecl) = WRAP((yylsp[(1) - (8)]), new (MEMMGR) XQUserFunction((yyvsp[(4) - (8)].str),(yyvsp[(5) - (8)].argSpecs),NULL,(yyvsp[(7) - (8)].sequenceType), (yyvsp[(2) - (8)].boolean), true, MEMMGR));
-    }
+    ;}
     break;
 
   case 359:
 #line 3019 "../src/parser/XQParser.y"
     {
     (yyval.argSpecs) = NULL;
-  }
+  ;}
     break;
 
   case 360:
 #line 3023 "../src/parser/XQParser.y"
     {
     (yyval.argSpecs) = (yyvsp[(2) - (3)].argSpecs);
-  }
+  ;}
     break;
 
   case 361:
 #line 3029 "../src/parser/XQParser.y"
     {
     (yyval.boolean) = false;
-  }
+  ;}
     break;
 
   case 362:
 #line 3033 "../src/parser/XQParser.y"
     {
     (yyval.boolean) = true;
-  }
+  ;}
     break;
 
   case 363:
@@ -7871,7 +7871,7 @@ yyreduce:
     {
     (yyvsp[(1) - (3)].argSpecs)->push_back((yyvsp[(3) - (3)].argSpec));
     (yyval.argSpecs) = (yyvsp[(1) - (3)].argSpecs);
-  }
+  ;}
     break;
 
   case 364:
@@ -7880,28 +7880,28 @@ yyreduce:
     XQUserFunction::ArgumentSpecs* paramList = new (MEMMGR) XQUserFunction::ArgumentSpecs(XQillaAllocator<XQUserFunction::ArgumentSpec*>(MEMMGR));
     paramList->push_back((yyvsp[(1) - (1)].argSpec));
     (yyval.argSpecs) = paramList;
-  }
+  ;}
     break;
 
   case 365:
 #line 3056 "../src/parser/XQParser.y"
     {
     (yyval.argSpec) = WRAP((yylsp[(1) - (3)]), new (MEMMGR) XQUserFunction::ArgumentSpec((yyvsp[(2) - (3)].str), (yyvsp[(3) - (3)].sequenceType), MEMMGR));
-  }
+  ;}
     break;
 
   case 366:
 #line 3064 "../src/parser/XQParser.y"
     {
       (yyval.astNode) = (yyvsp[(2) - (3)].astNode);
-    }
+    ;}
     break;
 
   case 367:
 #line 3068 "../src/parser/XQParser.y"
     {
       (yyval.astNode) = (yyvsp[(2) - (3)].astNode);
-    }
+    ;}
     break;
 
   case 368:
@@ -7913,7 +7913,7 @@ yyreduce:
     else {
       QP->_query->setQueryBody((yyvsp[(1) - (1)].astNode));
     }
-  }
+  ;}
     break;
 
   case 369:
@@ -7931,7 +7931,7 @@ yyreduce:
         dis->addItem((yyvsp[(3) - (3)].astNode));
         (yyval.astNode) = dis;
       }
-    }
+    ;}
     break;
 
   case 383:
@@ -7942,28 +7942,28 @@ yyreduce:
 
       // Add the return expression
       (yyval.astNode) = WRAP((yylsp[(2) - (3)]), new (MEMMGR) XQReturn(tmp, (yyvsp[(3) - (3)].astNode), MEMMGR));
-    }
+    ;}
     break;
 
   case 384:
 #line 3138 "../src/parser/XQParser.y"
     {
       (yyval.tupleNode) = setLastAncestor((yyvsp[(3) - (3)].tupleNode), setLastAncestor((yyvsp[(2) - (3)].tupleNode), (yyvsp[(1) - (3)].tupleNode)));
-    }
+    ;}
     break;
 
   case 385:
 #line 3142 "../src/parser/XQParser.y"
     {
       (yyval.tupleNode) = setLastAncestor((yyvsp[(2) - (2)].tupleNode), (yyvsp[(1) - (2)].tupleNode));
-    }
+    ;}
     break;
 
   case 386:
 #line 3146 "../src/parser/XQParser.y"
     {
       (yyval.tupleNode) = setLastAncestor((yyvsp[(2) - (2)].tupleNode), (yyvsp[(1) - (2)].tupleNode));
-    }
+    ;}
     break;
 
   case 388:
@@ -7972,7 +7972,7 @@ yyreduce:
       REJECT_NOT_XQUERY(FlworExprForLetList, (yylsp[(2) - (2)]));
 
       (yyval.tupleNode) = setLastAncestor((yyvsp[(2) - (2)].tupleNode), (yyvsp[(1) - (2)].tupleNode));
-    }
+    ;}
     break;
 
   case 389:
@@ -7981,21 +7981,21 @@ yyreduce:
       REJECT_NOT_XQUERY(FlworExprForLetList, (yylsp[(2) - (2)]));
 
       (yyval.tupleNode) = setLastAncestor((yyvsp[(2) - (2)].tupleNode), (yyvsp[(1) - (2)].tupleNode));
-    }
+    ;}
     break;
 
   case 392:
 #line 3173 "../src/parser/XQParser.y"
     {
       (yyval.tupleNode) = (yyvsp[(2) - (2)].tupleNode);
-    }
+    ;}
     break;
 
   case 393:
 #line 3180 "../src/parser/XQParser.y"
     {
       (yyval.tupleNode) = setLastAncestor((yyvsp[(3) - (3)].tupleNode), (yyvsp[(1) - (3)].tupleNode));
-    }
+    ;}
     break;
 
   case 395:
@@ -8005,14 +8005,14 @@ yyreduce:
     // sequence itself, so allow it to match multiple matches
     (yyvsp[(3) - (7)].sequenceType)->setOccurrence(SequenceType::STAR);
     (yyval.tupleNode) = WRAP((yylsp[(1) - (7)]), new (MEMMGR) ForTuple(0, (yyvsp[(2) - (7)].str), (yyvsp[(4) - (7)].str), WRAP((yylsp[(3) - (7)]), new (MEMMGR) XQTreatAs((yyvsp[(7) - (7)].astNode), (yyvsp[(3) - (7)].sequenceType), MEMMGR)), MEMMGR));
-  }
+  ;}
     break;
 
   case 396:
 #line 3199 "../src/parser/XQParser.y"
     {
     (yyval.str) = NULL;
-  }
+  ;}
     break;
 
   case 397:
@@ -8021,91 +8021,97 @@ yyreduce:
     REJECT_NOT_XQUERY(PositionalVar, (yylsp[(1) - (3)]));
 
     (yyval.str) = (yyvsp[(3) - (3)].str); 
-  }
+  ;}
     break;
 
   case 398:
 #line 3213 "../src/parser/XQParser.y"
     {
     (yyval.str) = NULL;
-  }
+  ;}
     break;
 
   case 399:
 #line 3217 "../src/parser/XQParser.y"
     {
     (yyval.str) = (yyvsp[(3) - (3)].str);
-  }
+  ;}
     break;
 
   case 400:
 #line 3227 "../src/parser/XQParser.y"
     {
     (yyval.tupleNode) = (yyvsp[(2) - (2)].tupleNode);
-  }
+  ;}
     break;
 
   case 401:
 #line 3234 "../src/parser/XQParser.y"
     {
     (yyval.tupleNode) = setLastAncestor((yyvsp[(3) - (3)].tupleNode), (yyvsp[(1) - (3)].tupleNode));
-  }
+  ;}
     break;
 
   case 403:
 #line 3242 "../src/parser/XQParser.y"
     {
     (yyval.tupleNode) = WRAP((yylsp[(1) - (5)]), new (MEMMGR) LetTuple(0, (yyvsp[(2) - (5)].str), WRAP((yylsp[(3) - (5)]), new (MEMMGR) XQTreatAs((yyvsp[(5) - (5)].astNode), (yyvsp[(3) - (5)].sequenceType), MEMMGR)), MEMMGR));
-  }
+  ;}
     break;
 
   case 404:
 #line 3246 "../src/parser/XQParser.y"
     {
-  }
+    ASTNode *literal = WRAP((yylsp[(1) - (5)]), new (MEMMGR) XQLiteral(
+                  SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
+                  SchemaSymbols::fgDT_INTEGER,
+                  X("0"), AnyAtomicType::DECIMAL,
+                  MEMMGR));
+    (yyval.tupleNode) = WRAP((yylsp[(1) - (5)]), new (MEMMGR) LetTuple(0, (yyvsp[(3) - (5)].str), literal, MEMMGR));
+  ;}
     break;
 
   case 405:
-#line 3253 "../src/parser/XQParser.y"
+#line 3259 "../src/parser/XQParser.y"
     { 
     (yyval.tupleNode) = WRAP((yylsp[(1) - (2)]), new (MEMMGR) WhereTuple(0, (yyvsp[(2) - (2)].astNode), MEMMGR));
-  }
+  ;}
     break;
 
   case 406:
-#line 3261 "../src/parser/XQParser.y"
+#line 3267 "../src/parser/XQParser.y"
     {
     ((OrderByTuple*)getLastAncestor((yyvsp[(3) - (3)].tupleNode)))->setUnstable();
     (yyval.tupleNode) = (yyvsp[(3) - (3)].tupleNode);
-  }
+  ;}
     break;
 
   case 407:
-#line 3266 "../src/parser/XQParser.y"
+#line 3272 "../src/parser/XQParser.y"
     {
     (yyval.tupleNode) = (yyvsp[(4) - (4)].tupleNode);
-  }
+  ;}
     break;
 
   case 408:
-#line 3274 "../src/parser/XQParser.y"
+#line 3280 "../src/parser/XQParser.y"
     {
     (yyval.tupleNode) = setLastAncestor((yyvsp[(1) - (3)].tupleNode), (yyvsp[(3) - (3)].tupleNode));
-  }
+  ;}
     break;
 
   case 410:
-#line 3284 "../src/parser/XQParser.y"
+#line 3290 "../src/parser/XQParser.y"
     {
     LOCATION((yylsp[(1) - (3)]), loc);
     Collation *collation = CONTEXT->getDefaultCollation(&loc);
     
     (yyval.tupleNode) = WRAP((yylsp[(1) - (3)]), new (MEMMGR) OrderByTuple(0, (yyvsp[(1) - (3)].astNode), OrderByTuple::STABLE | (yyvsp[(2) - (3)].orderByModifier) | (yyvsp[(3) - (3)].orderByModifier), collation, MEMMGR));
-  }
+  ;}
     break;
 
   case 411:
-#line 3291 "../src/parser/XQParser.y"
+#line 3297 "../src/parser/XQParser.y"
     {
     try {
       LOCATION((yylsp[(4) - (5)]), loc);
@@ -8116,11 +8122,11 @@ yyreduce:
     catch(ContextException&) {
       yyerror((yylsp[(4) - (5)]), "The specified collation does not exist [err:XQST0076]");
     }
-  }
+  ;}
     break;
 
   case 412:
-#line 3306 "../src/parser/XQParser.y"
+#line 3312 "../src/parser/XQParser.y"
     {
     SequenceType *zero_or_one = WRAP((yylsp[(1) - (1)]), new (MEMMGR)
       SequenceType(new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_ANYTHING),
@@ -8131,32 +8137,32 @@ yyreduce:
     (yyval.astNode) = WRAP((yylsp[(1) - (1)]), new (MEMMGR) XQPromoteUntyped((yyval.astNode), SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
                                                 SchemaSymbols::fgDT_STRING, MEMMGR));
     (yyval.astNode) = WRAP((yylsp[(1) - (1)]), new (MEMMGR) XQTreatAs((yyval.astNode), zero_or_one, MEMMGR));
-  }
+  ;}
     break;
 
   case 413:
-#line 3322 "../src/parser/XQParser.y"
+#line 3328 "../src/parser/XQParser.y"
     {
     (yyval.orderByModifier) = OrderByTuple::ASCENDING;
-  }
+  ;}
     break;
 
   case 414:
-#line 3326 "../src/parser/XQParser.y"
+#line 3332 "../src/parser/XQParser.y"
     {
     (yyval.orderByModifier) = OrderByTuple::ASCENDING;
-  }
+  ;}
     break;
 
   case 415:
-#line 3330 "../src/parser/XQParser.y"
+#line 3336 "../src/parser/XQParser.y"
     {
     (yyval.orderByModifier) = OrderByTuple::DESCENDING;
-  }
+  ;}
     break;
 
   case 416:
-#line 3337 "../src/parser/XQParser.y"
+#line 3343 "../src/parser/XQParser.y"
     {
     switch(CONTEXT->getDefaultFLWOROrderingMode()) {
     case StaticContext::FLWOR_ORDER_EMPTY_LEAST:
@@ -8164,122 +8170,122 @@ yyreduce:
     case StaticContext::FLWOR_ORDER_EMPTY_GREATEST:
       (yyval.orderByModifier) = OrderByTuple::EMPTY_GREATEST; break;
     }
-  }
+  ;}
     break;
 
   case 417:
-#line 3346 "../src/parser/XQParser.y"
+#line 3352 "../src/parser/XQParser.y"
     {
     (yyval.orderByModifier) = OrderByTuple::EMPTY_GREATEST;
-  }
+  ;}
     break;
 
   case 418:
-#line 3350 "../src/parser/XQParser.y"
+#line 3356 "../src/parser/XQParser.y"
     {
     (yyval.orderByModifier) = OrderByTuple::EMPTY_LEAST;
-  }
+  ;}
     break;
 
   case 419:
-#line 3359 "../src/parser/XQParser.y"
+#line 3365 "../src/parser/XQParser.y"
     {
     // Add a ContextTuple at the start
     TupleNode *tmp = setLastAncestor((yyvsp[(2) - (4)].tupleNode), WRAP((yylsp[(1) - (4)]), new (MEMMGR) ContextTuple(MEMMGR)));
 
     // Add the return expression
     (yyval.astNode) = WRAP((yylsp[(3) - (4)]), new (MEMMGR) XQQuantified(XQQuantified::SOME, tmp, (yyvsp[(4) - (4)].astNode), MEMMGR));
-  }
+  ;}
     break;
 
   case 420:
-#line 3367 "../src/parser/XQParser.y"
+#line 3373 "../src/parser/XQParser.y"
     {
     // Add a ContextTuple at the start
     TupleNode *tmp = setLastAncestor((yyvsp[(2) - (4)].tupleNode), WRAP((yylsp[(1) - (4)]), new (MEMMGR) ContextTuple(MEMMGR)));
 
     // Add the return expression
     (yyval.astNode) = WRAP((yylsp[(3) - (4)]), new (MEMMGR) XQQuantified(XQQuantified::EVERY, tmp, (yyvsp[(4) - (4)].astNode), MEMMGR));
-  }
+  ;}
     break;
 
   case 421:
-#line 3378 "../src/parser/XQParser.y"
+#line 3384 "../src/parser/XQParser.y"
     {
     (yyval.tupleNode) = setLastAncestor((yyvsp[(3) - (3)].tupleNode), (yyvsp[(1) - (3)].tupleNode));
-  }
+  ;}
     break;
 
   case 423:
-#line 3386 "../src/parser/XQParser.y"
+#line 3392 "../src/parser/XQParser.y"
     {
     // the SequenceType has been specified for each item of the sequence, but we can only apply to the
     // sequence itself, so allow it to match multiple matches
     (yyvsp[(3) - (5)].sequenceType)->setOccurrence(SequenceType::STAR);
     (yyval.tupleNode) = WRAP((yylsp[(1) - (5)]), new (MEMMGR) ForTuple(0, (yyvsp[(2) - (5)].str), 0, WRAP((yylsp[(3) - (5)]), new (MEMMGR) XQTreatAs((yyvsp[(5) - (5)].astNode), (yyvsp[(3) - (5)].sequenceType), MEMMGR)), MEMMGR));
-  }
+  ;}
     break;
 
   case 424:
-#line 3397 "../src/parser/XQParser.y"
+#line 3403 "../src/parser/XQParser.y"
     {
     (yyval.astNode) = new (MEMMGR) XQTypeswitch( WRAP((yylsp[(1) - (6)]), (yyvsp[(3) - (6)].astNode)), (yyvsp[(5) - (6)].caseClauses), (yyvsp[(6) - (6)].caseClause), MEMMGR);
-  }
+  ;}
     break;
 
   case 425:
-#line 3404 "../src/parser/XQParser.y"
+#line 3410 "../src/parser/XQParser.y"
     {
     (yyvsp[(1) - (2)].caseClauses)->push_back((yyvsp[(2) - (2)].caseClause));
     (yyval.caseClauses)=(yyvsp[(1) - (2)].caseClauses);
-  }
+  ;}
     break;
 
   case 426:
-#line 3409 "../src/parser/XQParser.y"
+#line 3415 "../src/parser/XQParser.y"
     {
     (yyval.caseClauses)=new (MEMMGR) XQTypeswitch::Cases(XQillaAllocator<XQTypeswitch::Case*>(MEMMGR));
     (yyval.caseClauses)->push_back((yyvsp[(1) - (1)].caseClause));
-  }
+  ;}
     break;
 
   case 427:
-#line 3417 "../src/parser/XQParser.y"
+#line 3423 "../src/parser/XQParser.y"
     {
     (yyval.caseClause) = WRAP((yylsp[(1) - (5)]), new (MEMMGR) XQTypeswitch::Case((yyvsp[(3) - (5)].str), NULL, (yyvsp[(5) - (5)].astNode)));
-  }
+  ;}
     break;
 
   case 428:
-#line 3421 "../src/parser/XQParser.y"
+#line 3427 "../src/parser/XQParser.y"
     {
     (yyval.caseClause) = WRAP((yylsp[(1) - (3)]), new (MEMMGR) XQTypeswitch::Case(NULL, NULL, (yyvsp[(3) - (3)].astNode)));
-  }
+  ;}
     break;
 
   case 429:
-#line 3429 "../src/parser/XQParser.y"
+#line 3435 "../src/parser/XQParser.y"
     { 
     (yyval.caseClause) = WRAP((yylsp[(1) - (4)]), new (MEMMGR) XQTypeswitch::Case(NULL, (yyvsp[(2) - (4)].sequenceType), (yyvsp[(4) - (4)].astNode)));
-  }
+  ;}
     break;
 
   case 430:
-#line 3433 "../src/parser/XQParser.y"
+#line 3439 "../src/parser/XQParser.y"
     { 
     (yyval.caseClause) = WRAP((yylsp[(1) - (7)]), new (MEMMGR) XQTypeswitch::Case((yyvsp[(3) - (7)].str), (yyvsp[(5) - (7)].sequenceType), (yyvsp[(7) - (7)].astNode)));
-  }
+  ;}
     break;
 
   case 431:
-#line 3441 "../src/parser/XQParser.y"
+#line 3447 "../src/parser/XQParser.y"
     { 
     (yyval.astNode) = WRAP((yylsp[(1) - (8)]), new (MEMMGR) XQIf((yyvsp[(3) - (8)].astNode), (yyvsp[(6) - (8)].astNode), (yyvsp[(8) - (8)].astNode), MEMMGR));
-  }
+  ;}
     break;
 
   case 432:
-#line 3449 "../src/parser/XQParser.y"
+#line 3455 "../src/parser/XQParser.y"
     {
     if((yyvsp[(1) - (3)].astNode)->getType() == ASTNode::OPERATOR && ((XQOperator*)(yyvsp[(1) - (3)].astNode))->getOperatorName() == Or::name) {
       ((Or*)(yyvsp[(1) - (3)].astNode))->addArgument((yyvsp[(3) - (3)].astNode));
@@ -8287,11 +8293,11 @@ yyreduce:
     }
     else
       (yyval.astNode) = WRAP((yylsp[(2) - (3)]), new (MEMMGR) Or(packageArgs((yyvsp[(1) - (3)].astNode), (yyvsp[(3) - (3)].astNode), MEMMGR), MEMMGR));
-  }
+  ;}
     break;
 
   case 434:
-#line 3463 "../src/parser/XQParser.y"
+#line 3469 "../src/parser/XQParser.y"
     {
     if((yyvsp[(1) - (3)].astNode)->getType()==ASTNode::OPERATOR && ((XQOperator*)(yyvsp[(1) - (3)].astNode))->getOperatorName() == And::name) {
       ((And*)(yyvsp[(1) - (3)].astNode))->addArgument((yyvsp[(3) - (3)].astNode));
@@ -8299,300 +8305,300 @@ yyreduce:
     }
     else
       (yyval.astNode) = WRAP((yylsp[(2) - (3)]), new (MEMMGR) And(packageArgs((yyvsp[(1) - (3)].astNode), (yyvsp[(3) - (3)].astNode), MEMMGR), MEMMGR));
-  }
+  ;}
     break;
 
   case 436:
-#line 3482 "../src/parser/XQParser.y"
+#line 3488 "../src/parser/XQParser.y"
     {
     (yyval.astNode) = WRAP((yylsp[(2) - (3)]), new (MEMMGR) GeneralComp(GeneralComp::EQUAL,packageArgs((yyvsp[(1) - (3)].astNode),(yyvsp[(3) - (3)].astNode), MEMMGR),MEMMGR));
-  }
+  ;}
     break;
 
   case 437:
-#line 3486 "../src/parser/XQParser.y"
+#line 3492 "../src/parser/XQParser.y"
     {
     (yyval.astNode) = WRAP((yylsp[(2) - (3)]), new (MEMMGR) GeneralComp(GeneralComp::NOT_EQUAL,packageArgs((yyvsp[(1) - (3)].astNode),(yyvsp[(3) - (3)].astNode), MEMMGR),MEMMGR));
-  }
+  ;}
     break;
 
   case 438:
-#line 3489 "../src/parser/XQParser.y"
-    { /* Careful! */ QP->_lexer->undoLessThan(); }
+#line 3495 "../src/parser/XQParser.y"
+    { /* Careful! */ QP->_lexer->undoLessThan(); ;}
     break;
 
   case 439:
-#line 3490 "../src/parser/XQParser.y"
+#line 3496 "../src/parser/XQParser.y"
     {
     (yyval.astNode) = WRAP((yylsp[(2) - (4)]), new (MEMMGR) GeneralComp(GeneralComp::LESS_THAN,packageArgs((yyvsp[(1) - (4)].astNode),(yyvsp[(4) - (4)].astNode), MEMMGR),MEMMGR));
-  }
+  ;}
     break;
 
   case 440:
-#line 3494 "../src/parser/XQParser.y"
+#line 3500 "../src/parser/XQParser.y"
     {
     (yyval.astNode) = WRAP((yylsp[(2) - (3)]), new (MEMMGR) GeneralComp(GeneralComp::LESS_THAN_EQUAL,packageArgs((yyvsp[(1) - (3)].astNode),(yyvsp[(3) - (3)].astNode), MEMMGR),MEMMGR));
-  }
+  ;}
     break;
 
   case 441:
-#line 3498 "../src/parser/XQParser.y"
+#line 3504 "../src/parser/XQParser.y"
     {
     (yyval.astNode) = WRAP((yylsp[(2) - (3)]), new (MEMMGR) GeneralComp(GeneralComp::GREATER_THAN,packageArgs((yyvsp[(1) - (3)].astNode),(yyvsp[(3) - (3)].astNode), MEMMGR),MEMMGR));
-  }
+  ;}
     break;
 
   case 442:
-#line 3502 "../src/parser/XQParser.y"
+#line 3508 "../src/parser/XQParser.y"
     {
     (yyval.astNode) = WRAP((yylsp[(2) - (3)]), new (MEMMGR) GeneralComp(GeneralComp::GREATER_THAN_EQUAL,packageArgs((yyvsp[(1) - (3)].astNode),(yyvsp[(3) - (3)].astNode), MEMMGR),MEMMGR));
-  }
+  ;}
     break;
 
   case 443:
-#line 3506 "../src/parser/XQParser.y"
+#line 3512 "../src/parser/XQParser.y"
     {
     (yyval.astNode) = WRAP((yylsp[(2) - (3)]), new (MEMMGR) Equals(packageArgs((yyvsp[(1) - (3)].astNode), (yyvsp[(3) - (3)].astNode), MEMMGR),MEMMGR));
-  }
+  ;}
     break;
 
   case 444:
-#line 3510 "../src/parser/XQParser.y"
+#line 3516 "../src/parser/XQParser.y"
     {
     (yyval.astNode) = WRAP((yylsp[(2) - (3)]), new (MEMMGR) NotEquals(packageArgs((yyvsp[(1) - (3)].astNode), (yyvsp[(3) - (3)].astNode), MEMMGR),MEMMGR));
-  }
+  ;}
     break;
 
   case 445:
-#line 3514 "../src/parser/XQParser.y"
+#line 3520 "../src/parser/XQParser.y"
     {
     (yyval.astNode) = WRAP((yylsp[(2) - (3)]), new (MEMMGR) LessThan(packageArgs((yyvsp[(1) - (3)].astNode), (yyvsp[(3) - (3)].astNode), MEMMGR),MEMMGR));
-  }
+  ;}
     break;
 
   case 446:
-#line 3518 "../src/parser/XQParser.y"
+#line 3524 "../src/parser/XQParser.y"
     {
     (yyval.astNode) = WRAP((yylsp[(2) - (3)]), new (MEMMGR) LessThanEqual(packageArgs((yyvsp[(1) - (3)].astNode), (yyvsp[(3) - (3)].astNode), MEMMGR),MEMMGR));
-  }
+  ;}
     break;
 
   case 447:
-#line 3522 "../src/parser/XQParser.y"
+#line 3528 "../src/parser/XQParser.y"
     {
     (yyval.astNode) = WRAP((yylsp[(2) - (3)]), new (MEMMGR) GreaterThan(packageArgs((yyvsp[(1) - (3)].astNode), (yyvsp[(3) - (3)].astNode), MEMMGR),MEMMGR));
-  }
+  ;}
     break;
 
   case 448:
-#line 3526 "../src/parser/XQParser.y"
+#line 3532 "../src/parser/XQParser.y"
     {
     (yyval.astNode) = WRAP((yylsp[(2) - (3)]), new (MEMMGR) GreaterThanEqual(packageArgs((yyvsp[(1) - (3)].astNode), (yyvsp[(3) - (3)].astNode), MEMMGR),MEMMGR));
-  }
+  ;}
     break;
 
   case 449:
-#line 3530 "../src/parser/XQParser.y"
+#line 3536 "../src/parser/XQParser.y"
     {
     (yyval.astNode) = WRAP((yylsp[(2) - (3)]), new (MEMMGR) NodeComparison(packageArgs((yyvsp[(1) - (3)].astNode), (yyvsp[(3) - (3)].astNode), MEMMGR), MEMMGR));
-  }
+  ;}
     break;
 
   case 450:
-#line 3534 "../src/parser/XQParser.y"
+#line 3540 "../src/parser/XQParser.y"
     {
     (yyval.astNode) = WRAP((yylsp[(2) - (3)]), new (MEMMGR) OrderComparison(packageArgs((yyvsp[(1) - (3)].astNode), (yyvsp[(3) - (3)].astNode), MEMMGR), true, MEMMGR));
-  }
+  ;}
     break;
 
   case 451:
-#line 3538 "../src/parser/XQParser.y"
+#line 3544 "../src/parser/XQParser.y"
     {
     (yyval.astNode) = WRAP((yylsp[(2) - (3)]), new (MEMMGR) OrderComparison(packageArgs((yyvsp[(1) - (3)].astNode), (yyvsp[(3) - (3)].astNode), MEMMGR), false,MEMMGR));
-  }
+  ;}
     break;
 
   case 453:
-#line 3547 "../src/parser/XQParser.y"
+#line 3553 "../src/parser/XQParser.y"
     {
     (yyval.astNode) = WRAP((yylsp[(2) - (3)]), new (MEMMGR) FTContains((yyvsp[(1) - (3)].astNode), (yyvsp[(3) - (3)].ftselection), NULL, MEMMGR));
-  }
+  ;}
     break;
 
   case 454:
-#line 3551 "../src/parser/XQParser.y"
+#line 3557 "../src/parser/XQParser.y"
     {
     (yyval.astNode) = WRAP((yylsp[(2) - (4)]), new (MEMMGR) FTContains((yyvsp[(1) - (4)].astNode), (yyvsp[(3) - (4)].ftselection), (yyvsp[(4) - (4)].astNode), MEMMGR));
-  }
+  ;}
     break;
 
   case 456:
-#line 3560 "../src/parser/XQParser.y"
+#line 3566 "../src/parser/XQParser.y"
     {
     (yyval.astNode) = WRAP((yylsp[(2) - (3)]), new (MEMMGR) Range(packageArgs((yyvsp[(1) - (3)].astNode), (yyvsp[(3) - (3)].astNode), MEMMGR),MEMMGR));
-  }
+  ;}
     break;
 
   case 458:
-#line 3569 "../src/parser/XQParser.y"
+#line 3575 "../src/parser/XQParser.y"
     {
     (yyval.astNode) = WRAP((yylsp[(2) - (3)]), new (MEMMGR) Plus(packageArgs((yyvsp[(1) - (3)].astNode), (yyvsp[(3) - (3)].astNode), MEMMGR),MEMMGR));
-  }
+  ;}
     break;
 
   case 459:
-#line 3573 "../src/parser/XQParser.y"
+#line 3579 "../src/parser/XQParser.y"
     {
     (yyval.astNode) = WRAP((yylsp[(2) - (3)]), new (MEMMGR) Minus(packageArgs((yyvsp[(1) - (3)].astNode), (yyvsp[(3) - (3)].astNode), MEMMGR),MEMMGR));
-  }
+  ;}
     break;
 
   case 461:
-#line 3582 "../src/parser/XQParser.y"
+#line 3588 "../src/parser/XQParser.y"
     {
     (yyval.astNode) = WRAP((yylsp[(2) - (3)]), new (MEMMGR) Multiply(packageArgs((yyvsp[(1) - (3)].astNode), (yyvsp[(3) - (3)].astNode), MEMMGR),MEMMGR));
-  }
+  ;}
     break;
 
   case 462:
-#line 3586 "../src/parser/XQParser.y"
+#line 3592 "../src/parser/XQParser.y"
     {
     (yyval.astNode) = WRAP((yylsp[(2) - (3)]), new (MEMMGR) Divide(packageArgs((yyvsp[(1) - (3)].astNode), (yyvsp[(3) - (3)].astNode), MEMMGR),MEMMGR));
-  }
+  ;}
     break;
 
   case 463:
-#line 3590 "../src/parser/XQParser.y"
+#line 3596 "../src/parser/XQParser.y"
     {
     (yyval.astNode) = WRAP((yylsp[(2) - (3)]), new (MEMMGR) IntegerDivide(packageArgs((yyvsp[(1) - (3)].astNode), (yyvsp[(3) - (3)].astNode), MEMMGR),MEMMGR));
-  }
+  ;}
     break;
 
   case 464:
-#line 3594 "../src/parser/XQParser.y"
+#line 3600 "../src/parser/XQParser.y"
     {
     (yyval.astNode) = WRAP((yylsp[(2) - (3)]), new (MEMMGR) Mod(packageArgs((yyvsp[(1) - (3)].astNode), (yyvsp[(3) - (3)].astNode), MEMMGR),MEMMGR));
-  }
+  ;}
     break;
 
   case 466:
-#line 3603 "../src/parser/XQParser.y"
+#line 3609 "../src/parser/XQParser.y"
     {
       (yyval.astNode) = WRAP((yylsp[(2) - (3)]), new (MEMMGR) Union(packageArgs((yyvsp[(1) - (3)].astNode), (yyvsp[(3) - (3)].astNode), MEMMGR),MEMMGR));
-    }
+    ;}
     break;
 
   case 467:
-#line 3607 "../src/parser/XQParser.y"
+#line 3613 "../src/parser/XQParser.y"
     {
       (yyval.astNode) = WRAP((yylsp[(2) - (3)]), new (MEMMGR) Union(packageArgs((yyvsp[(1) - (3)].astNode), (yyvsp[(3) - (3)].astNode), MEMMGR),MEMMGR));
-    }
+    ;}
     break;
 
   case 469:
-#line 3616 "../src/parser/XQParser.y"
+#line 3622 "../src/parser/XQParser.y"
     {
       (yyval.astNode) = WRAP((yylsp[(2) - (3)]), new (MEMMGR) Intersect(packageArgs((yyvsp[(1) - (3)].astNode), (yyvsp[(3) - (3)].astNode), MEMMGR),MEMMGR));
-    }
+    ;}
     break;
 
   case 470:
-#line 3620 "../src/parser/XQParser.y"
+#line 3626 "../src/parser/XQParser.y"
     {
       (yyval.astNode) = WRAP((yylsp[(2) - (3)]), new (MEMMGR) Except(packageArgs((yyvsp[(1) - (3)].astNode), (yyvsp[(3) - (3)].astNode), MEMMGR),MEMMGR));
-    }
+    ;}
     break;
 
   case 472:
-#line 3629 "../src/parser/XQParser.y"
+#line 3635 "../src/parser/XQParser.y"
     {
     (yyval.astNode) = WRAP((yylsp[(2) - (4)]), new (MEMMGR) XQInstanceOf((yyvsp[(1) - (4)].astNode),(yyvsp[(4) - (4)].sequenceType),MEMMGR));
-  }
+  ;}
     break;
 
   case 474:
-#line 3638 "../src/parser/XQParser.y"
+#line 3644 "../src/parser/XQParser.y"
     {
     XQTreatAs* treatAs = new (MEMMGR) XQTreatAs((yyvsp[(1) - (4)].astNode),(yyvsp[(4) - (4)].sequenceType),MEMMGR, XQTreatAs::err_XPDY0050);
     (yyval.astNode) = WRAP((yylsp[(2) - (4)]), treatAs);
-  }
+  ;}
     break;
 
   case 476:
-#line 3648 "../src/parser/XQParser.y"
+#line 3654 "../src/parser/XQParser.y"
     {
     (yyval.astNode) = WRAP((yylsp[(2) - (4)]), new (MEMMGR) XQCastableAs((yyvsp[(1) - (4)].astNode),(yyvsp[(4) - (4)].sequenceType),MEMMGR));
-  }
+  ;}
     break;
 
   case 478:
-#line 3657 "../src/parser/XQParser.y"
+#line 3663 "../src/parser/XQParser.y"
     {
     (yyval.astNode) = WRAP((yylsp[(1) - (4)]), new (MEMMGR) XQCastAs((yyvsp[(1) - (4)].astNode),(yyvsp[(4) - (4)].sequenceType),MEMMGR));
-  }
+  ;}
     break;
 
   case 480:
-#line 3666 "../src/parser/XQParser.y"
-    {
-      VectorOfASTNodes args(XQillaAllocator<ASTNode*>(MEMMGR));
-      args.push_back((yyvsp[(2) - (2)].astNode));
-      (yyval.astNode) = WRAP((yylsp[(1) - (2)]), new (MEMMGR) UnaryMinus(/*positive*/false, args, MEMMGR));
-    }
-    break;
-
-  case 481:
 #line 3672 "../src/parser/XQParser.y"
     {
       VectorOfASTNodes args(XQillaAllocator<ASTNode*>(MEMMGR));
       args.push_back((yyvsp[(2) - (2)].astNode));
+      (yyval.astNode) = WRAP((yylsp[(1) - (2)]), new (MEMMGR) UnaryMinus(/*positive*/false, args, MEMMGR));
+    ;}
+    break;
+
+  case 481:
+#line 3678 "../src/parser/XQParser.y"
+    {
+      VectorOfASTNodes args(XQillaAllocator<ASTNode*>(MEMMGR));
+      args.push_back((yyvsp[(2) - (2)].astNode));
       (yyval.astNode) = WRAP((yylsp[(1) - (2)]), new (MEMMGR) UnaryMinus(/*positive*/true, args, MEMMGR));
-    }
+    ;}
     break;
 
   case 486:
-#line 3693 "../src/parser/XQParser.y"
+#line 3699 "../src/parser/XQParser.y"
     {
       (yyval.astNode) = WRAP((yylsp[(1) - (4)]), new (MEMMGR) XQValidate((yyvsp[(3) - (4)].astNode),DocumentCache::VALIDATION_STRICT,MEMMGR));
-    }
+    ;}
     break;
 
   case 487:
-#line 3697 "../src/parser/XQParser.y"
+#line 3703 "../src/parser/XQParser.y"
     {
       (yyval.astNode) = WRAP((yylsp[(1) - (5)]), new (MEMMGR) XQValidate((yyvsp[(4) - (5)].astNode),DocumentCache::VALIDATION_LAX,MEMMGR));
-    }
+    ;}
     break;
 
   case 488:
-#line 3701 "../src/parser/XQParser.y"
+#line 3707 "../src/parser/XQParser.y"
     {
       (yyval.astNode) = WRAP((yylsp[(1) - (5)]), new (MEMMGR) XQValidate((yyvsp[(4) - (5)].astNode),DocumentCache::VALIDATION_STRICT,MEMMGR));
-    }
+    ;}
     break;
 
   case 489:
-#line 3709 "../src/parser/XQParser.y"
+#line 3715 "../src/parser/XQParser.y"
     {
     REJECT_NOT_XQUERY(ExtensionExpr, (yylsp[(1) - (3)]));
 
     // we don't support any pragma
     yyerror((yylsp[(1) - (3)]), "This pragma is not recognized, and no alternative expression is specified [err:XQST0079]");
-  }
+  ;}
     break;
 
   case 490:
-#line 3716 "../src/parser/XQParser.y"
+#line 3722 "../src/parser/XQParser.y"
     {
     REJECT_NOT_XQUERY(ExtensionExpr, (yylsp[(1) - (4)]));
 
     // we don't support any pragma
     (yyval.astNode) = (yyvsp[(3) - (4)].astNode);
-  }
+  ;}
     break;
 
   case 493:
-#line 3729 "../src/parser/XQParser.y"
+#line 3735 "../src/parser/XQParser.y"
     {
         // validate the QName
         QualifiedName qName((yyvsp[(3) - (4)].str));
@@ -8607,27 +8613,27 @@ yyreduce:
         catch(NamespaceLookupException&) {
           yyerror((yylsp[(3) - (4)]), "The pragma name is using an undefined namespace prefix [err:XPST0081]");
         }
-      }
+      ;}
     break;
 
   case 495:
-#line 3750 "../src/parser/XQParser.y"
+#line 3756 "../src/parser/XQParser.y"
     {
     (yyval.str) = (yyvsp[(2) - (2)].str);
-  }
+  ;}
     break;
 
   case 497:
-#line 3759 "../src/parser/XQParser.y"
+#line 3765 "../src/parser/XQParser.y"
     {
     XQNav *nav = GET_NAVIGATION((yylsp[(1) - (2)]), (yyvsp[(1) - (2)].astNode));
     nav->addStep((yyvsp[(2) - (2)].astNode));
     (yyval.astNode) = nav;
-  }
+  ;}
     break;
 
   case 498:
-#line 3765 "../src/parser/XQParser.y"
+#line 3771 "../src/parser/XQParser.y"
     {
     XQNav *nav = WRAP((yylsp[(1) - (2)]), new (MEMMGR) XQNav(MEMMGR));
 
@@ -8647,11 +8653,11 @@ yyreduce:
 
     nav->addStep((yyvsp[(2) - (2)].astNode));
     (yyval.astNode) = nav;
-  }
+  ;}
     break;
 
   case 500:
-#line 3790 "../src/parser/XQParser.y"
+#line 3796 "../src/parser/XQParser.y"
     {
     VectorOfASTNodes args(XQillaAllocator<ASTNode*>(MEMMGR));
     FunctionRoot *root = WRAP((yylsp[(1) - (1)]), new (MEMMGR) FunctionRoot(args, MEMMGR));
@@ -8660,20 +8666,20 @@ yyreduce:
       SequenceType(new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_DOCUMENT)));
 
     (yyval.astNode) = WRAP((yylsp[(1) - (1)]), new (MEMMGR) XQTreatAs(root, documentNode, MEMMGR));
-  }
+  ;}
     break;
 
   case 501:
-#line 3804 "../src/parser/XQParser.y"
+#line 3810 "../src/parser/XQParser.y"
     {
     XQNav *nav = GET_NAVIGATION((yylsp[(1) - (3)]), (yyvsp[(1) - (3)].astNode));
     nav->addStep((yyvsp[(3) - (3)].astNode));
     (yyval.astNode) = nav;
-  }
+  ;}
     break;
 
   case 502:
-#line 3810 "../src/parser/XQParser.y"
+#line 3816 "../src/parser/XQParser.y"
     {
     XQNav *nav = GET_NAVIGATION((yylsp[(1) - (3)]), (yyvsp[(1) - (3)].astNode));
 
@@ -8685,26 +8691,26 @@ yyreduce:
     nav->addStep((yyvsp[(3) - (3)].astNode));
 
     (yyval.astNode) = nav;
-  }
+  ;}
     break;
 
   case 506:
-#line 3831 "../src/parser/XQParser.y"
+#line 3837 "../src/parser/XQParser.y"
     {
     (yyval.astNode) = XQPredicate::addPredicates((yyvsp[(1) - (2)].astNode), (yyvsp[(2) - (2)].predicates));
-  }
+  ;}
     break;
 
   case 507:
-#line 3835 "../src/parser/XQParser.y"
+#line 3841 "../src/parser/XQParser.y"
     {
     (yyval.astNode) = XQPredicate::addReversePredicates((yyvsp[(1) - (2)].astNode), (yyvsp[(2) - (2)].predicates));
     (yyval.astNode) = WRAP((yylsp[(1) - (2)]), new (MEMMGR) XQDocumentOrder((yyval.astNode), MEMMGR));
-  }
+  ;}
     break;
 
   case 508:
-#line 3844 "../src/parser/XQParser.y"
+#line 3850 "../src/parser/XQParser.y"
     {
     if(!(yyvsp[(2) - (2)].nodeTest)->isNodeTypeSet()) {
       switch((yyvsp[(1) - (2)].axis)) {
@@ -8715,78 +8721,78 @@ yyreduce:
     }
 
     (yyval.astNode) = WRAP((yylsp[(1) - (2)]), new (MEMMGR) XQStep((yyvsp[(1) - (2)].axis),(yyvsp[(2) - (2)].nodeTest),MEMMGR));
-  }
+  ;}
     break;
 
   case 510:
-#line 3867 "../src/parser/XQParser.y"
+#line 3873 "../src/parser/XQParser.y"
     {
     (yyval.axis) = XQStep::CHILD;
-  }
+  ;}
     break;
 
   case 511:
-#line 3871 "../src/parser/XQParser.y"
+#line 3877 "../src/parser/XQParser.y"
     {
     (yyval.axis) = XQStep::DESCENDANT;
-  }
+  ;}
     break;
 
   case 512:
-#line 3875 "../src/parser/XQParser.y"
+#line 3881 "../src/parser/XQParser.y"
     {
     (yyval.axis) = XQStep::ATTRIBUTE;
-  }
+  ;}
     break;
 
   case 513:
-#line 3879 "../src/parser/XQParser.y"
+#line 3885 "../src/parser/XQParser.y"
     {
     (yyval.axis) = XQStep::SELF;
-  }
+  ;}
     break;
 
   case 514:
-#line 3883 "../src/parser/XQParser.y"
+#line 3889 "../src/parser/XQParser.y"
     {
     (yyval.axis) = XQStep::DESCENDANT_OR_SELF;
-  }
+  ;}
     break;
 
   case 515:
-#line 3887 "../src/parser/XQParser.y"
+#line 3893 "../src/parser/XQParser.y"
     {
     (yyval.axis) = XQStep::FOLLOWING_SIBLING;
-  }
+  ;}
     break;
 
   case 516:
-#line 3891 "../src/parser/XQParser.y"
+#line 3897 "../src/parser/XQParser.y"
     {
     (yyval.axis) = XQStep::FOLLOWING;
-  }
+  ;}
     break;
 
   case 517:
-#line 3895 "../src/parser/XQParser.y"
+#line 3901 "../src/parser/XQParser.y"
     {
     (yyval.axis) = XQStep::NAMESPACE;
-  }
+  ;}
     break;
 
   case 518:
-#line 3903 "../src/parser/XQParser.y"
+#line 3909 "../src/parser/XQParser.y"
     {
     if(!(yyvsp[(2) - (2)].nodeTest)->isNodeTypeSet()) {
       (yyvsp[(2) - (2)].nodeTest)->setNodeType(Node::attribute_string);
     }
 
     (yyval.astNode) = WRAP((yylsp[(1) - (2)]), new (MEMMGR) XQStep(XQStep::ATTRIBUTE, (yyvsp[(2) - (2)].nodeTest), MEMMGR));
-  }
+  ;}
     break;
 
   case 519:
-#line 3911 "../src/parser/XQParser.y"
+#line 3917 "../src/parser/XQParser.y"
     {
     XQStep::Axis axis = XQStep::CHILD;
     SequenceType::ItemType *itemtype = (yyvsp[(1) - (1)].nodeTest)->getItemType();
@@ -8798,255 +8804,255 @@ yyreduce:
     }
 
     (yyval.astNode) = WRAP((yylsp[(1) - (1)]), new (MEMMGR) XQStep(axis, (yyvsp[(1) - (1)].nodeTest), MEMMGR));
-  }
+  ;}
     break;
 
   case 520:
-#line 3928 "../src/parser/XQParser.y"
+#line 3934 "../src/parser/XQParser.y"
     {
     if(!(yyvsp[(2) - (2)].nodeTest)->isNodeTypeSet()) {
       (yyvsp[(2) - (2)].nodeTest)->setNodeType(Node::element_string);
     }
 
     (yyval.astNode) = WRAP((yylsp[(1) - (2)]), new (MEMMGR) XQStep((yyvsp[(1) - (2)].axis), (yyvsp[(2) - (2)].nodeTest), MEMMGR));
-  }
+  ;}
     break;
 
   case 522:
-#line 3945 "../src/parser/XQParser.y"
+#line 3951 "../src/parser/XQParser.y"
     {
     (yyval.axis) = XQStep::PARENT;
-  }
+  ;}
     break;
 
   case 523:
-#line 3949 "../src/parser/XQParser.y"
+#line 3955 "../src/parser/XQParser.y"
     {
     (yyval.axis) = XQStep::ANCESTOR;
-  }
+  ;}
     break;
 
   case 524:
-#line 3953 "../src/parser/XQParser.y"
+#line 3959 "../src/parser/XQParser.y"
     {
     (yyval.axis) = XQStep::PRECEDING_SIBLING;
-  }
+  ;}
     break;
 
   case 525:
-#line 3957 "../src/parser/XQParser.y"
+#line 3963 "../src/parser/XQParser.y"
     {
     (yyval.axis) = XQStep::PRECEDING;
-  }
+  ;}
     break;
 
   case 526:
-#line 3961 "../src/parser/XQParser.y"
+#line 3967 "../src/parser/XQParser.y"
     {
     (yyval.axis) = XQStep::ANCESTOR_OR_SELF;
-  }
+  ;}
     break;
 
   case 527:
-#line 3969 "../src/parser/XQParser.y"
+#line 3975 "../src/parser/XQParser.y"
     {
     NodeTest *step = new (MEMMGR) NodeTest();
     step->setNameWildcard();
     step->setNamespaceWildcard();
     step->setTypeWildcard();
     (yyval.astNode) = WRAP((yylsp[(1) - (1)]), new (MEMMGR) XQStep(XQStep::PARENT, step, MEMMGR));
-  }
+  ;}
     break;
 
   case 528:
-#line 3981 "../src/parser/XQParser.y"
+#line 3987 "../src/parser/XQParser.y"
     {
     (yyval.nodeTest) = new (MEMMGR) NodeTest();
     (yyval.nodeTest)->setItemType((yyvsp[(1) - (1)].itemType));
-  }
+  ;}
     break;
 
   case 530:
-#line 3991 "../src/parser/XQParser.y"
+#line 3997 "../src/parser/XQParser.y"
     {
     NodeTest *step = new (MEMMGR) NodeTest();
     step->setNodePrefix((yyvsp[(1) - (1)].qName)->getPrefix());
     step->setNodeName((yyvsp[(1) - (1)].qName)->getName());
     (yyval.nodeTest) = step;
-  }
+  ;}
     break;
 
   case 532:
-#line 4003 "../src/parser/XQParser.y"
+#line 4009 "../src/parser/XQParser.y"
     {
     NodeTest *step = new (MEMMGR) NodeTest();
     step->setNameWildcard();
     step->setNamespaceWildcard();
     (yyval.nodeTest) = step;
-  }
+  ;}
     break;
 
   case 533:
-#line 4010 "../src/parser/XQParser.y"
+#line 4016 "../src/parser/XQParser.y"
     {
     NodeTest *step = new (MEMMGR) NodeTest();
     step->setNodePrefix((yyvsp[(1) - (1)].str));
     step->setNameWildcard();
     (yyval.nodeTest) = step;
-  }
+  ;}
     break;
 
   case 534:
-#line 4017 "../src/parser/XQParser.y"
+#line 4023 "../src/parser/XQParser.y"
     {
     NodeTest *step = new (MEMMGR) NodeTest();
     step->setNodeName((yyvsp[(1) - (1)].str));
     step->setNamespaceWildcard();
     (yyval.nodeTest) = step;
-  }
+  ;}
     break;
 
   case 535:
-#line 4028 "../src/parser/XQParser.y"
+#line 4034 "../src/parser/XQParser.y"
     {
     (yyval.astNode) = XQPredicate::addPredicates((yyvsp[(1) - (2)].astNode), (yyvsp[(2) - (2)].predicates));
-  }
+  ;}
     break;
 
   case 536:
-#line 4037 "../src/parser/XQParser.y"
+#line 4043 "../src/parser/XQParser.y"
     {
     (yyval.predicates) = new (MEMMGR) VectorOfPredicates(MEMMGR);
-  }
+  ;}
     break;
 
   case 537:
-#line 4041 "../src/parser/XQParser.y"
+#line 4047 "../src/parser/XQParser.y"
     {
     XQPredicate *pred = WRAP((yylsp[(2) - (4)]), new (MEMMGR) XQPredicate((yyvsp[(3) - (4)].astNode), MEMMGR));
     (yyvsp[(1) - (4)].predicates)->push_back(pred);
     (yyval.predicates) = (yyvsp[(1) - (4)].predicates); 
-  }
+  ;}
     break;
 
   case 553:
-#line 4072 "../src/parser/XQParser.y"
+#line 4078 "../src/parser/XQParser.y"
     {
     (yyval.astNode) = WRAP((yylsp[(1) - (2)]), new (MEMMGR) XQVariable((yyvsp[(2) - (2)].str), MEMMGR));
-  }
+  ;}
     break;
 
   case 555:
-#line 4083 "../src/parser/XQParser.y"
+#line 4089 "../src/parser/XQParser.y"
     { 
     (yyval.astNode) = (yyvsp[(2) - (3)].astNode);
-  }
+  ;}
     break;
 
   case 556:
-#line 4087 "../src/parser/XQParser.y"
+#line 4093 "../src/parser/XQParser.y"
     { 
     (yyval.astNode) = WRAP((yylsp[(1) - (2)]), new (MEMMGR) XQSequence(MEMMGR));
-  }
+  ;}
     break;
 
   case 557:
-#line 4095 "../src/parser/XQParser.y"
+#line 4101 "../src/parser/XQParser.y"
     {
     (yyval.astNode) = WRAP((yylsp[(1) - (1)]), new (MEMMGR) XQContextItem(MEMMGR));
-  }
+  ;}
     break;
 
   case 558:
-#line 4103 "../src/parser/XQParser.y"
+#line 4109 "../src/parser/XQParser.y"
     {
     REJECT_NOT_XQUERY(OrderedExpr, (yylsp[(1) - (4)]));
 
     (yyval.astNode) = WRAP((yylsp[(1) - (4)]), new (MEMMGR) XQOrderingChange(StaticContext::ORDERING_ORDERED, (yyvsp[(3) - (4)].astNode), MEMMGR));
-  }
+  ;}
     break;
 
   case 559:
-#line 4113 "../src/parser/XQParser.y"
+#line 4119 "../src/parser/XQParser.y"
     {
     REJECT_NOT_XQUERY(UnorderedExpr, (yylsp[(1) - (4)]));
 
     (yyval.astNode) = WRAP((yylsp[(1) - (4)]), new (MEMMGR) XQOrderingChange(StaticContext::ORDERING_UNORDERED, (yyvsp[(3) - (4)].astNode), MEMMGR));
-  }
+  ;}
     break;
 
   case 560:
-#line 4123 "../src/parser/XQParser.y"
+#line 4129 "../src/parser/XQParser.y"
     {
     (yyval.astNode) = WRAP((yylsp[(1) - (3)]), new (MEMMGR) XQFunctionCall((yyvsp[(1) - (3)].str), NULL, MEMMGR));
-  }
+  ;}
     break;
 
   case 561:
-#line 4127 "../src/parser/XQParser.y"
+#line 4133 "../src/parser/XQParser.y"
     {
     (yyval.astNode) = WRAP((yylsp[(1) - (4)]), new (MEMMGR) XQFunctionCall((yyvsp[(1) - (4)].str), (yyvsp[(3) - (4)].itemList), MEMMGR));
-  }
+  ;}
     break;
 
   case 562:
-#line 4134 "../src/parser/XQParser.y"
+#line 4140 "../src/parser/XQParser.y"
     {
     (yyvsp[(1) - (3)].itemList)->push_back((yyvsp[(3) - (3)].astNode));
     (yyval.itemList) = (yyvsp[(1) - (3)].itemList);
-  }
+  ;}
     break;
 
   case 563:
-#line 4139 "../src/parser/XQParser.y"
+#line 4145 "../src/parser/XQParser.y"
     {
     (yyval.itemList) = new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR));
     (yyval.itemList)->push_back((yyvsp[(1) - (1)].astNode));
-  }
+  ;}
     break;
 
   case 564:
-#line 4148 "../src/parser/XQParser.y"
+#line 4154 "../src/parser/XQParser.y"
     {
     REJECT_NOT_XQUERY(Constructor, (yylsp[(1) - (1)]));
-  }
+  ;}
     break;
 
   case 565:
-#line 4152 "../src/parser/XQParser.y"
+#line 4158 "../src/parser/XQParser.y"
     {
     REJECT_NOT_XQUERY(Constructor, (yylsp[(1) - (1)]));
-  }
+  ;}
     break;
 
   case 569:
-#line 4165 "../src/parser/XQParser.y"
+#line 4171 "../src/parser/XQParser.y"
     { 
     VectorOfASTNodes* content = new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR));
     ASTNode *name = WRAP((yylsp[(2) - (5)]), new (MEMMGR) XQDirectName((yyvsp[(2) - (5)].str), /*isAttr*/false, MEMMGR));
     (yyval.astNode) = WRAP((yylsp[(1) - (5)]), new (MEMMGR) XQElementConstructor(name, (yyvsp[(3) - (5)].itemList), content, MEMMGR));
-  }
+  ;}
     break;
 
   case 570:
-#line 4171 "../src/parser/XQParser.y"
+#line 4177 "../src/parser/XQParser.y"
     { 
     if(!XPath2Utils::equals((yyvsp[(2) - (10)].str), (yyvsp[(8) - (10)].str)))
       yyerror((yylsp[(7) - (10)]), "Close tag does not match open tag");
     ASTNode *name = WRAP((yylsp[(2) - (10)]), new (MEMMGR) XQDirectName((yyvsp[(2) - (10)].str), /*isAttr*/false, MEMMGR));
     (yyval.astNode) = WRAP((yylsp[(1) - (10)]), new (MEMMGR) XQElementConstructor(name, (yyvsp[(3) - (10)].itemList), (yyvsp[(6) - (10)].itemList), MEMMGR));
-  }
+  ;}
     break;
 
   case 573:
-#line 4184 "../src/parser/XQParser.y"
+#line 4190 "../src/parser/XQParser.y"
     {
     (yyval.itemList) = new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR));
-  }
+  ;}
     break;
 
   case 574:
-#line 4188 "../src/parser/XQParser.y"
+#line 4194 "../src/parser/XQParser.y"
     {
     (yyval.itemList) = (yyvsp[(1) - (7)].itemList);
 
@@ -9054,11 +9060,11 @@ yyreduce:
     ASTNode *attrItem = WRAP((yylsp[(3) - (7)]), new (MEMMGR) XQAttributeConstructor(name, (yyvsp[(7) - (7)].itemList),MEMMGR));
 
     (yyval.itemList)->push_back(attrItem);
-  }
+  ;}
     break;
 
   case 575:
-#line 4197 "../src/parser/XQParser.y"
+#line 4203 "../src/parser/XQParser.y"
     {
     (yyval.itemList) = (yyvsp[(1) - (7)].itemList);
 
@@ -9066,170 +9072,170 @@ yyreduce:
     ASTNode *attrItem = WRAP((yylsp[(3) - (7)]), new (MEMMGR) XQAttributeConstructor(name, (yyvsp[(7) - (7)].itemList),MEMMGR));
 
     (yyval.itemList)->insert((yyval.itemList)->begin(), attrItem);
-  }
+  ;}
     break;
 
   case 578:
-#line 4213 "../src/parser/XQParser.y"
+#line 4219 "../src/parser/XQParser.y"
     { 
     (yyval.itemList) = (yyvsp[(2) - (3)].itemList);
-  }
+  ;}
     break;
 
   case 579:
-#line 4217 "../src/parser/XQParser.y"
+#line 4223 "../src/parser/XQParser.y"
     { 
     (yyval.itemList) = (yyvsp[(2) - (3)].itemList);
-  }
+  ;}
     break;
 
   case 580:
-#line 4224 "../src/parser/XQParser.y"
+#line 4230 "../src/parser/XQParser.y"
     { 
     (yyval.itemList) = (yyvsp[(2) - (3)].itemList);
-  }
+  ;}
     break;
 
   case 581:
-#line 4228 "../src/parser/XQParser.y"
+#line 4234 "../src/parser/XQParser.y"
     { 
     (yyval.itemList) = (yyvsp[(2) - (3)].itemList);
-  }
+  ;}
     break;
 
   case 582:
-#line 4238 "../src/parser/XQParser.y"
+#line 4244 "../src/parser/XQParser.y"
     { 
     (yyval.itemList) = new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR));
-  }
+  ;}
     break;
 
   case 583:
-#line 4242 "../src/parser/XQParser.y"
+#line 4248 "../src/parser/XQParser.y"
     {
     (yyval.itemList) = (yyvsp[(1) - (2)].itemList);
     (yyval.itemList)->push_back((yyvsp[(2) - (2)].astNode));
-  }
+  ;}
     break;
 
   case 584:
-#line 4247 "../src/parser/XQParser.y"
+#line 4253 "../src/parser/XQParser.y"
     {
     (yyval.itemList) = (yyvsp[(1) - (2)].itemList);
     (yyval.itemList)->push_back(WRAP((yylsp[(2) - (2)]), new (MEMMGR) XQLiteral(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
                                SchemaSymbols::fgDT_STRING,
                                (yyvsp[(2) - (2)].str), AnyAtomicType::STRING, MEMMGR)));
-  }
+  ;}
     break;
 
   case 585:
-#line 4257 "../src/parser/XQParser.y"
+#line 4263 "../src/parser/XQParser.y"
     { 
     (yyval.itemList) = new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR));
-  }
+  ;}
     break;
 
   case 586:
-#line 4261 "../src/parser/XQParser.y"
+#line 4267 "../src/parser/XQParser.y"
     {
     yyerror((yylsp[(2) - (2)]), "Namespace URI of a namespace declaration must be a literal [err:XQST0022]");
-  }
+  ;}
     break;
 
   case 587:
-#line 4265 "../src/parser/XQParser.y"
+#line 4271 "../src/parser/XQParser.y"
     {
     (yyval.itemList) = (yyvsp[(1) - (2)].itemList);
     (yyval.itemList)->push_back(WRAP((yylsp[(2) - (2)]), new (MEMMGR) XQLiteral(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
                                SchemaSymbols::fgDT_STRING,
                                (yyvsp[(2) - (2)].str), AnyAtomicType::STRING, MEMMGR)));
-  }
+  ;}
     break;
 
   case 588:
-#line 4278 "../src/parser/XQParser.y"
+#line 4284 "../src/parser/XQParser.y"
     { 
     (yyval.itemList) = new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR));
-  }
+  ;}
     break;
 
   case 589:
-#line 4282 "../src/parser/XQParser.y"
+#line 4288 "../src/parser/XQParser.y"
     {
     (yyval.itemList) = (yyvsp[(1) - (2)].itemList);
     (yyval.itemList)->push_back((yyvsp[(2) - (2)].astNode));
-  }
+  ;}
     break;
 
   case 590:
-#line 4287 "../src/parser/XQParser.y"
+#line 4293 "../src/parser/XQParser.y"
     {
     (yyval.itemList) = (yyvsp[(1) - (2)].itemList);
     (yyval.itemList)->push_back(WRAP((yylsp[(2) - (2)]), new (MEMMGR) XQLiteral(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
                                SchemaSymbols::fgDT_STRING,
                                (yyvsp[(2) - (2)].str), AnyAtomicType::STRING, MEMMGR)));
-  }
+  ;}
     break;
 
   case 591:
-#line 4297 "../src/parser/XQParser.y"
+#line 4303 "../src/parser/XQParser.y"
     { 
     (yyval.itemList) = new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR));
-  }
+  ;}
     break;
 
   case 592:
-#line 4301 "../src/parser/XQParser.y"
+#line 4307 "../src/parser/XQParser.y"
     {
     yyerror((yylsp[(2) - (2)]), "Namespace URI of a namespace declaration must be a literal [err:XQST0022]");
-  }
+  ;}
     break;
 
   case 593:
-#line 4305 "../src/parser/XQParser.y"
+#line 4311 "../src/parser/XQParser.y"
     {
     (yyval.itemList) = (yyvsp[(1) - (2)].itemList);
     (yyval.itemList)->push_back(WRAP((yylsp[(2) - (2)]), new (MEMMGR) XQLiteral(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
                                SchemaSymbols::fgDT_STRING,
                                (yyvsp[(2) - (2)].str), AnyAtomicType::STRING, MEMMGR)));
-  }
+  ;}
     break;
 
   case 594:
-#line 4322 "../src/parser/XQParser.y"
+#line 4328 "../src/parser/XQParser.y"
     {
     (yyval.itemList) = new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR)); 
-  }
+  ;}
     break;
 
   case 595:
-#line 4326 "../src/parser/XQParser.y"
+#line 4332 "../src/parser/XQParser.y"
     {
     (yyval.itemList) = (yyvsp[(1) - (2)].itemList);
     (yyval.itemList)->push_back((yyvsp[(2) - (2)].astNode));
-  }
+  ;}
     break;
 
   case 596:
-#line 4331 "../src/parser/XQParser.y"
+#line 4337 "../src/parser/XQParser.y"
     {
     (yyval.itemList) = (yyvsp[(1) - (2)].itemList);
     (yyval.itemList)->push_back((yyvsp[(2) - (2)].astNode));
-  }
+  ;}
     break;
 
   case 597:
-#line 4336 "../src/parser/XQParser.y"
+#line 4342 "../src/parser/XQParser.y"
     {
     (yyval.itemList) = (yyvsp[(1) - (2)].itemList);
     (yyval.itemList)->push_back(WRAP((yylsp[(2) - (2)]), new (MEMMGR) XQLiteral(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
                                SchemaSymbols::fgDT_STRING,
                                (yyvsp[(2) - (2)].str), AnyAtomicType::STRING, MEMMGR)));
-  }
+  ;}
     break;
 
   case 598:
-#line 4343 "../src/parser/XQParser.y"
+#line 4349 "../src/parser/XQParser.y"
     {
     (yyval.itemList) = (yyvsp[(1) - (2)].itemList);
     if(CONTEXT->getPreserveBoundarySpace()) {
@@ -9237,11 +9243,11 @@ yyreduce:
                                  SchemaSymbols::fgDT_STRING,
                                  (yyvsp[(2) - (2)].str), AnyAtomicType::STRING, MEMMGR)));
     }
-  }
+  ;}
     break;
 
   case 599:
-#line 4356 "../src/parser/XQParser.y"
+#line 4362 "../src/parser/XQParser.y"
     {
     ASTNode *value = WRAP((yylsp[(1) - (3)]), new (MEMMGR) XQLiteral(
                   SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
@@ -9249,18 +9255,18 @@ yyreduce:
                   (yyvsp[(2) - (3)].str), AnyAtomicType::STRING,
                   MEMMGR));
     (yyval.astNode) = WRAP((yylsp[(1) - (3)]), new (MEMMGR) XQCommentConstructor(value, MEMMGR));
-  }
+  ;}
     break;
 
   case 600:
-#line 4369 "../src/parser/XQParser.y"
+#line 4375 "../src/parser/XQParser.y"
     {
     (yyval.str) = (XMLCh*)XMLUni::fgZeroLenString;
-  }
+  ;}
     break;
 
   case 602:
-#line 4378 "../src/parser/XQParser.y"
+#line 4384 "../src/parser/XQParser.y"
     {
     ASTNode *value = WRAP((yylsp[(3) - (3)]), new (MEMMGR) XQLiteral(
                   SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
@@ -9274,90 +9280,90 @@ yyreduce:
                   (yyvsp[(2) - (3)].str), AnyAtomicType::STRING,
                   MEMMGR)), 
                   value, MEMMGR));
-  }
+  ;}
     break;
 
   case 604:
-#line 4398 "../src/parser/XQParser.y"
+#line 4404 "../src/parser/XQParser.y"
     {
     (yyval.str) = (yyvsp[(2) - (2)].str);
-  }
+  ;}
     break;
 
   case 611:
-#line 4421 "../src/parser/XQParser.y"
+#line 4427 "../src/parser/XQParser.y"
     {
     (yyval.astNode) = WRAP((yylsp[(1) - (4)]), new (MEMMGR) XQDocumentConstructor((yyvsp[(3) - (4)].astNode), MEMMGR));
-  }
+  ;}
     break;
 
   case 612:
-#line 4429 "../src/parser/XQParser.y"
+#line 4435 "../src/parser/XQParser.y"
     {
     VectorOfASTNodes* empty = new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR));
     (yyval.astNode) = WRAP((yylsp[(1) - (3)]), new (MEMMGR) XQElementConstructor((yyvsp[(2) - (3)].astNode), empty, (yyvsp[(3) - (3)].itemList), MEMMGR));
-  }
+  ;}
     break;
 
   case 613:
-#line 4437 "../src/parser/XQParser.y"
+#line 4443 "../src/parser/XQParser.y"
     {
     (yyval.astNode) = WRAP((yylsp[(1) - (1)]), new (MEMMGR) XQDirectName((yyvsp[(1) - (1)].str), /*isAttr*/false, MEMMGR));
-  }
+  ;}
     break;
 
   case 614:
-#line 4441 "../src/parser/XQParser.y"
+#line 4447 "../src/parser/XQParser.y"
     {
     (yyval.astNode) = (yyvsp[(2) - (3)].astNode);
-  }
+  ;}
     break;
 
   case 615:
-#line 4449 "../src/parser/XQParser.y"
+#line 4455 "../src/parser/XQParser.y"
     {
     (yyval.itemList) = new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR));
-  }
+  ;}
     break;
 
   case 616:
-#line 4453 "../src/parser/XQParser.y"
+#line 4459 "../src/parser/XQParser.y"
     {
     (yyval.itemList) = new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR));
     (yyval.itemList)->push_back((yyvsp[(2) - (3)].astNode));
-  }
+  ;}
     break;
 
   case 617:
-#line 4462 "../src/parser/XQParser.y"
+#line 4468 "../src/parser/XQParser.y"
     {
     (yyval.astNode) = WRAP((yylsp[(1) - (3)]), new (MEMMGR) XQAttributeConstructor((yyvsp[(2) - (3)].astNode), (yyvsp[(3) - (3)].itemList), MEMMGR));
-  }
+  ;}
     break;
 
   case 618:
-#line 4470 "../src/parser/XQParser.y"
+#line 4476 "../src/parser/XQParser.y"
     {
     (yyval.astNode) = WRAP((yylsp[(1) - (4)]), new (MEMMGR) XQTextConstructor((yyvsp[(3) - (4)].astNode), MEMMGR));
-  }
+  ;}
     break;
 
   case 619:
-#line 4478 "../src/parser/XQParser.y"
+#line 4484 "../src/parser/XQParser.y"
     {
     (yyval.astNode) = WRAP((yylsp[(1) - (4)]), new (MEMMGR) XQCommentConstructor((yyvsp[(3) - (4)].astNode), MEMMGR));
-  }
+  ;}
     break;
 
   case 620:
-#line 4486 "../src/parser/XQParser.y"
+#line 4492 "../src/parser/XQParser.y"
     {
     (yyval.astNode) = WRAP((yylsp[(1) - (3)]), new (MEMMGR) XQPIConstructor((yyvsp[(2) - (3)].astNode), (yyvsp[(3) - (3)].astNode), MEMMGR));
-  }
+  ;}
     break;
 
   case 621:
-#line 4493 "../src/parser/XQParser.y"
+#line 4499 "../src/parser/XQParser.y"
     {
     // Check for a colon
     for(XMLCh *tmp = (yyvsp[(1) - (1)].str); *tmp; ++tmp)
@@ -9366,277 +9372,277 @@ yyreduce:
     (yyval.astNode) = WRAP((yylsp[(1) - (1)]), new (MEMMGR) XQLiteral(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
                                SchemaSymbols::fgDT_STRING,
                                (yyvsp[(1) - (1)].str), AnyAtomicType::STRING, MEMMGR));
-  }
+  ;}
     break;
 
   case 622:
-#line 4503 "../src/parser/XQParser.y"
+#line 4509 "../src/parser/XQParser.y"
     {
     (yyval.astNode) = (yyvsp[(2) - (3)].astNode);
-  }
+  ;}
     break;
 
   case 623:
-#line 4510 "../src/parser/XQParser.y"
+#line 4516 "../src/parser/XQParser.y"
     {
     (yyval.astNode) = WRAP((yylsp[(1) - (2)]), new (MEMMGR) XQSequence(MEMMGR));
-  }
+  ;}
     break;
 
   case 624:
-#line 4514 "../src/parser/XQParser.y"
+#line 4520 "../src/parser/XQParser.y"
     {
     (yyval.astNode) = (yyvsp[(2) - (3)].astNode);
-  }
+  ;}
     break;
 
   case 625:
-#line 4522 "../src/parser/XQParser.y"
+#line 4528 "../src/parser/XQParser.y"
     {
     SequenceType* seq = WRAP((yylsp[(1) - (2)]), new (MEMMGR) SequenceType());
     seq->setItemType(new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_ATOMIC_TYPE, NULL, (yyvsp[(1) - (2)].qName)));
     seq->setOccurrence((yyvsp[(2) - (2)].occurrence));
     (yyval.sequenceType) = seq;
-  }
+  ;}
     break;
 
   case 626:
-#line 4532 "../src/parser/XQParser.y"
+#line 4538 "../src/parser/XQParser.y"
     {
     (yyval.occurrence) = SequenceType::EXACTLY_ONE;
-  }
+  ;}
     break;
 
   case 627:
-#line 4536 "../src/parser/XQParser.y"
+#line 4542 "../src/parser/XQParser.y"
     {
     (yyval.occurrence) = SequenceType::QUESTION_MARK;
-  }
+  ;}
     break;
 
   case 628:
-#line 4544 "../src/parser/XQParser.y"
+#line 4550 "../src/parser/XQParser.y"
     {
     (yyval.sequenceType) = WRAP((yyloc), new (MEMMGR) SequenceType(new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_ANYTHING), SequenceType::STAR));
-  }
+  ;}
     break;
 
   case 629:
-#line 4548 "../src/parser/XQParser.y"
+#line 4554 "../src/parser/XQParser.y"
     {
     REJECT_NOT_XQUERY(TypeDeclaration, (yylsp[(1) - (2)]));
 
     (yyval.sequenceType) = (yyvsp[(2) - (2)].sequenceType);
-  }
+  ;}
     break;
 
   case 630:
-#line 4558 "../src/parser/XQParser.y"
+#line 4564 "../src/parser/XQParser.y"
     {
     SequenceType* seq = WRAP((yylsp[(1) - (2)]), new (MEMMGR) SequenceType());
     seq->setItemType((yyvsp[(1) - (2)].itemType));
     seq->setOccurrence((yyvsp[(2) - (2)].occurrence));
     (yyval.sequenceType) = seq;
-  }
+  ;}
     break;
 
   case 631:
-#line 4565 "../src/parser/XQParser.y"
+#line 4571 "../src/parser/XQParser.y"
     { 
     (yyval.sequenceType) = WRAP((yylsp[(1) - (3)]), new (MEMMGR) SequenceType()); 
-  }
+  ;}
     break;
 
   case 632:
-#line 4574 "../src/parser/XQParser.y"
-    { (yyval.occurrence) = SequenceType::EXACTLY_ONE; }
+#line 4580 "../src/parser/XQParser.y"
+    { (yyval.occurrence) = SequenceType::EXACTLY_ONE; ;}
     break;
 
   case 633:
-#line 4576 "../src/parser/XQParser.y"
-    { (yyval.occurrence) = SequenceType::STAR; }
+#line 4582 "../src/parser/XQParser.y"
+    { (yyval.occurrence) = SequenceType::STAR; ;}
     break;
 
   case 634:
-#line 4578 "../src/parser/XQParser.y"
-    { (yyval.occurrence) = SequenceType::PLUS; }
+#line 4584 "../src/parser/XQParser.y"
+    { (yyval.occurrence) = SequenceType::PLUS; ;}
     break;
 
   case 635:
-#line 4580 "../src/parser/XQParser.y"
-    { (yyval.occurrence) = SequenceType::QUESTION_MARK; }
+#line 4586 "../src/parser/XQParser.y"
+    { (yyval.occurrence) = SequenceType::QUESTION_MARK; ;}
     break;
 
   case 636:
-#line 4586 "../src/parser/XQParser.y"
+#line 4592 "../src/parser/XQParser.y"
     {
     (yyval.itemType) = new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_ATOMIC_TYPE, NULL, (yyvsp[(1) - (1)].qName));
-  }
+  ;}
     break;
 
   case 637:
-#line 4590 "../src/parser/XQParser.y"
+#line 4596 "../src/parser/XQParser.y"
     {
     (yyval.itemType) = new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_ANYTHING);
-  }
+  ;}
     break;
 
   case 651:
-#line 4625 "../src/parser/XQParser.y"
+#line 4631 "../src/parser/XQParser.y"
     {
     (yyval.itemType) = new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_NODE);
-  }
+  ;}
     break;
 
   case 652:
-#line 4633 "../src/parser/XQParser.y"
+#line 4639 "../src/parser/XQParser.y"
     {
     (yyval.itemType) = new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_DOCUMENT);
-  }
+  ;}
     break;
 
   case 653:
-#line 4637 "../src/parser/XQParser.y"
+#line 4643 "../src/parser/XQParser.y"
     {
     (yyval.itemType) = (yyvsp[(3) - (4)].itemType);
     (yyval.itemType)->setItemTestType(SequenceType::ItemType::TEST_DOCUMENT);
-  }
+  ;}
     break;
 
   case 654:
-#line 4642 "../src/parser/XQParser.y"
+#line 4648 "../src/parser/XQParser.y"
     {
     (yyval.itemType) = (yyvsp[(3) - (4)].itemType);
     (yyval.itemType)->setItemTestType(SequenceType::ItemType::TEST_SCHEMA_DOCUMENT);
-  }
+  ;}
     break;
 
   case 655:
-#line 4651 "../src/parser/XQParser.y"
+#line 4657 "../src/parser/XQParser.y"
     {
     (yyval.itemType) = new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_TEXT);
-  }
+  ;}
     break;
 
   case 656:
-#line 4659 "../src/parser/XQParser.y"
+#line 4665 "../src/parser/XQParser.y"
     {
     (yyval.itemType) = new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_COMMENT);
-  }
+  ;}
     break;
 
   case 657:
-#line 4667 "../src/parser/XQParser.y"
+#line 4673 "../src/parser/XQParser.y"
     {
     (yyval.itemType) = new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_PI);
-  }
+  ;}
     break;
 
   case 658:
-#line 4671 "../src/parser/XQParser.y"
+#line 4677 "../src/parser/XQParser.y"
     {
     (yyval.itemType) = new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_PI, new (MEMMGR) QualifiedName((yyvsp[(3) - (4)].str), MEMMGR));
-  }
+  ;}
     break;
 
   case 659:
-#line 4675 "../src/parser/XQParser.y"
+#line 4681 "../src/parser/XQParser.y"
     {
     (yyval.itemType) = new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_PI, new (MEMMGR) QualifiedName((yyvsp[(3) - (4)].str), MEMMGR));
-  }
+  ;}
     break;
 
   case 660:
-#line 4683 "../src/parser/XQParser.y"
+#line 4689 "../src/parser/XQParser.y"
     {
     (yyval.itemType) = new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_ATTRIBUTE);
-  }
+  ;}
     break;
 
   case 661:
-#line 4687 "../src/parser/XQParser.y"
+#line 4693 "../src/parser/XQParser.y"
     {
     (yyval.itemType) = new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_ATTRIBUTE,(yyvsp[(3) - (4)].qName));
-  }
+  ;}
     break;
 
   case 662:
-#line 4691 "../src/parser/XQParser.y"
+#line 4697 "../src/parser/XQParser.y"
     {
     (yyval.itemType) = new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_ATTRIBUTE,(yyvsp[(3) - (6)].qName),(yyvsp[(5) - (6)].qName));
-  }
+  ;}
     break;
 
   case 664:
-#line 4700 "../src/parser/XQParser.y"
+#line 4706 "../src/parser/XQParser.y"
     {
     (yyval.qName) = NULL;
-  }
+  ;}
     break;
 
   case 665:
-#line 4708 "../src/parser/XQParser.y"
+#line 4714 "../src/parser/XQParser.y"
     {
     (yyval.itemType) = new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_SCHEMA_ATTRIBUTE,(yyvsp[(3) - (4)].qName));
-  }
+  ;}
     break;
 
   case 667:
-#line 4721 "../src/parser/XQParser.y"
+#line 4727 "../src/parser/XQParser.y"
     {
     (yyval.itemType) = new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_ELEMENT);
-  }
+  ;}
     break;
 
   case 668:
-#line 4725 "../src/parser/XQParser.y"
+#line 4731 "../src/parser/XQParser.y"
     {
     (yyval.itemType) = new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_ELEMENT,(yyvsp[(3) - (4)].qName));
-  }
+  ;}
     break;
 
   case 669:
-#line 4729 "../src/parser/XQParser.y"
+#line 4735 "../src/parser/XQParser.y"
     {
     (yyval.itemType) = new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_ELEMENT,(yyvsp[(3) - (6)].qName),(yyvsp[(5) - (6)].qName));
-  }
+  ;}
     break;
 
   case 670:
-#line 4733 "../src/parser/XQParser.y"
+#line 4739 "../src/parser/XQParser.y"
     {
     (yyval.itemType) = new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_ELEMENT,(yyvsp[(3) - (7)].qName),(yyvsp[(5) - (7)].qName));
     (yyval.itemType)->setAllowNilled(true);
-  }
+  ;}
     break;
 
   case 672:
-#line 4743 "../src/parser/XQParser.y"
+#line 4749 "../src/parser/XQParser.y"
     {
     (yyval.qName) = NULL;
-  }
+  ;}
     break;
 
   case 673:
-#line 4751 "../src/parser/XQParser.y"
+#line 4757 "../src/parser/XQParser.y"
     {
     (yyval.itemType) = new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_SCHEMA_ELEMENT,(yyvsp[(3) - (4)].qName));
-  }
+  ;}
     break;
 
   case 678:
-#line 4771 "../src/parser/XQParser.y"
+#line 4777 "../src/parser/XQParser.y"
     {
     // the string must be whitespace-normalized
     XMLString::collapseWS((yyvsp[(1) - (1)].str), MEMMGR);
     if((yyvsp[(1) - (1)].str) && *(yyvsp[(1) - (1)].str) && !XPath2Utils::isValidURI((yyvsp[(1) - (1)].str), MEMMGR))
       yyerror((yylsp[(1) - (1)]), "The URI literal is not valid [err:XQST0046]");
     (yyval.str) = (yyvsp[(1) - (1)].str);
-  }
+  ;}
     break;
 
   case 679:
-#line 4783 "../src/parser/XQParser.y"
+#line 4789 "../src/parser/XQParser.y"
     {
     // TBD weight
     (yyval.ftselection) = (yyvsp[(1) - (3)].ftselection);
@@ -9647,38 +9653,38 @@ yyreduce:
       (yyval.ftselection) = *i;
     }
 /*     delete $2; */
-  }
+  ;}
     break;
 
   case 680:
-#line 4798 "../src/parser/XQParser.y"
+#line 4804 "../src/parser/XQParser.y"
     {
-}
+;}
     break;
 
   case 681:
-#line 4801 "../src/parser/XQParser.y"
+#line 4807 "../src/parser/XQParser.y"
     {
-}
+;}
     break;
 
   case 682:
-#line 4807 "../src/parser/XQParser.y"
+#line 4813 "../src/parser/XQParser.y"
     {
   (yyval.ftoptionlist) = new (MEMMGR) VectorOfFTOptions(XQillaAllocator<FTOption*>(MEMMGR));
-}
+;}
     break;
 
   case 683:
-#line 4811 "../src/parser/XQParser.y"
+#line 4817 "../src/parser/XQParser.y"
     {
   if((yyvsp[(2) - (2)].ftoption) != NULL) (yyvsp[(1) - (2)].ftoptionlist)->push_back((yyvsp[(2) - (2)].ftoption));
   (yyval.ftoptionlist) = (yyvsp[(1) - (2)].ftoptionlist);
-}
+;}
     break;
 
   case 684:
-#line 4821 "../src/parser/XQParser.y"
+#line 4827 "../src/parser/XQParser.y"
     {
     if((yyvsp[(1) - (3)].ftselection)->getType() == FTSelection::OR) {
       FTOr *op = (FTOr*)(yyvsp[(1) - (3)].ftselection);
@@ -9688,11 +9694,11 @@ yyreduce:
     else {
       (yyval.ftselection) = WRAP((yylsp[(2) - (3)]), new (MEMMGR) FTOr((yyvsp[(1) - (3)].ftselection), (yyvsp[(3) - (3)].ftselection), MEMMGR));
     }
-  }
+  ;}
     break;
 
   case 686:
-#line 4838 "../src/parser/XQParser.y"
+#line 4844 "../src/parser/XQParser.y"
     {
     if((yyvsp[(1) - (3)].ftselection)->getType() == FTSelection::AND) {
       FTAnd *op = (FTAnd*)(yyvsp[(1) - (3)].ftselection);
@@ -9702,961 +9708,961 @@ yyreduce:
     else {
       (yyval.ftselection) = WRAP((yylsp[(2) - (3)]), new (MEMMGR) FTAnd((yyvsp[(1) - (3)].ftselection), (yyvsp[(3) - (3)].ftselection), MEMMGR));
     }
-  }
+  ;}
     break;
 
   case 688:
-#line 4854 "../src/parser/XQParser.y"
+#line 4860 "../src/parser/XQParser.y"
     {
     (yyval.ftselection) = WRAP((yylsp[(2) - (4)]), new (MEMMGR) FTMildnot((yyvsp[(1) - (4)].ftselection), (yyvsp[(4) - (4)].ftselection), MEMMGR));
-  }
+  ;}
     break;
 
   case 690:
-#line 4864 "../src/parser/XQParser.y"
+#line 4870 "../src/parser/XQParser.y"
     {
     (yyval.ftselection) = WRAP((yylsp[(1) - (2)]), new (MEMMGR) FTUnaryNot((yyvsp[(2) - (2)].ftselection), MEMMGR));
-  }
+  ;}
     break;
 
   case 693:
-#line 4874 "../src/parser/XQParser.y"
+#line 4880 "../src/parser/XQParser.y"
     {
   // TBD match options
   (yyval.ftselection) = (yyvsp[(1) - (2)].ftselection);
-}
+;}
     break;
 
   case 694:
-#line 4883 "../src/parser/XQParser.y"
+#line 4889 "../src/parser/XQParser.y"
     {
   // TBD FTTimes
   (yyval.ftselection) = (yyvsp[(1) - (2)].ftselection);
-}
+;}
     break;
 
   case 695:
-#line 4888 "../src/parser/XQParser.y"
+#line 4894 "../src/parser/XQParser.y"
     {
   (yyval.ftselection) = (yyvsp[(2) - (3)].ftselection);
-}
+;}
     break;
 
   case 697:
-#line 4898 "../src/parser/XQParser.y"
+#line 4904 "../src/parser/XQParser.y"
     {
     (yyval.ftselection) = WRAP((yylsp[(1) - (2)]), new (MEMMGR) FTWords((yyvsp[(1) - (2)].astNode), (yyvsp[(2) - (2)].ftanyalloption), MEMMGR));
-  }
+  ;}
     break;
 
   case 698:
-#line 4902 "../src/parser/XQParser.y"
+#line 4908 "../src/parser/XQParser.y"
     {
     (yyval.ftselection) = WRAP((yylsp[(2) - (4)]), new (MEMMGR) FTWords((yyvsp[(2) - (4)].astNode), (yyvsp[(4) - (4)].ftanyalloption), MEMMGR));
-  }
+  ;}
     break;
 
   case 699:
-#line 4910 "../src/parser/XQParser.y"
+#line 4916 "../src/parser/XQParser.y"
     {
   // we don't support any pragma
   yyerror((yylsp[(1) - (3)]), "This pragma is not recognized, and no alternative expression is specified [err:XQST0079]");
-}
+;}
     break;
 
   case 700:
-#line 4915 "../src/parser/XQParser.y"
+#line 4921 "../src/parser/XQParser.y"
     {
   // we don't support any pragma
   (yyval.ftselection) = (yyvsp[(3) - (4)].ftselection);
-}
+;}
     break;
 
   case 701:
-#line 4924 "../src/parser/XQParser.y"
+#line 4930 "../src/parser/XQParser.y"
     {
     (yyval.ftanyalloption) = FTWords::ANY;
-  }
+  ;}
     break;
 
   case 702:
-#line 4928 "../src/parser/XQParser.y"
+#line 4934 "../src/parser/XQParser.y"
     {
     (yyval.ftanyalloption) = FTWords::ANY;
-  }
+  ;}
     break;
 
   case 703:
-#line 4932 "../src/parser/XQParser.y"
+#line 4938 "../src/parser/XQParser.y"
     {
     (yyval.ftanyalloption) = FTWords::ANY_WORD;
-  }
+  ;}
     break;
 
   case 704:
-#line 4936 "../src/parser/XQParser.y"
+#line 4942 "../src/parser/XQParser.y"
     {
     (yyval.ftanyalloption) = FTWords::ALL;
-  }
+  ;}
     break;
 
   case 705:
-#line 4940 "../src/parser/XQParser.y"
+#line 4946 "../src/parser/XQParser.y"
     {
     (yyval.ftanyalloption) = FTWords::ALL_WORDS;
-  }
+  ;}
     break;
 
   case 706:
-#line 4944 "../src/parser/XQParser.y"
+#line 4950 "../src/parser/XQParser.y"
     {
     (yyval.ftanyalloption) = FTWords::PHRASE;
-  }
+  ;}
     break;
 
   case 708:
-#line 4954 "../src/parser/XQParser.y"
+#line 4960 "../src/parser/XQParser.y"
     {
   yyerror((yylsp[(1) - (3)]), "The FTTimes operator is not supported. [err:FTST0005]");
-}
+;}
     break;
 
   case 709:
-#line 4965 "../src/parser/XQParser.y"
+#line 4971 "../src/parser/XQParser.y"
     {
     (yyval.ftrange).type = FTRange::EXACTLY;
     (yyval.ftrange).arg1 = (yyvsp[(2) - (2)].astNode);
     (yyval.ftrange).arg2 = 0;
-  }
+  ;}
     break;
 
   case 710:
-#line 4971 "../src/parser/XQParser.y"
+#line 4977 "../src/parser/XQParser.y"
     {
     (yyval.ftrange).type = FTRange::AT_LEAST;
     (yyval.ftrange).arg1 = (yyvsp[(3) - (3)].astNode);
     (yyval.ftrange).arg2 = 0;
-  }
+  ;}
     break;
 
   case 711:
-#line 4977 "../src/parser/XQParser.y"
+#line 4983 "../src/parser/XQParser.y"
     {
     (yyval.ftrange).type = FTRange::AT_MOST;
     (yyval.ftrange).arg1 = (yyvsp[(3) - (3)].astNode);
     (yyval.ftrange).arg2 = 0;
-  }
+  ;}
     break;
 
   case 712:
-#line 4983 "../src/parser/XQParser.y"
+#line 4989 "../src/parser/XQParser.y"
     {
     (yyval.ftrange).type = FTRange::FROM_TO;
     (yyval.ftrange).arg1 = (yyvsp[(2) - (4)].astNode);
     (yyval.ftrange).arg2 = (yyvsp[(4) - (4)].astNode);
-  }
+  ;}
     break;
 
   case 713:
-#line 4998 "../src/parser/XQParser.y"
+#line 5004 "../src/parser/XQParser.y"
     {
     (yyval.ftoption) = WRAP((yylsp[(1) - (1)]), new (MEMMGR) FTOrder(MEMMGR));
-  }
+  ;}
     break;
 
   case 714:
-#line 5002 "../src/parser/XQParser.y"
+#line 5008 "../src/parser/XQParser.y"
     {
     (yyval.ftoption) = WRAP((yylsp[(1) - (3)]), new (MEMMGR) FTWindow((yyvsp[(2) - (3)].astNode), (yyvsp[(3) - (3)].ftunit), MEMMGR));
-  }
+  ;}
     break;
 
   case 715:
-#line 5006 "../src/parser/XQParser.y"
+#line 5012 "../src/parser/XQParser.y"
     {
     (yyval.ftoption) = WRAP((yylsp[(1) - (3)]), new (MEMMGR) FTDistance((yyvsp[(2) - (3)].ftrange), (yyvsp[(3) - (3)].ftunit), MEMMGR));
-  }
+  ;}
     break;
 
   case 716:
-#line 5010 "../src/parser/XQParser.y"
+#line 5016 "../src/parser/XQParser.y"
     {
     (yyval.ftoption) = WRAP((yylsp[(1) - (2)]), new (MEMMGR) FTScope(FTScope::SAME, (yyvsp[(2) - (2)].ftunit), MEMMGR));
-  }
+  ;}
     break;
 
   case 717:
-#line 5014 "../src/parser/XQParser.y"
+#line 5020 "../src/parser/XQParser.y"
     {
     (yyval.ftoption) = WRAP((yylsp[(1) - (2)]), new (MEMMGR) FTScope(FTScope::DIFFERENT, (yyvsp[(2) - (2)].ftunit), MEMMGR));
-  }
+  ;}
     break;
 
   case 718:
-#line 5018 "../src/parser/XQParser.y"
+#line 5024 "../src/parser/XQParser.y"
     {
     (yyval.ftoption) = WRAP((yylsp[(1) - (2)]), new (MEMMGR) FTContent(FTContent::AT_START, MEMMGR));
-  }
+  ;}
     break;
 
   case 719:
-#line 5022 "../src/parser/XQParser.y"
+#line 5028 "../src/parser/XQParser.y"
     {
     (yyval.ftoption) = WRAP((yylsp[(1) - (2)]), new (MEMMGR) FTContent(FTContent::AT_END, MEMMGR));
-  }
+  ;}
     break;
 
   case 720:
-#line 5026 "../src/parser/XQParser.y"
+#line 5032 "../src/parser/XQParser.y"
     {
     (yyval.ftoption) = WRAP((yylsp[(1) - (2)]), new (MEMMGR) FTContent(FTContent::ENTIRE_CONTENT, MEMMGR));
-  }
+  ;}
     break;
 
   case 721:
-#line 5034 "../src/parser/XQParser.y"
+#line 5040 "../src/parser/XQParser.y"
     {
     (yyval.ftunit) = FTOption::WORDS;
-  }
+  ;}
     break;
 
   case 722:
-#line 5038 "../src/parser/XQParser.y"
+#line 5044 "../src/parser/XQParser.y"
     {
     (yyval.ftunit) = FTOption::SENTENCES;
-  }
+  ;}
     break;
 
   case 723:
-#line 5042 "../src/parser/XQParser.y"
+#line 5048 "../src/parser/XQParser.y"
     {
     (yyval.ftunit) = FTOption::PARAGRAPHS;
-  }
+  ;}
     break;
 
   case 724:
-#line 5050 "../src/parser/XQParser.y"
+#line 5056 "../src/parser/XQParser.y"
     {
     (yyval.ftunit) = FTOption::SENTENCES;
-  }
+  ;}
     break;
 
   case 725:
-#line 5054 "../src/parser/XQParser.y"
+#line 5060 "../src/parser/XQParser.y"
     {
     (yyval.ftunit) = FTOption::PARAGRAPHS;
-  }
+  ;}
     break;
 
   case 736:
-#line 5090 "../src/parser/XQParser.y"
+#line 5096 "../src/parser/XQParser.y"
     {
     std::cerr << "case insensitive" << std::endl;
-  }
+  ;}
     break;
 
   case 737:
-#line 5094 "../src/parser/XQParser.y"
+#line 5100 "../src/parser/XQParser.y"
     {
     std::cerr << "case sensitive" << std::endl;
-  }
+  ;}
     break;
 
   case 738:
-#line 5098 "../src/parser/XQParser.y"
+#line 5104 "../src/parser/XQParser.y"
     {
     std::cerr << "lowercase" << std::endl;
-  }
+  ;}
     break;
 
   case 739:
-#line 5102 "../src/parser/XQParser.y"
+#line 5108 "../src/parser/XQParser.y"
     {
     std::cerr << "uppercase" << std::endl;
-  }
+  ;}
     break;
 
   case 740:
-#line 5111 "../src/parser/XQParser.y"
+#line 5117 "../src/parser/XQParser.y"
     {
     std::cerr << "diacritics insensitive" << std::endl;
-  }
+  ;}
     break;
 
   case 741:
-#line 5115 "../src/parser/XQParser.y"
+#line 5121 "../src/parser/XQParser.y"
     {
     std::cerr << "diacritics sensitive" << std::endl;
-  }
+  ;}
     break;
 
   case 742:
-#line 5123 "../src/parser/XQParser.y"
+#line 5129 "../src/parser/XQParser.y"
     {
     std::cerr << "with stemming" << std::endl;
-  }
+  ;}
     break;
 
   case 743:
-#line 5127 "../src/parser/XQParser.y"
+#line 5133 "../src/parser/XQParser.y"
     {
     std::cerr << "without stemming" << std::endl;
-  }
+  ;}
     break;
 
   case 744:
-#line 5137 "../src/parser/XQParser.y"
+#line 5143 "../src/parser/XQParser.y"
     {
     std::cerr << "with thesaurus" << std::endl;
-  }
+  ;}
     break;
 
   case 745:
-#line 5141 "../src/parser/XQParser.y"
+#line 5147 "../src/parser/XQParser.y"
     {
     std::cerr << "with thesaurus default" << std::endl;
-  }
+  ;}
     break;
 
   case 746:
-#line 5145 "../src/parser/XQParser.y"
+#line 5151 "../src/parser/XQParser.y"
     {
     std::cerr << "with thesaurus ()" << std::endl;
-  }
+  ;}
     break;
 
   case 747:
-#line 5149 "../src/parser/XQParser.y"
+#line 5155 "../src/parser/XQParser.y"
     {
     std::cerr << "with thesaurus (default)" << std::endl;
-  }
+  ;}
     break;
 
   case 748:
-#line 5153 "../src/parser/XQParser.y"
+#line 5159 "../src/parser/XQParser.y"
     {
     std::cerr << "without thesaurus" << std::endl;
-  }
+  ;}
     break;
 
   case 749:
-#line 5160 "../src/parser/XQParser.y"
+#line 5166 "../src/parser/XQParser.y"
     {
-  }
+  ;}
     break;
 
   case 750:
-#line 5163 "../src/parser/XQParser.y"
+#line 5169 "../src/parser/XQParser.y"
     {
-  }
+  ;}
     break;
 
   case 751:
-#line 5170 "../src/parser/XQParser.y"
+#line 5176 "../src/parser/XQParser.y"
     {
     std::cerr << "at StringLiteral" << std::endl;
-  }
+  ;}
     break;
 
   case 752:
-#line 5174 "../src/parser/XQParser.y"
+#line 5180 "../src/parser/XQParser.y"
     {
     std::cerr << "at StringLiteral relationship StringLiteral" << std::endl;
-  }
+  ;}
     break;
 
   case 753:
-#line 5178 "../src/parser/XQParser.y"
+#line 5184 "../src/parser/XQParser.y"
     {
     std::cerr << "at StringLiteral levels" << std::endl;
-  }
+  ;}
     break;
 
   case 754:
-#line 5182 "../src/parser/XQParser.y"
+#line 5188 "../src/parser/XQParser.y"
     {
     std::cerr << "at StringLiteral relationship StringLiteral levels" << std::endl;
-  }
+  ;}
     break;
 
   case 755:
-#line 5192 "../src/parser/XQParser.y"
+#line 5198 "../src/parser/XQParser.y"
     {
     yyerror((yylsp[(1) - (5)]), "FTStopWordOption is not supported. [err:FTST0006]");
-  }
+  ;}
     break;
 
   case 756:
-#line 5196 "../src/parser/XQParser.y"
+#line 5202 "../src/parser/XQParser.y"
     {
     yyerror((yylsp[(1) - (3)]), "FTStopWordOption is not supported. [err:FTST0006]");
-  }
+  ;}
     break;
 
   case 757:
-#line 5200 "../src/parser/XQParser.y"
+#line 5206 "../src/parser/XQParser.y"
     {
     yyerror((yylsp[(1) - (5)]), "FTStopWordOption is not supported. [err:FTST0006]");
-  }
+  ;}
     break;
 
   case 758:
-#line 5207 "../src/parser/XQParser.y"
+#line 5213 "../src/parser/XQParser.y"
     {
-  }
+  ;}
     break;
 
   case 759:
-#line 5210 "../src/parser/XQParser.y"
+#line 5216 "../src/parser/XQParser.y"
     {
-  }
+  ;}
     break;
 
   case 760:
-#line 5218 "../src/parser/XQParser.y"
+#line 5224 "../src/parser/XQParser.y"
     {
     std::cerr << "at URILiteral" << std::endl;
-  }
+  ;}
     break;
 
   case 761:
-#line 5222 "../src/parser/XQParser.y"
+#line 5228 "../src/parser/XQParser.y"
     {
     std::cerr << "()" << std::endl;
-  }
+  ;}
     break;
 
   case 762:
-#line 5229 "../src/parser/XQParser.y"
+#line 5235 "../src/parser/XQParser.y"
     {
     std::cerr << "StringLiteral" << std::endl;
-  }
+  ;}
     break;
 
   case 763:
-#line 5233 "../src/parser/XQParser.y"
+#line 5239 "../src/parser/XQParser.y"
     {
     std::cerr << ", StringLiteral" << std::endl;
-  }
+  ;}
     break;
 
   case 764:
-#line 5241 "../src/parser/XQParser.y"
+#line 5247 "../src/parser/XQParser.y"
     {
     std::cerr << "union" << std::endl;
-  }
+  ;}
     break;
 
   case 765:
-#line 5245 "../src/parser/XQParser.y"
+#line 5251 "../src/parser/XQParser.y"
     {
     std::cerr << "except" << std::endl;
-  }
+  ;}
     break;
 
   case 766:
-#line 5253 "../src/parser/XQParser.y"
+#line 5259 "../src/parser/XQParser.y"
     {
     std::cerr << "language StringLiteral" << std::endl;
-  }
+  ;}
     break;
 
   case 767:
-#line 5261 "../src/parser/XQParser.y"
+#line 5267 "../src/parser/XQParser.y"
     {
     std::cerr << "with wildcards" << std::endl;
-  }
+  ;}
     break;
 
   case 768:
-#line 5265 "../src/parser/XQParser.y"
+#line 5271 "../src/parser/XQParser.y"
     {
     std::cerr << "without wildcards" << std::endl;
-  }
+  ;}
     break;
 
   case 769:
-#line 5273 "../src/parser/XQParser.y"
+#line 5279 "../src/parser/XQParser.y"
     {
-}
+;}
     break;
 
   case 770:
-#line 5280 "../src/parser/XQParser.y"
+#line 5286 "../src/parser/XQParser.y"
     {
     (yyval.astNode) = (yyvsp[(3) - (3)].astNode);
-  }
+  ;}
     break;
 
   case 771:
-#line 5288 "../src/parser/XQParser.y"
+#line 5294 "../src/parser/XQParser.y"
     {
     CHECK_SPECIFIED((yylsp[(1) - (3)]), BIT_REVALIDATION_SPECIFIED, "revalidation", "XUST0003");
     CONTEXT->setRevalidationMode(DocumentCache::VALIDATION_STRICT);
-  }
+  ;}
     break;
 
   case 772:
-#line 5293 "../src/parser/XQParser.y"
+#line 5299 "../src/parser/XQParser.y"
     {
     CHECK_SPECIFIED((yylsp[(1) - (3)]), BIT_REVALIDATION_SPECIFIED, "revalidation", "XUST0003");
     CONTEXT->setRevalidationMode(DocumentCache::VALIDATION_LAX);
-  }
+  ;}
     break;
 
   case 773:
-#line 5298 "../src/parser/XQParser.y"
+#line 5304 "../src/parser/XQParser.y"
     {
     CHECK_SPECIFIED((yylsp[(1) - (3)]), BIT_REVALIDATION_SPECIFIED, "revalidation", "XUST0003");
     CONTEXT->setRevalidationMode(DocumentCache::VALIDATION_SKIP);
-  }
+  ;}
     break;
 
   case 774:
-#line 5310 "../src/parser/XQParser.y"
+#line 5316 "../src/parser/XQParser.y"
     {
     (yyval.astNode) = WRAP((yylsp[(1) - (6)]), new (MEMMGR) UInsertAsFirst((yyvsp[(2) - (6)].astNode), (yyvsp[(6) - (6)].astNode), MEMMGR));
-  }
+  ;}
     break;
 
   case 775:
-#line 5314 "../src/parser/XQParser.y"
+#line 5320 "../src/parser/XQParser.y"
     {
     (yyval.astNode) = WRAP((yylsp[(1) - (6)]), new (MEMMGR) UInsertAsLast((yyvsp[(2) - (6)].astNode), (yyvsp[(6) - (6)].astNode), MEMMGR));
-  }
+  ;}
     break;
 
   case 776:
-#line 5318 "../src/parser/XQParser.y"
+#line 5324 "../src/parser/XQParser.y"
     {
     (yyval.astNode) = WRAP((yylsp[(1) - (4)]), new (MEMMGR) UInsertInto((yyvsp[(2) - (4)].astNode), (yyvsp[(4) - (4)].astNode), MEMMGR));
-  }
+  ;}
     break;
 
   case 777:
-#line 5322 "../src/parser/XQParser.y"
+#line 5328 "../src/parser/XQParser.y"
     {
     (yyval.astNode) = WRAP((yylsp[(1) - (4)]), new (MEMMGR) UInsertAfter((yyvsp[(2) - (4)].astNode), (yyvsp[(4) - (4)].astNode), MEMMGR));
-  }
+  ;}
     break;
 
   case 778:
-#line 5326 "../src/parser/XQParser.y"
+#line 5332 "../src/parser/XQParser.y"
     {
     (yyval.astNode) = WRAP((yylsp[(1) - (4)]), new (MEMMGR) UInsertBefore((yyvsp[(2) - (4)].astNode), (yyvsp[(4) - (4)].astNode), MEMMGR));
-  }
+  ;}
     break;
 
   case 781:
-#line 5337 "../src/parser/XQParser.y"
+#line 5343 "../src/parser/XQParser.y"
     {
     (yyval.astNode) = WRAP((yylsp[(1) - (2)]), new (MEMMGR) UDelete((yyvsp[(2) - (2)].astNode), MEMMGR));
-  }
+  ;}
     break;
 
   case 784:
-#line 5348 "../src/parser/XQParser.y"
+#line 5354 "../src/parser/XQParser.y"
     {
     (yyval.astNode) = WRAP((yylsp[(1) - (7)]), new (MEMMGR) UReplaceValueOf((yyvsp[(5) - (7)].astNode), (yyvsp[(7) - (7)].astNode), MEMMGR));
-  }
+  ;}
     break;
 
   case 785:
-#line 5352 "../src/parser/XQParser.y"
+#line 5358 "../src/parser/XQParser.y"
     {
     (yyval.astNode) = WRAP((yylsp[(1) - (5)]), new (MEMMGR) UReplace((yyvsp[(3) - (5)].astNode), (yyvsp[(5) - (5)].astNode), MEMMGR));
-  }
+  ;}
     break;
 
   case 786:
-#line 5362 "../src/parser/XQParser.y"
+#line 5368 "../src/parser/XQParser.y"
     {
     (yyval.astNode) = WRAP((yylsp[(1) - (5)]), new (MEMMGR) URename((yyvsp[(3) - (5)].astNode), (yyvsp[(5) - (5)].astNode), MEMMGR));
-  }
+  ;}
     break;
 
   case 787:
-#line 5370 "../src/parser/XQParser.y"
+#line 5376 "../src/parser/XQParser.y"
     {
     (yyval.astNode) = WRAP((yylsp[(1) - (6)]), new (MEMMGR) UTransform((yyvsp[(2) - (6)].copyBindingList), (yyvsp[(4) - (6)].astNode), (yyvsp[(6) - (6)].astNode), MEMMGR));
-  }
+  ;}
     break;
 
   case 788:
-#line 5377 "../src/parser/XQParser.y"
+#line 5383 "../src/parser/XQParser.y"
     {
     (yyvsp[(1) - (3)].copyBindingList)->push_back((yyvsp[(3) - (3)].copyBinding));
     (yyval.copyBindingList) = (yyvsp[(1) - (3)].copyBindingList);
-  }
+  ;}
     break;
 
   case 789:
-#line 5382 "../src/parser/XQParser.y"
+#line 5388 "../src/parser/XQParser.y"
     {
     (yyval.copyBindingList) = new (MEMMGR) VectorOfCopyBinding(XQillaAllocator<CopyBinding*>(MEMMGR));
     (yyval.copyBindingList)->push_back((yyvsp[(1) - (1)].copyBinding));
-  }
+  ;}
     break;
 
   case 790:
-#line 5390 "../src/parser/XQParser.y"
+#line 5396 "../src/parser/XQParser.y"
     {
     (yyval.copyBinding) = WRAP((yylsp[(1) - (4)]), new (MEMMGR) CopyBinding(MEMMGR, (yyvsp[(2) - (4)].str), (yyvsp[(4) - (4)].astNode)));
-  }
+  ;}
     break;
 
   case 791:
-#line 5399 "../src/parser/XQParser.y"
+#line 5405 "../src/parser/XQParser.y"
     {
     (yyval.astNode) = WRAP((yylsp[(1) - (1)]), new (MEMMGR) XQLiteral(
                   SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
                   SchemaSymbols::fgDT_INTEGER,
                   (yyvsp[(1) - (1)].str), AnyAtomicType::DECIMAL,
                   MEMMGR));
-  }
+  ;}
     break;
 
   case 792:
-#line 5411 "../src/parser/XQParser.y"
+#line 5417 "../src/parser/XQParser.y"
     {
     (yyval.astNode) = WRAP((yylsp[(1) - (1)]), new (MEMMGR) XQLiteral(
                   SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
                   SchemaSymbols::fgDT_DECIMAL,
                   (yyvsp[(1) - (1)].str), AnyAtomicType::DECIMAL,
                   MEMMGR));
-  }
+  ;}
     break;
 
   case 793:
-#line 5423 "../src/parser/XQParser.y"
+#line 5429 "../src/parser/XQParser.y"
     {
     (yyval.astNode) = WRAP((yylsp[(1) - (1)]), new (MEMMGR) XQLiteral(
                   SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
                   SchemaSymbols::fgDT_DOUBLE,
                   (yyvsp[(1) - (1)].str), AnyAtomicType::DOUBLE,
                   MEMMGR));
-  }
+  ;}
     break;
 
   case 794:
-#line 5436 "../src/parser/XQParser.y"
+#line 5442 "../src/parser/XQParser.y"
     {
     (yyval.astNode) = WRAP((yylsp[(1) - (1)]), new (MEMMGR) XQLiteral(
                   SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
                   SchemaSymbols::fgDT_STRING,
                   (yyvsp[(1) - (1)].str), AnyAtomicType::STRING,
                   MEMMGR));
-  }
+  ;}
     break;
 
   case 795:
-#line 5447 "../src/parser/XQParser.y"
+#line 5453 "../src/parser/XQParser.y"
     {
     // Check for a colon
     for(XMLCh *tmp = (yyvsp[(1) - (1)].str); *tmp; ++tmp)
       if(*tmp == ':') yyerror((yylsp[(1) - (1)]), "Expecting an NCName, found a QName");
-  }
+  ;}
     break;
 
   case 796:
-#line 5456 "../src/parser/XQParser.y"
+#line 5462 "../src/parser/XQParser.y"
     {
     (yyval.qName) = new (MEMMGR) QualifiedName((yyvsp[(1) - (1)].str),MEMMGR);
-  }
+  ;}
     break;
 
   case 797:
-#line 5468 "../src/parser/XQParser.y"
+#line 5474 "../src/parser/XQParser.y"
     {
     (yyval.functDecl) = WRAP((yylsp[(1) - (5)]), new (MEMMGR) XQUserFunction((yyvsp[(4) - (5)].str), 0, 0, (yyvsp[(5) - (5)].astNode), 0, MEMMGR));
-  }
+  ;}
     break;
 
   case 798:
-#line 5472 "../src/parser/XQParser.y"
+#line 5478 "../src/parser/XQParser.y"
     {
     (yyval.functDecl) = WRAP((yylsp[(1) - (7)]), new (MEMMGR) XQUserFunction((yyvsp[(4) - (7)].str), 0, (yyvsp[(5) - (7)].argSpecs), (yyvsp[(7) - (7)].astNode), (yyvsp[(6) - (7)].sequenceType), MEMMGR));
-  }
+  ;}
     break;
 
   case 799:
-#line 5476 "../src/parser/XQParser.y"
+#line 5482 "../src/parser/XQParser.y"
     {
     (yyval.functDecl) = WRAP((yylsp[(1) - (8)]), new (MEMMGR) XQUserFunction((yyvsp[(4) - (8)].str), (yyvsp[(7) - (8)].itemList), 0, (yyvsp[(8) - (8)].astNode), 0, MEMMGR));
     (yyval.functDecl)->setModeList((yyvsp[(5) - (8)].modeList));
-  }
+  ;}
     break;
 
   case 800:
-#line 5481 "../src/parser/XQParser.y"
+#line 5487 "../src/parser/XQParser.y"
     {
     (yyval.functDecl) = WRAP((yylsp[(1) - (10)]), new (MEMMGR) XQUserFunction((yyvsp[(4) - (10)].str), (yyvsp[(7) - (10)].itemList), (yyvsp[(8) - (10)].argSpecs), (yyvsp[(10) - (10)].astNode), (yyvsp[(9) - (10)].sequenceType), MEMMGR));
     (yyval.functDecl)->setModeList((yyvsp[(5) - (10)].modeList));
-  }
+  ;}
     break;
 
   case 801:
-#line 5486 "../src/parser/XQParser.y"
+#line 5492 "../src/parser/XQParser.y"
     {
     (yyval.functDecl) = WRAP((yylsp[(1) - (6)]), new (MEMMGR) XQUserFunction(0, (yyvsp[(5) - (6)].itemList), 0, (yyvsp[(6) - (6)].astNode), 0, MEMMGR));
     (yyval.functDecl)->setModeList((yyvsp[(3) - (6)].modeList));
-  }
+  ;}
     break;
 
   case 802:
-#line 5491 "../src/parser/XQParser.y"
+#line 5497 "../src/parser/XQParser.y"
     {
     (yyval.functDecl) = WRAP((yylsp[(1) - (8)]), new (MEMMGR) XQUserFunction(0, (yyvsp[(5) - (8)].itemList), (yyvsp[(6) - (8)].argSpecs), (yyvsp[(8) - (8)].astNode), (yyvsp[(7) - (8)].sequenceType), MEMMGR));
     (yyval.functDecl)->setModeList((yyvsp[(3) - (8)].modeList));
-  }
+  ;}
     break;
 
   case 803:
-#line 5499 "../src/parser/XQParser.y"
+#line 5505 "../src/parser/XQParser.y"
     {
     (yyval.sequenceType) = 0;
-  }
+  ;}
     break;
 
   case 804:
-#line 5503 "../src/parser/XQParser.y"
+#line 5509 "../src/parser/XQParser.y"
     {
     (yyval.sequenceType) = (yyvsp[(2) - (2)].sequenceType);
-  }
+  ;}
     break;
 
   case 805:
-#line 5511 "../src/parser/XQParser.y"
+#line 5517 "../src/parser/XQParser.y"
     {
     (yyval.argSpecs) = 0;
-  }
+  ;}
     break;
 
   case 806:
-#line 5515 "../src/parser/XQParser.y"
+#line 5521 "../src/parser/XQParser.y"
     {
     (yyval.argSpecs) = (yyvsp[(2) - (3)].argSpecs);
-  }
+  ;}
     break;
 
   case 807:
-#line 5522 "../src/parser/XQParser.y"
+#line 5528 "../src/parser/XQParser.y"
     {
     (yyval.modeList) = new (MEMMGR) XQUserFunction::ModeList(XQillaAllocator<XQUserFunction::Mode*>(MEMMGR));
     (yyval.modeList)->push_back(WRAP((yyloc), new (MEMMGR) XQUserFunction::Mode(XQUserFunction::Mode::DEFAULT)));
-  }
+  ;}
     break;
 
   case 808:
-#line 5527 "../src/parser/XQParser.y"
+#line 5533 "../src/parser/XQParser.y"
     {
     (yyval.modeList) = (yyvsp[(2) - (2)].modeList);
-  }
+  ;}
     break;
 
   case 809:
-#line 5535 "../src/parser/XQParser.y"
+#line 5541 "../src/parser/XQParser.y"
     {
     (yyval.modeList) = new (MEMMGR) XQUserFunction::ModeList(XQillaAllocator<XQUserFunction::Mode*>(MEMMGR));
     (yyval.modeList)->push_back((yyvsp[(1) - (1)].mode));
-  }
+  ;}
     break;
 
   case 810:
-#line 5540 "../src/parser/XQParser.y"
+#line 5546 "../src/parser/XQParser.y"
     {
     (yyvsp[(1) - (3)].modeList)->push_back((yyvsp[(3) - (3)].mode));
     (yyval.modeList) = (yyvsp[(1) - (3)].modeList);
-  }
+  ;}
     break;
 
   case 811:
-#line 5549 "../src/parser/XQParser.y"
+#line 5555 "../src/parser/XQParser.y"
     {
     (yyval.mode) = WRAP((yylsp[(1) - (1)]), new (MEMMGR) XQUserFunction::Mode((yyvsp[(1) - (1)].str)));
-  }
+  ;}
     break;
 
   case 812:
-#line 5553 "../src/parser/XQParser.y"
+#line 5559 "../src/parser/XQParser.y"
     {
     (yyval.mode) = WRAP((yylsp[(1) - (1)]), new (MEMMGR) XQUserFunction::Mode(XQUserFunction::Mode::DEFAULT));
-  }
+  ;}
     break;
 
   case 813:
-#line 5557 "../src/parser/XQParser.y"
+#line 5563 "../src/parser/XQParser.y"
     {
     (yyval.mode) = WRAP((yylsp[(1) - (1)]), new (MEMMGR) XQUserFunction::Mode(XQUserFunction::Mode::ALL));
-  }
+  ;}
     break;
 
   case 814:
-#line 5565 "../src/parser/XQParser.y"
+#line 5571 "../src/parser/XQParser.y"
     {
     (yyval.astNode) = WRAP((yylsp[(1) - (3)]), new (MEMMGR) XQCallTemplate((yyvsp[(3) - (3)].str), 0, MEMMGR));
-  }
+  ;}
     break;
 
   case 815:
-#line 5569 "../src/parser/XQParser.y"
+#line 5575 "../src/parser/XQParser.y"
     {
     (yyval.astNode) = WRAP((yylsp[(1) - (7)]), new (MEMMGR) XQCallTemplate((yyvsp[(3) - (7)].str), (yyvsp[(6) - (7)].templateArgs), MEMMGR));
-  }
+  ;}
     break;
 
   case 816:
-#line 5577 "../src/parser/XQParser.y"
+#line 5583 "../src/parser/XQParser.y"
     {
     (yyval.astNode) = WRAP((yylsp[(1) - (3)]), new (MEMMGR) XQApplyTemplates((yyvsp[(3) - (3)].astNode), 0, 0, MEMMGR));
-  }
+  ;}
     break;
 
   case 817:
-#line 5581 "../src/parser/XQParser.y"
+#line 5587 "../src/parser/XQParser.y"
     {
     (yyval.astNode) = WRAP((yylsp[(1) - (7)]), new (MEMMGR) XQApplyTemplates((yyvsp[(3) - (7)].astNode), (yyvsp[(6) - (7)].templateArgs), 0, MEMMGR));
-  }
+  ;}
     break;
 
   case 818:
-#line 5585 "../src/parser/XQParser.y"
+#line 5591 "../src/parser/XQParser.y"
     {
     (yyval.astNode) = WRAP((yylsp[(1) - (5)]), new (MEMMGR) XQApplyTemplates((yyvsp[(3) - (5)].astNode), 0, (yyvsp[(5) - (5)].mode), MEMMGR));
-  }
+  ;}
     break;
 
   case 819:
-#line 5589 "../src/parser/XQParser.y"
+#line 5595 "../src/parser/XQParser.y"
     {
     (yyval.astNode) = WRAP((yylsp[(1) - (9)]), new (MEMMGR) XQApplyTemplates((yyvsp[(3) - (9)].astNode), (yyvsp[(8) - (9)].templateArgs), (yyvsp[(5) - (9)].mode), MEMMGR));
-  }
+  ;}
     break;
 
   case 820:
-#line 5597 "../src/parser/XQParser.y"
+#line 5603 "../src/parser/XQParser.y"
     {
     (yyval.mode) = WRAP((yylsp[(1) - (1)]), new (MEMMGR) XQUserFunction::Mode((yyvsp[(1) - (1)].str)));
-  }
+  ;}
     break;
 
   case 821:
-#line 5601 "../src/parser/XQParser.y"
+#line 5607 "../src/parser/XQParser.y"
     {
     (yyval.mode) = WRAP((yylsp[(1) - (1)]), new (MEMMGR) XQUserFunction::Mode(XQUserFunction::Mode::DEFAULT));
-  }
+  ;}
     break;
 
   case 822:
-#line 5605 "../src/parser/XQParser.y"
+#line 5611 "../src/parser/XQParser.y"
     {
     (yyval.mode) = WRAP((yylsp[(1) - (1)]), new (MEMMGR) XQUserFunction::Mode(XQUserFunction::Mode::CURRENT));
-  }
+  ;}
     break;
 
   case 823:
-#line 5613 "../src/parser/XQParser.y"
+#line 5619 "../src/parser/XQParser.y"
     {
     (yyval.templateArgs) = new (MEMMGR) TemplateArguments(XQillaAllocator<XQTemplateArgument*>(MEMMGR));
     (yyval.templateArgs)->push_back((yyvsp[(1) - (1)].templateArg));
-  }
+  ;}
     break;
 
   case 824:
-#line 5618 "../src/parser/XQParser.y"
+#line 5624 "../src/parser/XQParser.y"
     {
     (yyval.templateArgs) = (yyvsp[(1) - (3)].templateArgs);
     (yyval.templateArgs)->push_back((yyvsp[(3) - (3)].templateArg));
-  }
+  ;}
     break;
 
   case 825:
-#line 5628 "../src/parser/XQParser.y"
+#line 5634 "../src/parser/XQParser.y"
     {
     if((yyvsp[(3) - (5)].sequenceType) != 0)
       (yyvsp[(5) - (5)].astNode) = (yyvsp[(3) - (5)].sequenceType)->convertFunctionArg((yyvsp[(5) - (5)].astNode), CONTEXT, /*numericfunction*/false, (yyvsp[(3) - (5)].sequenceType));
     (yyval.templateArg) = WRAP((yylsp[(1) - (5)]), new (MEMMGR) XQTemplateArgument((yyvsp[(2) - (5)].str), (yyvsp[(5) - (5)].astNode), MEMMGR));
-  }
+  ;}
     break;
 
   case 828:
-#line 5645 "../src/parser/XQParser.y"
+#line 5651 "../src/parser/XQParser.y"
     {
     (yyval.astNode) = WRAP((yylsp[(1) - (3)]), new (MEMMGR) XQFunctionRef((yyvsp[(1) - (3)].str), atoi(UTF8((yyvsp[(3) - (3)].str))), MEMMGR));
-  }
+  ;}
     break;
 
   case 829:
-#line 5653 "../src/parser/XQParser.y"
+#line 5659 "../src/parser/XQParser.y"
     {
     XQUserFunction *func = WRAP((yylsp[(1) - (4)]), new (MEMMGR) XQUserFunction(0, (yyvsp[(2) - (4)].argSpecs), (yyvsp[(4) - (4)].astNode), (yyvsp[(3) - (4)].sequenceType), false, false, MEMMGR));
     (yyval.astNode) = WRAP((yylsp[(1) - (4)]), new (MEMMGR) XQInlineFunction(func, MEMMGR));
-  }
+  ;}
     break;
 
   case 830:
-#line 5662 "../src/parser/XQParser.y"
+#line 5668 "../src/parser/XQParser.y"
     {
     REJECT_NOT_EXTENSION(DereferencedFunctionCall, (yylsp[(1) - (3)]));
     (yyval.astNode) = WRAP((yylsp[(2) - (3)]), new (MEMMGR) XQFunctionDeref((yyvsp[(1) - (3)].astNode), new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR)), MEMMGR));
-  }
+  ;}
     break;
 
   case 831:
-#line 5667 "../src/parser/XQParser.y"
+#line 5673 "../src/parser/XQParser.y"
     {
     REJECT_NOT_EXTENSION(DereferencedFunctionCall, (yylsp[(1) - (4)]));
     (yyval.astNode) = WRAP((yylsp[(2) - (4)]), new (MEMMGR) XQFunctionDeref((yyvsp[(1) - (4)].astNode), (yyvsp[(3) - (4)].itemList), MEMMGR));
-  }
+  ;}
     break;
 
   case 832:
-#line 5676 "../src/parser/XQParser.y"
+#line 5682 "../src/parser/XQParser.y"
     {
     (yyval.itemType) = new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_FUNCTION);
-  }
+  ;}
     break;
 
   case 833:
-#line 5680 "../src/parser/XQParser.y"
+#line 5686 "../src/parser/XQParser.y"
     {
     (yyval.itemType) = new (MEMMGR) SequenceType::ItemType(new (MEMMGR) VectorOfSequenceTypes(XQillaAllocator<SequenceType*>(MEMMGR)), (yyvsp[(5) - (5)].sequenceType));
-  }
+  ;}
     break;
 
   case 834:
-#line 5684 "../src/parser/XQParser.y"
+#line 5690 "../src/parser/XQParser.y"
     {
     (yyval.itemType) = new (MEMMGR) SequenceType::ItemType((yyvsp[(3) - (6)].sequenceTypes), (yyvsp[(6) - (6)].sequenceType));
-  }
+  ;}
     break;
 
   case 835:
-#line 5691 "../src/parser/XQParser.y"
+#line 5697 "../src/parser/XQParser.y"
     {
     (yyval.sequenceTypes) = new (MEMMGR) VectorOfSequenceTypes(XQillaAllocator<SequenceType*>(MEMMGR));
     (yyval.sequenceTypes)->push_back((yyvsp[(1) - (1)].sequenceType));
-  }
+  ;}
     break;
 
   case 836:
-#line 5696 "../src/parser/XQParser.y"
+#line 5702 "../src/parser/XQParser.y"
     {
     (yyval.sequenceTypes) = (yyvsp[(1) - (3)].sequenceTypes);
     (yyval.sequenceTypes)->push_back((yyvsp[(3) - (3)].sequenceType));
-  }
+  ;}
     break;
 
   case 837:
-#line 5705 "../src/parser/XQParser.y"
+#line 5711 "../src/parser/XQParser.y"
     {
     (yyval.itemType) = (yyvsp[(2) - (3)].itemType);
-  }
+  ;}
     break;
 
 
 /* Line 1267 of yacc.c.  */
-#line 10660 "../src/parser/XQParser.cpp"
+#line 10666 "../src/parser/XQParser.cpp"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);
@@ -10876,7 +10882,7 @@ yyreturn:
 }
 
 
-#line 5740 "../src/parser/XQParser.y"
+#line 5746 "../src/parser/XQParser.y"
 
 
 }  // namespace XQParser
