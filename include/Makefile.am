@@ -159,6 +159,7 @@ xqilla/functions/FunctionAdjustTimeToTimezone.hpp \
 xqilla/functions/FunctionAvg.hpp \
 xqilla/functions/FunctionBaseURI.hpp \
 xqilla/functions/FunctionBoolean.hpp \
+xqilla/functions/FunctionCaseFold.hpp \
 xqilla/functions/FunctionCeiling.hpp \
 xqilla/functions/FunctionCodepointEqual.hpp \
 xqilla/functions/FunctionCodepointsToString.hpp \
@@ -234,6 +235,7 @@ xqilla/functions/FunctionNumber.hpp \
 xqilla/functions/FunctionOneOrMore.hpp \
 xqilla/functions/FunctionParseHTML.hpp \
 xqilla/functions/FunctionParseJSON.hpp \
+xqilla/functions/FunctionSentences.hpp \
 xqilla/functions/FunctionSerializeJSON.hpp \
 xqilla/functions/FunctionParseXML.hpp \
 xqilla/functions/FunctionPartialApply.hpp \
@@ -278,6 +280,7 @@ xqilla/functions/FunctionTrue.hpp \
 xqilla/functions/FunctionUnordered.hpp \
 xqilla/functions/FunctionUnparsedText.hpp \
 xqilla/functions/FunctionUpperCase.hpp \
+xqilla/functions/FunctionWords.hpp \
 xqilla/functions/FunctionYearFromDate.hpp \
 xqilla/functions/FunctionYearFromDateTime.hpp \
 xqilla/functions/FunctionYearsFromDuration.hpp \
@@ -404,7 +407,7 @@ xqilla/utils/ContextUtils.hpp \
 xqilla/utils/PrintAST.hpp \
 xqilla/utils/UTF8Str.hpp \
 xqilla/utils/XQillaPlatformUtils.hpp \
-xqilla/utils/UCANormalizer.hpp \
+xqilla/utils/UnicodeTransformer.hpp \
 xqilla/framework/ReferenceCounted.hpp \
 xqilla/framework/XPath2MemoryManager.hpp \
 xqilla/framework/BaseMemoryManager.hpp \

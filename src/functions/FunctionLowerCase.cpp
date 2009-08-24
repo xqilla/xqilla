@@ -20,7 +20,7 @@
 #include "../config/xqilla_config.h"
 #include <xqilla/functions/FunctionLowerCase.hpp>
 #include <xqilla/context/DynamicContext.hpp>
-#include <xqilla/utils/UCANormalizer.hpp>
+#include <xqilla/utils/UnicodeTransformer.hpp>
 
 #include <xercesc/util/XMLUni.hpp>
 
@@ -57,7 +57,7 @@ Sequence FunctionLowerCase::createSequence(DynamicContext* context, int flags) c
   }
 
   XMLBuffer buf(1023, context->getMemoryManager());
-  Normalizer::lowerCase(arg->asString(context), buf);
+  UnicodeTransformer::lowerCase(arg->asString(context), buf);
   return Sequence(context->getItemFactory()->createString(buf.getRawBuffer(), context), memMgr);
 }
 

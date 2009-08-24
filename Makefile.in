@@ -102,26 +102,26 @@ am_libxqilla_la_OBJECTS = ReferenceCounted.lo BaseMemoryManager.lo \
 	XQillaImplementation.lo XPath2NodeSerializer.lo XQilla.lo \
 	XQQuery.lo UTF8Str.lo XMLChCompare.lo XStr.lo ContextUtils.lo \
 	DateUtils.lo NumUtils.lo XQillaPlatformUtils.lo PrintAST.lo \
-	XPath2NSUtils.lo XPath2Utils.lo UCANormalizer1.lo \
-	UCANormalizer2.lo UCANormalizer3.lo UCANormalizer4.lo \
-	UCANormalizer.lo XQillaException.lo XQException.lo \
+	XPath2NSUtils.lo XPath2Utils.lo UnicodeTransformer.lo \
+	utf8proc.lo XQillaException.lo XQException.lo \
 	EXSLTMathFunction.lo ExternalFunction.lo XQillaFunction.lo \
 	FunctionParseXML.lo FuncFactory.lo FunctionLookup.lo \
 	FunctionAbs.lo FunctionAcos.lo FunctionAsin.lo FunctionAtan.lo \
 	FunctionAvg.lo FunctionBaseURI.lo FunctionBoolean.lo \
-	FunctionCeiling.lo FunctionCodepointEqual.lo \
-	FunctionCodepointsToString.lo FunctionCollection.lo \
-	FunctionCompare.lo FunctionConcat.lo FunctionConstructor.lo \
-	FunctionContains.lo FunctionCount.lo FunctionCos.lo \
-	FunctionCurrentDate.lo FunctionCurrentDateTime.lo \
-	FunctionCurrentTime.lo FunctionData.lo FunctionDateTime.lo \
-	FunctionDeepEqual.lo FunctionDefaultCollation.lo \
-	FunctionDistinctValues.lo FunctionDocAvailable.lo \
-	FunctionDoc.lo FunctionDocument.lo FunctionDocumentURI.lo \
-	FunctionEmpty.lo FunctionEncodeForUri.lo FunctionEndsWith.lo \
-	FunctionError.lo FunctionEscapeHtmlUri.lo \
-	FunctionExactlyOne.lo FunctionExists.lo FunctionExp.lo \
-	FunctionFalse.lo FunctionFloor.lo FunctionFunctionArity.lo \
+	FunctionCaseFold.lo FunctionCeiling.lo \
+	FunctionCodepointEqual.lo FunctionCodepointsToString.lo \
+	FunctionCollection.lo FunctionCompare.lo FunctionConcat.lo \
+	FunctionConstructor.lo FunctionContains.lo FunctionCount.lo \
+	FunctionCos.lo FunctionCurrentDate.lo \
+	FunctionCurrentDateTime.lo FunctionCurrentTime.lo \
+	FunctionData.lo FunctionDateTime.lo FunctionDeepEqual.lo \
+	FunctionDefaultCollation.lo FunctionDistinctValues.lo \
+	FunctionDocAvailable.lo FunctionDoc.lo FunctionDocument.lo \
+	FunctionDocumentURI.lo FunctionEmpty.lo \
+	FunctionEncodeForUri.lo FunctionEndsWith.lo FunctionError.lo \
+	FunctionEscapeHtmlUri.lo FunctionExactlyOne.lo \
+	FunctionExists.lo FunctionExp.lo FunctionFalse.lo \
+	FunctionFloor.lo FunctionFunctionArity.lo \
 	FunctionFunctionName.lo FunctionId.lo FunctionIdref.lo \
 	FunctionImplicitTimezone.lo FunctionIndexOf.lo \
 	FunctionInScopePrefixes.lo FunctionInsertBefore.lo \
@@ -139,15 +139,16 @@ am_libxqilla_la_OBJECTS = ReferenceCounted.lo BaseMemoryManager.lo \
 	FunctionResolveQName.lo FunctionResolveURI.lo \
 	FunctionReverse.lo FunctionRoot.lo FunctionRound.lo \
 	FunctionRoundHalfToEven.lo FunctionSin.lo FunctionSqrt.lo \
-	FunctionTan.lo FunctionStartsWith.lo FunctionStaticBaseURI.lo \
-	FunctionString.lo FunctionStringJoin.lo \
-	FunctionStringLength.lo FunctionStringToCodepoints.lo \
-	FunctionSubsequence.lo FunctionSubstringAfter.lo \
-	FunctionSubstringBefore.lo FunctionSubstring.lo FunctionSum.lo \
-	FunctionTime.lo FunctionTokenize.lo FunctionTrace.lo \
-	FunctionTranslate.lo FunctionTrue.lo FunctionUnordered.lo \
-	FunctionUnparsedText.lo FunctionUpperCase.lo \
-	FunctionZeroOrOne.lo FunctionAdjustDateTimeToTimezone.lo \
+	FunctionTan.lo FunctionSentences.lo FunctionStartsWith.lo \
+	FunctionStaticBaseURI.lo FunctionString.lo \
+	FunctionStringJoin.lo FunctionStringLength.lo \
+	FunctionStringToCodepoints.lo FunctionSubsequence.lo \
+	FunctionSubstringAfter.lo FunctionSubstringBefore.lo \
+	FunctionSubstring.lo FunctionSum.lo FunctionTime.lo \
+	FunctionTokenize.lo FunctionTrace.lo FunctionTranslate.lo \
+	FunctionTrue.lo FunctionUnordered.lo FunctionUnparsedText.lo \
+	FunctionUpperCase.lo FunctionWords.lo FunctionZeroOrOne.lo \
+	FunctionAdjustDateTimeToTimezone.lo \
 	FunctionAdjustDateToTimezone.lo \
 	FunctionAdjustTimeToTimezone.lo FunctionDayFromDate.lo \
 	FunctionDayFromDateTime.lo FunctionDaysFromDuration.lo \
@@ -451,7 +452,6 @@ target_vendor = @target_vendor@
 tidy_include = @tidy_include@
 tidy_lib = @tidy_lib@
 tidy_library = @tidy_library@
-top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 xerces_include = @xerces_include@
@@ -596,11 +596,10 @@ src/utils/XQillaPlatformUtils.cpp \
 src/utils/PrintAST.cpp \
 src/utils/XPath2NSUtils.cpp \
 src/utils/XPath2Utils.cpp \
-src/utils/UCANormalizer1.cpp \
-src/utils/UCANormalizer2.cpp \
-src/utils/UCANormalizer3.cpp \
-src/utils/UCANormalizer4.cpp \
-src/utils/UCANormalizer.cpp \
+src/utils/UnicodeTransformer.cpp \
+src/utils/utf8proc/utf8proc.c \
+src/utils/utf8proc/utf8proc.h \
+src/utils/utf8proc/utf8proc_data.h \
 src/exceptions/XQillaException.cpp \
 src/exceptions/XQException.cpp \
 src/exceptions/InvalidLexicalSpaceException.hpp \
@@ -619,6 +618,7 @@ src/functions/FunctionAtan.cpp \
 src/functions/FunctionAvg.cpp \
 src/functions/FunctionBaseURI.cpp \
 src/functions/FunctionBoolean.cpp \
+src/functions/FunctionCaseFold.cpp \
 src/functions/FunctionCeiling.cpp \
 src/functions/FunctionCodepointEqual.cpp \
 src/functions/FunctionCodepointsToString.cpp \
@@ -696,6 +696,7 @@ src/functions/FunctionRoundHalfToEven.cpp \
 src/functions/FunctionSin.cpp \
 src/functions/FunctionSqrt.cpp \
 src/functions/FunctionTan.cpp \
+src/functions/FunctionSentences.cpp \
 src/functions/FunctionStartsWith.cpp \
 src/functions/FunctionStaticBaseURI.cpp \
 src/functions/FunctionString.cpp \
@@ -715,6 +716,7 @@ src/functions/FunctionTrue.cpp \
 src/functions/FunctionUnordered.cpp \
 src/functions/FunctionUnparsedText.cpp \
 src/functions/FunctionUpperCase.cpp \
+src/functions/FunctionWords.cpp \
 src/functions/FunctionZeroOrOne.cpp \
 src/functions/FunctionAdjustDateTimeToTimezone.cpp \
 src/functions/FunctionAdjustDateToTimezone.cpp \
@@ -1345,6 +1347,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionAvg.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionBaseURI.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionBoolean.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionCaseFold.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionCeiling.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionCodepointEqual.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionCodepointsToString.Plo@am__quote@
@@ -1441,6 +1444,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionSecondsFromDateTime.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionSecondsFromDuration.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionSecondsFromTime.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionSentences.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionSerializeJSON.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionSin.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionSqrt.Plo@am__quote@
@@ -1467,6 +1471,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionUnordered.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionUnparsedText.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionUpperCase.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionWords.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionYearFromDate.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionYearFromDateTime.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionYearsFromDuration.Plo@am__quote@
@@ -1537,11 +1542,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/TupleDebugHook.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/TupleNode.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/UApplyUpdates.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/UCANormalizer.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/UCANormalizer1.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/UCANormalizer2.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/UCANormalizer3.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/UCANormalizer4.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/UDelete.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/UInsertAfter.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/UInsertAsFirst.Plo@am__quote@
@@ -1554,6 +1554,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/UTF8Str.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/UTransform.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/UnaryMinus.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/UnicodeTransformer.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Union.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/UpdateFactory.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/VarHashEntryImpl.Plo@am__quote@
@@ -1687,6 +1688,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/runner.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/simple-basic.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/simple-context-item.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/utf8proc.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xmark.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xqc-basic.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xqc-context-item.Po@am__quote@
@@ -1718,6 +1720,13 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LTCOMPILE) -c -o $@ $<
+
+utf8proc.lo: src/utils/utf8proc/utf8proc.c
+@am__fastdepCC_TRUE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT utf8proc.lo -MD -MP -MF $(DEPDIR)/utf8proc.Tpo -c -o utf8proc.lo `test -f 'src/utils/utf8proc/utf8proc.c' || echo '$(srcdir)/'`src/utils/utf8proc/utf8proc.c
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/utf8proc.Tpo $(DEPDIR)/utf8proc.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='src/utils/utf8proc/utf8proc.c' object='utf8proc.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o utf8proc.lo `test -f 'src/utils/utf8proc/utf8proc.c' || echo '$(srcdir)/'`src/utils/utf8proc/utf8proc.c
 
 mapm5sin.lo: src/mapm/mapm5sin.c
 @am__fastdepCC_TRUE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT mapm5sin.lo -MD -MP -MF $(DEPDIR)/mapm5sin.Tpo -c -o mapm5sin.lo `test -f 'src/mapm/mapm5sin.c' || echo '$(srcdir)/'`src/mapm/mapm5sin.c
@@ -2881,40 +2890,12 @@ XPath2Utils.lo: src/utils/XPath2Utils.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XPath2Utils.lo `test -f 'src/utils/XPath2Utils.cpp' || echo '$(srcdir)/'`src/utils/XPath2Utils.cpp
 
-UCANormalizer1.lo: src/utils/UCANormalizer1.cpp
-@am__fastdepCXX_TRUE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT UCANormalizer1.lo -MD -MP -MF $(DEPDIR)/UCANormalizer1.Tpo -c -o UCANormalizer1.lo `test -f 'src/utils/UCANormalizer1.cpp' || echo '$(srcdir)/'`src/utils/UCANormalizer1.cpp
-@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/UCANormalizer1.Tpo $(DEPDIR)/UCANormalizer1.Plo
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/utils/UCANormalizer1.cpp' object='UCANormalizer1.lo' libtool=yes @AMDEPBACKSLASH@
+UnicodeTransformer.lo: src/utils/UnicodeTransformer.cpp
+@am__fastdepCXX_TRUE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT UnicodeTransformer.lo -MD -MP -MF $(DEPDIR)/UnicodeTransformer.Tpo -c -o UnicodeTransformer.lo `test -f 'src/utils/UnicodeTransformer.cpp' || echo '$(srcdir)/'`src/utils/UnicodeTransformer.cpp
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/UnicodeTransformer.Tpo $(DEPDIR)/UnicodeTransformer.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/utils/UnicodeTransformer.cpp' object='UnicodeTransformer.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o UCANormalizer1.lo `test -f 'src/utils/UCANormalizer1.cpp' || echo '$(srcdir)/'`src/utils/UCANormalizer1.cpp
-
-UCANormalizer2.lo: src/utils/UCANormalizer2.cpp
-@am__fastdepCXX_TRUE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT UCANormalizer2.lo -MD -MP -MF $(DEPDIR)/UCANormalizer2.Tpo -c -o UCANormalizer2.lo `test -f 'src/utils/UCANormalizer2.cpp' || echo '$(srcdir)/'`src/utils/UCANormalizer2.cpp
-@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/UCANormalizer2.Tpo $(DEPDIR)/UCANormalizer2.Plo
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/utils/UCANormalizer2.cpp' object='UCANormalizer2.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o UCANormalizer2.lo `test -f 'src/utils/UCANormalizer2.cpp' || echo '$(srcdir)/'`src/utils/UCANormalizer2.cpp
-
-UCANormalizer3.lo: src/utils/UCANormalizer3.cpp
-@am__fastdepCXX_TRUE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT UCANormalizer3.lo -MD -MP -MF $(DEPDIR)/UCANormalizer3.Tpo -c -o UCANormalizer3.lo `test -f 'src/utils/UCANormalizer3.cpp' || echo '$(srcdir)/'`src/utils/UCANormalizer3.cpp
-@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/UCANormalizer3.Tpo $(DEPDIR)/UCANormalizer3.Plo
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/utils/UCANormalizer3.cpp' object='UCANormalizer3.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o UCANormalizer3.lo `test -f 'src/utils/UCANormalizer3.cpp' || echo '$(srcdir)/'`src/utils/UCANormalizer3.cpp
-
-UCANormalizer4.lo: src/utils/UCANormalizer4.cpp
-@am__fastdepCXX_TRUE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT UCANormalizer4.lo -MD -MP -MF $(DEPDIR)/UCANormalizer4.Tpo -c -o UCANormalizer4.lo `test -f 'src/utils/UCANormalizer4.cpp' || echo '$(srcdir)/'`src/utils/UCANormalizer4.cpp
-@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/UCANormalizer4.Tpo $(DEPDIR)/UCANormalizer4.Plo
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/utils/UCANormalizer4.cpp' object='UCANormalizer4.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o UCANormalizer4.lo `test -f 'src/utils/UCANormalizer4.cpp' || echo '$(srcdir)/'`src/utils/UCANormalizer4.cpp
-
-UCANormalizer.lo: src/utils/UCANormalizer.cpp
-@am__fastdepCXX_TRUE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT UCANormalizer.lo -MD -MP -MF $(DEPDIR)/UCANormalizer.Tpo -c -o UCANormalizer.lo `test -f 'src/utils/UCANormalizer.cpp' || echo '$(srcdir)/'`src/utils/UCANormalizer.cpp
-@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/UCANormalizer.Tpo $(DEPDIR)/UCANormalizer.Plo
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/utils/UCANormalizer.cpp' object='UCANormalizer.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o UCANormalizer.lo `test -f 'src/utils/UCANormalizer.cpp' || echo '$(srcdir)/'`src/utils/UCANormalizer.cpp
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o UnicodeTransformer.lo `test -f 'src/utils/UnicodeTransformer.cpp' || echo '$(srcdir)/'`src/utils/UnicodeTransformer.cpp
 
 XQillaException.lo: src/exceptions/XQillaException.cpp
 @am__fastdepCXX_TRUE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT XQillaException.lo -MD -MP -MF $(DEPDIR)/XQillaException.Tpo -c -o XQillaException.lo `test -f 'src/exceptions/XQillaException.cpp' || echo '$(srcdir)/'`src/exceptions/XQillaException.cpp
@@ -3020,6 +3001,13 @@ FunctionBoolean.lo: src/functions/FunctionBoolean.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/functions/FunctionBoolean.cpp' object='FunctionBoolean.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o FunctionBoolean.lo `test -f 'src/functions/FunctionBoolean.cpp' || echo '$(srcdir)/'`src/functions/FunctionBoolean.cpp
+
+FunctionCaseFold.lo: src/functions/FunctionCaseFold.cpp
+@am__fastdepCXX_TRUE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT FunctionCaseFold.lo -MD -MP -MF $(DEPDIR)/FunctionCaseFold.Tpo -c -o FunctionCaseFold.lo `test -f 'src/functions/FunctionCaseFold.cpp' || echo '$(srcdir)/'`src/functions/FunctionCaseFold.cpp
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/FunctionCaseFold.Tpo $(DEPDIR)/FunctionCaseFold.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/functions/FunctionCaseFold.cpp' object='FunctionCaseFold.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o FunctionCaseFold.lo `test -f 'src/functions/FunctionCaseFold.cpp' || echo '$(srcdir)/'`src/functions/FunctionCaseFold.cpp
 
 FunctionCeiling.lo: src/functions/FunctionCeiling.cpp
 @am__fastdepCXX_TRUE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT FunctionCeiling.lo -MD -MP -MF $(DEPDIR)/FunctionCeiling.Tpo -c -o FunctionCeiling.lo `test -f 'src/functions/FunctionCeiling.cpp' || echo '$(srcdir)/'`src/functions/FunctionCeiling.cpp
@@ -3560,6 +3548,13 @@ FunctionTan.lo: src/functions/FunctionTan.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o FunctionTan.lo `test -f 'src/functions/FunctionTan.cpp' || echo '$(srcdir)/'`src/functions/FunctionTan.cpp
 
+FunctionSentences.lo: src/functions/FunctionSentences.cpp
+@am__fastdepCXX_TRUE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT FunctionSentences.lo -MD -MP -MF $(DEPDIR)/FunctionSentences.Tpo -c -o FunctionSentences.lo `test -f 'src/functions/FunctionSentences.cpp' || echo '$(srcdir)/'`src/functions/FunctionSentences.cpp
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/FunctionSentences.Tpo $(DEPDIR)/FunctionSentences.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/functions/FunctionSentences.cpp' object='FunctionSentences.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o FunctionSentences.lo `test -f 'src/functions/FunctionSentences.cpp' || echo '$(srcdir)/'`src/functions/FunctionSentences.cpp
+
 FunctionStartsWith.lo: src/functions/FunctionStartsWith.cpp
 @am__fastdepCXX_TRUE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT FunctionStartsWith.lo -MD -MP -MF $(DEPDIR)/FunctionStartsWith.Tpo -c -o FunctionStartsWith.lo `test -f 'src/functions/FunctionStartsWith.cpp' || echo '$(srcdir)/'`src/functions/FunctionStartsWith.cpp
 @am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/FunctionStartsWith.Tpo $(DEPDIR)/FunctionStartsWith.Plo
@@ -3692,6 +3687,13 @@ FunctionUpperCase.lo: src/functions/FunctionUpperCase.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/functions/FunctionUpperCase.cpp' object='FunctionUpperCase.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o FunctionUpperCase.lo `test -f 'src/functions/FunctionUpperCase.cpp' || echo '$(srcdir)/'`src/functions/FunctionUpperCase.cpp
+
+FunctionWords.lo: src/functions/FunctionWords.cpp
+@am__fastdepCXX_TRUE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT FunctionWords.lo -MD -MP -MF $(DEPDIR)/FunctionWords.Tpo -c -o FunctionWords.lo `test -f 'src/functions/FunctionWords.cpp' || echo '$(srcdir)/'`src/functions/FunctionWords.cpp
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/FunctionWords.Tpo $(DEPDIR)/FunctionWords.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/functions/FunctionWords.cpp' object='FunctionWords.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o FunctionWords.lo `test -f 'src/functions/FunctionWords.cpp' || echo '$(srcdir)/'`src/functions/FunctionWords.cpp
 
 FunctionZeroOrOne.lo: src/functions/FunctionZeroOrOne.cpp
 @am__fastdepCXX_TRUE@	$(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT FunctionZeroOrOne.lo -MD -MP -MF $(DEPDIR)/FunctionZeroOrOne.Tpo -c -o FunctionZeroOrOne.lo `test -f 'src/functions/FunctionZeroOrOne.cpp' || echo '$(srcdir)/'`src/functions/FunctionZeroOrOne.cpp

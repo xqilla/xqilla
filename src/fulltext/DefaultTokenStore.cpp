@@ -22,7 +22,7 @@
 #include <xqilla/fulltext/Tokenizer.hpp>
 #include <xqilla/framework/XPath2MemoryManager.hpp>
 #include <xqilla/context/DynamicContext.hpp>
-#include <xqilla/utils/UCANormalizer.hpp>
+#include <xqilla/utils/UnicodeTransformer.hpp>
 
 #include <xercesc/util/XMLString.hpp>
 
@@ -42,7 +42,7 @@ DefaultTokenStore::DefaultTokenStore(const Node::Ptr &node, const Tokenizer *tok
   while((token = stream->next()).word_ != 0) {
     ++numTokens_;
     buffer_.reset();
-    Normalizer::caseFoldAndRemoveDiacritics(token.word_, buffer_);
+    UnicodeTransformer::caseFoldAndRemoveDiacritics(token.word_, buffer_);
 
     TokenEntry *entry = tokens_.get(buffer_.getRawBuffer());
     if(entry == 0) {
@@ -64,7 +64,7 @@ DefaultTokenStore::DefaultTokenStore(XPath2MemoryManager *mm)
 TokenStream::Ptr DefaultTokenStore::findTokens(const XMLCh *searchString) const
 {
   buffer_.reset();
-  Normalizer::caseFoldAndRemoveDiacritics(searchString, buffer_);
+  UnicodeTransformer::caseFoldAndRemoveDiacritics(searchString, buffer_);
 
   const TokenEntry *entry = tokens_.get(buffer_.getRawBuffer());
   if(entry == 0) return 0;

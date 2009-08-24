@@ -1317,6 +1317,10 @@ SOURCE=..\..\src\functions\FunctionBoolean.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\src\functions\FunctionCaseFold.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\src\functions\FunctionCeiling.cpp
 # End Source File
 # Begin Source File
@@ -1693,6 +1697,10 @@ SOURCE=..\..\src\functions\FunctionSecondsFromTime.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\src\functions\FunctionSentences.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\src\functions\FunctionSerializeJSON.cpp
 # End Source File
 # Begin Source File
@@ -1797,6 +1805,10 @@ SOURCE=..\..\src\functions\FunctionUpperCase.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\src\functions\FunctionWords.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\src\functions\FunctionYearFromDate.cpp
 # End Source File
 # Begin Source File
@@ -1874,6 +1886,10 @@ SOURCE=..\..\include\xqilla\functions\FunctionBaseURI.hpp
 # Begin Source File
 
 SOURCE=..\..\include\xqilla\functions\FunctionBoolean.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\functions\FunctionCaseFold.hpp
 # End Source File
 # Begin Source File
 
@@ -2253,6 +2269,10 @@ SOURCE=..\..\include\xqilla\functions\FunctionSecondsFromTime.hpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\include\xqilla\functions\FunctionSentences.hpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\include\xqilla\functions\FunctionSerializeJSON.hpp
 # End Source File
 # Begin Source File
@@ -2354,6 +2374,10 @@ SOURCE=..\..\include\xqilla\functions\FunctionUnparsedText.hpp
 # Begin Source File
 
 SOURCE=..\..\include\xqilla\functions\FunctionUpperCase.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\functions\FunctionWords.hpp
 # End Source File
 # Begin Source File
 
@@ -3497,23 +3521,19 @@ SOURCE=..\..\src\utils\PrintAST.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\utils\UCANormalizer.cpp
+SOURCE=..\..\src\utils\UnicodeTransformer.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\utils\UCANormalizer1.cpp
+SOURCE=..\..\src\utils\utf8proc\utf8proc.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\utils\UCANormalizer2.cpp
+SOURCE=..\..\src\utils\utf8proc\utf8proc.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\utils\UCANormalizer3.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\utils\UCANormalizer4.cpp
+SOURCE=..\..\src\utils\utf8proc\utf8proc_data.h
 # End Source File
 # Begin Source File
 
@@ -3553,7 +3573,7 @@ SOURCE=..\..\include\xqilla\utils\PrintAST.hpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\include\xqilla\utils\UCANormalizer.hpp
+SOURCE=..\..\include\xqilla\utils\UnicodeTransformer.hpp
 # End Source File
 # Begin Source File
 

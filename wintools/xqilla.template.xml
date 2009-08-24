@@ -261,6 +261,7 @@
         <file name='include/xqilla/functions/FunctionAvg.hpp'/>
         <file name='include/xqilla/functions/FunctionBaseURI.hpp'/>
         <file name='include/xqilla/functions/FunctionBoolean.hpp'/>
+        <file name='include/xqilla/functions/FunctionCaseFold.hpp'/>
         <file name='include/xqilla/functions/FunctionCeiling.hpp'/>
         <file name='include/xqilla/functions/FunctionCodepointEqual.hpp'/>
         <file name='include/xqilla/functions/FunctionCodepointsToString.hpp'/>
@@ -357,6 +358,7 @@
         <file name='include/xqilla/functions/FunctionSecondsFromDateTime.hpp'/>
         <file name='include/xqilla/functions/FunctionSecondsFromDuration.hpp'/>
         <file name='include/xqilla/functions/FunctionSecondsFromTime.hpp'/>
+        <file name='include/xqilla/functions/FunctionSentences.hpp'/>
         <file name='include/xqilla/functions/FunctionStartsWith.hpp'/>
         <file name='include/xqilla/functions/FunctionStaticBaseURI.hpp'/>
         <file name='include/xqilla/functions/FunctionString.hpp'/>
@@ -380,6 +382,7 @@
         <file name='include/xqilla/functions/FunctionUnordered.hpp'/>
         <file name='include/xqilla/functions/FunctionUnparsedText.hpp'/>
         <file name='include/xqilla/functions/FunctionUpperCase.hpp'/>
+        <file name='include/xqilla/functions/FunctionWords.hpp'/>
         <file name='include/xqilla/functions/FunctionYearFromDate.hpp'/>
         <file name='include/xqilla/functions/FunctionYearFromDateTime.hpp'/>
         <file name='include/xqilla/functions/FunctionYearsFromDuration.hpp'/>
@@ -506,7 +509,7 @@
         <file name='include/xqilla/utils/PrintAST.hpp'/>
         <file name='include/xqilla/utils/UTF8Str.hpp'/>
         <file name='include/xqilla/utils/XQillaPlatformUtils.hpp'/>
-        <file name='include/xqilla/utils/UCANormalizer.hpp'/>
+        <file name='include/xqilla/utils/UnicodeTransformer.hpp'/>
         <file name='include/xqilla/framework/ReferenceCounted.hpp'/>
         <file name='include/xqilla/framework/XPath2MemoryManager.hpp'/>
         <file name='include/xqilla/framework/BaseMemoryManager.hpp'/>
@@ -686,6 +689,7 @@
         <file name="src/functions/FunctionAvg.cpp"/>
         <file name="src/functions/FunctionBaseURI.cpp"/>
         <file name="src/functions/FunctionBoolean.cpp"/>
+        <file name="src/functions/FunctionCaseFold.cpp"/>
         <file name="src/functions/FunctionCeiling.cpp"/>
         <file name="src/functions/FunctionCodepointEqual.cpp"/>
         <file name="src/functions/FunctionCodepointsToString.cpp"/>
@@ -780,6 +784,7 @@
         <file name="src/functions/FunctionSecondsFromDateTime.cpp"/>
         <file name="src/functions/FunctionSecondsFromDuration.cpp"/>
         <file name="src/functions/FunctionSecondsFromTime.cpp"/>
+        <file name="src/functions/FunctionSentences.cpp"/>
         <file name="src/functions/FunctionSerializeJSON.cpp"/>
 	<file name="src/functions/FunctionSin.cpp"/>
 	<file name="src/functions/FunctionSqrt.cpp"/>
@@ -806,6 +811,7 @@
         <file name="src/functions/FunctionUnordered.cpp"/>
         <file name="src/functions/FunctionUnparsedText.cpp"/>
         <file name="src/functions/FunctionUpperCase.cpp"/>
+        <file name="src/functions/FunctionWords.cpp"/>
         <file name="src/functions/FunctionYearFromDate.cpp"/>
         <file name="src/functions/FunctionYearFromDateTime.cpp"/>
         <file name="src/functions/FunctionYearsFromDuration.cpp"/>
@@ -991,11 +997,10 @@
         <file name="src/utils/DateUtils.hpp"/>
         <file name="src/utils/NumUtils.cpp"/>
         <file name="src/utils/PrintAST.cpp"/>
-        <file name="src/utils/UCANormalizer.cpp"/>
-        <file name="src/utils/UCANormalizer1.cpp"/>
-        <file name="src/utils/UCANormalizer2.cpp"/>
-        <file name="src/utils/UCANormalizer3.cpp"/>
-        <file name="src/utils/UCANormalizer4.cpp"/>
+        <file name="src/utils/UnicodeTransformer.cpp"/>
+        <file name="src/utils/utf8proc/utf8proc.c"/>
+        <file name="src/utils/utf8proc/utf8proc.h"/>
+        <file name="src/utils/utf8proc/utf8proc_data.h"/>
         <file name="src/utils/UTF8Str.cpp"/>
         <file name="src/utils/XMLChCompare.cpp"/>
         <file name="src/utils/XPath2NSUtils.cpp"/>

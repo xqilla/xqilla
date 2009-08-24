@@ -288,6 +288,7 @@
       <File RelativePath="..\..\include\xqilla\functions\FunctionAvg.hpp"/>
       <File RelativePath="..\..\include\xqilla\functions\FunctionBaseURI.hpp"/>
       <File RelativePath="..\..\include\xqilla\functions\FunctionBoolean.hpp"/>
+      <File RelativePath="..\..\include\xqilla\functions\FunctionCaseFold.hpp"/>
       <File RelativePath="..\..\include\xqilla\functions\FunctionCeiling.hpp"/>
       <File RelativePath="..\..\include\xqilla\functions\FunctionCodepointEqual.hpp"/>
       <File RelativePath="..\..\include\xqilla\functions\FunctionCodepointsToString.hpp"/>
@@ -384,6 +385,7 @@
       <File RelativePath="..\..\include\xqilla\functions\FunctionSecondsFromDateTime.hpp"/>
       <File RelativePath="..\..\include\xqilla\functions\FunctionSecondsFromDuration.hpp"/>
       <File RelativePath="..\..\include\xqilla\functions\FunctionSecondsFromTime.hpp"/>
+      <File RelativePath="..\..\include\xqilla\functions\FunctionSentences.hpp"/>
       <File RelativePath="..\..\include\xqilla\functions\FunctionStartsWith.hpp"/>
       <File RelativePath="..\..\include\xqilla\functions\FunctionStaticBaseURI.hpp"/>
       <File RelativePath="..\..\include\xqilla\functions\FunctionString.hpp"/>
@@ -407,6 +409,7 @@
       <File RelativePath="..\..\include\xqilla\functions\FunctionUnordered.hpp"/>
       <File RelativePath="..\..\include\xqilla\functions\FunctionUnparsedText.hpp"/>
       <File RelativePath="..\..\include\xqilla\functions\FunctionUpperCase.hpp"/>
+      <File RelativePath="..\..\include\xqilla\functions\FunctionWords.hpp"/>
       <File RelativePath="..\..\include\xqilla\functions\FunctionYearFromDate.hpp"/>
       <File RelativePath="..\..\include\xqilla\functions\FunctionYearFromDateTime.hpp"/>
       <File RelativePath="..\..\include\xqilla\functions\FunctionYearsFromDuration.hpp"/>
@@ -533,7 +536,7 @@
       <File RelativePath="..\..\include\xqilla\utils\PrintAST.hpp"/>
       <File RelativePath="..\..\include\xqilla\utils\UTF8Str.hpp"/>
       <File RelativePath="..\..\include\xqilla\utils\XQillaPlatformUtils.hpp"/>
-      <File RelativePath="..\..\include\xqilla\utils\UCANormalizer.hpp"/>
+      <File RelativePath="..\..\include\xqilla\utils\UnicodeTransformer.hpp"/>
       <File RelativePath="..\..\include\xqilla\framework\ReferenceCounted.hpp"/>
       <File RelativePath="..\..\include\xqilla\framework\XPath2MemoryManager.hpp"/>
       <File RelativePath="..\..\include\xqilla\framework\BaseMemoryManager.hpp"/>
@@ -713,6 +716,7 @@
       <File RelativePath="..\..\src\functions\FunctionAvg.cpp"/>
       <File RelativePath="..\..\src\functions\FunctionBaseURI.cpp"/>
       <File RelativePath="..\..\src\functions\FunctionBoolean.cpp"/>
+      <File RelativePath="..\..\src\functions\FunctionCaseFold.cpp"/>
       <File RelativePath="..\..\src\functions\FunctionCeiling.cpp"/>
       <File RelativePath="..\..\src\functions\FunctionCodepointEqual.cpp"/>
       <File RelativePath="..\..\src\functions\FunctionCodepointsToString.cpp"/>
@@ -807,6 +811,7 @@
       <File RelativePath="..\..\src\functions\FunctionSecondsFromDateTime.cpp"/>
       <File RelativePath="..\..\src\functions\FunctionSecondsFromDuration.cpp"/>
       <File RelativePath="..\..\src\functions\FunctionSecondsFromTime.cpp"/>
+      <File RelativePath="..\..\src\functions\FunctionSentences.cpp"/>
       <File RelativePath="..\..\src\functions\FunctionSerializeJSON.cpp"/>
       <File RelativePath="..\..\src\functions\FunctionSin.cpp"/>
       <File RelativePath="..\..\src\functions\FunctionSqrt.cpp"/>
@@ -833,6 +838,7 @@
       <File RelativePath="..\..\src\functions\FunctionUnordered.cpp"/>
       <File RelativePath="..\..\src\functions\FunctionUnparsedText.cpp"/>
       <File RelativePath="..\..\src\functions\FunctionUpperCase.cpp"/>
+      <File RelativePath="..\..\src\functions\FunctionWords.cpp"/>
       <File RelativePath="..\..\src\functions\FunctionYearFromDate.cpp"/>
       <File RelativePath="..\..\src\functions\FunctionYearFromDateTime.cpp"/>
       <File RelativePath="..\..\src\functions\FunctionYearsFromDuration.cpp"/>
@@ -1018,11 +1024,10 @@
       <File RelativePath="..\..\src\utils\DateUtils.hpp"/>
       <File RelativePath="..\..\src\utils\NumUtils.cpp"/>
       <File RelativePath="..\..\src\utils\PrintAST.cpp"/>
-      <File RelativePath="..\..\src\utils\UCANormalizer.cpp"/>
-      <File RelativePath="..\..\src\utils\UCANormalizer1.cpp"/>
-      <File RelativePath="..\..\src\utils\UCANormalizer2.cpp"/>
-      <File RelativePath="..\..\src\utils\UCANormalizer3.cpp"/>
-      <File RelativePath="..\..\src\utils\UCANormalizer4.cpp"/>
+      <File RelativePath="..\..\src\utils\UnicodeTransformer.cpp"/>
+      <File RelativePath="..\..\src\utils\utf8proc\utf8proc.c"/>
+      <File RelativePath="..\..\src\utils\utf8proc\utf8proc.h"/>
+      <File RelativePath="..\..\src\utils\utf8proc\utf8proc_data.h"/>
       <File RelativePath="..\..\src\utils\UTF8Str.cpp"/>
       <File RelativePath="..\..\src\utils\XMLChCompare.cpp"/>
       <File RelativePath="..\..\src\utils\XPath2NSUtils.cpp"/>

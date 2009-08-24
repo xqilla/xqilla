@@ -23,7 +23,7 @@
 #include <xqilla/utils/XPath2Utils.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/items/ATStringOrDerived.hpp>
-#include <xqilla/utils/UCANormalizer.hpp>
+#include <xqilla/utils/UnicodeTransformer.hpp>
 #include <xqilla/exceptions/FunctionException.hpp>
 #include <xqilla/framework/XPath2MemoryManager.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
@@ -112,16 +112,16 @@ Sequence FunctionNormalizeUnicode::createSequence(DynamicContext* context, int f
     XMLBuffer buf(1023, context->getMemoryManager());
 
     if(XPath2Utils::equals(normalization, fg_NFC)) {
-      Normalizer::normalizeC(str, buf);
+      UnicodeTransformer::normalizeC(str, buf);
     }
     else if(XPath2Utils::equals(normalization, fg_NFD)) {
-      Normalizer::normalizeD(str, buf);
+      UnicodeTransformer::normalizeD(str, buf);
     }
     else if(XPath2Utils::equals(normalization, fg_NFKC)) {
-      Normalizer::normalizeKC(str, buf);
+      UnicodeTransformer::normalizeKC(str, buf);
     }
     else if(XPath2Utils::equals(normalization, fg_NFKD)) {
-      Normalizer::normalizeKD(str, buf);
+      UnicodeTransformer::normalizeKD(str, buf);
     }
     else if(XPath2Utils::equals(normalization, fg_fully)) {
       XQThrow(FunctionException, X("FunctionNormalizeUnicode::createSequence"), X("Unsupported normalization form [err:FOCH0003]."));

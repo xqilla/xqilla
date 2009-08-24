@@ -148,11 +148,10 @@ src/utils/XQillaPlatformUtils.cpp \
 src/utils/PrintAST.cpp \
 src/utils/XPath2NSUtils.cpp \
 src/utils/XPath2Utils.cpp \
-src/utils/UCANormalizer1.cpp \
-src/utils/UCANormalizer2.cpp \
-src/utils/UCANormalizer3.cpp \
-src/utils/UCANormalizer4.cpp \
-src/utils/UCANormalizer.cpp \
+src/utils/UnicodeTransformer.cpp \
+src/utils/utf8proc/utf8proc.c \
+src/utils/utf8proc/utf8proc.h \
+src/utils/utf8proc/utf8proc_data.h \
 src/exceptions/XQillaException.cpp \
 src/exceptions/XQException.cpp \
 src/exceptions/InvalidLexicalSpaceException.hpp \
@@ -171,6 +170,7 @@ src/functions/FunctionAtan.cpp \
 src/functions/FunctionAvg.cpp \
 src/functions/FunctionBaseURI.cpp \
 src/functions/FunctionBoolean.cpp \
+src/functions/FunctionCaseFold.cpp \
 src/functions/FunctionCeiling.cpp \
 src/functions/FunctionCodepointEqual.cpp \
 src/functions/FunctionCodepointsToString.cpp \
@@ -248,6 +248,7 @@ src/functions/FunctionRoundHalfToEven.cpp \
 src/functions/FunctionSin.cpp \
 src/functions/FunctionSqrt.cpp \
 src/functions/FunctionTan.cpp \
+src/functions/FunctionSentences.cpp \
 src/functions/FunctionStartsWith.cpp \
 src/functions/FunctionStaticBaseURI.cpp \
 src/functions/FunctionString.cpp \
@@ -267,6 +268,7 @@ src/functions/FunctionTrue.cpp \
 src/functions/FunctionUnordered.cpp \
 src/functions/FunctionUnparsedText.cpp \
 src/functions/FunctionUpperCase.cpp \
+src/functions/FunctionWords.cpp \
 src/functions/FunctionZeroOrOne.cpp \
 src/functions/FunctionAdjustDateTimeToTimezone.cpp \
 src/functions/FunctionAdjustDateToTimezone.cpp \
