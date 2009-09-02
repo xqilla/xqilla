@@ -180,6 +180,13 @@ FaxppDocumentCacheImpl::FaxppDocumentCacheImpl(MemoryManager* memMgr, XMLGrammar
 {
 }
 
+FaxppDocumentCacheImpl::FaxppDocumentCacheImpl(const FaxppDocumentCacheImpl *parent, MemoryManager* memMgr)
+  : DocumentCacheImpl(memMgr, parent->grammarResolver_->getGrammarPool(), /*makeScanner*/false),
+    wrapper_(0),
+    validator_(/*strictValidation*/false, 0, grammarResolver_, memMgr, 0)
+{
+}
+
 void FaxppDocumentCacheImpl::setXMLEntityResolver(XMLEntityResolver* const handler)
 {
   entityResolver_ = handler;
@@ -332,7 +339,7 @@ DocumentCache *FaxppDocumentCacheImpl::createDerivedCache(MemoryManager *memMgr)
   grammarResolver_->getGrammarPool()->lockPool();
 
   // Construct a new FaxppDocumentCacheImpl, based on this one
-  return new (memMgr) FaxppDocumentCacheImpl(memMgr, grammarResolver_->getGrammarPool());
+  return new (memMgr) FaxppDocumentCacheImpl(this, memMgr);
 }
 
 #endif

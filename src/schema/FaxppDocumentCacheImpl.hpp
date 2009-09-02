@@ -61,6 +61,8 @@ public:
   virtual DocumentCache *createDerivedCache(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *memMgr) const;
 
 protected:
+  FaxppDocumentCacheImpl(const FaxppDocumentCacheImpl *parent, XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* memMgr);
+
   FaxppParserWrapper wrapper_;
   SchemaValidatorFilter validator_;
 };

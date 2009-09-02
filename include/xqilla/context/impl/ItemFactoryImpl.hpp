@@ -107,10 +107,7 @@ public:
                                                      const XMLCh *name, const DynamicContext* context);
 
 protected:
-  ItemFactoryImpl(DatatypeLookup *dl);
-
   DatatypeLookup *datatypeLookup_;
-  bool datatypeLookupOwned_;
 };
 
 #endif

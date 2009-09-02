@@ -69,14 +69,15 @@ XQDynamicContextImpl::XQDynamicContextImpl(XQillaConfiguration *conf, const Stat
 {
   time(&_currentTime);
   _memMgr = &_internalMM;
-  _itemFactory = _conf->createItemFactory(_docCache, &_internalMM);
+  _itemFactory = staticContext->getItemFactory();
+  _itemFactoryOwned = false;
 
   setXMLEntityResolver(staticContext->getXMLEntityResolver());
 
   // Set up the default URIResolver
   _defaultResolver.resolver = _conf->createDefaultURIResolver(&_internalMM);
   if(_defaultResolver.resolver != 0) {
-	  _defaultResolver.adopt = true;
+    _defaultResolver.adopt = true;
   }
 }
 
@@ -86,7 +87,7 @@ XQDynamicContextImpl::~XQDynamicContextImpl()
   _implicitTimezone = 0;
   _defaultVarStore.clear();
 
-  delete _itemFactory;
+  if(_itemFactoryOwned) delete _itemFactory;
   delete _docCache;
 
   std::vector<ResolverEntry, XQillaAllocator<ResolverEntry> >::reverse_iterator end = _resolvers.rend();
@@ -440,6 +441,7 @@ ItemFactory *XQDynamicContextImpl::getItemFactory() const
 void XQDynamicContextImpl::setItemFactory(ItemFactory *factory)
 {
   _itemFactory = factory;
+  _itemFactoryOwned = true;
 }
 
 UpdateFactory *XQDynamicContextImpl::createUpdateFactory() const

@@ -329,6 +329,7 @@ protected:
    * a constructor function in the in-scope functions. Constructor 
    * functions are discussed in 3.10.4 Constructor Functions */
   ItemFactory* _itemFactory;
+  bool _itemFactoryOwned;
 
   struct ResolverEntry {
     ResolverEntry() : resolver(0), adopt(false) {}

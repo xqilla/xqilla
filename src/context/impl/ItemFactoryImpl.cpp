@@ -41,20 +41,13 @@ XERCES_CPP_NAMESPACE_USE
 #endif
 
 ItemFactoryImpl::ItemFactoryImpl(const DocumentCache* dc, MemoryManager* memMgr)
-  : datatypeLookup_(new (memMgr) DatatypeLookup(dc, memMgr)),
-    datatypeLookupOwned_(true)
-{
-}
-
-ItemFactoryImpl::ItemFactoryImpl(DatatypeLookup *dl)
-  : datatypeLookup_(dl),
-    datatypeLookupOwned_(false)
+  : datatypeLookup_(new (memMgr) DatatypeLookup(dc, memMgr))
 {
 }
 
 ItemFactoryImpl::~ItemFactoryImpl()
 {
-  if(datatypeLookupOwned_) delete datatypeLookup_;
+  delete datatypeLookup_;
 }
 
 AnyAtomicType::AtomicObjectType ItemFactoryImpl::getPrimitiveTypeIndex(const XMLCh* typeURI, const XMLCh* typeName, bool &isPrimitive) const
