@@ -151,14 +151,6 @@ void StaticAnalysis::variableUsed(const XMLCh *namespaceURI, const XMLCh *name)
   namespaceURI = _memMgr->getPooledString(namespaceURI);
   name = _memMgr->getPooledString(name);
 
-  VarEntry *entry = _dynamicVariables;
-  while(entry) {
-    if(entry->uri == namespaceURI && entry->name == name) {
-      return;
-    }
-    entry = entry->prev;
-  }
-
   _dynamicVariables = new (_memMgr) VarEntry(namespaceURI, name, _dynamicVariables);
 }
 
@@ -172,19 +164,21 @@ bool StaticAnalysis::removeVariable(const XMLCh *namespaceURI, const XMLCh *name
   namespaceURI = _memMgr->getPooledString(namespaceURI);
   name = _memMgr->getPooledString(name);
 
+  bool found = false;
+
   VarEntry **parent = &_dynamicVariables;
   while(*parent) {
     if((*parent)->uri == namespaceURI && (*parent)->name == name) {
       VarEntry *tmp = *parent;
       *parent = tmp->prev;
       _memMgr->deallocate(tmp);
-      return true;
+      found = true;
+    } else {
+      parent = &(*parent)->prev;
     }
-
-    parent = &(*parent)->prev;
   }
 
-  return false;
+  return found;
 }
 
 bool StaticAnalysis::isVariableUsed(const XMLCh *namespaceURI, const XMLCh *name) const
