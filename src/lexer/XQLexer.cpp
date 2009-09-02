@@ -13727,6 +13727,7 @@ static yyconst short int yy_chk[25949] =
  */
 #line 21 "../src/lexer/XQLexer.l"
 
+#include <cstdio>
 #include <sstream>
 #include <xqilla/utils/UTF8Str.hpp>
 #include "XQLexer.hpp"
