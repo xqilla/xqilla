@@ -194,12 +194,9 @@ ASTNode* FunctionLookup::lookUpGlobalFunction(
                                               XPath2MemoryManager* memMgr,
                                               const FunctionLookup *contextTable)
 {
-  ASTNode *ast = g_globalFunctionTable->lookUpFunction(
-                                                       URI, fname, args, memMgr);
-  if (!ast && contextTable)
-    ast = contextTable->lookUpFunction(
-                                       URI, fname, args, memMgr);
-  return ast;
+  if(contextTable)
+    return contextTable->lookUpFunction(URI, fname, args, memMgr);
+  return g_globalFunctionTable->lookUpFunction(URI, fname, args, memMgr);
 }
 
 // static
