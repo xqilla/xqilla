@@ -174,17 +174,15 @@ FAXPP_Error FaxppParserWrapper::parseInputSource(const InputSource &srcToUse, XP
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 FaxppDocumentCacheImpl::FaxppDocumentCacheImpl(MemoryManager* memMgr, XMLGrammarPool *xmlgr)
-  : DocumentCacheImpl(memMgr, xmlgr, /*makeScanner*/true),
+  : DocumentCacheImpl(memMgr, xmlgr),
     wrapper_(0),
-    validator_(/*strictValidation*/false, 0, grammarResolver_, memMgr, 0)
+    validator_(0)
 {
 }
 
-FaxppDocumentCacheImpl::FaxppDocumentCacheImpl(const FaxppDocumentCacheImpl *parent, MemoryManager* memMgr)
-  : DocumentCacheImpl(memMgr, parent->grammarResolver_->getGrammarPool(), /*makeScanner*/false),
-    wrapper_(0),
-    validator_(/*strictValidation*/false, 0, grammarResolver_, memMgr, 0)
+FaxppDocumentCacheImpl::~FaxppDocumentCacheImpl()
 {
+  delete validator_;
 }
 
 void FaxppDocumentCacheImpl::setXMLEntityResolver(XMLEntityResolver* const handler)
@@ -209,9 +207,13 @@ void FaxppDocumentCacheImpl::parseDocument(InputSource &srcToUse, EventHandler *
 {
   XPath2MemoryManager *mm = context->getMemoryManager();
 
+  if(validator_ == 0) {
+    validator_ = new (memMgr_) SchemaValidatorFilter(/*strictValidation*/false, 0, grammarResolver_, memMgr_, 0);
+  }
+
   if(doPSVI_) {
-    validator_.setNextEventHandler(handler);
-    events_ = &validator_;
+    validator_->setNextEventHandler(handler);
+    events_ = validator_;
   }
   else {
     events_ = handler;
@@ -339,7 +341,7 @@ DocumentCache *FaxppDocumentCacheImpl::createDerivedCache(MemoryManager *memMgr)
   grammarResolver_->getGrammarPool()->lockPool();
 
   // Construct a new FaxppDocumentCacheImpl, based on this one
-  return new (memMgr) FaxppDocumentCacheImpl(this, memMgr);
+  return new (memMgr) FaxppDocumentCacheImpl(memMgr, grammarResolver_->getGrammarPool());
 }
 
 #endif

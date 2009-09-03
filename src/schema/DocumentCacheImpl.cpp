@@ -86,7 +86,7 @@ static int checkGrammarResolverHack_int = checkGrammarResolverHack();
 // untyped
 const XMLCh DocumentCache::g_szUntyped[]= { chLatin_u, chLatin_n, chLatin_t, chLatin_y, chLatin_p, chLatin_e, chLatin_d, chNull };
 
-DocumentCacheImpl::DocumentCacheImpl(MemoryManager* memMgr, XMLGrammarPool *xmlgr, bool makeScanner)
+DocumentCacheImpl::DocumentCacheImpl(MemoryManager* memMgr, XMLGrammarPool *xmlgr)
   : grammarResolver_(0),
     scanner_(0),
     entityResolver_(0),
@@ -101,7 +101,7 @@ DocumentCacheImpl::DocumentCacheImpl(MemoryManager* memMgr, XMLGrammarPool *xmlg
     noNamespaceSchemaLocation_(1023, memMgr),
     memMgr_(memMgr)
 {
-  init(xmlgr, makeScanner);
+  init(xmlgr);
 }
 
 DocumentCacheImpl::DocumentCacheImpl(const DocumentCacheImpl *parent, MemoryManager* memMgr)
@@ -124,11 +124,11 @@ DocumentCacheImpl::DocumentCacheImpl(const DocumentCacheImpl *parent, MemoryMana
   schemaLocations_.set(parent->schemaLocations_.getRawBuffer());
   noNamespaceSchemaLocation_.set(parent->noNamespaceSchemaLocation_.getRawBuffer());
 
-  scanner_->setExternalNoNamespaceSchemaLocation(noNamespaceSchemaLocation_.getRawBuffer());
-  scanner_->setExternalSchemaLocation(schemaLocations_.getRawBuffer());
+  getScanner()->setExternalNoNamespaceSchemaLocation(noNamespaceSchemaLocation_.getRawBuffer());
+  getScanner()->setExternalSchemaLocation(schemaLocations_.getRawBuffer());
 }
 
-void DocumentCacheImpl::init(XMLGrammarPool *gramPool, bool makeScanner)
+void DocumentCacheImpl::init(XMLGrammarPool *gramPool)
 {
   grammarResolver_ = new (memMgr_) GrammarResolver(gramPool, memMgr_);
   if(gramPool) {
@@ -141,8 +141,11 @@ void DocumentCacheImpl::init(XMLGrammarPool *gramPool, bool makeScanner)
     // 2008/06/06 I don't think this is needed anymore - jpcs
 //     ((GrammarResolverHack*)grammarResolver_)->fGrammarPoolXSModel = gramPool->getXSModel();
   }
+}
 
-  if(makeScanner) {
+XMLScanner *DocumentCacheImpl::getScanner()
+{
+  if(scanner_ == 0) {
     scanner_ = new (memMgr_) IGXMLScanner(0, grammarResolver_, memMgr_);
     scanner_->setURIStringPool(grammarResolver_->getStringPool());
 
@@ -159,9 +162,8 @@ void DocumentCacheImpl::init(XMLGrammarPool *gramPool, bool makeScanner)
     scanner_->setDoSchema(true);
     scanner_->setValidationScheme(XMLScanner::Val_Auto);
     scanner_->setValidationConstraintFatal(false);
-
-    loadedSchemas_ = new (memMgr_) XMLStringPool(3, memMgr_);
   }
+  return scanner_;
 }
 
 DocumentCacheImpl::~DocumentCacheImpl()
@@ -287,8 +289,8 @@ void DocumentCacheImpl::parseDocument(InputSource &srcToUse, EventHandler *handl
   strictValidation_ = false;
 
   try {
-    scanner_->setDoSchema(doPSVI_);
-    scanner_->scanDocument(srcToUse);
+    getScanner()->setDoSchema(doPSVI_);
+    getScanner()->scanDocument(srcToUse);
   }
   catch(const SAXException& toCatch) {
     //TODO: Find a way to decipher whether the exception is actually because of a parsing problem or because the document can't be found
@@ -306,7 +308,7 @@ static inline void setLocation(LocationInfo &info, const Locator *locator)
                        (unsigned int)(locator->getColumnNumber()));
 }
 
-#define LOCATION setLocation(location_, scanner_->getLocator())
+#define LOCATION setLocation(location_, getScanner()->getLocator())
 
 void DocumentCacheImpl::startDocument()
 {
@@ -314,7 +316,7 @@ void DocumentCacheImpl::startDocument()
   events_->setLocationInfo(&location_);
 
   // Encode space chars in the document URI as %20
-  const XMLCh *uri = scanner_->getLocator()->getSystemId();
+  const XMLCh *uri = getScanner()->getLocator()->getSystemId();
 
   XMLBuffer encode(XMLString::stringLen(uri) + 1);
   if(uri != 0) {
@@ -330,7 +332,7 @@ void DocumentCacheImpl::startDocument()
     uri = encode.getRawBuffer();
   }
 
-  events_->startDocumentEvent(uri, scanner_->getReaderMgr()->getCurrentEncodingStr());
+  events_->startDocumentEvent(uri, getScanner()->getReaderMgr()->getCurrentEncodingStr());
 }
 
 void DocumentCacheImpl::endDocument()
@@ -348,11 +350,11 @@ void DocumentCacheImpl::startElement(const XMLElementDecl& elemDecl, const unsig
                                      const XercesSizeUint attrCount, const bool isEmpty, const bool isRoot)
 {
   LOCATION;
-  events_->startElementEvent(emptyToNull(elemPrefix), emptyToNull(scanner_->getURIText(urlId)), elemDecl.getBaseName());
+  events_->startElementEvent(emptyToNull(elemPrefix), emptyToNull(getScanner()->getURIText(urlId)), elemDecl.getBaseName());
 
   attrList_ = &attrList;
   attrCount_ = (unsigned int) attrCount;
-  if(!scanner_->getDoSchema() || scanner_->getCurrentGrammarType() != Grammar::SchemaGrammarType) {
+  if(!getScanner()->getDoSchema() || getScanner()->getCurrentGrammarType() != Grammar::SchemaGrammarType) {
     handleAttributesPSVI(0, 0, 0);
   }
 
@@ -383,7 +385,7 @@ void DocumentCacheImpl::endElement(const XMLElementDecl& elemDecl, const unsigne
   }
 
   LOCATION;
-  events_->endElementEvent(emptyToNull(elemPrefix), emptyToNull(scanner_->getURIText(urlId)), elemDecl.getBaseName(),
+  events_->endElementEvent(emptyToNull(elemPrefix), emptyToNull(getScanner()->getURIText(urlId)), elemDecl.getBaseName(),
                            emptyToNull(typeURI), typeName);
 
   elementInfo_ = 0;
@@ -448,14 +450,14 @@ void DocumentCacheImpl::handleAttributesPSVI(const XMLCh* const localName, const
 
   for(unsigned int i = 0; i < attrCount_; ++i) {
     const XMLAttr *attr = attrList_->elementAt(i);
-    if(attr->getURIId() == scanner_->getXMLNSNamespaceId()) {
+    if(attr->getURIId() == getScanner()->getXMLNSNamespaceId()) {
       events_->namespaceEvent(attr->getName(), attr->getValue());
     }
     else if(XPath2Utils::equals(attr->getName(), XMLUni::fgXMLNSString)) {
       events_->namespaceEvent(0, attr->getValue());
     }
     else {
-      const XMLCh *auri = scanner_->getURIText(attr->getURIId());
+      const XMLCh *auri = getScanner()->getURIText(attr->getURIId());
       const XMLCh *typeURI = SchemaSymbols::fgURI_SCHEMAFORSCHEMA;
       const XMLCh *typeName = ATUntypedAtomic::fgDT_UNTYPEDATOMIC;
 
@@ -584,6 +586,10 @@ bool DocumentCacheImpl::isTypeDefined(const XMLCh* const uri, const XMLCh* const
 
 void DocumentCacheImpl::addSchemaLocation(const XMLCh* uri, VectorOfStrings* locations, StaticContext *context, const LocationInfo *location)
 {
+  if(loadedSchemas_ == 0) {
+    loadedSchemas_ = new (memMgr_) XMLStringPool(3, memMgr_);
+  }
+
   XMLBuffer buf(1023,context->getMemoryManager());
   if(loadedSchemas_->exists(uri))
     {
@@ -652,7 +658,7 @@ void DocumentCacheImpl::loadSchema(const XMLCh* const uri, const XMLCh* location
   Grammar* grammar=NULL;
   if(srcToUse) {
     if(location == 0) location = srcToUse->getSystemId();
-    grammar = scanner_->loadGrammar(*srcToUse, Grammar::SchemaGrammarType, true);
+    grammar = getScanner()->loadGrammar(*srcToUse, Grammar::SchemaGrammarType, true);
   }
   else if(location) {
     // Resolve the location against the base uri
@@ -662,7 +668,7 @@ void DocumentCacheImpl::loadSchema(const XMLCh* const uri, const XMLCh* location
       systemId = urlTmp.getURLText();
     }
 
-    grammar = scanner_->loadGrammar(systemId, Grammar::SchemaGrammarType, true);
+    grammar = getScanner()->loadGrammar(systemId, Grammar::SchemaGrammarType, true);
   }
   if(grammar==NULL)
     XQThrow3(StaticErrorException,X("DocumentCacheImpl::loadSchema"), X("Schema not found [err:XQST0059]"), info);
@@ -671,14 +677,14 @@ void DocumentCacheImpl::loadSchema(const XMLCh* const uri, const XMLCh* location
   // XML documents that match
   if(uri == 0 || *uri == 0) {
     noNamespaceSchemaLocation_.set(location);
-    scanner_->setExternalNoNamespaceSchemaLocation(noNamespaceSchemaLocation_.getRawBuffer());
+    getScanner()->setExternalNoNamespaceSchemaLocation(noNamespaceSchemaLocation_.getRawBuffer());
   }
   else {
     schemaLocations_.append(' ');
     schemaLocations_.append(uri);
     schemaLocations_.append(' ');
     schemaLocations_.append(location);
-    scanner_->setExternalSchemaLocation(schemaLocations_.getRawBuffer());
+    getScanner()->setExternalSchemaLocation(schemaLocations_.getRawBuffer());
   }
 }
 

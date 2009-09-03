@@ -53,6 +53,7 @@ class FaxppDocumentCacheImpl : public DocumentCacheImpl
 {
 public:
   FaxppDocumentCacheImpl(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* memMgr, XERCES_CPP_NAMESPACE_QUALIFIER XMLGrammarPool* xmlgr = 0);
+  ~FaxppDocumentCacheImpl();
 
   virtual void setXMLEntityResolver(XERCES_CPP_NAMESPACE_QUALIFIER XMLEntityResolver* const handler);
 
@@ -61,10 +62,8 @@ public:
   virtual DocumentCache *createDerivedCache(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *memMgr) const;
 
 protected:
-  FaxppDocumentCacheImpl(const FaxppDocumentCacheImpl *parent, XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* memMgr);
-
   FaxppParserWrapper wrapper_;
-  SchemaValidatorFilter validator_;
+  SchemaValidatorFilter *validator_;
 };
 
 #endif

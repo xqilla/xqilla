@@ -46,7 +46,7 @@ typedef XMLSSize_t XMLFileLoc;
  * rules.
  */
 class XQILLA_API SchemaValidatorFilter : public EventFilter,
-                                         private XERCES_CPP_NAMESPACE_QUALIFIER XMLScanner,
+                                         public XERCES_CPP_NAMESPACE_QUALIFIER XMLScanner,
                                          private XERCES_CPP_NAMESPACE_QUALIFIER XMLDocumentHandler,
                                          private XERCES_CPP_NAMESPACE_QUALIFIER XMLErrorReporter
 {

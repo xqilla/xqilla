@@ -49,8 +49,7 @@ class XQILLA_API DocumentCacheImpl : public DocumentCache,
                                      private XERCES_CPP_NAMESPACE_QUALIFIER XMLErrorReporter
 {
 public:
-  DocumentCacheImpl(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* memMgr, XERCES_CPP_NAMESPACE_QUALIFIER XMLGrammarPool* xmlgr = 0,
-                    bool makeScanner = true);
+  DocumentCacheImpl(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* memMgr, XERCES_CPP_NAMESPACE_QUALIFIER XMLGrammarPool* xmlgr = 0);
   DocumentCacheImpl(const DocumentCacheImpl *parent, XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* memMgr);
   ~DocumentCacheImpl();
 
@@ -103,7 +102,7 @@ public:
   static XERCES_CPP_NAMESPACE_QUALIFIER InputSource *resolveURI(const XMLCh *uri, const XMLCh *baseUri);
 
 protected:
-  void init(XERCES_CPP_NAMESPACE_QUALIFIER XMLGrammarPool *gramPool = 0, bool makeScanner = true);
+  void init(XERCES_CPP_NAMESPACE_QUALIFIER XMLGrammarPool *gramPool = 0);
 
   void loadSchema(const XMLCh* const uri, const XMLCh* location, StaticContext *context, const LocationInfo *info);
 
@@ -157,6 +156,8 @@ protected:
                                     XERCES_CPP_NAMESPACE_QUALIFIER PSVIAttributeList *psviAttributes);
 
 protected:
+  XERCES_CPP_NAMESPACE_QUALIFIER XMLScanner *getScanner();
+
   XERCES_CPP_NAMESPACE_QUALIFIER GrammarResolver *grammarResolver_;
   XERCES_CPP_NAMESPACE_QUALIFIER XMLScanner *scanner_;
   XERCES_CPP_NAMESPACE_QUALIFIER XMLEntityResolver *entityResolver_;
