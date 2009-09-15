@@ -88,17 +88,10 @@
 #ifndef UTF8PROC_H
 #define UTF8PROC_H
 
-
 #include <stdlib.h>
-#include <stdbool.h>
 #include <string.h>
 #include <sys/types.h>
-#include <inttypes.h>
 #include <limits.h>
-
-#ifndef SSIZE_MAX
-#define SSIZE_MAX (SIZE_MAX/2)
-#endif
 
 #define UTF8PROC_NULLTERM         (1<<0)
 #define UTF8PROC_STABLE           (1<<1)
@@ -190,6 +183,24 @@
 #define UTF8PROC_ERROR_INVALIDUTF8 -3
 #define UTF8PROC_ERROR_NOTASSIGNED -4
 #define UTF8PROC_ERROR_INVALIDOPTS -5
+
+#ifdef _MSC_VER
+  #include <wtypes.h>
+  typedef unsigned __int8   uint8_t;
+  typedef unsigned __int16  uint16_t;
+  typedef signed __int8     int8_t;
+  typedef signed __int16    int16_t;
+  typedef signed __int32    int32_t;
+  typedef SSIZE_T           ssize_t;
+#else
+  #include <stdint.h>
+#endif
+
+#ifndef SSIZE_MAX
+#define SSIZE_MAX  0x7FFFFFFF
+#endif
+
+
 /*
  *  Error codes being returned by almost all functions:
  *  ERROR_NOMEM:       Memory could not be allocated.
@@ -200,7 +211,7 @@
  *  ERROR_INVALIDOPTS: Invalid options have been used.
  */
 
- 
+
 typedef int16_t utf8proc_propval_t;
 typedef struct utf8proc_property_struct {
   utf8proc_propval_t category;
@@ -227,10 +238,10 @@ typedef struct utf8proc_property_struct {
 
 
 typedef struct {
-  int8_t  cluster;          // Store last cluster bounding property
-  int8_t  word;             // Store last word bounding property
+  uint8_t cluster;          // Store last cluster bounding property
+  uint8_t word;             // Store last word bounding property
   int32_t TBD_buf[128];     // Store TBD chars.
-  int8_t  sb_attr_queue[2]; // Store history property for sentence bounding.
+  uint8_t sb_attr_queue[2]; // Store history property for sentence bounding.
                             // The queue length must be two -- it rest with
                             // the sentence breaking algorithm.
 }bound_attr_t;
@@ -303,8 +314,6 @@ typedef struct {
 #define UTF8PROC_DECOMP_TYPE_COMPAT   16
 
 
-extern const int8_t utf8proc_utf8class[256];
-
 const char *utf8proc_version(void);
 
 const char *utf8proc_errmsg(ssize_t errcode);
@@ -324,7 +333,7 @@ ssize_t utf16proc_iterate(const uint16_t *str, ssize_t strlen, int32_t *dst);
  *  negative error code is returned.
  */
 
-bool utf8proc_codepoint_valid(int32_t uc);
+int utf8proc_codepoint_valid(int32_t uc);
 /*
  *  Returns 1, if the given unicode code-point is valid, otherwise 0.
  */
@@ -466,10 +475,10 @@ ssize_t utf16proc_map(
  *          'malloc', and has theirfore to be freed with 'free'.
  */
 
-uint8_t *utf8proc_NFD(const uint8_t *str);
-uint8_t *utf8proc_NFC(const uint8_t *str);
-uint8_t *utf8proc_NFKD(const uint8_t *str);
-uint8_t *utf8proc_NFKC(const uint8_t *str);
+uint8_t  *utf8proc_NFD(const uint8_t *str);
+uint8_t  *utf8proc_NFC(const uint8_t *str);
+uint8_t  *utf8proc_NFKD(const uint8_t *str);
+uint8_t  *utf8proc_NFKC(const uint8_t *str);
 uint16_t *utf16proc_NFD(const uint16_t *str);
 uint16_t *utf16proc_NFC(const uint16_t *str);
 uint16_t *utf16proc_NFKD(const uint16_t *str);

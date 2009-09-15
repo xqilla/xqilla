@@ -261,8 +261,8 @@ const char *utf8proc_errmsg(ssize_t errcode) {
 
 ssize_t utf8proc_iterate(const uint8_t *str, ssize_t strlen, int32_t *dst)
 {
-  int length;
-  int i;
+  ssize_t length;
+  ssize_t i;
   int32_t uc = -1;
   *dst = -1;
   if (!strlen) return 0;
@@ -300,7 +300,7 @@ ssize_t utf8proc_iterate(const uint8_t *str, ssize_t strlen, int32_t *dst)
 
 ssize_t utf16proc_iterate(const uint16_t *str, ssize_t strlen, int32_t *dst)
 {
-  int length;
+  ssize_t length;
   int32_t uc, w2; // w2 means "the second word"
   *dst = -1;
   if (strlen == 0)
@@ -327,7 +327,7 @@ ssize_t utf16proc_iterate(const uint16_t *str, ssize_t strlen, int32_t *dst)
   return length;
 }
 
-bool utf8proc_codepoint_valid(int32_t uc) {
+int utf8proc_codepoint_valid(int32_t uc) {
   if (uc < 0 || uc >= 0x110000 ||
     ((uc & 0xFFFF) >= 0xFFFE) || (uc >= 0xD800 && uc < 0xE000) ||
     (uc >= 0xFDD0 && uc < 0xFDF0)) return false;
@@ -394,7 +394,7 @@ ssize_t utf8proc_flush(int32_t *dst, ssize_t bufsize,
 {
   ssize_t written = 0;
   if (options & (UTF8PROC_WORDBOUND | UTF8PROC_SENTENCEBOUND)) {
-    bool output_sb = true;
+    int output_sb = true;
     // At the end of the stream, we have to fetch the chars in TBD_buf if any.
     int32_t *p = last_bound_attr->TBD_buf;
     for (; *p != UTF8PROC_INVALID_CODE; p++) {
@@ -431,7 +431,7 @@ void utf8proc_init_bound_attr(bound_attr_t* attr)
   options & ~UTF8PROC_LUMP, last_bound_attr)
 
 ssize_t utf8proc_decompose_char(int32_t uc, int32_t *dst, ssize_t bufsize,
-    int options, bound_attr_t *last_bound_attr) {
+                                int options, bound_attr_t *last_bound_attr) {
   // ASSERT: uc >= 0 && uc < 0x110000
   const utf8proc_property_t *property;
   utf8proc_propval_t category;
@@ -539,13 +539,13 @@ ssize_t utf8proc_decompose_char(int32_t uc, int32_t *dst, ssize_t bufsize,
     if (property->decomp_mapping != 0 &&
         (!property->decomp_type || (options & UTF8PROC_COMPAT))) {
       int32_t mapping = property->decomp_mapping;
+      ssize_t written = 0;
+      const int32_t *entry = utf8proc_sequences + (-mapping);
       // If the mapping is not sequence
       if (mapping > 0)
         return utf8proc_decompose_char(mapping, dst, bufsize,
                                        options, last_bound_attr);
       // If the mapping is sequence
-      ssize_t written = 0;
-      const int32_t *entry = utf8proc_sequences + (-mapping);
       for (; *entry >= 0; entry++) {
         written += utf8proc_decompose_char(*entry, dst+written,
                          (bufsize > written) ? (bufsize - written) : 0, options,
@@ -556,7 +556,7 @@ ssize_t utf8proc_decompose_char(int32_t uc, int32_t *dst, ssize_t bufsize,
     }
   }
   if (options & UTF8PROC_CHARBOUND) {
-    bool boundary;
+    int boundary;
     int tbc, lbc;
     bound_attr_t* bp = (bound_attr_t *)last_bound_attr;
     tbc =
@@ -611,25 +611,30 @@ ssize_t utf8proc_decompose_char(int32_t uc, int32_t *dst, ssize_t bufsize,
     int32_t *TBD_buf      = last_bound_attr->TBD_buf;
     int word_boundary     = NOT_BOUND;
     int sentence_boundary = NOT_BOUND;
-    bool TBD              = false;
+    int TBD               = false;
     const int TBD_size    = sizeof(last_bound_attr->TBD_buf)/ \
                             sizeof(last_bound_attr->TBD_buf[0]);
+    // Declare some vars for Word/Sentence boundary
+    ssize_t i, written, size;
+    int32_t *write;
+    int output_sb;
 
     if (options & UTF8PROC_WORDBOUND) {
       int tbc = property->word_bound_attr;
       int lbc = last_bound_attr->word;
+      int old_tbc;
       // WB_FORMATFE and WB_EXTENDFE are the same in bounding.
       if (tbc == WB_EXTENDFE) tbc = WB_FORMATFE;
       if (lbc == WB_EXTENDFE) lbc = WB_FORMATFE;
       word_boundary = utf8proc_wb_table[lbc][tbc];
 
       switch(lbc) {
-      case WB_ALETTER_FORMATFE: lbc = WB_ALETTER; break;
-      case WB_ALETTER_MIDNUMLET_FORMATFE: lbc = WB_ALETTER_MIDNUMLET; break;
-      case WB_NUMERIC_MIDNUMLET_FORMATFE: lbc = WB_NUMERIC_MIDNUMLET; break;
+        case WB_ALETTER_FORMATFE: lbc = WB_ALETTER; break;
+        case WB_ALETTER_MIDNUMLET_FORMATFE: lbc = WB_ALETTER_MIDNUMLET; break;
+        case WB_NUMERIC_MIDNUMLET_FORMATFE: lbc = WB_NUMERIC_MIDNUMLET; break;
       }
 
-      int old_tbc = tbc;
+      old_tbc = tbc;
       switch(lbc) {
       case WB_ALETTER:
         switch(tbc) {
@@ -662,7 +667,7 @@ ssize_t utf8proc_decompose_char(int32_t uc, int32_t *dst, ssize_t bufsize,
       last_bound_attr->word = tbc;
     }
     if (options & UTF8PROC_SENTENCEBOUND) {
-      bool do_not_insert_property = false;
+      int do_not_insert_property = false;
       int8_t* sb_attr = last_bound_attr->sb_attr_queue;
       int tbc = property->sentence_bound_attr;
       int lbc = sb_attr[1];
@@ -682,7 +687,7 @@ ssize_t utf8proc_decompose_char(int32_t uc, int32_t *dst, ssize_t bufsize,
       if (lbc == SB_SEP || lbc == SB_CR || lbc == SB_LF) {
         do_not_insert_property = false;
         TBD = false;
-      } 
+      }
       else if (!do_not_insert_property) {
         // Rule 7.0
         if (sb_attr[0] == SB_UPPER && sb_attr[1] == SB_ATERM && tbc == SB_UPPER) {
@@ -690,7 +695,7 @@ ssize_t utf8proc_decompose_char(int32_t uc, int32_t *dst, ssize_t bufsize,
         } // Rule 8.0 9.0 and 11.0
         else if ((sb_attr[0] == SB_ATERM || sb_attr[0] == SB_STERM) &&
                  (sb_attr[1] == SB_CLOSE || sb_attr[1] == SB_SP)) {
-          bool determined = false;
+          int determined = false;
           if (sb_attr[0] == SB_ATERM) { // Rule 8.0
             if (tbc != SB_OLETTER && tbc != SB_UPPER &&
                 tbc != SB_LOWER   && tbc != SB_SEP) {
@@ -741,11 +746,9 @@ ssize_t utf8proc_decompose_char(int32_t uc, int32_t *dst, ssize_t bufsize,
       }
     }
     // output result data of word/sentence bounding.
-    ssize_t i;
-    ssize_t written = 0;
-    ssize_t size = TBD_size;
-    int32_t *write;
-    bool output_sb = true;
+    written = 0;
+    size = TBD_size;
+    output_sb = true;
     for (i = 0; i < TBD_size; i++) {
       if (TBD_buf[i] == UTF8PROC_INVALID_CODE) {
         write = TBD_buf + i;

@@ -59,7 +59,7 @@ static void transformUTF16(const XMLCh *source, XMLBuffer &dest, int options)
       return cleanup(buf);
 
   // Begin transform
-  ssize_t result = utf16proc_decompose(source, srcSize, buf, dstSize, options);
+  ssize_t result = utf16proc_decompose((const uint16_t *)source, srcSize, buf, dstSize, options);
   // do nothig if hits internal errors
   if (result < 0)
       return cleanup(buf);
@@ -72,7 +72,7 @@ static void transformUTF16(const XMLCh *source, XMLBuffer &dest, int options)
     if (buf == NULL)  // do nothig if not enough memory
       return cleanup(buf);
 
-    result = utf16proc_decompose(source, srcSize, buf, dstSize, options);
+    result = utf16proc_decompose((const uint16_t *)source, srcSize, buf, dstSize, options);
     if (result < 0 || result > dstSize)
       return cleanup(buf);
   }

@@ -54,6 +54,14 @@
  *
  */
 
+#ifndef true
+  #define true   1
+#endif
+
+#ifndef false
+  #define false  0
+#endif
+
 const int32_t utf8proc_sequences[] = {
   0, -1, 32, 776, -1, 32, 772, 
   -1, 32, 769, -1, 32, 807, -1, 49, 
