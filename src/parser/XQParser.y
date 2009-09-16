@@ -380,7 +380,6 @@ namespace XQParser {
 %token _OPEN_APOS_             "' (open)"
 %token _CLOSE_APOS_            "' (close)"
 %token _LBRACE_                "{"
-%token _LBRACE_EXPR_ENCLOSURE_ "{ (expression enclosure)"
 %token _RBRACE_                "}"
 %token _SEMICOLON_             ";"
 %token _HASH_                  "#"
@@ -3065,10 +3064,6 @@ EnclosedExpr:
     {
       $$ = $2;
     }
-    | _LBRACE_EXPR_ENCLOSURE_ Expr _RBRACE_
-    {
-      $$ = $2;
-    }
       ;
 
 // [31]    QueryBody    ::=    Expr
@@ -3696,15 +3691,15 @@ ValueExpr:
 //                  ) Expr "}" 
 // [67]    ValidationMode    ::=    "lax" | "strict"
 ValidateExpr:
-    _VALIDATE_ _LBRACE_EXPR_ENCLOSURE_ Expr _RBRACE_
+    _VALIDATE_ _LBRACE_ Expr _RBRACE_
     {
       $$ = WRAP(@1, new (MEMMGR) XQValidate($3,DocumentCache::VALIDATION_STRICT,MEMMGR));
     }
-  | _VALIDATE_ _LAX_ _LBRACE_EXPR_ENCLOSURE_ Expr _RBRACE_
+  | _VALIDATE_ _LAX_ _LBRACE_ Expr _RBRACE_
     {
       $$ = WRAP(@1, new (MEMMGR) XQValidate($4,DocumentCache::VALIDATION_LAX,MEMMGR));
     }
-  | _VALIDATE_ _STRICT_ _LBRACE_EXPR_ENCLOSURE_ Expr _RBRACE_
+  | _VALIDATE_ _STRICT_ _LBRACE_ Expr _RBRACE_
     {
       $$ = WRAP(@1, new (MEMMGR) XQValidate($4,DocumentCache::VALIDATION_STRICT,MEMMGR));
     }
@@ -3712,14 +3707,14 @@ ValidateExpr:
 
 // [68]     ExtensionExpr     ::=     Pragma+ "{" Expr? "}"
 ExtensionExpr:
-    PragmaList _LBRACE_EXPR_ENCLOSURE_ _RBRACE_
+    PragmaList _LBRACE_ _RBRACE_
   {
     REJECT_NOT_XQUERY(ExtensionExpr, @1);
 
     // we don't support any pragma
     yyerror(@1, "This pragma is not recognized, and no alternative expression is specified [err:XQST0079]");
   }
-  | PragmaList _LBRACE_EXPR_ENCLOSURE_ Expr _RBRACE_
+  | PragmaList _LBRACE_ Expr _RBRACE_
   {
     REJECT_NOT_XQUERY(ExtensionExpr, @1);
 
@@ -4106,7 +4101,7 @@ ContextItemExpr:
 
 // [94]    OrderedExpr    ::=    <"ordered" "{"> Expr "}" 
 OrderedExpr:
-  _ORDERED_ _LBRACE_EXPR_ENCLOSURE_ Expr _RBRACE_
+  _ORDERED_ _LBRACE_ Expr _RBRACE_
   {
     REJECT_NOT_XQUERY(OrderedExpr, @1);
 
@@ -4116,7 +4111,7 @@ OrderedExpr:
 
 // [95]    UnorderedExpr    ::=    <"unordered" "{"> Expr "}" 
 UnorderedExpr:
-  _UNORDERED_ _LBRACE_EXPR_ENCLOSURE_ Expr _RBRACE_
+  _UNORDERED_ _LBRACE_ Expr _RBRACE_
   {
     REJECT_NOT_XQUERY(UnorderedExpr, @1);
 
@@ -4424,7 +4419,7 @@ ComputedConstructor:
 
 // [113]    CompDocConstructor    ::=    <"document" "{"> Expr "}" 
 CompDocConstructor:
-  _DOCUMENT_ _LBRACE_EXPR_ENCLOSURE_ Expr _RBRACE_
+  _DOCUMENT_ _LBRACE_ Expr _RBRACE_
   {
     $$ = WRAP(@1, new (MEMMGR) XQDocumentConstructor($3, MEMMGR));
   }
@@ -4444,7 +4439,7 @@ CompConstructorName:
   {
     $$ = WRAP(@1, new (MEMMGR) XQDirectName($1, /*isAttr*/false, MEMMGR));
   }
-  | _LBRACE_EXPR_ENCLOSURE_ Expr _RBRACE_
+  | _LBRACE_ Expr _RBRACE_
   {
     $$ = $2;
   }
@@ -4452,11 +4447,11 @@ CompConstructorName:
 
 // [115]    ContentExpr    ::=    Expr
 ContentExpr:
-  _LBRACE_EXPR_ENCLOSURE_ _RBRACE_
+  _LBRACE_ _RBRACE_
   {
     $$ = new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR));
   }
-  | _LBRACE_EXPR_ENCLOSURE_ Expr _RBRACE_
+  | _LBRACE_ Expr _RBRACE_
   {
     $$ = new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR));
     $$->push_back($2);
@@ -4473,7 +4468,7 @@ CompAttrConstructor:
 
 // [117]    CompTextConstructor    ::=    <"text" "{"> Expr "}" 
 CompTextConstructor:
-  _TEXT_ _LBRACE_EXPR_ENCLOSURE_ Expr _RBRACE_
+  _TEXT_ _LBRACE_ Expr _RBRACE_
   {
     $$ = WRAP(@1, new (MEMMGR) XQTextConstructor($3, MEMMGR));
   }
@@ -4481,7 +4476,7 @@ CompTextConstructor:
 
 // [118]    CompCommentConstructor    ::=    <"comment" "{"> Expr "}" 
 CompCommentConstructor:
-  _COMMENT_ _LBRACE_EXPR_ENCLOSURE_ Expr _RBRACE_
+  _COMMENT_ _LBRACE_ Expr _RBRACE_
   {
     $$ = WRAP(@1, new (MEMMGR) XQCommentConstructor($3, MEMMGR));
   }
@@ -4506,18 +4501,18 @@ CompPINCName:
                                SchemaSymbols::fgDT_STRING,
                                $1, AnyAtomicType::STRING, MEMMGR));
   }
-  | _LBRACE_EXPR_ENCLOSURE_ Expr _RBRACE_
+  | _LBRACE_ Expr _RBRACE_
   {
     $$ = $2;
   }
   ;
 
 CompPIConstructorContent:
-  _LBRACE_EXPR_ENCLOSURE_ _RBRACE_
+  _LBRACE_ _RBRACE_
   {
     $$ = WRAP(@1, new (MEMMGR) XQSequence(MEMMGR));
   }
-  | _LBRACE_EXPR_ENCLOSURE_ Expr _RBRACE_
+  | _LBRACE_ Expr _RBRACE_
   {
     $$ = $2;
   }
@@ -4905,7 +4900,7 @@ FTWords:
   {
     $$ = WRAP(@1, new (MEMMGR) FTWords($1, $2, MEMMGR));
   }
-  | _LBRACE_EXPR_ENCLOSURE_ Expr _RBRACE_ FTAnyallOption
+  | _LBRACE_ Expr _RBRACE_ FTAnyallOption
   {
     $$ = WRAP(@2, new (MEMMGR) FTWords($2, $4, MEMMGR));
   }
@@ -4913,12 +4908,12 @@ FTWords:
 
 // [153]    	FTExtensionSelection 	   ::=    	Pragma+ "{" FTSelection? "}"
 FTExtensionSelection:
-  PragmaList _LBRACE_EXPR_ENCLOSURE_ _RBRACE_
+  PragmaList _LBRACE_ _RBRACE_
 {
   // we don't support any pragma
   yyerror(@1, "This pragma is not recognized, and no alternative expression is specified [err:XQST0079]");
 }
-| PragmaList _LBRACE_EXPR_ENCLOSURE_ FTSelection _RBRACE_
+| PragmaList _LBRACE_ FTSelection _RBRACE_
 {
   // we don't support any pragma
   $$ = $3;
