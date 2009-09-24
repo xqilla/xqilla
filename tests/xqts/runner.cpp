@@ -51,7 +51,7 @@ using namespace std;
 class XQillaTestSuiteRunner : public TestSuiteRunner, private XMLEntityResolver, private ModuleResolver, private URIResolver
 {
 public:
-  XQillaTestSuiteRunner(const string &singleTest, TestSuiteResultListener *results, XQillaConfiguration *conf, XQilla::Language lang);
+  XQillaTestSuiteRunner(const string &singleTest, TestSuiteResultListener *results, XQillaConfiguration *conf, XQilla::Language lang, FastXDMConfiguration *fastConf = 0, XercesConfiguration *xercesConf = 0, bool userSetParserLang = false);
   virtual ~XQillaTestSuiteRunner();
 
   virtual void addSource(const string &id, const string &filename, const string &schema);
@@ -63,6 +63,7 @@ public:
   virtual void endTestGroup();
 
   virtual void runTestCase(const TestCase &testCase);
+  virtual void detectParserLang(const string &testSuiteNamespace);
 
 private:
   virtual InputSource* resolveEntity(XMLResourceIdentifier* resourceIdentifier);
@@ -72,8 +73,12 @@ private:
   virtual bool resolveDefaultCollection(Sequence &result, DynamicContext* context, const QueryPathNode *projection);
   virtual bool putDocument(const Node::Ptr &document, const XMLCh *uri, DynamicContext *context) { return true; }
 
+  virtual void detectDefaultConf();
 private:
   XQillaConfiguration *m_conf;
+  FastXDMConfiguration *m_fastConf;
+  XercesConfiguration *m_xercesConf;
+  bool m_userSetParserLang;
   XQilla::Language m_lang;
   string m_szSingleTest;
   string m_szFullTestName;
@@ -104,13 +109,14 @@ void usage(const char *progname)
     }
   }
 
-  cout << "Usage: " << name << " [options] <location of the XQTS suite> (<test group or case name>)?" << endl << endl;
+  cout << "Usage: " << name << " [options] <location of the XQTS/XQUTS/XQFTTS suite> (<test group or case name>)?" << endl << endl;
   cout << "-e <file>      : Use the given file as a known error file" << endl;
   cout << "-E <file>      : Output an error file" << endl;
   cout << "-h             : Show this display" << endl;
   cout << "-r             : Output results as XML" << endl;
   cout << "-u             : Parse XQuery Update (also uses Xerces-C data model)" << endl;
   cout << "-s             : Parse XSLT 2.0" << endl;
+  cout << "-f             : Parse XQuery Full Text 1.0" << endl;
   cout << "-x             : Use the Xerces-C data model (default is FastXDM)" << endl;
 }
 
@@ -120,13 +126,14 @@ int main(int argc, char *argv[])
   string singleTest;
   string errorFile;
   string outputErrorFile;
+
   bool xmlResults = false;
-  bool update = false;
-  bool xslt = false;
+  bool userSetParserLang = false;
+  XQilla::Language lang = XQilla::XQUERY;
 
   XercesConfiguration xercesConf;
   FastXDMConfiguration fastConf;
-  XQillaConfiguration *conf = &fastConf;
+  XQillaConfiguration *conf = NULL;
 
   for(int i = 1; i < argc; ++i) {
     if(*argv[i] == '-' && argv[i][2] == '\0' ){
@@ -154,17 +161,24 @@ int main(int argc, char *argv[])
         outputErrorFile = argv[i];
         break;
       }
+      case 'f': {
+        lang = XQilla::XQUERY_FULLTEXT;
+        userSetParserLang = true;
+        break;
+      }
       case 'r': {
         xmlResults = true;
         break;
       }
       case 'u': {
-        update = true;
+        lang = XQilla::XQUERY_UPDATE;
+        userSetParserLang = true;
         conf = &xercesConf;
         break;
       }
       case 's': {
-        xslt = true;
+        lang = XQilla::XSLT2;
+        userSetParserLang = true;
         break;
       }
       case 'x': {
@@ -206,7 +220,7 @@ int main(int argc, char *argv[])
     xmlreport->setImplementation("XQilla", "2.0");
     xmlreport->setOrganization("XQilla", "http://xqilla.sourceforge.net");
 
-    if(!update) {
+    if(lang != XQilla::XQUERY_UPDATE) {
       xmlreport->addImplementationDefinedItem("expressionUnicode", "UTF-16");
       xmlreport->addImplementationDefinedItem("implicitTimezone", "Defined by the system clock");
       xmlreport->addImplementationDefinedItem("XMLVersion", "1.1");
@@ -217,7 +231,7 @@ int main(int argc, char *argv[])
     }
 
     xmlreport->addFeature("Minimal Conformance", true);
-    if(!update) {
+    if(lang != XQilla::XQUERY_UPDATE) {
       xmlreport->addFeature("Schema Import", true);
       xmlreport->addFeature("Schema Validation", true);
       xmlreport->addFeature("Static Typing", false);
@@ -229,7 +243,7 @@ int main(int argc, char *argv[])
     }
 
     xmlreport->setSubmittor("John Snelson", "john.snelson@oracle.com");
-  }
+  } 
   else {
     results.reset(new ConsoleResultListener());
   }
@@ -238,14 +252,8 @@ int main(int argc, char *argv[])
   if(errorFile != "" && !knownErrors.loadErrors(errorFile)) {
     return 1;
   }
-
-  XQilla::Language lang = XQilla::XQUERY;
-  if(update) lang = XQilla::XQUERY_UPDATE;
-  else if(xslt) lang = XQilla::XSLT2;
-
-  lang = (XQilla::Language)(lang | XQilla::EXTENSIONS);
-
-  XQillaTestSuiteRunner runner(singleTest, &knownErrors, conf, lang);
+  
+  XQillaTestSuiteRunner runner(singleTest, &knownErrors, conf, lang, &fastConf, &xercesConf, userSetParserLang);
   TestSuiteParser parser(testSuitePath, &runner);
 
   parser.run();
@@ -272,9 +280,12 @@ int main(int argc, char *argv[])
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-XQillaTestSuiteRunner::XQillaTestSuiteRunner(const string &singleTest, TestSuiteResultListener *results, XQillaConfiguration *conf, XQilla::Language lang)
+XQillaTestSuiteRunner::XQillaTestSuiteRunner(const string &singleTest, TestSuiteResultListener *results, XQillaConfiguration *conf, XQilla::Language lang, FastXDMConfiguration *fastConf, XercesConfiguration *xercesConf, bool userSetParserLang)
   : TestSuiteRunner(results),
     m_conf(conf),
+    m_fastConf(fastConf),
+    m_xercesConf(xercesConf),
+    m_userSetParserLang(userSetParserLang),
     m_lang(lang),
     m_szSingleTest(singleTest),
     m_pCurTestCase(NULL),
@@ -332,6 +343,11 @@ void XQillaTestSuiteRunner::runTestCase(const TestCase &testCase)
      testCase.name.find(m_szSingleTest) == string::npos &&
      m_szFullTestName.find(m_szSingleTest) == string::npos) {
     m_results->reportSkip(testCase, "Not run");
+    return;
+  }
+
+  if(m_results->isSkippedTest(testCase.name)) {
+    m_results->reportSkip(testCase, "Skip");
     return;
   }
 
@@ -548,3 +564,42 @@ bool XQillaTestSuiteRunner::resolveDefaultCollection(Sequence &result, DynamicCo
     return resolveCollection(result, X(m_pCurTestCase->defaultCollection.c_str()), context, projection);
   return false;
 }
+
+void XQillaTestSuiteRunner::detectParserLang(const string &testSuiteNS)
+{
+
+  // if the user specified the parser language, don't do auto-detection 
+  if(m_userSetParserLang){
+    detectDefaultConf();
+    m_lang = (XQilla::Language)(m_lang | XQilla::EXTENSIONS);
+    return; 
+  }
+
+  if(testSuiteNS == "http://www.w3.org/2005/02/query-test-XQTSCatalog")
+     m_lang = XQilla::XQUERY;
+  else if(testSuiteNS == "http://www.w3.org/2005/02/query-test-update")
+     m_lang = XQilla::XQUERY_UPDATE;
+  else if(testSuiteNS == "http://www.w3.org/2005/02/query-test-full-text")
+     m_lang = XQilla::XQUERY_FULLTEXT;
+  else if(testSuiteNS == "http://www.w3.org/2005/05/xslt20-test-catalog")
+     m_lang = XQilla::XSLT2;
+
+  detectDefaultConf();
+
+  m_lang = (XQilla::Language)(m_lang | XQilla::EXTENSIONS);
+}
+
+void XQillaTestSuiteRunner::detectDefaultConf()
+{
+  // if the user has set the m_conf, do nothing
+  if(m_conf != NULL)
+    return;
+
+  if(m_lang == XQilla::XQUERY_UPDATE){
+    m_conf = m_xercesConf;
+  } 
+  else {
+    m_conf = m_fastConf;
+  }
+}
+

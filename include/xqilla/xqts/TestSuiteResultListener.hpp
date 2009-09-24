@@ -50,6 +50,8 @@ public:
                                  const std::string &comment) = 0;
   virtual void reportFailUnexpectedError(const TestCase &testCase, const std::string &unexpectedError,
                                          const std::string &comment) = 0;
+  
+  virtual bool isSkippedTest(const std::string &testName) const { return false;}
 
 protected:
   TestSuiteResultListener() {}
@@ -80,6 +82,7 @@ public:
 
   bool loadErrors(const std::string &errorFile);
   bool saveErrors(const std::string &errorFile) const;
+  bool isSkippedTest(const std::string &testName) const;
 
   class Error {
   public:

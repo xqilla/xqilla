@@ -298,6 +298,19 @@ bool KnownErrorChecker::saveErrors(const std::string &errorFile) const
   return true;
 }
 
+bool KnownErrorChecker::isSkippedTest(const std::string &testName) const
+{
+  if(errors_.empty())
+    return false;
+
+  std::map<std::string, Error>::const_iterator it = errors_.find(testName);
+ 
+  if(it != errors_.end() && (*it).second.action == "skip")
+    return true;
+  else
+    return false;
+
+}
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 ConsoleResultListener::ConsoleResultListener()

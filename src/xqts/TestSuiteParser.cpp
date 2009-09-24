@@ -113,10 +113,14 @@ void TestSuiteParser::startElement(const XMLCh* const uri, const XMLCh* const lo
 
         urlXQTSQueriesDirectory_.setURL(urlXQTSCatalog_, attributes.getValue(X("XQueryQueryOffsetPath")));
         urlXQTSResultsDirectory_.setURL(urlXQTSCatalog_, attributes.getValue(X("ResultOffsetPath")));
+
+        // detect runner's parser language and conf
+        runner_->detectParserLang(szURI);
       }
       else if(szName=="testcases") {
         // XSLT test suite
         xslt_ = true;
+        runner_->detectParserLang(szURI); 
 
         runner_->getResultListener()->reportVersion(UTF8(attributes.getValue(X("testSuiteVersion"))), false);
 

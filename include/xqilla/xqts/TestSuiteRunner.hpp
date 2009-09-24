@@ -48,6 +48,7 @@ public:
   virtual void endTestGroup() = 0;
 
   virtual void runTestCase(const TestCase &testCase) = 0;
+  virtual void detectParserLang(const std::string &testSuiteNamespace) = 0;
 
 protected:
   TestSuiteRunner(TestSuiteResultListener *results) : m_results(results) {}
