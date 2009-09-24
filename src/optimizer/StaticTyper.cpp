@@ -42,7 +42,9 @@ ASTNode *StaticTyper::run(ASTNode *item, StaticContext *context)
 
 void StaticTyper::optimize(XQQuery *query)
 {
-  query->staticTyping(context_, this);
+  assert(context_ == query->getStaticContext());
+
+  query->staticTyping(this);
 }
 
 ASTNode *StaticTyper::optimize(ASTNode *item)

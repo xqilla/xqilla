@@ -66,7 +66,7 @@ void Optimizer::reset()
 
 void StaticResolver::optimize(XQQuery *query)
 {
-  query->staticResolution(xpc_);
+  query->staticResolution();
 }
 
 ASTNode *StaticResolver::optimize(ASTNode *item)

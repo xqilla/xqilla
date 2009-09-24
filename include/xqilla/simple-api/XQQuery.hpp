@@ -178,7 +178,7 @@ public:
    *
    * @exception XQException If a static resolution time error occurs
    */
-  void staticResolution(StaticContext *context = 0);
+  void staticResolution();
 
   /**
    * Perform type calculation and related optimizations. This operation
@@ -192,7 +192,7 @@ public:
    *
    * @exception XQException If a static resolution time error occurs
    */
-  void staticTyping(StaticContext *context = 0, StaticTyper *styper = 0);
+  void staticTyping(StaticTyper *styper = 0);
 
   //@}
 

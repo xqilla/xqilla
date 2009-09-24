@@ -172,9 +172,9 @@ void XQQuery::execute(EventHandler *events, const XMLCh *templateQName, DynamicC
   execute(events, context);
 }
 
-void XQQuery::staticResolution(StaticContext *context)
+void XQQuery::staticResolution()
 {
-  if(context == 0) context = m_context;
+  StaticContext *context = m_context;
 
   // Run staticResolutionStage1 on the user defined functions,
   // which gives them the static type they were defined with
@@ -289,17 +289,23 @@ void XQQuery::staticResolution(StaticContext *context)
   if(m_query) m_query = m_query->staticResolution(context);
 }
 
-void XQQuery::staticTyping(StaticContext *context, StaticTyper *styper)
+void XQQuery::staticTyping(StaticTyper *styper)
 {
+  StaticContext *context = m_context;
+
   StaticTyper defaultTyper;
   if(styper == 0) styper = &defaultTyper;
-  if(context == 0) context = m_context;
 
   VariableTypeStore* varStore = context->getVariableTypeStore();
 
+  // Static type the imported modules (again)
+  ImportedModules::const_iterator modIt;
+  for(modIt = m_importedModules.begin(); modIt != m_importedModules.end(); ++modIt) {
+    (*modIt)->staticTyping(styper);
+  }  
+
   // Define types for the imported variables
-  for(ImportedModules::const_iterator modIt = m_importedModules.begin();
-      modIt != m_importedModules.end(); ++modIt) {
+  for(modIt = m_importedModules.begin(); modIt != m_importedModules.end(); ++modIt) {
     for(GlobalVariables::const_iterator varIt = (*modIt)->m_userDefVars.begin();
         varIt != (*modIt)->m_userDefVars.end(); ++varIt) {
       varStore->declareGlobalVar((*varIt)->getVariableURI(), (*varIt)->getVariableLocalName(),
