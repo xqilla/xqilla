@@ -23,7 +23,7 @@
 #include <xercesc/framework/XMLBuffer.hpp>
 #include <vector>
 extern "C" {
-#include "utf8proc/utf8proc.h"
+#include <xqilla/utils/utf8proc.h>
 }
 
 #define NO_COMPOSITION 0xFFFFFFFF

@@ -472,7 +472,6 @@ src/utils/NumUtils.cpp lib
 src/utils/PrintAST.cpp lib
 src/utils/UnicodeTransformer.cpp lib
 src/utils/utf8proc/utf8proc.c lib
-src/utils/utf8proc/utf8proc.h lib
 src/utils/utf8proc/utf8proc_data.h lib
 src/utils/UTF8Str.cpp lib
 src/utils/XMLChCompare.cpp lib
@@ -950,6 +949,7 @@ include/xqilla/utils/ContextUtils.hpp lib
 include/xqilla/utils/NumUtils.hpp lib
 include/xqilla/utils/PrintAST.hpp lib
 include/xqilla/utils/UnicodeTransformer.hpp lib
+include/xqilla/utils/utf8proc.h lib
 include/xqilla/utils/UTF8Str.hpp lib
 include/xqilla/utils/XMLChCompare.hpp lib
 include/xqilla/utils/XPath2NSUtils.hpp lib

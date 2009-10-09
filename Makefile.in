@@ -598,7 +598,6 @@ src/utils/XPath2NSUtils.cpp \
 src/utils/XPath2Utils.cpp \
 src/utils/UnicodeTransformer.cpp \
 src/utils/utf8proc/utf8proc.c \
-src/utils/utf8proc/utf8proc.h \
 src/utils/utf8proc/utf8proc_data.h \
 src/exceptions/XQillaException.cpp \
 src/exceptions/XQException.cpp \

@@ -456,6 +456,7 @@
       <File RelativePath="..\..\include\xqilla\utils\PrintAST.hpp"/>
       <File RelativePath="..\..\include\xqilla\utils\UTF8Str.hpp"/>
       <File RelativePath="..\..\include\xqilla\utils\XQillaPlatformUtils.hpp"/>
+      <File RelativePath="..\..\include\xqilla\utils\utf8proc.h"/>
       <File RelativePath="..\..\include\xqilla\utils\UnicodeTransformer.hpp"/>
       <File RelativePath="..\..\include\xqilla\framework\ReferenceCounted.hpp"/>
       <File RelativePath="..\..\include\xqilla\framework\XPath2MemoryManager.hpp"/>
@@ -946,7 +947,6 @@
       <File RelativePath="..\..\src\utils\PrintAST.cpp"/>
       <File RelativePath="..\..\src\utils\UnicodeTransformer.cpp"/>
       <File RelativePath="..\..\src\utils\utf8proc\utf8proc.c"/>
-      <File RelativePath="..\..\src\utils\utf8proc\utf8proc.h"/>
       <File RelativePath="..\..\src\utils\utf8proc\utf8proc_data.h"/>
       <File RelativePath="..\..\src\utils\UTF8Str.cpp"/>
       <File RelativePath="..\..\src\utils\XMLChCompare.cpp"/>

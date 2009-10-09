@@ -22,7 +22,7 @@
 #include <xqilla/utils/UnicodeTransformer.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 extern "C" {
-#include "../utils/utf8proc/utf8proc.h"
+#include <xqilla/utils/utf8proc.h>
 }
 
 #if defined(XERCES_HAS_CPP_NAMESPACE)

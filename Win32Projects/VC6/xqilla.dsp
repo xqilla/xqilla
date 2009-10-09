@@ -3529,10 +3529,6 @@ SOURCE=..\..\src\utils\utf8proc\utf8proc.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\utils\utf8proc\utf8proc.h
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\src\utils\utf8proc\utf8proc_data.h
 # End Source File
 # Begin Source File
@@ -3574,6 +3570,10 @@ SOURCE=..\..\include\xqilla\utils\PrintAST.hpp
 # Begin Source File
 
 SOURCE=..\..\include\xqilla\utils\UnicodeTransformer.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\xqilla\utils\utf8proc.h
 # End Source File
 # Begin Source File
 

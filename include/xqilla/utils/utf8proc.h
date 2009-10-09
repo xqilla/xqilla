@@ -240,7 +240,7 @@ typedef struct utf8proc_property_struct {
 typedef struct {
   uint8_t cluster;          // Store last cluster bounding property
   uint8_t word;             // Store last word bounding property
-  int32_t TBD_buf[128];     // Store TBD chars.
+  int32_t TBD_buf[2048];    // Store TBD chars.
   uint8_t sb_attr_queue[2]; // Store history property for sentence bounding.
                             // The queue length must be two -- it rest with
                             // the sentence breaking algorithm.
