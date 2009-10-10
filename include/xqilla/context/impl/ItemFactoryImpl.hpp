@@ -31,6 +31,7 @@ class XQILLA_API ItemFactoryImpl : public ItemFactory
 {
 public:
   ItemFactoryImpl(const DocumentCache* dc, XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* memMgr);
+  ItemFactoryImpl(DatatypeLookup *datatypeLookup);
   virtual ~ItemFactoryImpl();
 
   /* @name Atomic type factory methods */

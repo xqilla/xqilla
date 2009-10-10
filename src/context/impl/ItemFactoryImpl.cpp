@@ -45,6 +45,11 @@ ItemFactoryImpl::ItemFactoryImpl(const DocumentCache* dc, MemoryManager* memMgr)
 {
 }
 
+ItemFactoryImpl::ItemFactoryImpl(DatatypeLookup *datatypeLookup)
+  : datatypeLookup_(datatypeLookup)
+{
+}
+
 ItemFactoryImpl::~ItemFactoryImpl()
 {
   delete datatypeLookup_;
