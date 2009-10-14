@@ -244,6 +244,7 @@ typedef struct {
   uint8_t sb_attr_queue[2]; // Store history property for sentence bounding.
                             // The queue length must be two -- it rest with
                             // the sentence breaking algorithm.
+  int (*filter_callback)(int32_t codepoint); // A pointer to user-defined filters
 }bound_attr_t;
 
 
@@ -405,11 +406,25 @@ ssize_t utf16proc_decompose_char(
  *  buffer size is returned.
  *  WARNING: The parameter 'uc' has to be in the range of 0x0000 to
  *           0x10FFFF, otherwise the program might crash!
+ *
+ *  You can defined a filter function and let utf8proc_decompose_with_filter()
+ *  to filter codepoints for you. Here is a example:
+ *      int filter_callback(int32_t ch) {
+ *        if(isalnum(ch))
+ *           return 1;  // non-zero means legal
+ *        return 0;     // zero means illegal
+ *      }
+ *
  */
 
 ssize_t utf8proc_decompose(
   const uint8_t *str, ssize_t strlen,
   int32_t *buffer, ssize_t bufsize, int options
+);
+ssize_t utf8proc_decompose_with_filter(
+  const uint8_t *str, ssize_t strlen,
+  int32_t *buffer, ssize_t bufsize, int options,
+  int (*filter_callback)(int32_t codepoint)
 );
 ssize_t utf16proc_decompose(
   const uint16_t *str, ssize_t strlen,

@@ -600,6 +600,7 @@ xqilla/utils/PrintAST.hpp \
 xqilla/utils/UTF8Str.hpp \
 xqilla/utils/XQillaPlatformUtils.hpp \
 xqilla/utils/UnicodeTransformer.hpp \
+xqilla/utils/utf8proc.h \
 xqilla/framework/ReferenceCounted.hpp \
 xqilla/framework/XPath2MemoryManager.hpp \
 xqilla/framework/BaseMemoryManager.hpp \

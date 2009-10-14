@@ -232,7 +232,7 @@ static const int8_t utf8proc_sb_table[][16] = {
 
 static bound_attr_t init_bound_attr = \
 { UTF8PROC_BOUNDCLASS_START, WB_START, {UTF8PROC_INVALID_CODE},
- {SB_START, SB_START}
+ {SB_START, SB_START}, NULL/*filter callback*/
 };
 
 #define PUT(buf, pos, bufsize, ch)    {if (pos < bufsize) buf[pos] = ch; pos++;}
@@ -453,6 +453,11 @@ ssize_t utf8proc_decompose_char(int32_t uc, int32_t *dst, ssize_t bufsize,
       if (bufsize >= 3) dst[2] = UTF8PROC_HANGUL_TBASE + hangul_tindex;
       return 3;
     }
+  }
+  if (last_bound_attr->filter_callback) {
+    // Skip current codepoint if user want to filter it out.
+    if (last_bound_attr->filter_callback(uc) == 0)
+      return 0;
   }
   if (options & UTF8PROC_REJECTNA) {
     if (!category) return UTF8PROC_ERROR_NOTASSIGNED;
@@ -795,7 +800,15 @@ ssize_t utf8proc_decompose_char(int32_t uc, int32_t *dst, ssize_t bufsize,
 
 ssize_t utf8proc_decompose(
   const uint8_t *str, ssize_t strlen,
-  int32_t *buffer, ssize_t bufsize, int options
+  int32_t *buffer, ssize_t bufsize, int options)
+{
+  utf8proc_decompose_with_filter(str, strlen, buffer, bufsize, options, NULL);
+}
+
+ssize_t utf8proc_decompose_with_filter(
+  const uint8_t *str, ssize_t strlen,
+  int32_t *buffer, ssize_t bufsize, int options,
+  int (*filter_callback)(int32_t codepoint)
 ) {
   // strlen will be ignored, if UTF8PROC_NULLTERM is set in options
   ssize_t wpos = 0;
@@ -812,6 +825,7 @@ ssize_t utf8proc_decompose(
     ssize_t rpos = 0;
     ssize_t decomp_result;
     bound_attr_t boundclass = init_bound_attr;
+    boundclass.filter_callback = filter_callback;
     while (1) {
       if (options & UTF8PROC_NULLTERM) {
         if (options & UTF8PROC_UTF16)

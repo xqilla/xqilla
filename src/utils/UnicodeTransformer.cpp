@@ -116,12 +116,12 @@ void UnicodeTransformer::caseFold(const XMLCh* source, XMLBuffer &dest)
 
 void UnicodeTransformer::removeDiacritics(const XMLCh* source, XMLBuffer &dest)
 {
-  transformUTF16(source, dest, UTF8PROC_REMOVE_DIACRITIC);
+  transformUTF16(source, dest, UTF8PROC_DECOMPOSE | UTF8PROC_REMOVE_DIACRITIC);
 }
 
 void UnicodeTransformer::caseFoldAndRemoveDiacritics(const XMLCh* source, XMLBuffer &dest)
 {
-  transformUTF16(source, dest, UTF8PROC_CASEFOLD | UTF8PROC_REMOVE_DIACRITIC);
+  transformUTF16(source, dest, UTF8PROC_DECOMPOSE | UTF8PROC_CASEFOLD | UTF8PROC_REMOVE_DIACRITIC);
 }
 
 void UnicodeTransformer::lowerCase(const XMLCh* source, XMLBuffer &dest)
