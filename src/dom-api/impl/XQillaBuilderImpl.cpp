@@ -134,7 +134,7 @@ DOMDocument* XQillaBuilderImpl::getDocumentAndAddGrammar() {
 
     while(enumerator.hasMoreElements()) {
         Grammar &g = enumerator.nextElement();
-        gr->cacheGrammar(oldGrPool->orphanGrammar(g.getGrammarDescription()->getGrammarKey()));
+        gr->cacheGrammar(getGrammarResolver()->orphanGrammar(g.getGrammarDescription()->getGrammarKey()));
     }
 
     ((XQillaDocumentImpl*)doc)->setGrammarPool(gr, true);

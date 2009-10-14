@@ -82,6 +82,16 @@ void printTypes(const char *label, const DOMNode *node, int indent = 0)
   }
 }
 
+static DOMNode *importNodeFix(DOMDocument *doc, DOMNode *node, bool deep)
+{
+  DOMNode *newNode = doc->importNode(node, deep);
+  // Xerces-C has a bug that doesn't copy the prefix correctly - jpcs
+  if(node->getNodeType() == DOMNode::ELEMENT_NODE ||
+     node->getNodeType() == DOMNode::ATTRIBUTE_NODE)
+    newNode->setPrefix(node->getPrefix());
+  return newNode;
+}
+
 void XercesUpdateFactory::applyInsertInto(const PendingUpdate &update, DynamicContext *context)
 {
   const XercesNodeImpl *nodeImpl = (const XercesNodeImpl*)update.getTarget()->getInterface(Item::gXQilla);
@@ -98,7 +108,7 @@ void XercesUpdateFactory::applyInsertInto(const PendingUpdate &update, DynamicCo
   Item::Ptr item;
   while((item = children->next(context)).notNull()) {
     const XercesNodeImpl *childImpl = (const XercesNodeImpl*)item->getInterface(Item::gXQilla);
-    DOMNode *newChild = doc->importNode(const_cast<DOMNode*>(childImpl->getDOMNode()), /*deep*/true);
+    DOMNode *newChild = importNodeFix(doc, const_cast<DOMNode*>(childImpl->getDOMNode()), /*deep*/true);
 
     if(childImpl->dmNodeKind() == Node::element_string ||
        childImpl->dmNodeKind() == Node::text_string) {
@@ -136,7 +146,7 @@ void XercesUpdateFactory::applyInsertAttributes(const PendingUpdate &update, Dyn
   Item::Ptr item;
   while((item = children->next(context)).notNull()) {
     const XercesNodeImpl *childImpl = (const XercesNodeImpl*)item->getInterface(Item::gXQilla);
-    DOMNode *newChild = doc->importNode(const_cast<DOMNode*>(childImpl->getDOMNode()), /*deep*/true);
+    DOMNode *newChild = importNodeFix(doc, const_cast<DOMNode*>(childImpl->getDOMNode()), /*deep*/true);
 
     // 1. Error checks:
     //    a. If the QNames of any two attribute nodes in $content have implied namespace bindings that conflict with each other,
@@ -244,7 +254,7 @@ void XercesUpdateFactory::applyInsertBefore(const PendingUpdate &update, Dynamic
   Item::Ptr item;
   while((item = children->next(context)).notNull()) {
     const XercesNodeImpl *childImpl = (const XercesNodeImpl*)item->getInterface(Item::gXQilla);
-    DOMNode *newChild = doc->importNode(const_cast<DOMNode*>(childImpl->getDOMNode()), /*deep*/true);
+    DOMNode *newChild = importNodeFix(doc, const_cast<DOMNode*>(childImpl->getDOMNode()), /*deep*/true);
 
     if(childImpl->dmNodeKind() == Node::element_string ||
        childImpl->dmNodeKind() == Node::text_string) {
@@ -288,7 +298,7 @@ void XercesUpdateFactory::applyInsertAfter(const PendingUpdate &update, DynamicC
   Item::Ptr item;
   while((item = children->next(context)).notNull()) {
     const XercesNodeImpl *childImpl = (const XercesNodeImpl*)item->getInterface(Item::gXQilla);
-    DOMNode *newChild = doc->importNode(const_cast<DOMNode*>(childImpl->getDOMNode()), /*deep*/true);
+    DOMNode *newChild = importNodeFix(doc, const_cast<DOMNode*>(childImpl->getDOMNode()), /*deep*/true);
 
     if(childImpl->dmNodeKind() == Node::element_string ||
        childImpl->dmNodeKind() == Node::text_string) {
@@ -330,7 +340,7 @@ void XercesUpdateFactory::applyInsertAsFirst(const PendingUpdate &update, Dynami
   Item::Ptr item;
   while((item = children->next(context)).notNull()) {
     const XercesNodeImpl *childImpl = (const XercesNodeImpl*)item->getInterface(Item::gXQilla);
-    DOMNode *newChild = doc->importNode(const_cast<DOMNode*>(childImpl->getDOMNode()), /*deep*/true);
+    DOMNode *newChild = importNodeFix(doc, const_cast<DOMNode*>(childImpl->getDOMNode()), /*deep*/true);
 
     if(childImpl->dmNodeKind() == Node::element_string ||
        childImpl->dmNodeKind() == Node::text_string) {
@@ -371,7 +381,7 @@ void XercesUpdateFactory::applyInsertAsLast(const PendingUpdate &update, Dynamic
   Item::Ptr item;
   while((item = children->next(context)).notNull()) {
     const XercesNodeImpl *childImpl = (const XercesNodeImpl*)item->getInterface(Item::gXQilla);
-    DOMNode *newChild = doc->importNode(const_cast<DOMNode*>(childImpl->getDOMNode()), /*deep*/true);
+    DOMNode *newChild = importNodeFix(doc, const_cast<DOMNode*>(childImpl->getDOMNode()), /*deep*/true);
 
     if(childImpl->dmNodeKind() == Node::element_string ||
        childImpl->dmNodeKind() == Node::text_string) {
@@ -412,7 +422,7 @@ void XercesUpdateFactory::applyReplaceNode(const PendingUpdate &update, DynamicC
   Item::Ptr item;
   while((item = children->next(context)).notNull()) {
     const XercesNodeImpl *childImpl = (const XercesNodeImpl*)item->getInterface(Item::gXQilla);
-    DOMNode *newChild = doc->importNode(const_cast<DOMNode*>(childImpl->getDOMNode()), /*deep*/true);
+    DOMNode *newChild = importNodeFix(doc, const_cast<DOMNode*>(childImpl->getDOMNode()), /*deep*/true);
 
     // 1b. If the type-name property of parent($target) is xs:untyped, then upd:setToUntyped() is invoked
     //     on each element node in $replacement.
@@ -450,7 +460,7 @@ void XercesUpdateFactory::applyReplaceAttribute(const PendingUpdate &update, Dyn
   Item::Ptr item;
   while((item = children->next(context)).notNull()) {
     const XercesNodeImpl *childImpl = (const XercesNodeImpl*)item->getInterface(Item::gXQilla);
-    DOMNode *newChild = doc->importNode(const_cast<DOMNode*>(childImpl->getDOMNode()), /*deep*/true);
+    DOMNode *newChild = importNodeFix(doc, const_cast<DOMNode*>(childImpl->getDOMNode()), /*deep*/true);
 
     // 1. Error checks:
     //    a. If the QNames of any two attribute nodes in $replacement have implied namespace bindings that conflict with
