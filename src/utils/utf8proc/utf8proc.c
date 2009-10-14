@@ -802,7 +802,7 @@ ssize_t utf8proc_decompose(
   const uint8_t *str, ssize_t strlen,
   int32_t *buffer, ssize_t bufsize, int options)
 {
-  utf8proc_decompose_with_filter(str, strlen, buffer, bufsize, options, NULL);
+  return utf8proc_decompose_with_filter(str, strlen, buffer, bufsize, options, NULL);
 }
 
 ssize_t utf8proc_decompose_with_filter(

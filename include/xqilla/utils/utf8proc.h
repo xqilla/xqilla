@@ -92,6 +92,7 @@
 #include <string.h>
 #include <sys/types.h>
 #include <limits.h>
+#include <xqilla/framework/XQillaExport.hpp>
 
 #define UTF8PROC_NULLTERM         (1<<0)
 #define UTF8PROC_STABLE           (1<<1)
@@ -191,7 +192,7 @@
   typedef signed __int8     int8_t;
   typedef signed __int16    int16_t;
   typedef signed __int32    int32_t;
-  typedef SSIZE_T           ssize_t;
+  #define ssize_t SSIZE_T
 #else
   #include <stdint.h>
 #endif
@@ -315,9 +316,9 @@ typedef struct {
 #define UTF8PROC_DECOMP_TYPE_COMPAT   16
 
 
-const char *utf8proc_version(void);
+XQILLA_API const char* utf8proc_version(void);
 
-const char *utf8proc_errmsg(ssize_t errcode);
+XQILLA_API const char* utf8proc_errmsg(ssize_t errcode);
 /*
  *  Returns a static error string for the given error code.
  */
@@ -334,13 +335,13 @@ ssize_t utf16proc_iterate(const uint16_t *str, ssize_t strlen, int32_t *dst);
  *  negative error code is returned.
  */
 
-int utf8proc_codepoint_valid(int32_t uc);
+XQILLA_API int utf8proc_codepoint_valid(int32_t uc);
 /*
  *  Returns 1, if the given unicode code-point is valid, otherwise 0.
  */
 
-ssize_t utf8proc_encode_char(int32_t uc, uint8_t *dst);
-ssize_t utf16proc_encode_char(int32_t uc, uint16_t *dst);
+XQILLA_API ssize_t utf8proc_encode_char(int32_t uc, uint8_t *dst);
+XQILLA_API ssize_t utf16proc_encode_char(int32_t uc, uint16_t *dst);
 /*
  *  Encodes the unicode char with the code point 'uc' as an UTF-8 string in
  *  the byte array being pointed to by 'dst'. This array has to be at least
@@ -350,7 +351,7 @@ ssize_t utf16proc_encode_char(int32_t uc, uint16_t *dst);
  *  This function does not check if 'uc' is a valid unicode code point.
  */
 
-const utf8proc_property_t *utf8proc_get_property(int32_t uc);
+XQILLA_API const utf8proc_property_t *utf8proc_get_property(int32_t uc);
 /*
  *  Returns a pointer to a (constant) struct containing information about
  *  the unicode char with the given code point 'uc'.
@@ -360,7 +361,7 @@ const utf8proc_property_t *utf8proc_get_property(int32_t uc);
  *           0x10FFFF, otherwise the program might crash!
  */
 
-ssize_t utf8proc_flush(int32_t *dst, ssize_t bufsize,
+XQILLA_API ssize_t utf8proc_flush(int32_t *dst, ssize_t bufsize,
   int options, bound_attr_t *last_bound_attr
 );
 /*
@@ -369,16 +370,16 @@ ssize_t utf8proc_flush(int32_t *dst, ssize_t bufsize,
  *  - call it in the end of the loop.
  */
 
-void utf8proc_init_bound_attr(bound_attr_t* attr);
+XQILLA_API void utf8proc_init_bound_attr(bound_attr_t* attr);
 /*
  *  Fetch the initial value for bound_attr_t object.
  */
 
-ssize_t utf8proc_decompose_char(
+XQILLA_API ssize_t utf8proc_decompose_char(
   int32_t uc, int32_t *dst, ssize_t bufsize,
   int options, bound_attr_t *last_bound_attr
 );
-ssize_t utf16proc_decompose_char(
+XQILLA_API ssize_t utf16proc_decompose_char(
   int32_t uc, int32_t *dst, ssize_t bufsize,
   int options, bound_attr_t *last_bound_attr
 );
@@ -417,16 +418,16 @@ ssize_t utf16proc_decompose_char(
  *
  */
 
-ssize_t utf8proc_decompose(
+XQILLA_API ssize_t utf8proc_decompose(
   const uint8_t *str, ssize_t strlen,
   int32_t *buffer, ssize_t bufsize, int options
 );
-ssize_t utf8proc_decompose_with_filter(
+XQILLA_API ssize_t utf8proc_decompose_with_filter(
   const uint8_t *str, ssize_t strlen,
   int32_t *buffer, ssize_t bufsize, int options,
   int (*filter_callback)(int32_t codepoint)
 );
-ssize_t utf16proc_decompose(
+XQILLA_API ssize_t utf16proc_decompose(
   const uint16_t *str, ssize_t strlen,
   int32_t *buffer, ssize_t bufsize, int options
 );
@@ -444,8 +445,8 @@ ssize_t utf16proc_decompose(
  *  buffer size is returned.
  */
 
-ssize_t utf8proc_reencode(int32_t *buffer, ssize_t length, int options);
-ssize_t utf16proc_reencode(int32_t *buffer, ssize_t length, int options);
+XQILLA_API ssize_t utf8proc_reencode(int32_t *buffer, ssize_t length, int options);
+XQILLA_API ssize_t utf16proc_reencode(int32_t *buffer, ssize_t length, int options);
 /*
  *  Reencodes the sequence of unicode characters given by the pointer
  *  'buffer' and 'length' as UTF-8.
@@ -468,10 +469,10 @@ ssize_t utf16proc_reencode(int32_t *buffer, ssize_t length, int options);
  *           crash!
  */
 
-ssize_t utf8proc_map(
+XQILLA_API ssize_t utf8proc_map(
   const uint8_t *str, ssize_t strlen, uint8_t **dstptr, int options
 );
-ssize_t utf16proc_map(
+XQILLA_API ssize_t utf16proc_map(
   const uint16_t *str, ssize_t strlen, uint16_t **dstptr, int options
 );
 /*
@@ -490,14 +491,14 @@ ssize_t utf16proc_map(
  *          'malloc', and has theirfore to be freed with 'free'.
  */
 
-uint8_t  *utf8proc_NFD(const uint8_t *str);
-uint8_t  *utf8proc_NFC(const uint8_t *str);
-uint8_t  *utf8proc_NFKD(const uint8_t *str);
-uint8_t  *utf8proc_NFKC(const uint8_t *str);
-uint16_t *utf16proc_NFD(const uint16_t *str);
-uint16_t *utf16proc_NFC(const uint16_t *str);
-uint16_t *utf16proc_NFKD(const uint16_t *str);
-uint16_t *utf16proc_NFKC(const uint16_t *str);
+XQILLA_API uint8_t  *utf8proc_NFD(const uint8_t *str);
+XQILLA_API uint8_t  *utf8proc_NFC(const uint8_t *str);
+XQILLA_API uint8_t  *utf8proc_NFKD(const uint8_t *str);
+XQILLA_API uint8_t  *utf8proc_NFKC(const uint8_t *str);
+XQILLA_API uint16_t *utf16proc_NFD(const uint16_t *str);
+XQILLA_API uint16_t *utf16proc_NFC(const uint16_t *str);
+XQILLA_API uint16_t *utf16proc_NFKD(const uint16_t *str);
+XQILLA_API uint16_t *utf16proc_NFKC(const uint16_t *str);
 /*
  *  Returns a pointer to newly allocated memory of a NFD, NFC, NFKD or NFKC
  *  normalized version of the null-terminated string 'str'.
