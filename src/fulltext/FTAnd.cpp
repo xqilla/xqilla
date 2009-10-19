@@ -124,8 +124,10 @@ bool BufferedMatches::next(DynamicContext *context)
     if(matches_->next(context)) {
       includeBuffer_.push_back(matches_->getStringIncludes());
       excludeBuffer_.push_back(matches_->getStringExcludes());
-      includeIt_ = --(includeBuffer_.end());
-      excludeIt_ = --(excludeBuffer_.end());
+      includeIt_ = includeBuffer_.end();
+      excludeIt_ = excludeBuffer_.end();
+      includeIt_--;
+      excludeIt_--; 
       return true;
     }
   }
