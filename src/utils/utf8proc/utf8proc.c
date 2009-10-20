@@ -230,11 +230,6 @@ static const int8_t utf8proc_sb_table[][16] = {
 
 #define UTF8PROC_INVALID_CODE          -1
 
-static bound_attr_t init_bound_attr = \
-{ UTF8PROC_BOUNDCLASS_START, WB_START, {UTF8PROC_INVALID_CODE},
- {SB_START, SB_START}, NULL/*filter callback*/
-};
-
 #define PUT(buf, pos, bufsize, ch)    {if (pos < bufsize) buf[pos] = ch; pos++;}
 
 
@@ -389,6 +384,33 @@ const utf8proc_property_t *utf8proc_get_property(int32_t uc) {
   );
 }
 
+static void utf8proc_reset_bound_attr(bound_attr_t* attr)
+{
+  // Free the TBD heap as need
+  if (attr->TBD_heap)
+    free (attr->TBD_heap);
+
+  attr->cluster      = UTF8PROC_BOUNDCLASS_START;
+  attr->word         = WB_START;
+  attr->TBD_stack[0] = UTF8PROC_INVALID_CODE;
+  attr->TBD_heap     = NULL;
+  attr->TBD_buf_size = sizeof(attr->TBD_stack) / sizeof(attr->TBD_stack[0]);
+  memset(attr->sb_attr_queue, SB_START, sizeof(attr->sb_attr_queue));
+
+  return;
+}
+
+void utf8proc_init_bound_attr(bound_attr_t* attr)
+{
+  if (attr == NULL)
+    return;
+
+  attr->TBD_heap = NULL; // Must be set to NULL before reseting.
+  attr->filter_callback = NULL;
+  utf8proc_reset_bound_attr(attr);
+  return;
+}
+
 ssize_t utf8proc_flush(int32_t *dst, ssize_t bufsize,
                        int options, bound_attr_t *last_bound_attr)
 {
@@ -396,7 +418,9 @@ ssize_t utf8proc_flush(int32_t *dst, ssize_t bufsize,
   if (options & (UTF8PROC_WORDBOUND | UTF8PROC_SENTENCEBOUND)) {
     int output_sb = true;
     // At the end of the stream, we have to fetch the chars in TBD_buf if any.
-    int32_t *p = last_bound_attr->TBD_buf;
+    int32_t *p = last_bound_attr->TBD_heap ? \
+                 last_bound_attr->TBD_heap : last_bound_attr->TBD_stack;
+
     for (; *p != UTF8PROC_INVALID_CODE; p++) {
       if (*p == UTF8PROC_SB_MARK && output_sb) {
         // We only output the first confirmed sentence bound.
@@ -405,7 +429,6 @@ ssize_t utf8proc_flush(int32_t *dst, ssize_t bufsize,
       } else
         PUT(dst, written, bufsize, *p);
     }
-    *last_bound_attr = init_bound_attr; // reset bound property
 
     // Unicode Standard say that a Word/Sentence Bound Mark should be placed
     // at the end of stream
@@ -415,15 +438,8 @@ ssize_t utf8proc_flush(int32_t *dst, ssize_t bufsize,
       PUT(dst, written, bufsize, UTF8PROC_SB_MARK);
   }
 
+  utf8proc_reset_bound_attr(last_bound_attr);
   return written;
-}
-
-void utf8proc_init_bound_attr(bound_attr_t* attr)
-{
-  if (attr == NULL)
-    return;
-  *attr = init_bound_attr;
-  return;
 }
 
 #define utf8proc_decompose_lump(replacement_uc) \
@@ -613,12 +629,14 @@ ssize_t utf8proc_decompose_char(int32_t uc, int32_t *dst, ssize_t bufsize,
     }
   }
   if (options & (UTF8PROC_WORDBOUND | UTF8PROC_SENTENCEBOUND)) {
-    int32_t *TBD_buf      = last_bound_attr->TBD_buf;
     int word_boundary     = NOT_BOUND;
     int sentence_boundary = NOT_BOUND;
-    int TBD               = false;
-    const int TBD_size    = sizeof(last_bound_attr->TBD_buf)/ \
-                            sizeof(last_bound_attr->TBD_buf[0]);
+
+    int TBD          = false; // bool value
+    int TBD_size     = last_bound_attr->TBD_buf_size;
+    int32_t *TBD_buf = last_bound_attr->TBD_heap ? \
+                       last_bound_attr->TBD_heap : last_bound_attr->TBD_stack;
+
     // Declare some vars for Word/Sentence boundary
     ssize_t i, written, size;
     int32_t *write;
@@ -760,8 +778,32 @@ ssize_t utf8proc_decompose_char(int32_t uc, int32_t *dst, ssize_t bufsize,
         break;
       }
     }
-    if (i >= TBD_size)
-      return UTF8PROC_ERROR_OVERFLOW;
+
+    // If the buffer is about to be used out, use heap to create a bigger one.
+    // The threshold value is (TBD_size-8), because the max size of writting
+    // a codepoint with a bouding is sure to less then 8.
+    if (i >= (TBD_size - 8)) {
+      TBD_size = TBD_size * 2; // double the size.
+      if (last_bound_attr->TBD_heap) {
+        // If we are using heap already, just realloc a bigger one.
+        TBD_buf = realloc(TBD_buf, TBD_size * sizeof(TBD_buf[0]));
+        if (TBD_buf == NULL) {
+          free(last_bound_attr->TBD_heap);
+          return UTF8PROC_ERROR_NOMEM;
+        }
+      } else {
+        // If using stack, create a heap with double size and copy the TBD data.
+        TBD_buf = malloc(TBD_size * sizeof(TBD_buf[0]));
+        if (TBD_buf == NULL)
+          return UTF8PROC_ERROR_NOMEM;
+        memcpy(TBD_buf, last_bound_attr->TBD_stack, size * sizeof(TBD_buf[0]));
+      }
+
+      size  = TBD_size;
+      write = TBD_buf + i;
+      last_bound_attr->TBD_buf_size = TBD_size;
+      last_bound_attr->TBD_heap     = TBD_buf;
+    }
 
     if (!TBD) {  // Output all confirmed content
       write = dst;
@@ -824,7 +866,8 @@ ssize_t utf8proc_decompose_with_filter(
     int32_t uc;
     ssize_t rpos = 0;
     ssize_t decomp_result;
-    bound_attr_t boundclass = init_bound_attr;
+    bound_attr_t boundclass;
+    utf8proc_init_bound_attr(&boundclass);
     boundclass.filter_callback = filter_callback;
     while (1) {
       if (options & UTF8PROC_NULLTERM) {

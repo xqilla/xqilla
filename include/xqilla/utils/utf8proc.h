@@ -241,7 +241,9 @@ typedef struct utf8proc_property_struct {
 typedef struct {
   uint8_t cluster;          // Store last cluster bounding property
   uint8_t word;             // Store last word bounding property
-  int32_t TBD_buf[2048];    // Store TBD chars.
+  int32_t TBD_stack[512];   // Stack for storing TBD chars
+  int32_t *TBD_heap;        // Use heap if upon stack does not enough.
+  int32_t TBD_buf_size;
   uint8_t sb_attr_queue[2]; // Store history property for sentence bounding.
                             // The queue length must be two -- it rest with
                             // the sentence breaking algorithm.
@@ -365,14 +367,14 @@ XQILLA_API ssize_t utf8proc_flush(int32_t *dst, ssize_t bufsize,
   int options, bound_attr_t *last_bound_attr
 );
 /*
- *  Flush all the "TBD" chars and return them. You only need to it when you call
+ *  Flush all the "TBD" chars and return them. You only need it when you call
  *  utf8proc_decompose_char() with option WORDBOUND or SENTENCEBOUND in a loop
- *  - call it in the end of the loop.
+ *  - call it in the end of the loop, otherwish may cause memory leak!
  */
 
 XQILLA_API void utf8proc_init_bound_attr(bound_attr_t* attr);
 /*
- *  Fetch the initial value for bound_attr_t object.
+ *  Init the special bound_attr_t object. 
  */
 
 XQILLA_API ssize_t utf8proc_decompose_char(
