@@ -144,6 +144,11 @@
       <query name="bug4"/>
       <output-file compare="Fragment">bug4.out</output-file>
     </test-case>
+    <test-case name="bug5" FilePath="bugs/">
+      <!-- Subsequence of order by -->
+      <query name="bug5"/>
+      <output-file compare="Fragment">bug5.out</output-file>
+    </test-case>
   </test-group>
 
   <test-group name="unicode">
