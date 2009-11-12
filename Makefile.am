@@ -16,7 +16,7 @@ lib_LTLIBRARIES = libxqilla.la
 
 # Library version, see http://sourceware.org/autobook/autobook/autobook_91.html
 # -no-undefined for Cygwin (bug #1639669)
-libxqilla_la_LDFLAGS = -version-info 5:2:0 -no-undefined
+libxqilla_la_LDFLAGS = -version-info 5:3:0 -no-undefined
 
 libxqilla_la_SOURCES = \
 src/framework/ReferenceCounted.cpp \
