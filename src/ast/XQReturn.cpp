@@ -75,7 +75,10 @@ public:
       context->testInterrupt();
 
       reset.reset();
-      if(parent_.isNull() || !parent_->next(context)) return 0;
+      if(parent_.isNull() || !parent_->next(context)) {
+	      parent_ = 0;
+	      return 0;
+      }
 
       context->setVariableStore(parent_);
       result_ = ast_->getExpression()->createResult(context);
