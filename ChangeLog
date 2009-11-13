@@ -12,6 +12,7 @@ version 2.2.3 (2009.11.12):
 	  circumstances.
 	* Fixed query/module static-typing to also (re-)static type the modules
 	  it imports.
+	* Fixed a bug in fn:codepoint-equal().
 	
 version 2.2.2 (2009.07.02):
 	* Fixed XQillaDocumentImpl::cloneNode() to return an instance of 

@@ -42,7 +42,14 @@ const unsigned int FunctionCodepointEqual::maxArgs = 2;
 **/
 
 FunctionCodepointEqual::FunctionCodepointEqual(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
-  : XQFunction(name, minArgs, maxArgs, "string?,string?", args, memMgr)
+  : XQFunction(name, minArgs, maxArgs, "string?,string?", args, memMgr),
+    collation_(0)
+{
+}
+
+FunctionCodepointEqual::FunctionCodepointEqual(Collation *collation, const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
+  : XQFunction(name, minArgs, maxArgs, "string?,string?", args, memMgr),
+    collation_(collation)
 {
 }
 
