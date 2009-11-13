@@ -88,8 +88,9 @@ static DOMNode *importNodeFix(DOMDocument *doc, DOMNode *node, bool deep)
 {
   DOMNode *newNode = doc->importNode(node, deep);
   // Xerces-C has a bug that doesn't copy the prefix correctly - jpcs
-  if(node->getNodeType() == DOMNode::ELEMENT_NODE ||
-     node->getNodeType() == DOMNode::ATTRIBUTE_NODE)
+  if((node->getNodeType() == DOMNode::ELEMENT_NODE ||
+      node->getNodeType() == DOMNode::ATTRIBUTE_NODE) &&
+     node->getNamespaceURI() != 0 && *node->getNamespaceURI() != 0)
     newNode->setPrefix(node->getPrefix());
   return newNode;
 }
