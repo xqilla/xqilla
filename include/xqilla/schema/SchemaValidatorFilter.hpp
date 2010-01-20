@@ -75,8 +75,10 @@ private:
   virtual const XMLCh *getName() const { return 0; }
   virtual XERCES_CPP_NAMESPACE_QUALIFIER NameIdPool<XERCES_CPP_NAMESPACE_QUALIFIER DTDEntityDecl> *getEntityDeclPool() { return 0; }
   virtual const XERCES_CPP_NAMESPACE_QUALIFIER NameIdPool<XERCES_CPP_NAMESPACE_QUALIFIER DTDEntityDecl> *getEntityDeclPool() const { return 0; }
+#if _XERCES_VERSION < 30100
   virtual unsigned int resolveQName(const XMLCh *const qName, XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer &prefixBufToFill,
                                     const short mode, int &prefixColonPos);
+#endif
   virtual void scanDocument(const XERCES_CPP_NAMESPACE_QUALIFIER InputSource &src) {}
   virtual bool scanNext(XERCES_CPP_NAMESPACE_QUALIFIER XMLPScanToken &toFill) { return false; }
   virtual XERCES_CPP_NAMESPACE_QUALIFIER Grammar *loadGrammar(const XERCES_CPP_NAMESPACE_QUALIFIER InputSource &src,

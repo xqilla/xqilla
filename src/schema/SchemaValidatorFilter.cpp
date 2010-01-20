@@ -701,6 +701,8 @@ void SchemaValidatorFilter::piEvent(const XMLCh *target, const XMLCh *value)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
+#if _XERCES_VERSION < 30100
+
 unsigned int SchemaValidatorFilter::resolveQName(const XMLCh *const qName, XMLBuffer &prefixBuf,
                                                  const short mode, int &prefixColonPos)
 {
@@ -733,6 +735,8 @@ unsigned int SchemaValidatorFilter::resolveQName(const XMLCh *const qName, XMLBu
     }
   }
 }
+
+#endif
 
 bool SchemaValidatorFilter::switchGrammar(const XMLCh *uri)
 {
