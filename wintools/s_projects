@@ -30,10 +30,6 @@ echo XQILLA = $XQILLA
 # generate the VC7.1 and VC8 project files
 $XQILLA -u genproject.xq -v projectFile "$CONFIG_OUTPUT" -v outputPath "../Win32Projects"
 
-# generate srcfiles.in, which gets used to create VC6 project files
-$XQILLA gensrcfiles.xq -v projectFile "$CONFIG_OUTPUT" -o srcfiles.in
-
-
 # Post process the VC7.1 files to put the "Name" attribute first,
 # since VC7.1 doesn't use a proper XML parser :-(
 
