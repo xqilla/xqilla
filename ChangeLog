@@ -1,5 +1,18 @@
 XQilla: an XQuery and XPath 2.0 library and command line interpreter.
 
+version 2.2.3 (2009.11.12):
+	* Work around for a Xerces-C bug in DOMDocument::importNode() that
+	  resulted in badly copied prefixes using XQuery Update.
+	* Fixed a segfault in the DOM 3 API by orphaning Xerces-C Grammar
+	  correctly.
+	* Fixed optimization of count(), exists(), and empty() based on static
+	  type if the argument uses doc() or collection().
+	* Fixed a bug that caused a crash when using "order by" in some
+	  circumstances.
+	* Fixed query/module static-typing to also (re-)static type the modules
+	  it imports.
+	* Fixed a bug in fn:codepoint-equal().
+	
 version 2.2.2 (2009.07.02):
 	* Fixed XQillaDocumentImpl::cloneNode() to return an instance of 
 	  XQillaDocumentImpl.

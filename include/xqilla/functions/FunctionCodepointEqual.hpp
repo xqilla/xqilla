@@ -17,10 +17,6 @@
  * limitations under the License.
  */
 
-/*
-  codepoint-equal function
-*/
-
 #ifndef _FUNCTION_CODEPOINT_EQUAL_HPP
 #define _FUNCTION_CODEPOINT_EQUAL_HPP
 
@@ -36,13 +32,16 @@ public:
   static const unsigned int maxArgs;
 
   FunctionCodepointEqual(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
+  FunctionCodepointEqual(Collation *collation, const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
 
   ASTNode* staticResolution(StaticContext *context);  
   virtual ASTNode *staticTypingImpl(StaticContext *context);
   Sequence createSequence(DynamicContext* context, int flags=0) const;
 
+  Collation *getCollation() { return collation_; }
+
 private:
   Collation *collation_;
 };
 
-#endif // _FUNCTION_CODEPOINT_EQUAL_HPP
+#endif

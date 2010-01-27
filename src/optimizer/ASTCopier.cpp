@@ -52,6 +52,7 @@
 #include <xqilla/operators/UnaryMinus.hpp>
 #include <xqilla/operators/Union.hpp>
 
+#include <xqilla/functions/FunctionCodepointEqual.hpp>
 #include <xqilla/update/FunctionPut.hpp>
 
 XERCES_CPP_NAMESPACE_USE;
@@ -325,6 +326,9 @@ ASTNode *ASTCopier::optimizeFunction(XQFunction *item)
   if(uri == XQFunction::XMLChFunctionURI) {
     if(name == FunctionPut::name) {
       result = new (mm_) FunctionPut(((FunctionPut*)item)->getBaseURI(), item->getArguments(), mm_);
+    }
+    else if(name == FunctionCodepointEqual::name) {
+      result = new (mm_) FunctionCodepointEqual(((FunctionCodepointEqual*)item)->getCollation(), item->getArguments(), mm_);
     }
   }
 

@@ -125,7 +125,8 @@ DecimalLiteral   ("."{Digits})|({Digits}"."[0-9]*)
 DoubleLiteral   (("."{Digits})|({Digits}("."[0-9]*)?))("e"|"E")("+"|"-")?{Digits}
 NotNumber       (("."{Digits})|({Digits}("."[0-9]*)?))(("e"|"E")("+"|"-")?{Digits})?[a-zA-Z][0-9a-zA-Z]*
 
-StringLiteral ("\""({PredefinedEntityRef}|{CharRef}|("\"\"")|[^"&])*"\"")|("'"({PredefinedEntityRef}|{CharRef}|("''")|[^'&])*"'")
+StringLiteral      ("\""({PredefinedEntityRef}|{CharRef}|("\"\"")|[^"&])*"\"")|("'"({PredefinedEntityRef}|{CharRef}|("''")|[^'&])*"'")
+XPathStringLiteral ("\""(("\"\"")|[^"])*"\"")|("'"(("''")|[^'])*"'")
 
 /* [148]    	ElementContentChar 	   ::=    	Char - [{}<&] */
 ElementContentChar ([\x0009]|[\x000D]|[\x000A]|[\x0020-\x0025]|[\x0027-\x003B]|[\x003D-\x007A]|[\x007C]|[\x007E-\xD7FF]|[\xE000-\xFFFD]|{SurrogatePairs})
@@ -239,7 +240,17 @@ void XQLexer::undoLessThan()
 <INITIAL>{IntegerLiteral} RECOGNIZE_VALUE(_INTEGER_LITERAL_, yytext);
 <INITIAL>{DecimalLiteral} RECOGNIZE_VALUE(_DECIMAL_LITERAL_, yytext);
 <INITIAL>{DoubleLiteral}  RECOGNIZE_VALUE(_DOUBLE_LITERAL_, yytext);
-<INITIAL>{StringLiteral}  RECOGNIZE_VALUE_UNESCAPE(_STRING_LITERAL_, yytext + 1, yyleng - 2, *yytext, false, true, false);
+
+<INITIAL>{StringLiteral} RECOGNIZE_VALUE_UNESCAPE(_STRING_LITERAL_, yytext + 1, yyleng - 2, *yytext, false, !isXPath(), false);
+<INITIAL>{XPathStringLiteral} {
+  if(isXPath()) {
+    RECOGNIZE_VALUE_UNESCAPE(_STRING_LITERAL_, yytext + 1, yyleng - 2, *yytext, false, false, false);
+  } else {
+    std::ostringstream oss;
+    oss << "Bad escaping in string literal: " << UTF8((XMLCh*)yytext);
+    return error(oss.str().c_str());
+  }
+}
 
 <INITIAL,COMPUTED_CONSTRUCTOR>{WhitespaceChar}+ /* Do nothing */
 

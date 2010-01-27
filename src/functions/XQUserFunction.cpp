@@ -712,7 +712,7 @@ ASTNode *XQUserFunctionInstance::staticTypingImpl(StaticContext *context)
   } else {
     // Force the type check to happen, by declaring our type as item()*
     _src.clear();
-    _src.getStaticType() = StaticType::ITEM_TYPE;
+    _src.getStaticType() = StaticType(StaticType::ITEM_TYPE, 0, StaticType::UNLIMITED);
     _src.forceNoFolding(true);
   }
 

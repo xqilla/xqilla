@@ -1732,7 +1732,8 @@ protected:
 
 Node::Ptr FastXDMNamespaceNodeImpl::root(const DynamicContext* context) const
 {
-  return owner_.isNull() ? this : owner_->root(context);
+  if(owner_.isNull()) return this;
+  return owner_->root(context);
 }
 
 Node::Ptr FastXDMNamespaceNodeImpl::dmParent(const DynamicContext* context) const
