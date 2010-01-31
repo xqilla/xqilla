@@ -20,6 +20,9 @@
 #include <xqilla/optimizer/ASTReleaser.hpp>
 #include <xqilla/framework/XPath2MemoryManager.hpp>
 
+#include "xqilla/functions/FunctionMatches.hpp"
+#include <xercesc/util/regx/RegularExpression.hpp>
+
 ASTReleaser::ASTReleaser()
 {
 }
@@ -161,6 +164,18 @@ RELEASE(FTContains)
 ASTNode *ASTReleaser::optimizeFunction(XQFunction *item)
 {
   ASTVisitor::optimizeFunction(item);
+
+  const XMLCh *uri = item->getFunctionURI();
+  const XMLCh *name = item->getFunctionName();
+  if(uri == XQFunction::XMLChFunctionURI) {
+    // fn:matches()
+    if(name == FunctionMatches::name) {
+      FunctionMatches *fm = (FunctionMatches*) item;
+      XERCES_CPP_NAMESPACE_QUALIFIER RegularExpression *regExp = fm->getRegExp();
+      delete regExp;
+    }
+  }
+
   // Release the argument vector
   const_cast<VectorOfASTNodes&>(item->getArguments()).~VectorOfASTNodes();
   RELEASE_IMPL();

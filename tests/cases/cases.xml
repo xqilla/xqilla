@@ -69,6 +69,10 @@
       <query name="regex9"/>
       <output-file compare="Fragment">regex9.out</output-file>
     </test-case>
+    <test-case name="regex10" FilePath="regex/">
+      <query name="regex10"/>
+      <output-file compare="Fragment">regex10.out</output-file>
+    </test-case>
   </test-group>
 
   <test-group name="hofunctions">
