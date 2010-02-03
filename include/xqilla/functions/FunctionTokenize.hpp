@@ -22,6 +22,13 @@
 
 #include <xqilla/ast/ConstantFoldingFunction.hpp>
 
+XERCES_CPP_NAMESPACE_BEGIN
+class RuntimeException;
+class RegularExpression;
+class ParseException;
+XERCES_CPP_NAMESPACE_END
+
+
 /** 
  * Breaks the $input string into a sequence of strings, 
  * treating any substring that matches $pattern as a separator. 
@@ -41,12 +48,32 @@ public:
    * Constructor.
    */
   FunctionTokenize(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
+
+  virtual ASTNode *staticTypingImpl(StaticContext *context);
   
   /**
    * Returns $input broken into a sequence of strings 
    * using matches to $pattern as a separator. 
    */
   Sequence createSequence(DynamicContext* context, int flags=0) const;
+
+  const XERCES_CPP_NAMESPACE_QUALIFIER RegularExpression* getRegExp() const{
+    return regExp_;
+  };
+  void copyRegExp(FunctionTokenize *source, XPath2MemoryManager* memMgr);
+
+private:
+  //if a regular expession is a constant, then we will store a compiled regexp here,
+  //and also pattern, and options if presented. We need those values when copying this function
+  const XERCES_CPP_NAMESPACE_QUALIFIER RegularExpression *regExp_;
+  const XMLCh *pattern_;
+  const XMLCh *options_;
+
+  //helper functions
+  void checkRegexpOpts(const XMLCh* opts, const char* sourceMsg) const;
+  void processParseException(XERCES_CPP_NAMESPACE_QUALIFIER ParseException &e, const char* sourceMsg,
+                             XPath2MemoryManager* memMgr) const;
+  void processRuntimeException(XERCES_CPP_NAMESPACE_QUALIFIER RuntimeException &e, const char* sourceMsg) const;
 
 };
 

@@ -28,6 +28,8 @@
 #include <xercesc/util/ParseException.hpp>
 #include <xercesc/validators/schema/SchemaSymbols.hpp>
 #include <xercesc/util/XMLUni.hpp>
+#include <xercesc/util/ParseException.hpp>
+
 
 #if defined(XERCES_HAS_CPP_NAMESPACE)
 XERCES_CPP_NAMESPACE_USE
@@ -47,10 +49,51 @@ const unsigned int FunctionReplace::maxArgs = 4;
  */
   
 FunctionReplace::FunctionReplace(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
-  : ConstantFoldingFunction(name, minArgs, maxArgs, "string?, string, string, string", args, memMgr)
+  : ConstantFoldingFunction(name, minArgs, maxArgs, "string?, string, string, string", args, memMgr),
+    regExp_(0), pattern_(0), options_(0)
 {
   _src.getStaticType() = StaticType::STRING_TYPE;
 }
+
+ASTNode *FunctionReplace::staticTypingImpl(StaticContext *context)
+{
+  //either there are 3 args, and regexp should be a constant,
+  //or there is a flags argument as well, and it should also be a constant
+  if(context && !regExp_ && _args[1]->isConstant() &&
+    (getNumArgs() == 3 || (getNumArgs() == 4 && _args[3]->isConstant())))
+  {
+    XPath2MemoryManager* memMgr = context->getMemoryManager();
+
+    AutoDelete<DynamicContext> dContext(context->createDynamicContext());
+    dContext->setMemoryManager(memMgr);
+
+    Item::Ptr patternItem = getParamNumber(2, dContext)->next(dContext);
+    pattern_ = (XMLCh*) patternItem->asString(dContext);
+
+    options_ = (XMLCh*) XMLUni::fgZeroLenString;
+    if(getNumArgs() == 4)
+    {
+      Item::Ptr optsItem = getParamNumber(4, dContext)->next(dContext);
+      options_ = (XMLCh*) optsItem->asString(dContext);
+    	checkRegexpOpts(options_, "FunctionReplace::staticTypingImpl");
+  	}
+
+    // Always turn off head character optimisation, since it is broken
+    XMLBuffer optionsBuf;
+    optionsBuf.set(options_);
+    optionsBuf.append(chLatin_H);
+
+  	try
+    {
+      regExp_ = new (memMgr) RegularExpression(pattern_, optionsBuf.getRawBuffer());
+    } catch (ParseException &e){
+      processParseException(e, "FunctionReplace::staticTypingImpl", memMgr);
+    }
+  }
+
+  return this;
+}
+
 
 Sequence FunctionReplace::createSequence(DynamicContext* context, int flags) const
 {
@@ -60,7 +103,6 @@ Sequence FunctionReplace::createSequence(DynamicContext* context, int flags) con
   Item::Ptr inputString = getParamNumber(1,context)->next(context);
   if(inputString.notNull())
     input = inputString->asString(context);
-  const XMLCh *pattern = getParamNumber(2,context)->next(context)->asString(context);
   const XMLCh *replacement = getParamNumber(3,context)->next(context)->asString(context);
 
   const XMLCh *ptr;
@@ -82,43 +124,36 @@ Sequence FunctionReplace::createSequence(DynamicContext* context, int flags) con
     }
   }
 
+  if(regExp_)
+  {
+    try
+    {
+      AutoDeallocate<const XMLCh> result(replace(input, regExp_, replacement, memMgr), memMgr);
+      return Sequence(context->getItemFactory()->createString(result.get(), context), memMgr);
+    } catch (RuntimeException &e){
+      processRuntimeException(e, "FunctionReplace::createSequence");
+    }
+  }
+
+  //get here if regExp has not been compiled before
+  const XMLCh *pattern = getParamNumber(2,context)->next(context)->asString(context);
+
   const XMLCh *options = XMLUni::fgZeroLenString;
   if(getNumArgs()>3)
     options=getParamNumber(4,context)->next(context)->asString(context);
   
   //Check that the options are valid - throw an exception if not (can have s,m,i and x)
   //Note: Are allowed to duplicate the letters.
-  const XMLCh* cursor=options;
-  for(; *cursor != 0; ++cursor){
-    switch(*cursor) {
-    case chLatin_s:
-    case chLatin_m:
-    case chLatin_i:
-    case chLatin_x:
-      break;
-    default:
-      XQThrow(FunctionException, X("FunctionReplace::createSequence"),X("Invalid regular expression flags [err:FORX0001]."));
-    }
-  }
+  checkRegexpOpts(options, "FunctionReplace::createSequence");
 
   // Now attempt to replace
   try {
     AutoDeallocate<const XMLCh> result(replace(input, pattern, replacement, options, memMgr), memMgr);
     return Sequence(context->getItemFactory()->createString(result.get(), context), memMgr);
-
   } catch (ParseException &e){ 
-    XMLBuffer buf(1023, memMgr);
-    buf.set(X("Invalid regular expression: "));
-    buf.append(e.getMessage());
-    buf.append(X(" [err:FORX0002]"));
-    XQThrow(FunctionException, X("FunctionReplace::createSequence"), buf.getRawBuffer());
-  } catch (RuntimeException &e){ 
-    if(e.getCode()==XMLExcepts::Regex_RepPatMatchesZeroString)
-      XQThrow(FunctionException, X("FunctionReplace::createSequence"), X("The pattern matches the zero-length string [err:FORX0003]"));
-    else if(e.getCode()==XMLExcepts::Regex_InvalidRepPattern)
-      XQThrow(FunctionException, X("FunctionReplace::createSequence"), X("Invalid replacement pattern [err:FORX0004]"));
-    else 
-      XQThrow(FunctionException, X("FunctionReplace::createSequence"), e.getMessage());
+    processParseException(e, "FunctionReplace::createSequence", memMgr);
+  } catch (RuntimeException &e){
+    processRuntimeException(e, "FunctionReplace::createSequence");
   }
 
   // Never happens
@@ -139,3 +174,72 @@ const XMLCh *FunctionReplace::replace(const XMLCh *input, const XMLCh *pattern, 
   return regEx.replace(input, replacement);
 #endif
 }
+
+const XMLCh *FunctionReplace::replace(const XMLCh *input, const RegularExpression* regExp,
+                                      const XMLCh *replacement, MemoryManager *mm)
+{
+#ifdef HAVE_ALLMATCHES
+  return regExp->replace(input, replacement, mm);
+#else
+  return regExp->replace(input, replacement);
+#endif
+}
+
+void FunctionReplace::checkRegexpOpts(const XMLCh* opts, const char* sourceMsg) const
+{
+  const XMLCh* cursor = opts;
+  for(; *cursor != 0; ++cursor){
+    switch(*cursor) {
+    case chLatin_s:
+    case chLatin_m:
+    case chLatin_i:
+    case chLatin_x:
+      break;
+    default:
+      XQThrow(FunctionException, X(sourceMsg),X("Invalid regular expression flags [err:FORX0001]."));
+    }
+  }
+}
+
+void FunctionReplace::processParseException(ParseException &e, const char* sourceMsg, XPath2MemoryManager* memMgr) const
+{
+  XMLBuffer buf(1023, memMgr);
+  buf.set(X("Invalid regular expression: "));
+  buf.append(e.getMessage());
+  buf.append(X(" [err:FORX0002]"));
+  XQThrow(FunctionException, X(sourceMsg), buf.getRawBuffer());
+}
+
+void FunctionReplace::processRuntimeException(RuntimeException &e, const char* sourceMsg) const
+{
+    if(e.getCode()==XMLExcepts::Regex_RepPatMatchesZeroString)
+      XQThrow(FunctionException, X(sourceMsg), X("The pattern matches the zero-length string [err:FORX0003]"));
+    else if(e.getCode()==XMLExcepts::Regex_InvalidRepPattern)
+      XQThrow(FunctionException, X(sourceMsg), X("Invalid replacement pattern [err:FORX0004]"));
+    else 
+      XQThrow(FunctionException, X(sourceMsg), e.getMessage());
+}
+
+void FunctionReplace::copyRegExp(FunctionReplace* source, XPath2MemoryManager* memMgr)
+{
+  if(source->regExp_)
+  {
+    pattern_ = memMgr->getPooledString(source->pattern_);
+    options_ = memMgr->getPooledString(source->options_);
+
+    // Always turn off head character optimisation, since it is broken
+    XMLBuffer optionsBuf;
+    optionsBuf.set(options_);
+    optionsBuf.append(chLatin_H);
+
+    //compiling regexp again
+    try
+    {
+      regExp_ = new (memMgr) RegularExpression(pattern_, optionsBuf.getRawBuffer());
+    } catch (ParseException &e){
+      processParseException(e, "FunctionMatches::copyRegExp", memMgr);
+    }
+  }
+}
+
+

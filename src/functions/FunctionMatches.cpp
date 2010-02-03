@@ -31,6 +31,8 @@
 
 #include <xercesc/util/XMLException.hpp>
 #include <xercesc/util/regx/RegularExpression.hpp>
+#include <xercesc/util/ParseException.hpp>
+
 
 #if defined(XERCES_HAS_CPP_NAMESPACE)
 XERCES_CPP_NAMESPACE_USE
@@ -76,14 +78,19 @@ ASTNode *FunctionMatches::staticTypingImpl(StaticContext *context)
     {
       Item::Ptr optsItem = getParamNumber(3, dContext)->next(dContext);
       options_ = (XMLCh*) optsItem->asString(dContext);
-    	checkRegexpOpts(options_);
+    	checkRegexpOpts(options_, "FunctionMatches::staticTypingImplSequence");
   	}
+
+    // Always turn off head character optimisation, since it is broken
+    XMLBuffer optionsBuf;
+    optionsBuf.set(options_);
+    optionsBuf.append(chLatin_H);
 
   	try
     {
-      regExp_ = new (memMgr) RegularExpression(pattern_, options_);
+      regExp_ = new (memMgr) RegularExpression(pattern_, optionsBuf.getRawBuffer());
     } catch (ParseException &e){
-      processParseException(e, memMgr);
+      processParseException(e, "FunctionMatches::staticTypingImplSequence", memMgr);
     }
   }
 	
@@ -106,11 +113,11 @@ Sequence FunctionMatches::createSequence(DynamicContext* context, int flags) con
     {
       return Sequence(context->getItemFactory()->createBoolean(matches(input, regExp_), context), memMgr);
     } catch (XMLException &e){
-      processXMLException(e);
+      processXMLException(e, "FunctionMatches::createSequence");
     }
   }
 
-  //do not get here if we had precompiled regexp
+  //do not get here if we had a pre-compiled regexp
 
   const XMLCh* pattern = getParamNumber(2,context)->next(context)->asString(context);
 
@@ -120,21 +127,21 @@ Sequence FunctionMatches::createSequence(DynamicContext* context, int flags) con
 
   //Check that the options are valid - throw an exception if not (can have s,m,i and x)
   //Note: Are allowed to duplicate the letters.
-  checkRegexpOpts(options);
+  checkRegexpOpts(options, "FunctionMatches::createSequence");
 
   try {
     return Sequence(context->getItemFactory()->createBoolean(matches(input, pattern, options), context), memMgr);
   } catch (ParseException &e){ 
-	processParseException(e, memMgr);
+	processParseException(e, "FunctionMatches::createSequence", memMgr);
   } catch (XMLException &e){
-	processXMLException(e);
+	processXMLException(e, "FunctionMatches::createSequence");
   }  
 
   //do not get here
 
 }
 
-void FunctionMatches::checkRegexpOpts(const XMLCh* opts) const
+void FunctionMatches::checkRegexpOpts(const XMLCh* opts, const char* sourceMsg) const
 {
   const XMLCh* cursor = opts;
   for(; *cursor != 0; ++cursor){
@@ -150,18 +157,19 @@ void FunctionMatches::checkRegexpOpts(const XMLCh* opts) const
   }
 }
 
-void FunctionMatches::processParseException(ParseException &e, XPath2MemoryManager* memMgr) const
+void FunctionMatches::processParseException(ParseException &e, const char* sourceMsg,
+                                            XPath2MemoryManager* memMgr) const
 {
   XMLBuffer buf(1023, memMgr);
   buf.set(X("Invalid regular expression: "));
   buf.append(e.getMessage());
   buf.append(X(" [err:FORX0002]"));
-  XQThrow(FunctionException, X("FunctionMatches::createSequence"), buf.getRawBuffer());
+  XQThrow(FunctionException, X(sourceMsg), buf.getRawBuffer());
 }
 
-void FunctionMatches::processXMLException(XMLException &e) const
+void FunctionMatches::processXMLException(XMLException &e, const char* sourceMsg) const
 {
-  XQThrow(FunctionException, X("FunctionMatches::createSequence"), e.getMessage());
+  XQThrow(FunctionException, X(sourceMsg), e.getMessage());
 }
 
 bool FunctionMatches::matches(const XMLCh *input, const XMLCh *pattern, const XMLCh *options)
@@ -182,7 +190,7 @@ bool FunctionMatches::matches(const XMLCh *input, const XMLCh *pattern, const XM
 }
 
 //should be invoked only we have a precompiled regexp
-bool FunctionMatches::matches(const XMLCh *input, XERCES_CPP_NAMESPACE_QUALIFIER RegularExpression* regExp)
+bool FunctionMatches::matches(const XMLCh *input, const XERCES_CPP_NAMESPACE_QUALIFIER RegularExpression* regExp)
 {
   if(input == 0)
   {
@@ -198,12 +206,17 @@ void FunctionMatches::copyRegExp(FunctionMatches* source, XPath2MemoryManager* m
     pattern_ = memMgr->getPooledString(source->pattern_);
     options_ = memMgr->getPooledString(source->options_);
 
+    // Always turn off head character optimisation, since it is broken
+    XMLBuffer optionsBuf;
+    optionsBuf.set(options_);
+    optionsBuf.append(chLatin_H);
+
     //compiling regexp again
     try
     {
-      regExp_ = new (memMgr) RegularExpression(pattern_, options_);
+      regExp_ = new (memMgr) RegularExpression(pattern_, optionsBuf.getRawBuffer());
     } catch (ParseException &e){
-      processParseException(e, memMgr);
+      processParseException(e, "FunctionMatches::copyRegExp", memMgr);
     }
   }
 }

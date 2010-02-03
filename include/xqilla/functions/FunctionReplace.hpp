@@ -22,6 +22,13 @@
 
 #include <xqilla/ast/ConstantFoldingFunction.hpp>
 
+XERCES_CPP_NAMESPACE_BEGIN
+class RuntimeException;
+class RegularExpression;
+class ParseException;
+XERCES_CPP_NAMESPACE_END
+
+
 /** 
  * Returns the string that is obtained by replacing all non-overlapping substrings of $input 
  * that match the given $pattern with an occurrence of the $replacement string.  
@@ -32,6 +39,7 @@
  */
 class XQILLA_API FunctionReplace : public ConstantFoldingFunction
 {
+
 public:
   static const XMLCh name[];
   static const unsigned int minArgs;
@@ -41,7 +49,9 @@ public:
    * Constructor.
    */
   FunctionReplace(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
-  
+
+  virtual ASTNode *staticTypingImpl(StaticContext *context);
+
   /**
    * Returns $input with non-overlapping matches to $pattern 
    * replaced by $replacement
@@ -52,6 +62,29 @@ public:
                               const XMLCh *options = 0, XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *mm =
                               XERCES_CPP_NAMESPACE_QUALIFIER XMLPlatformUtils::fgMemoryManager);
 
+  static const XMLCh *replace(const XMLCh *input, const XERCES_CPP_NAMESPACE_QUALIFIER RegularExpression *regExp,
+                              const XMLCh *replacement,
+                              XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *mm =
+                              XERCES_CPP_NAMESPACE_QUALIFIER XMLPlatformUtils::fgMemoryManager);
+
+
+  const XERCES_CPP_NAMESPACE_QUALIFIER RegularExpression* getRegExp() const {
+    return regExp_;
+  };
+  void copyRegExp(FunctionReplace *source, XPath2MemoryManager* memMgr);
+
+private:
+  //if a regular expession is a constant, then we will store a compiled regexp here,
+  //and also pattern, and options if presented. We need those values when copying this function
+  const XERCES_CPP_NAMESPACE_QUALIFIER RegularExpression *regExp_;
+  const XMLCh *pattern_;
+  const XMLCh *options_;
+
+  //helper functions
+  void checkRegexpOpts(const XMLCh* opts, const char* sourceMsg) const;
+  void processParseException(XERCES_CPP_NAMESPACE_QUALIFIER ParseException &e, const char* sourceMsg,
+                             XPath2MemoryManager* memMgr) const;
+  void processRuntimeException(XERCES_CPP_NAMESPACE_QUALIFIER RuntimeException &e, const char* sourceMsg) const;
 };
 
 #endif

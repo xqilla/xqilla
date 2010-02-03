@@ -56,6 +56,8 @@
 #include <xqilla/update/FunctionPut.hpp>
 
 #include "xqilla/functions/FunctionMatches.hpp"
+#include "xqilla/functions/FunctionReplace.hpp"
+#include "xqilla/functions/FunctionTokenize.hpp"
 
 XERCES_CPP_NAMESPACE_USE;
 
@@ -334,6 +336,18 @@ ASTNode *ASTCopier::optimizeFunction(XQFunction *item)
       FunctionMatches* source = (FunctionMatches*) item;
       newFm->copyRegExp(source, mm_);
       result = newFm;
+    } else if (name == FunctionReplace::name) {
+      FunctionReplace* newFr = new (mm_) FunctionReplace(item->getArguments(), mm_);
+
+      FunctionReplace* source = (FunctionReplace*) item;
+      newFr->copyRegExp(source, mm_);
+      result = newFr;
+    } else if (name == FunctionTokenize::name) {
+      FunctionTokenize* newFt = new (mm_) FunctionTokenize(item->getArguments(), mm_);
+
+      FunctionTokenize* source = (FunctionTokenize*) item;
+      newFt->copyRegExp(source, mm_);
+      result = newFt;
     }
     else if(name == FunctionCodepointEqual::name) {
       result = new (mm_) FunctionCodepointEqual(((FunctionCodepointEqual*)item)->getCollation(), item->getArguments(), mm_);

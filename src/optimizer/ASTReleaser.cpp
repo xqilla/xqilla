@@ -22,6 +22,8 @@
 
 #include "xqilla/functions/FunctionMatches.hpp"
 #include <xercesc/util/regx/RegularExpression.hpp>
+#include <xqilla/functions/FunctionReplace.hpp>
+#include <xqilla/functions/FunctionTokenize.hpp>
 
 ASTReleaser::ASTReleaser()
 {
@@ -171,7 +173,15 @@ ASTNode *ASTReleaser::optimizeFunction(XQFunction *item)
     // fn:matches()
     if(name == FunctionMatches::name) {
       FunctionMatches *fm = (FunctionMatches*) item;
-      XERCES_CPP_NAMESPACE_QUALIFIER RegularExpression *regExp = fm->getRegExp();
+      const XERCES_CPP_NAMESPACE_QUALIFIER RegularExpression *regExp = fm->getRegExp();
+      delete regExp;
+    } else if (name == FunctionReplace::name) {
+      FunctionReplace *fr = (FunctionReplace*) item;
+      const XERCES_CPP_NAMESPACE_QUALIFIER RegularExpression *regExp = fr->getRegExp();
+      delete regExp;
+    } else if (name == FunctionTokenize::name) {
+      FunctionTokenize *ft = (FunctionTokenize*) item;
+      const XERCES_CPP_NAMESPACE_QUALIFIER RegularExpression *regExp = ft->getRegExp();
       delete regExp;
     }
   }
