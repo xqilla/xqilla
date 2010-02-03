@@ -20,7 +20,7 @@
 #ifndef _FUNCTIONREPLACE_HPP
 #define _FUNCTIONREPLACE_HPP
 
-#include <xqilla/ast/ConstantFoldingFunction.hpp>
+#include <xqilla/functions/RegExpFunction.hpp>
 
 XERCES_CPP_NAMESPACE_BEGIN
 class RuntimeException;
@@ -37,7 +37,7 @@ XERCES_CPP_NAMESPACE_END
  * xf:replace(string? $input, string $pattern, string  $replacement, 
  *            string  $flags) => string?
  */
-class XQILLA_API FunctionReplace : public ConstantFoldingFunction
+class XQILLA_API FunctionReplace : public RegExpFunction
 {
 
 public:
@@ -67,23 +67,9 @@ public:
                               XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *mm =
                               XERCES_CPP_NAMESPACE_QUALIFIER XMLPlatformUtils::fgMemoryManager);
 
-
-  const XERCES_CPP_NAMESPACE_QUALIFIER RegularExpression* getRegExp() const {
-    return regExp_;
-  };
-  void copyRegExp(FunctionReplace *source, XPath2MemoryManager* memMgr);
-
 private:
-  //if a regular expession is a constant, then we will store a compiled regexp here,
-  //and also pattern, and options if presented. We need those values when copying this function
-  const XERCES_CPP_NAMESPACE_QUALIFIER RegularExpression *regExp_;
-  const XMLCh *pattern_;
-  const XMLCh *options_;
 
   //helper functions
-  void checkRegexpOpts(const XMLCh* opts, const char* sourceMsg) const;
-  void processParseException(XERCES_CPP_NAMESPACE_QUALIFIER ParseException &e, const char* sourceMsg,
-                             XPath2MemoryManager* memMgr) const;
   void processRuntimeException(XERCES_CPP_NAMESPACE_QUALIFIER RuntimeException &e, const char* sourceMsg) const;
 };
 

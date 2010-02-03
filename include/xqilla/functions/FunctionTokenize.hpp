@@ -20,7 +20,7 @@
 #ifndef _FUNCTIONTOKENIZE_HPP
 #define _FUNCTIONTOKENIZE_HPP
 
-#include <xqilla/ast/ConstantFoldingFunction.hpp>
+#include <xqilla/functions/RegExpFunction.hpp>
 
 XERCES_CPP_NAMESPACE_BEGIN
 class RuntimeException;
@@ -37,7 +37,7 @@ XERCES_CPP_NAMESPACE_END
  * tokenize(string? $input, string $pattern) => string*
  * tokenize(string? $input, string $pattern, string $flags) => string*
  */
-class XQILLA_API FunctionTokenize : public ConstantFoldingFunction
+class XQILLA_API FunctionTokenize : public RegExpFunction
 {
 public:
   static const XMLCh name[];
@@ -57,22 +57,7 @@ public:
    */
   Sequence createSequence(DynamicContext* context, int flags=0) const;
 
-  const XERCES_CPP_NAMESPACE_QUALIFIER RegularExpression* getRegExp() const{
-    return regExp_;
-  };
-  void copyRegExp(FunctionTokenize *source, XPath2MemoryManager* memMgr);
-
 private:
-  //if a regular expession is a constant, then we will store a compiled regexp here,
-  //and also pattern, and options if presented. We need those values when copying this function
-  const XERCES_CPP_NAMESPACE_QUALIFIER RegularExpression *regExp_;
-  const XMLCh *pattern_;
-  const XMLCh *options_;
-
-  //helper functions
-  void checkRegexpOpts(const XMLCh* opts, const char* sourceMsg) const;
-  void processParseException(XERCES_CPP_NAMESPACE_QUALIFIER ParseException &e, const char* sourceMsg,
-                             XPath2MemoryManager* memMgr) const;
   void processRuntimeException(XERCES_CPP_NAMESPACE_QUALIFIER RuntimeException &e, const char* sourceMsg) const;
 
 };

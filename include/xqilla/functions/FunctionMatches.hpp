@@ -20,7 +20,7 @@
 #ifndef _FUNCTIONMATCHES_HPP
 #define _FUNCTIONMATCHES_HPP
 
-#include <xqilla/ast/ConstantFoldingFunction.hpp>
+#include <xqilla/functions/RegExpFunction.hpp>
 
 XERCES_CPP_NAMESPACE_BEGIN
 class XMLException;
@@ -29,7 +29,7 @@ class ParseException;
 XERCES_CPP_NAMESPACE_END
 
 
-class XQILLA_API FunctionMatches : public ConstantFoldingFunction {
+class XQILLA_API FunctionMatches : public RegExpFunction {
 public:
   static const XMLCh name[];
   static const unsigned int minArgs;
@@ -45,20 +45,7 @@ public:
   static bool matches(const XMLCh *input, const XMLCh *pattern, const XMLCh *options = 0);
   static bool matches(const XMLCh *input, const XERCES_CPP_NAMESPACE_QUALIFIER RegularExpression* regExp);
 
-  const XERCES_CPP_NAMESPACE_QUALIFIER RegularExpression* getRegExp() const {
-    return regExp_;
-  };
-  void copyRegExp(FunctionMatches *source, XPath2MemoryManager* memMgr);
-
 private:
-  //if a regular expession is a constant, then we will store a compiled regexp here,
-  //and also pattern, and options if presented. We need those values when copying this function
-  const XERCES_CPP_NAMESPACE_QUALIFIER RegularExpression *regExp_;
-  const XMLCh *pattern_;
-  const XMLCh *options_;
-  //helper functions
-  void checkRegexpOpts(const XMLCh* opts, const char* sourceMsg) const;
-  void processParseException(XERCES_CPP_NAMESPACE_QUALIFIER ParseException &e, const char* sourceMsg, XPath2MemoryManager* memMgr) const;
   void processXMLException(XERCES_CPP_NAMESPACE_QUALIFIER XMLException &e, const char* sourceMsg) const;
 };
 

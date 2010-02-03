@@ -49,8 +49,7 @@ const unsigned int FunctionReplace::maxArgs = 4;
  */
   
 FunctionReplace::FunctionReplace(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
-  : ConstantFoldingFunction(name, minArgs, maxArgs, "string?, string, string, string", args, memMgr),
-    regExp_(0), pattern_(0), options_(0)
+  : RegExpFunction(name, minArgs, maxArgs, "string?, string, string, string", args, memMgr)
 {
   _src.getStaticType() = StaticType::STRING_TYPE;
 }
@@ -185,30 +184,6 @@ const XMLCh *FunctionReplace::replace(const XMLCh *input, const RegularExpressio
 #endif
 }
 
-void FunctionReplace::checkRegexpOpts(const XMLCh* opts, const char* sourceMsg) const
-{
-  const XMLCh* cursor = opts;
-  for(; *cursor != 0; ++cursor){
-    switch(*cursor) {
-    case chLatin_s:
-    case chLatin_m:
-    case chLatin_i:
-    case chLatin_x:
-      break;
-    default:
-      XQThrow(FunctionException, X(sourceMsg),X("Invalid regular expression flags [err:FORX0001]."));
-    }
-  }
-}
-
-void FunctionReplace::processParseException(ParseException &e, const char* sourceMsg, XPath2MemoryManager* memMgr) const
-{
-  XMLBuffer buf(1023, memMgr);
-  buf.set(X("Invalid regular expression: "));
-  buf.append(e.getMessage());
-  buf.append(X(" [err:FORX0002]"));
-  XQThrow(FunctionException, X(sourceMsg), buf.getRawBuffer());
-}
 
 void FunctionReplace::processRuntimeException(RuntimeException &e, const char* sourceMsg) const
 {
@@ -219,27 +194,4 @@ void FunctionReplace::processRuntimeException(RuntimeException &e, const char* s
     else 
       XQThrow(FunctionException, X(sourceMsg), e.getMessage());
 }
-
-void FunctionReplace::copyRegExp(FunctionReplace* source, XPath2MemoryManager* memMgr)
-{
-  if(source->regExp_)
-  {
-    pattern_ = memMgr->getPooledString(source->pattern_);
-    options_ = memMgr->getPooledString(source->options_);
-
-    // Always turn off head character optimisation, since it is broken
-    XMLBuffer optionsBuf;
-    optionsBuf.set(options_);
-    optionsBuf.append(chLatin_H);
-
-    //compiling regexp again
-    try
-    {
-      regExp_ = new (memMgr) RegularExpression(pattern_, optionsBuf.getRawBuffer());
-    } catch (ParseException &e){
-      processParseException(e, "FunctionMatches::copyRegExp", memMgr);
-    }
-  }
-}
-
 
