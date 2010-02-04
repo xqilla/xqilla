@@ -496,6 +496,7 @@ xqilla/functions/FunctionYearFromDateTime.hpp \
 xqilla/functions/FunctionYearsFromDuration.hpp \
 xqilla/functions/FunctionZeroOrOne.hpp \
 xqilla/functions/FuncFactory.hpp \
+xqilla/functions/RegExpFunction.hpp \
 xqilla/functions/XQUserFunction.hpp \
 xqilla/functions/XQillaFunction.hpp \
 xqilla/items/ATAnySimpleType.hpp \
