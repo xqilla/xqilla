@@ -111,7 +111,6 @@ xqilla/context/Scope.hpp \
 xqilla/context/VarHashEntry.hpp \
 xqilla/context/VariableTypeStore.hpp \
 xqilla/context/Collation.hpp \
-xqilla/context/ModuleResolver.hpp \
 xqilla/context/ExternalFunctionResolver.hpp \
 xqilla/context/UpdateFactory.hpp \
 xqilla/context/RegexGroupStore.hpp \
