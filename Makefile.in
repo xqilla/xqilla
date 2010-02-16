@@ -49,7 +49,12 @@ DIST_COMMON = README $(am__configure_deps) $(srcdir)/Makefile.am \
 	autotools/depcomp autotools/install-sh autotools/ltmain.sh \
 	autotools/missing autotools/mkinstalldirs
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
-am__aclocal_m4_deps = $(top_srcdir)/configure.in
+am__aclocal_m4_deps = $(top_srcdir)/autotools/m4/libtool.m4 \
+	$(top_srcdir)/autotools/m4/ltoptions.m4 \
+	$(top_srcdir)/autotools/m4/ltsugar.m4 \
+	$(top_srcdir)/autotools/m4/ltversion.m4 \
+	$(top_srcdir)/autotools/m4/lt~obsolete.m4 \
+	$(top_srcdir)/configure.in
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 am__CONFIG_DISTCLEAN_FILES = config.status config.cache config.log \
@@ -507,11 +512,12 @@ AUTOMAKE_OPTIONS = foreign dist-zip
 SUBDIRS = include
 INCLUDES = -I$(top_srcdir)/include/ $(xerces_include) -I$(top_srcdir)/src/lexer/ $(faxpp_include) $(tidy_include)
 LDADD = libxqilla.la
+ACLOCAL_AMFLAGS = -I autotools/m4
 lib_LTLIBRARIES = libxqilla.la
 
 # Library version, see http://sourceware.org/autobook/autobook/autobook_91.html
 # -no-undefined for Cygwin (bug #1639669)
-libxqilla_la_LDFLAGS = -version-info 5:2:0 -no-undefined
+libxqilla_la_LDFLAGS = -version-info 5:4:0 -no-undefined
 libxqilla_la_SOURCES = \
 src/framework/ReferenceCounted.cpp \
 src/framework/BaseMemoryManager.cpp \

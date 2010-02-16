@@ -4,6 +4,7 @@ SUBDIRS = include
 INCLUDES = -I$(top_srcdir)/include/ $(xerces_include) -I$(top_srcdir)/src/lexer/ $(faxpp_include) $(tidy_include)
 LDFLAGS = -L$(xerces_lib) -R$(xerces_lib) $(faxpp_lib) $(tidy_lib) -lxerces-c $(faxpp_library) $(tidy_library)
 LDADD = libxqilla.la
+ACLOCAL_AMFLAGS = -I autotools/m4
 
 bin_PROGRAMS = xqilla
 noinst_PROGRAMS = xqtsRunner xmarkRunner simple-basic simple-context-item xqc-basic xqc-context-item
@@ -16,7 +17,7 @@ lib_LTLIBRARIES = libxqilla.la
 
 # Library version, see http://sourceware.org/autobook/autobook/autobook_91.html
 # -no-undefined for Cygwin (bug #1639669)
-libxqilla_la_LDFLAGS = -version-info 5:2:0 -no-undefined
+libxqilla_la_LDFLAGS = -version-info 5:4:0 -no-undefined
 
 libxqilla_la_SOURCES = \
 src/framework/ReferenceCounted.cpp \

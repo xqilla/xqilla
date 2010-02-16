@@ -221,7 +221,7 @@ bool XercesURIResolver::putDocument(const Node::Ptr &document, const XMLCh *uri,
       if(*ptr == '%') {
         if(ptr[1] == 0) throw MalformedURLException(__FILE__, __LINE__, XMLExcepts::URL_MalformedURL);
         if(ptr[2] == 0) throw MalformedURLException(__FILE__, __LINE__, XMLExcepts::URL_MalformedURL);
-        unencode8.append(1, char2hexdigit(ptr[1]) * 0x10 + char2hexdigit(ptr[2]));
+        unencode8.append(1, (char)(char2hexdigit(ptr[1]) * 0x10 + char2hexdigit(ptr[2])));
         ptr += 3;
       }
       else {
