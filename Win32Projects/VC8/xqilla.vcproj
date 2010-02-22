@@ -415,6 +415,7 @@
       <File RelativePath="..\..\include\xqilla\functions\FunctionYearsFromDuration.hpp"/>
       <File RelativePath="..\..\include\xqilla\functions\FunctionZeroOrOne.hpp"/>
       <File RelativePath="..\..\include\xqilla\functions\FuncFactory.hpp"/>
+      <File RelativePath="..\..\include\xqilla\functions\RegExpFunction.hpp"/>
       <File RelativePath="..\..\include\xqilla\functions\XQUserFunction.hpp"/>
       <File RelativePath="..\..\include\xqilla\functions\XQillaFunction.hpp"/>
       <File RelativePath="..\..\include\xqilla\items\ATAnySimpleType.hpp"/>
@@ -844,6 +845,7 @@
       <File RelativePath="..\..\src\functions\FunctionYearFromDateTime.cpp"/>
       <File RelativePath="..\..\src\functions\FunctionYearsFromDuration.cpp"/>
       <File RelativePath="..\..\src\functions\FunctionZeroOrOne.cpp"/>
+      <File RelativePath="..\..\src\functions\RegExpFunction.cpp"/>
       <File RelativePath="..\..\src\functions\XQUserFunction.cpp"/>
       <File RelativePath="..\..\src\functions\XQillaFunction.cpp"/>
     </Filter>
