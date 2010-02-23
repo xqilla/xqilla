@@ -56,10 +56,9 @@ Sequence FunctionWords::createSequence(DynamicContext* context, int flags) const
     return Sequence(memMgr);
 
   const XMLCh *input=inputString->asString(context);
-  XMLBuffer buf(1023, context->getMemoryManager());
-  UnicodeTransformer::words(input, buf);
+  AutoDeallocate<XMLCh> buf(UnicodeTransformer::words(input, memMgr), memMgr);
 
-  XMLCh* rb = buf.getRawBuffer();
+  XMLCh* rb = buf.get();
   XMLCh* start = NULL;
   Sequence resultSeq(0, memMgr);
 

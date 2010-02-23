@@ -25,24 +25,30 @@
 #include <xqilla/framework/XQillaExport.hpp>
 #include <xercesc/framework/XMLBuffer.hpp>
 
+class XPath2MemoryManager;
 ///
 class XQILLA_API UnicodeTransformer
 {
 public:
-  static void normalizeC(const XMLCh* source, XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer &dest);
-  static void normalizeD(const XMLCh* source, XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer &dest);
-  static void normalizeKC(const XMLCh* source, XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer &dest);
-  static void normalizeKD(const XMLCh* source, XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer &dest);
+  static XMLCh* normalizeC(const XMLCh* source, XPath2MemoryManager* mm);
+  static XMLCh* normalizeD(const XMLCh* source, XPath2MemoryManager* mm);
+  static XMLCh* normalizeKC(const XMLCh* source, XPath2MemoryManager* mm);
+  static XMLCh* normalizeKD(const XMLCh* source, XPath2MemoryManager* mm);
 
-  static void removeDiacritics(const XMLCh* source, XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer &dest);
-  static void caseFold(const XMLCh* source, XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer &dest);
-  static void caseFoldAndRemoveDiacritics(const XMLCh* source, XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer &dest);
+  static XMLCh* removeDiacritics(const XMLCh* source, XPath2MemoryManager* mm);
+  static XMLCh* caseFold(const XMLCh* source, XPath2MemoryManager* mm);
+  static XMLCh* caseFoldAndRemoveDiacritics(const XMLCh* source, XPath2MemoryManager* mm);
 
-  static void lowerCase(const XMLCh* source, XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer &dest);
-  static void upperCase(const XMLCh* source, XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer &dest);
+  static XMLCh* lowerCase(const XMLCh* source, XPath2MemoryManager* mm);
+  static XMLCh* upperCase(const XMLCh* source, XPath2MemoryManager* mm);
 
-  static void words(const XMLCh* source, XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer &dest);
-  static void sentences(const XMLCh* source, XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer &dest);
+  static XMLCh* words(const XMLCh* source, XPath2MemoryManager* mm);
+  static XMLCh* sentences(const XMLCh* source, XPath2MemoryManager* mm);
+  static XMLCh* wordsAndSentences(const XMLCh* source, XPath2MemoryManager* mm);
+ 
+  static bool isPunctuation(const XMLCh* source, int &codeSize);
+  static bool isSpaceSeparator(const XMLCh* source);
+  static bool isSpacesOrPunctuations(const XMLCh* start, const XMLCh* end);
 };
 
 #endif

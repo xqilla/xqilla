@@ -21,6 +21,7 @@
 
 #include <xqilla/utils/UnicodeTransformer.hpp>
 #include <xercesc/framework/XMLBuffer.hpp>
+#include <xqilla/framework/XPath2MemoryManager.hpp>
 #include <vector>
 extern "C" {
 #include <xqilla/utils/utf8proc.h>
@@ -33,14 +34,7 @@ using namespace std;
 XERCES_CPP_NAMESPACE_USE
 #endif
 
-static void cleanup(int32_t *buf)
-{
-  if (buf != NULL)
-    delete []buf;
-  return;
-}
-
-static void transformUTF16(const XMLCh *source, XMLBuffer &dest, int options)
+static XMLCh* transformUTF16(const XMLCh *source, int options, XPath2MemoryManager *mm)
 {
   // Count word number
   ssize_t srcSize;
@@ -54,92 +48,149 @@ static void transformUTF16(const XMLCh *source, XMLBuffer &dest, int options)
   ssize_t dstSize = srcSize * 2 + 1;
   if (dstSize < 1024) 
     dstSize = 1024;
-  int32_t *buf = new int32_t[dstSize];
-  if (buf == NULL) // do nothig if not enough memory
-      return cleanup(buf);
+
+  AutoDeallocate<XMLCh> buf(mm, dstSize * sizeof(int32_t));
 
   // Begin transform
-  ssize_t result = utf16proc_decompose((const uint16_t *)source, srcSize, buf, dstSize, options);
+  ssize_t result = utf16proc_decompose((const uint16_t *)source, srcSize, (int32_t*)buf.get(), dstSize, options);
   // do nothig if hits internal errors
   if (result < 0)
-      return cleanup(buf);
+      return 0;
   // Create a new buffer if the buffer is not large enough
   if (result > dstSize) {
     // We have to create a bigger one.
-    delete []buf;
     dstSize = result + 1;
-    buf = new int32_t[dstSize];
-    if (buf == NULL)  // do nothig if not enough memory
-      return cleanup(buf);
+    XMLCh* moreMm = (XMLCh*)mm->allocate(dstSize*sizeof(int32_t));
+    buf.set(moreMm);
 
-    result = utf16proc_decompose((const uint16_t *)source, srcSize, buf, dstSize, options);
+    result = utf16proc_decompose((const uint16_t *)source, srcSize, (int32_t*)buf.get(), dstSize, options);
     if (result < 0 || result > dstSize)
-      return cleanup(buf);
+      return 0;
   }
 
-  result = utf16proc_reencode(buf, result, options);
+  result = utf16proc_reencode((int32_t*)buf.get(), result, options);
   if (result < 0)
-    return cleanup(buf);
-
+    return 0;  
+      
   // Write the end and push it into stream
-  XMLCh* output = (XMLCh *)buf;
-  output[result] = 0;
-  dest.append(output);
-
-  return cleanup(buf);
+  XMLCh* output = (XMLCh *)buf.adopt();
+  output[result] = XMLCh(0);
+  
+  return output; 
 }
 
-void UnicodeTransformer::normalizeC(const XMLCh* source, XMLBuffer &dest)
+XMLCh* UnicodeTransformer::normalizeC(const XMLCh* source, XPath2MemoryManager* mm)
 {
-  transformUTF16(source, dest, UTF8PROC_COMPOSE);
+  return transformUTF16(source, UTF8PROC_COMPOSE, mm);
 }
 
-void UnicodeTransformer::normalizeD(const XMLCh* source, XMLBuffer &dest)
+XMLCh* UnicodeTransformer::normalizeD(const XMLCh* source, XPath2MemoryManager* mm)
 {
-  transformUTF16(source, dest, UTF8PROC_DECOMPOSE);
+  return transformUTF16(source, UTF8PROC_DECOMPOSE, mm);
 }
 
-void UnicodeTransformer::normalizeKC(const XMLCh* source, XMLBuffer &dest)
+XMLCh* UnicodeTransformer::normalizeKC(const XMLCh* source, XPath2MemoryManager* mm)
 {
-  transformUTF16(source, dest, UTF8PROC_COMPAT | UTF8PROC_COMPOSE);
+  return transformUTF16(source, UTF8PROC_COMPAT | UTF8PROC_COMPOSE, mm);
 }
 
-void UnicodeTransformer::normalizeKD(const XMLCh* source, XMLBuffer &dest)
+XMLCh* UnicodeTransformer::normalizeKD(const XMLCh* source, XPath2MemoryManager* mm)
 {
-  transformUTF16(source, dest, UTF8PROC_COMPAT | UTF8PROC_DECOMPOSE);
+  return transformUTF16(source, UTF8PROC_COMPAT | UTF8PROC_DECOMPOSE, mm);
 }
 
-void UnicodeTransformer::caseFold(const XMLCh* source, XMLBuffer &dest)
+XMLCh* UnicodeTransformer::caseFold(const XMLCh* source, XPath2MemoryManager* mm)
 {
-  transformUTF16(source, dest, UTF8PROC_CASEFOLD);
+  return transformUTF16(source, UTF8PROC_CASEFOLD, mm);
 }
 
-void UnicodeTransformer::removeDiacritics(const XMLCh* source, XMLBuffer &dest)
+XMLCh* UnicodeTransformer::removeDiacritics(const XMLCh* source, XPath2MemoryManager* mm)
 {
-  transformUTF16(source, dest, UTF8PROC_DECOMPOSE | UTF8PROC_REMOVE_DIACRITIC);
+  return transformUTF16(source, UTF8PROC_DECOMPOSE | UTF8PROC_REMOVE_DIACRITIC, mm);
 }
 
-void UnicodeTransformer::caseFoldAndRemoveDiacritics(const XMLCh* source, XMLBuffer &dest)
+XMLCh* UnicodeTransformer::caseFoldAndRemoveDiacritics(const XMLCh* source, XPath2MemoryManager* mm)
 {
-  transformUTF16(source, dest, UTF8PROC_DECOMPOSE | UTF8PROC_CASEFOLD | UTF8PROC_REMOVE_DIACRITIC);
+  return transformUTF16(source, UTF8PROC_DECOMPOSE | UTF8PROC_CASEFOLD | UTF8PROC_REMOVE_DIACRITIC, mm);
 }
 
-void UnicodeTransformer::lowerCase(const XMLCh* source, XMLBuffer &dest)
+XMLCh* UnicodeTransformer::lowerCase(const XMLCh* source, XPath2MemoryManager* mm)
 {
-  transformUTF16(source, dest, UTF8PROC_LOWERCASE);
+  return transformUTF16(source, UTF8PROC_LOWERCASE, mm);
 }
 
-void UnicodeTransformer::upperCase(const XMLCh* source, XMLBuffer &dest)
+XMLCh* UnicodeTransformer::upperCase(const XMLCh* source, XPath2MemoryManager* mm)
 {
-  transformUTF16(source, dest, UTF8PROC_UPPERCASE);
+  return transformUTF16(source, UTF8PROC_UPPERCASE, mm);
 }
 
-void UnicodeTransformer::words(const XMLCh* source, XMLBuffer &dest)
+XMLCh* UnicodeTransformer::words(const XMLCh* source, XPath2MemoryManager* mm)
 {
-  transformUTF16(source, dest, UTF8PROC_WORDBOUND);
+  return transformUTF16(source, UTF8PROC_WORDBOUND, mm);
 }
 
-void UnicodeTransformer::sentences(const XMLCh* source, XMLBuffer &dest)
+XMLCh* UnicodeTransformer::sentences(const XMLCh* source, XPath2MemoryManager* mm)
 {
-  transformUTF16(source, dest, UTF8PROC_SENTENCEBOUND);
+  return transformUTF16(source, UTF8PROC_SENTENCEBOUND, mm);
+}
+
+XMLCh* UnicodeTransformer::wordsAndSentences(const XMLCh* source, XPath2MemoryManager *mm)
+{
+  AutoDeallocate<XMLCh> tmp(transformUTF16(source, UTF8PROC_STRIPCC, mm), mm);
+  return transformUTF16(tmp.get(), UTF8PROC_WORDBOUND | UTF8PROC_SENTENCEBOUND, mm);
+}
+
+bool UnicodeTransformer::isPunctuation(const XMLCh* source, int &codeSize)
+{
+  codeSize = 1;
+  if((*source) >=0xD800 && (*source) <= 0xDBFF){
+    codeSize = 2;
+  }
+
+  const utf8proc_property_t *property; 
+  if(codeSize == 2){
+    int32_t* uc = (int32_t *)source;
+    property = utf8proc_get_property(*uc);
+  } else {
+    property = utf8proc_get_property(*source);
+  }
+
+  if(property->category == UTF8PROC_CATEGORY_PC
+    || property->category == UTF8PROC_CATEGORY_PD
+    || property->category == UTF8PROC_CATEGORY_PS
+    || property->category == UTF8PROC_CATEGORY_PE
+    || property->category == UTF8PROC_CATEGORY_PI
+    || property->category == UTF8PROC_CATEGORY_PF
+    || property->category == UTF8PROC_CATEGORY_PO)
+    return true;
+
+  return false;
+}
+
+bool UnicodeTransformer::isSpaceSeparator(const XMLCh* source)
+{
+
+  const utf8proc_property_t *property; 
+  property = utf8proc_get_property(*source);
+
+  if(property->category == UTF8PROC_CATEGORY_ZS)
+    return true;
+
+  return false;
+}
+
+
+bool UnicodeTransformer::isSpacesOrPunctuations(const XMLCh* start, const XMLCh* end)
+{
+  const XMLCh* tmp = start;
+  int codeLen = 1;
+  
+  while(tmp != end){
+    if( !isSpaceSeparator(tmp) || !isPunctuation(tmp, codeLen))
+      return false;
+
+    tmp = tmp + codeLen;;
+  }
+
+  return true;
 }

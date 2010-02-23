@@ -58,10 +58,9 @@ Sequence FunctionSentences::createSequence(DynamicContext* context, int flags) c
     return Sequence(memMgr);
 
   const XMLCh *input=inputString->asString(context);
-  XMLBuffer buf(1023, context->getMemoryManager());
-  UnicodeTransformer::sentences(input, buf);
+  AutoDeallocate<XMLCh> buf(UnicodeTransformer::sentences(input, memMgr), memMgr);
 
-  XMLCh* rb = buf.getRawBuffer();
+  XMLCh* rb = buf.get();
   XMLCh* start = NULL;
   Sequence resultSeq(0, memMgr);
 

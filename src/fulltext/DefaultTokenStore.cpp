@@ -23,6 +23,9 @@
 #include <xqilla/framework/XPath2MemoryManager.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/utils/UnicodeTransformer.hpp>
+extern "C" {
+#include <xqilla/utils/utf8proc.h>
+}
 
 #include <xercesc/util/XMLString.hpp>
 
@@ -34,20 +37,17 @@ DefaultTokenStore::DefaultTokenStore(const Node::Ptr &node, const Tokenizer *tok
                                      DynamicContext *context)
   : tokens_(73, /*adoptElems*/true, context->getMemoryManager()),
     numTokens_(0),
-    mm_(context->getMemoryManager()),
-    buffer_(1023, context->getMemoryManager())
+    mm_(context->getMemoryManager())
 {
   TokenStream::Ptr stream = tokenizer->tokenize(node, context);
   TokenInfo token;
   while((token = stream->next()).word_ != 0) {
     ++numTokens_;
-    buffer_.reset();
-    UnicodeTransformer::caseFoldAndRemoveDiacritics(token.word_, buffer_);
-
-    TokenEntry *entry = tokens_.get(buffer_.getRawBuffer());
+    AutoDeallocate<XMLCh> buf(UnicodeTransformer::caseFoldAndRemoveDiacritics(token.word_, mm_), mm_);
+    TokenEntry *entry = tokens_.get(buf.get());
     if(entry == 0) {
       entry = new TokenEntry();
-      tokens_.put((void*)mm_->getPooledString(buffer_.getRawBuffer()), entry);
+      tokens_.put((void*)mm_->getPooledString(buf.get()), entry);
     }
     entry->addToken(token);
   }
@@ -56,17 +56,14 @@ DefaultTokenStore::DefaultTokenStore(const Node::Ptr &node, const Tokenizer *tok
 DefaultTokenStore::DefaultTokenStore(XPath2MemoryManager *mm)
   : tokens_(3, /*adoptElems*/true, mm),
     numTokens_(0),
-    mm_(mm),
-    buffer_(0, mm)
+    mm_(mm)
 {
 }
 
 TokenStream::Ptr DefaultTokenStore::findTokens(const XMLCh *searchString) const
 {
-  buffer_.reset();
-  UnicodeTransformer::caseFoldAndRemoveDiacritics(searchString, buffer_);
-
-  const TokenEntry *entry = tokens_.get(buffer_.getRawBuffer());
+  AutoDeallocate<XMLCh> buf(UnicodeTransformer::caseFoldAndRemoveDiacritics(searchString, mm_), mm_);
+  const TokenEntry *entry = tokens_.get(buf.get());
   if(entry == 0) return 0;
   return entry->getTokenStream();
 }

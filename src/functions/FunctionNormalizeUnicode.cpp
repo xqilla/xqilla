@@ -109,19 +109,19 @@ Sequence FunctionNormalizeUnicode::createSequence(DynamicContext* context, int f
     return Sequence(context->getItemFactory()->createString(str, context), memMgr);
   }
   else {
-    XMLBuffer buf(1023, context->getMemoryManager());
+    AutoDeallocate<XMLCh> buf(0, memMgr);
 
     if(XPath2Utils::equals(normalization, fg_NFC)) {
-      UnicodeTransformer::normalizeC(str, buf);
+      buf.set(UnicodeTransformer::normalizeC(str, memMgr));
     }
     else if(XPath2Utils::equals(normalization, fg_NFD)) {
-      UnicodeTransformer::normalizeD(str, buf);
+      buf.set(UnicodeTransformer::normalizeD(str, memMgr));
     }
     else if(XPath2Utils::equals(normalization, fg_NFKC)) {
-      UnicodeTransformer::normalizeKC(str, buf);
+      buf.set(UnicodeTransformer::normalizeKC(str, memMgr));
     }
     else if(XPath2Utils::equals(normalization, fg_NFKD)) {
-      UnicodeTransformer::normalizeKD(str, buf);
+      buf.set(UnicodeTransformer::normalizeKD(str, memMgr));
     }
     else if(XPath2Utils::equals(normalization, fg_fully)) {
       XQThrow(FunctionException, X("FunctionNormalizeUnicode::createSequence"), X("Unsupported normalization form [err:FOCH0003]."));
@@ -130,7 +130,7 @@ Sequence FunctionNormalizeUnicode::createSequence(DynamicContext* context, int f
       XQThrow(FunctionException, X("FunctionNormalizeUnicode::createSequence"), X("Invalid normalization form [err:FOCH0003]."));
    }
 
-    return Sequence(context->getItemFactory()->createString(buf.getRawBuffer(), context), memMgr);
+    return Sequence(context->getItemFactory()->createString(buf.get(), context), memMgr);
   }
 
   // Never reached

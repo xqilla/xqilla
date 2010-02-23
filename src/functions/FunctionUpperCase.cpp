@@ -56,7 +56,6 @@ Sequence FunctionUpperCase::createSequence(DynamicContext* context, int flags) c
     return Sequence(context->getItemFactory()->createString(XMLUni::fgZeroLenString, context), memMgr);
   }
 
-  XMLBuffer buf(1023, context->getMemoryManager());
-  UnicodeTransformer::upperCase(arg->asString(context), buf);
-  return Sequence(context->getItemFactory()->createString(buf.getRawBuffer(), context), memMgr);
+  AutoDeallocate<XMLCh> buf(UnicodeTransformer::upperCase(arg->asString(context), memMgr), memMgr);
+  return Sequence(context->getItemFactory()->createString(buf.get(), context), memMgr);
 }

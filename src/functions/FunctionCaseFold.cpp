@@ -56,7 +56,6 @@ Sequence FunctionCaseFold::createSequence(DynamicContext* context, int flags) co
     return Sequence(context->getItemFactory()->createString(XMLUni::fgZeroLenString, context), memMgr);
   }
 
-  XMLBuffer buf(1023, context->getMemoryManager());
-  UnicodeTransformer::caseFold(arg->asString(context), buf);
-  return Sequence(context->getItemFactory()->createString(buf.getRawBuffer(), context), memMgr);
+  AutoDeallocate<XMLCh> buf(UnicodeTransformer::caseFold(arg->asString(context), memMgr), memMgr);
+  return Sequence(context->getItemFactory()->createString(buf.get(), context), memMgr);
 }
