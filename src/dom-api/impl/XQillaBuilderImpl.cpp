@@ -120,26 +120,28 @@ DOMDocument* XQillaBuilderImpl::getDocumentAndAddGrammar() {
       return 0;
     }
 
-    //we copy this gramamr and reset the parser one in the process.
-    XMLGrammarPool *oldGrPool = getGrammarResolver()->getGrammarPool();
-    XQillaXMLGrammarPoolImpl *gr = new (getMemoryManager()) XQillaXMLGrammarPoolImpl(getMemoryManager());
+    if(getParameter(XMLUni::fgXercesDOMHasPSVIInfo)) {
+      //we copy this gramamr and reset the parser one in the process.
+      XMLGrammarPool *oldGrPool = getGrammarResolver()->getGrammarPool();
+      XQillaXMLGrammarPoolImpl *gr = new (getMemoryManager()) XQillaXMLGrammarPoolImpl(getMemoryManager());
 
-    // manually copy string pool contents to work around XERCESC-1798.
-    const XMLStringPool* src = oldGrPool->getURIStringPool();
-    XMLStringPool* dst = gr->getURIStringPool();
+      // manually copy string pool contents to work around XERCESC-1798.
+      const XMLStringPool* src = oldGrPool->getURIStringPool();
+      XMLStringPool* dst = gr->getURIStringPool();
 
-    for (unsigned int i = 1; i < src->getStringCount() + 1; ++i)
+      for (unsigned int i = 1; i < src->getStringCount() + 1; ++i)
         dst->addOrFind (src->getValueForId(i));
 
-    RefHashTableOfEnumerator< Grammar> enumerator
+      RefHashTableOfEnumerator< Grammar> enumerator
         = oldGrPool->getGrammarEnumerator();
 
-    while(enumerator.hasMoreElements()) {
+      while(enumerator.hasMoreElements()) {
         Grammar &g = enumerator.nextElement();
         gr->cacheGrammar(getGrammarResolver()->orphanGrammar(g.getGrammarDescription()->getGrammarKey()));
-    }
+      }
 
-    ((XQillaDocumentImpl*)doc)->setGrammarPool(gr, true);
+      ((XQillaDocumentImpl*)doc)->setGrammarPool(gr, true);
+    }
 
     return doc;
 }
