@@ -21,6 +21,10 @@
 #include <xqilla/fulltext/DefaultTokenizer.hpp>
 #include <xqilla/framework/XPath2MemoryManager.hpp>
 #include <xqilla/context/DynamicContext.hpp>
+#include <xqilla/utils/UnicodeTransformer.hpp>
+extern "C" {
+#include <xqilla/utils/utf8proc.h>
+}
 
 #include <xercesc/util/XMLString.hpp>
 
@@ -39,15 +43,20 @@ TokenStream::Ptr DefaultTokenizer::tokenize(const XMLCh *str, XPath2MemoryManage
 }
 
 DefaultTokenizer::DefaultTokenStream::DefaultTokenStream(const XMLCh *str, XPath2MemoryManager *mm)
-  : string_(XMLString::replicate(str, mm)),
-    current_(string_),
-    tokenStart_(0),
+  : tokenStart_(0),
     position_(0),
     sentence_(0),
     paragraph_(0),
     seenEndOfSentence_(false),
     mm_(mm)
 {
+  //string_ will point to memory allocated in wordsAndSentences
+  string_ = UnicodeTransformer::wordsAndSentences(str, mm_); 
+  current_ = string_;
+
+  //skip over the first <WB> and <SB>
+  current_++;
+  current_++;
 }
 
 DefaultTokenizer::DefaultTokenStream::~DefaultTokenStream()
@@ -55,67 +64,65 @@ DefaultTokenizer::DefaultTokenStream::~DefaultTokenStream()
   mm_->deallocate(string_);
 }
 
-#define REPORT_TOKEN \
-      if(tokenStart_ != 0) { \
-        *current_ = 0; \
-        result.word_ = mm_->getPooledString(tokenStart_); \
-        result.position_ = position_; \
-        result.sentence_ = sentence_; \
-        result.paragraph_ = paragraph_; \
-        ++position_; \
-        tokenStart_ = 0; \
-      }
-
-
 TokenInfo DefaultTokenizer::DefaultTokenStream::next()
 {
   TokenInfo result;
   memset(&result, 0, sizeof(TokenInfo));
-  while(result.word_ == 0) {
-    switch(*current_) {
-    case '\n': {
-      REPORT_TOKEN;
-      if(seenEndOfSentence_) {
-        ++paragraph_;
-        seenEndOfSentence_ = false;
-      }
-      break;
-    }
-    case '!':
-    case '?':
-    case ':':
-    case '.': {
-      REPORT_TOKEN;
-      if(!seenEndOfSentence_) {
-        ++sentence_;
-        seenEndOfSentence_ = true;
-      }
-      break;
-    }
-    case '\r':
-    case '\t':
-    case ' ':
-    case '"':
-    case '\'':
-    case '`':
-    case ';':
-    case ',': {
-      REPORT_TOKEN;
-      break;
-    }
-    case 0: {
-      REPORT_TOKEN;
-      return result;
-    }
-    default: {
-      if(tokenStart_ == 0) {
-        tokenStart_ = current_;
-        seenEndOfSentence_ = false;
-      }
-      break;
-    }
-    }
 
+  // in case that utf8proc return 0
+  if(current_ == 0)
+    return result;
+
+  while(result.word_ == 0) {
+    switch(*current_){
+      case UTF8PROC_SB_MARK: {
+        ++sentence_;
+        break;
+      }  
+      case UTF8PROC_WB_MARK:{
+        if(tokenStart_ != 0 
+          && !UnicodeTransformer::isSpacesOrPunctuations(tokenStart_, current_-1)) {
+          //report a token
+          //token is form tokenStart_ to current_-1
+          result.word_ = mm_->getPooledString(tokenStart_, current_-tokenStart_);
+          result.paragraph_ = paragraph_;
+          result.position_ = position_;
+          result.sentence_ = sentence_;
+          ++position_;
+          tokenStart_ = 0;
+        }
+
+        break;
+      }
+      case 0:{//end of the string
+        return result;
+      }
+      default: {
+        // if current is a single space seperator and after is <WB>
+        // like: "<WB> <WB>", ignore it
+        if(tokenStart_ == 0 
+          && *(current_+1) == UTF8PROC_WB_MARK
+          && UnicodeTransformer::isSpaceSeparator(current_)){
+          break;  
+        }
+
+        // if current is a single punctuation and after is <WB>, 
+        // like: "<WB>)<WB>", ignore it
+        int codeSize;
+        if(tokenStart_ == 0  
+          && (*(current_+1) == UTF8PROC_WB_MARK || *(current_+2) == UTF8PROC_WB_MARK) 
+          && UnicodeTransformer::isPunctuation(current_, codeSize)){
+          if (*(current_ + codeSize) == UTF8PROC_WB_MARK)
+            current_ = current_ + codeSize-1;
+
+          break;
+        }
+
+        if(tokenStart_ == 0) {
+          tokenStart_ = current_;
+        }
+      }
+    }
     ++current_;
   }
 
