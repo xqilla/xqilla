@@ -161,6 +161,12 @@
       <query name="bug5"/>
       <output-file compare="Fragment">bug5.out</output-file>
     </test-case>
+    <test-case name="bug6" FilePath="bugs/">
+      <!-- Don't use default namespace for computed attribute constructors -->
+      <!-- Generate prefixes for prefixless attributes in a namespace during namespace fixup -->
+      <query name="bug6"/>
+      <output-file compare="Fragment">bug6.out</output-file>
+    </test-case>
   </test-group>
 
   <test-group name="unicode">
