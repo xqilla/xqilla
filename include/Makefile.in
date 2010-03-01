@@ -321,7 +321,6 @@ xqilla/context/DynamicContext.hpp \
 xqilla/context/StaticContext.hpp \
 xqilla/context/ItemFactory.hpp \
 xqilla/context/MessageListener.hpp \
-xqilla/context/ModuleResolver.hpp \
 xqilla/context/URIResolver.hpp \
 xqilla/context/VariableStore.hpp \
 xqilla/context/Scope.hpp \
