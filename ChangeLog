@@ -1,6 +1,20 @@
 XQilla: an XQuery and XPath 2.0 library and command line interpreter.
 
 
+version 2.2.4 (2010.03.01):
+	* Modified to build against Xerces-C 3.1.0
+	* Modified the DOM 3 API to only orphan grammars if PSVI is enabled.
+	* Fixed computed attribute constructors not to use the default element
+	  namespace for names.
+	* Modified node serialization to generate prefixes for attributes with
+	  no prefix but in a namespace.
+	* Modified node serialization to use existing prefixes if possible.
+	* Fixed an unknown exception during certain update operations.
+	* Build fix for Sun Workshop 6 compiler.
+	* Build fix for older GCC.
+	* Added maintainer mode (--enable-maintainer-mode) to rebuild build
+	  related files.
+	
 version 2.2.3 (2009.11.12):
 	* Work around for a Xerces-C bug in DOMDocument::importNode() that
 	  resulted in badly copied prefixes using XQuery Update.
