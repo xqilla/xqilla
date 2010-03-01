@@ -671,7 +671,7 @@ namespace XQParser {
 %type <astNode>      CompElemConstructor CompTextConstructor CompPIConstructor CompCommentConstructor OrderedExpr UnorderedExpr
 %type <astNode>      CompAttrConstructor CompDocConstructor DoubleLiteral InstanceofExpr DirectConstructor 
 %type <astNode>      ExtensionExpr FTContainsExpr FTIgnoreOption VarDeclValue LeadingSlash CompPINCName
-%type <astNode>      InsertExpr DeleteExpr RenameExpr ReplaceExpr TransformExpr CompConstructorName
+%type <astNode>      InsertExpr DeleteExpr RenameExpr ReplaceExpr TransformExpr CompElementName CompAttrName
 %type <astNode>      ForwardStep ReverseStep AbbrevForwardStep AbbrevReverseStep OrderExpr CompPIConstructorContent
 %type <astNode>      PathPattern_XSLT IdValue_XSLT KeyValue_XSLT CallTemplateExpr ApplyTemplatesExpr
 %type <astNode>      DereferencedFunctionCall InlineFunction LiteralFunctionRef FunctionRef
@@ -4427,17 +4427,17 @@ CompDocConstructor:
 
 // [114]    CompElemConstructor    ::=    (<"element" QName "{"> |  (<"element" "{"> Expr "}" "{")) ContentExpr? "}" 
 CompElemConstructor:
-  _ELEMENT_ CompConstructorName ContentExpr
+  _ELEMENT_ CompElementName ContentExpr
   {
     VectorOfASTNodes* empty = new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR));
     $$ = WRAP(@1, new (MEMMGR) XQElementConstructor($2, empty, $3, MEMMGR));
   }
   ;
 
-CompConstructorName:
+CompElementName:
   _CONSTR_QNAME_
   {
-    $$ = WRAP(@1, new (MEMMGR) XQDirectName($1, /*useDefaultNamespace*/false, MEMMGR));
+    $$ = WRAP(@1, new (MEMMGR) XQDirectName($1, /*useDefaultNamespace*/true, MEMMGR));
   }
   | _LBRACE_EXPR_ENCLOSURE_ Expr _RBRACE_
   {
@@ -4460,9 +4460,20 @@ ContentExpr:
 
 // [116]    CompAttrConstructor    ::=    (<"attribute" QName "{"> |  (<"attribute" "{"> Expr "}" "{")) Expr? "}" 
 CompAttrConstructor:
-  _ATTRIBUTE_ CompConstructorName ContentExpr
+  _ATTRIBUTE_ CompAttrName ContentExpr
   {
     $$ = WRAP(@1, new (MEMMGR) XQAttributeConstructor($2, $3, MEMMGR));
+  }
+  ;
+
+CompAttrName:
+  _CONSTR_QNAME_
+  {
+    $$ = WRAP(@1, new (MEMMGR) XQDirectName($1, /*useDefaultNamespace*/false, MEMMGR));
+  }
+  | _LBRACE_EXPR_ENCLOSURE_ Expr _RBRACE_
+  {
+    $$ = $2;
   }
   ;
 
