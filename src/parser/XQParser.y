@@ -4166,14 +4166,14 @@ DirElemConstructor:
   _LESS_THAN_OP_OR_TAG_ DirElemConstructorQName DirAttributeList OptionalWhitespace _EMPTY_TAG_CLOSE_
   { 
     VectorOfASTNodes* content = new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR));
-    ASTNode *name = WRAP(@2, new (MEMMGR) XQDirectName($2, /*isAttr*/false, MEMMGR));
+    ASTNode *name = WRAP(@2, new (MEMMGR) XQDirectName($2, /*useDefaultNamespace*/true, MEMMGR));
     $$ = WRAP(@1, new (MEMMGR) XQElementConstructor(name, $3, content, MEMMGR));
   }
   | _LESS_THAN_OP_OR_TAG_ DirElemConstructorQName DirAttributeList OptionalWhitespace _START_TAG_CLOSE_ DirElementContent _END_TAG_OPEN_ DirElemConstructorQName OptionalWhitespace _END_TAG_CLOSE_
   { 
     if(!XPath2Utils::equals($2, $8))
       yyerror(@7, "Close tag does not match open tag");
-    ASTNode *name = WRAP(@2, new (MEMMGR) XQDirectName($2, /*isAttr*/false, MEMMGR));
+    ASTNode *name = WRAP(@2, new (MEMMGR) XQDirectName($2, /*useDefaultNamespace*/true, MEMMGR));
     $$ = WRAP(@1, new (MEMMGR) XQElementConstructor(name, $3, $6, MEMMGR));
   }
   ;
@@ -4190,7 +4190,7 @@ DirAttributeList:
   {
     $$ = $1;
 
-    ASTNode *name = WRAP(@3, new (MEMMGR) XQDirectName($3, /*isAttr*/true, MEMMGR));
+    ASTNode *name = WRAP(@3, new (MEMMGR) XQDirectName($3, /*useDefaultNamespace*/false, MEMMGR));
     ASTNode *attrItem = WRAP(@3, new (MEMMGR) XQAttributeConstructor(name, $7,MEMMGR));
 
     $$->push_back(attrItem);
@@ -4199,7 +4199,7 @@ DirAttributeList:
   {
     $$ = $1;
 
-    ASTNode *name = WRAP(@3, new (MEMMGR) XQDirectName($3, /*isAttr*/true, MEMMGR));
+    ASTNode *name = WRAP(@3, new (MEMMGR) XQDirectName($3, /*useDefaultNamespace*/false, MEMMGR));
     ASTNode *attrItem = WRAP(@3, new (MEMMGR) XQAttributeConstructor(name, $7,MEMMGR));
 
     $$->insert($$->begin(), attrItem);
@@ -4437,7 +4437,7 @@ CompElemConstructor:
 CompConstructorName:
   _CONSTR_QNAME_
   {
-    $$ = WRAP(@1, new (MEMMGR) XQDirectName($1, /*isAttr*/false, MEMMGR));
+    $$ = WRAP(@1, new (MEMMGR) XQDirectName($1, /*useDefaultNamespace*/false, MEMMGR));
   }
   | _LBRACE_EXPR_ENCLOSURE_ Expr _RBRACE_
   {
