@@ -668,7 +668,7 @@ namespace XQParser {
 %type <astNode>      CompElemConstructor CompTextConstructor CompPIConstructor CompCommentConstructor OrderedExpr UnorderedExpr
 %type <astNode>      CompAttrConstructor CompDocConstructor DoubleLiteral InstanceofExpr DirectConstructor 
 %type <astNode>      ExtensionExpr FTContainsExpr FTIgnoreOption VarDeclValue LeadingSlash CompPINCName
-%type <astNode>      InsertExpr DeleteExpr RenameExpr ReplaceExpr TransformExpr CompConstructorName
+%type <astNode>      InsertExpr DeleteExpr RenameExpr ReplaceExpr TransformExpr CompElementName CompAttrName
 %type <astNode>      ForwardStep ReverseStep AbbrevForwardStep AbbrevReverseStep OrderExpr CompPIConstructorContent
 %type <astNode>      PathPattern_XSLT IdValue_XSLT KeyValue_XSLT CallTemplateExpr ApplyTemplatesExpr
 %type <astNode>      DereferencedFunctionCall InlineFunction LiteralFunctionRef FunctionRef
@@ -4166,14 +4166,14 @@ DirElemConstructor:
   _LESS_THAN_OP_OR_TAG_ DirElemConstructorQName DirAttributeList OptionalWhitespace _EMPTY_TAG_CLOSE_
   { 
     VectorOfASTNodes* content = new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR));
-    ASTNode *name = WRAP(@2, new (MEMMGR) XQDirectName($2, /*isAttr*/false, MEMMGR));
+    ASTNode *name = WRAP(@2, new (MEMMGR) XQDirectName($2, /*useDefaultNamespace*/true, MEMMGR));
     $$ = WRAP(@1, new (MEMMGR) XQElementConstructor(name, $3, content, MEMMGR));
   }
   | _LESS_THAN_OP_OR_TAG_ DirElemConstructorQName DirAttributeList OptionalWhitespace _START_TAG_CLOSE_ DirElementContent _END_TAG_OPEN_ DirElemConstructorQName OptionalWhitespace _END_TAG_CLOSE_
   { 
     if(!XPath2Utils::equals($2, $8))
       yyerror(@7, "Close tag does not match open tag");
-    ASTNode *name = WRAP(@2, new (MEMMGR) XQDirectName($2, /*isAttr*/false, MEMMGR));
+    ASTNode *name = WRAP(@2, new (MEMMGR) XQDirectName($2, /*useDefaultNamespace*/true, MEMMGR));
     $$ = WRAP(@1, new (MEMMGR) XQElementConstructor(name, $3, $6, MEMMGR));
   }
   ;
@@ -4190,7 +4190,7 @@ DirAttributeList:
   {
     $$ = $1;
 
-    ASTNode *name = WRAP(@3, new (MEMMGR) XQDirectName($3, /*isAttr*/true, MEMMGR));
+    ASTNode *name = WRAP(@3, new (MEMMGR) XQDirectName($3, /*useDefaultNamespace*/false, MEMMGR));
     ASTNode *attrItem = WRAP(@3, new (MEMMGR) XQAttributeConstructor(name, $7,MEMMGR));
 
     $$->push_back(attrItem);
@@ -4199,7 +4199,7 @@ DirAttributeList:
   {
     $$ = $1;
 
-    ASTNode *name = WRAP(@3, new (MEMMGR) XQDirectName($3, /*isAttr*/true, MEMMGR));
+    ASTNode *name = WRAP(@3, new (MEMMGR) XQDirectName($3, /*useDefaultNamespace*/false, MEMMGR));
     ASTNode *attrItem = WRAP(@3, new (MEMMGR) XQAttributeConstructor(name, $7,MEMMGR));
 
     $$->insert($$->begin(), attrItem);
@@ -4427,17 +4427,17 @@ CompDocConstructor:
 
 // [114]    CompElemConstructor    ::=    (<"element" QName "{"> |  (<"element" "{"> Expr "}" "{")) ContentExpr? "}" 
 CompElemConstructor:
-  _ELEMENT_ CompConstructorName ContentExpr
+  _ELEMENT_ CompElementName ContentExpr
   {
     VectorOfASTNodes* empty = new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR));
     $$ = WRAP(@1, new (MEMMGR) XQElementConstructor($2, empty, $3, MEMMGR));
   }
   ;
 
-CompConstructorName:
+CompElementName:
   _CONSTR_QNAME_
   {
-    $$ = WRAP(@1, new (MEMMGR) XQDirectName($1, /*isAttr*/false, MEMMGR));
+    $$ = WRAP(@1, new (MEMMGR) XQDirectName($1, /*useDefaultNamespace*/true, MEMMGR));
   }
   | _LBRACE_ Expr _RBRACE_
   {
@@ -4460,9 +4460,20 @@ ContentExpr:
 
 // [116]    CompAttrConstructor    ::=    (<"attribute" QName "{"> |  (<"attribute" "{"> Expr "}" "{")) Expr? "}" 
 CompAttrConstructor:
-  _ATTRIBUTE_ CompConstructorName ContentExpr
+  _ATTRIBUTE_ CompAttrName ContentExpr
   {
     $$ = WRAP(@1, new (MEMMGR) XQAttributeConstructor($2, $3, MEMMGR));
+  }
+  ;
+
+CompAttrName:
+  _CONSTR_QNAME_
+  {
+    $$ = WRAP(@1, new (MEMMGR) XQDirectName($1, /*useDefaultNamespace*/false, MEMMGR));
+  }
+  | _LBRACE_ Expr _RBRACE_
+  {
+    $$ = $2;
   }
   ;
 

@@ -140,10 +140,10 @@ EventGenerator::Ptr XQContentSequence::generateEvents(EventHandler *events, Dyna
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-XQDirectName::XQDirectName(const XMLCh *qname, bool isAttr, XPath2MemoryManager* mm)
+XQDirectName::XQDirectName(const XMLCh *qname, bool useDefaultNamespace, XPath2MemoryManager* mm)
   : ASTNodeImpl(DIRECT_NAME, mm),
     qname_(qname),
-    isAttr_(isAttr)
+    useDefaultNamespace_(useDefaultNamespace)
 {
 }
 
@@ -155,7 +155,7 @@ ASTNode *XQDirectName::staticResolution(StaticContext *context)
   const XMLCh* uri = 0;
   if(prefix == 0 || *prefix == 0) {
     // If qname has no prefix
-    if(!isAttr_)
+    if(useDefaultNamespace_)
       uri = context->getDefaultElementAndTypeNS();
   }
   else {

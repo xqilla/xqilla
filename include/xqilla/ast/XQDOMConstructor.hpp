@@ -79,18 +79,18 @@ private:
 class XQILLA_API XQDirectName : public ASTNodeImpl
 {
 public:
-  XQDirectName(const XMLCh *qname, bool isAttr, XPath2MemoryManager* mm);
+  XQDirectName(const XMLCh *qname, bool useDefaultNamespace, XPath2MemoryManager* mm);
 
   virtual ASTNode *staticResolution(StaticContext *context);
   virtual ASTNode *staticTypingImpl(StaticContext *context);
   virtual Result createResult(DynamicContext* context, int flags=0) const;
 
   const XMLCh *getQName() const { return qname_; }
-  bool getIsAttr() const { return isAttr_; }
+  bool getUseDefaultNamespace() const { return useDefaultNamespace_; }
 
 private:
   const XMLCh *qname_;
-  bool isAttr_;
+  bool useDefaultNamespace_;
 };
 
 class XQILLA_API XQNameExpression : public ASTNodeImpl

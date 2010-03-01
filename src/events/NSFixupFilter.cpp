@@ -138,52 +138,80 @@ bool NSFixupFilter::definePrefix(const XMLCh *&prefix, const XMLCh *uri, bool at
   // The "xml" prefix is always defined
   if(XPath2Utils::equals(XMLUni::fgXMLString, prefix)) return false;
 
-  // Check if the prefix is already defined
-  NSEntry *cur = findPrefix(prefix);
+  bool define = true;
+  bool newPrefix = false;
 
-  bool result = true;
-  if(cur != 0) {
-    if(XPath2Utils::equals(uri, cur->uri)) {
-      // The prefix is already defined
-      result = false;
+  // Make up a prefix for an attribute in a namespace without one
+  if(prefix == 0 && attr) {
+    newPrefix = true;
+  }
+  else {
+    // Check if the prefix is already defined
+    NSEntry *cur = findPrefix(prefix);
+
+    if(cur != 0) {
+      if(XPath2Utils::equals(uri, cur->uri)) {
+        // The prefix is already defined
+        define = false;
+      }
+      else if(cur->level == level_) {
+        if(uri == 0) {
+          // TBD this is an error - jpcs
+          define = false;
+        }
+        else if(!redefine) {
+          define = false;
+        }
+        else {
+          newPrefix = true;
+        }
+      }
     }
-    else if(cur->level == level_) {
-      if(uri == 0) {
-        // TBD this is an error - jpcs
-        result = false;
-      }
-      else if(!redefine) {
-        result = false;
-      }
-      else {
-        // Choose a new prefix
-        static XMLCh ns_prefix[] = { 'n', 's', 0 };
-        if(prefix == 0) prefix = ns_prefix;
-
-        XMLBuffer buf(20, mm_);
-        unsigned int num = 0;
-        do {
-          ++num;
-          buf.set(prefix);
-          buf.append('_');
-          numToBuf(num, buf);
-        } while(findPrefix(buf.getRawBuffer()) != 0);
-        prefix = mm_->getPooledString(buf.getRawBuffer());
-      }
+    else if(uri == 0) {
+      // The default namespace is implicitly set to no namespace
+      define = false;
     }
   }
-  else if(uri == 0) {
-    // The default namespace is implicitly set to no namespace
-    result = false;
+
+  if(newPrefix) {
+    // See if there's an existing binding
+    NSEntry *cur = namespaces_;
+    while(cur != 0) {
+      if(XPath2Utils::equals(uri, cur->uri) &&
+         (!attr || cur->prefix != 0)) {
+        break;
+      }
+      cur = cur->prev;
+    }
+
+    if(cur != 0) {
+      prefix = cur->prefix;
+      define = false;
+    }
+    else {
+      // Choose a new prefix
+      static XMLCh ns_prefix[] = { 'n', 's', 0 };
+      if(prefix == 0) prefix = ns_prefix;
+
+      XMLBuffer buf(20, mm_);
+      unsigned int num = 0;
+      do {
+        ++num;
+        buf.set(prefix);
+        buf.append('_');
+        numToBuf(num, buf);
+      } while(findPrefix(buf.getRawBuffer()) != 0);
+      prefix = mm_->getPooledString(buf.getRawBuffer());
+    }
   }
 
   // add the mapping to our linked list
   NSEntry *entry = (NSEntry*)mm_->allocate(sizeof(NSEntry));
   entry->set(mm_->getPooledString(prefix),
-	     mm_->getPooledString(uri),
-	     level_, namespaces_);
+             mm_->getPooledString(uri),
+             level_, namespaces_);
   namespaces_ = entry;
 
-  return result;
+  return define;
 }
 
