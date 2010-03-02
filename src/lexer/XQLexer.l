@@ -416,6 +416,8 @@ void XQLexer::undoLessThan()
 <INITIAL>"nodes"                  RECOGNIZE_VALUE(_NODES_, yytext);
 <INITIAL>"id"                     RECOGNIZE_VALUE(_ID_, yytext);
 <INITIAL>"key"                    RECOGNIZE_VALUE(_KEY_, yytext);
+<INITIAL>"no"                     RECOGNIZE_VALUE(_NO_, yytext);
+<INITIAL>"with"                   RECOGNIZE_VALUE(_WITH_, yytext);
 
 <INITIAL>"namespace" {
   if(!isXPath() && lookAhead() == _COLON_COLON_) {
@@ -532,9 +534,9 @@ void XQLexer::undoLessThan()
     RECOGNIZE_VALUE(_QNAME_, yytext);
   }
 }
-<INITIAL>"ftcontains" {
+<INITIAL>"contains" {
   if(isFullText()) {
-    RECOGNIZE_VALUE(_FTCONTAINS_, yytext);
+    RECOGNIZE_VALUE(_CONTAINS_, yytext);
   } else {
     RECOGNIZE_VALUE(_QNAME_, yytext);
   }
@@ -627,12 +629,11 @@ void XQLexer::undoLessThan()
     RECOGNIZE_VALUE(_CASE_, yytext);
   }
 }
-<INITIAL>"with" {
-  int tok = lookAhead();
-  if(tok == _DIACRITICS_ || tok == _STEMMING_ || tok == _THESAURUS_ || tok == _STOP_ || tok == _DEFAULT_ || tok == _WILDCARDS_) {
-    RECOGNIZE_VALUE(_WITH_FT_, yytext);
+<INITIAL>"using" {
+  if(isFullText()) {
+    RECOGNIZE_VALUE(_USING_, yytext);
   } else {
-    RECOGNIZE_VALUE(_WITH_, yytext);
+    RECOGNIZE_VALUE(_QNAME_, yytext);
   }
 }
 <INITIAL>"at" {

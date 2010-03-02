@@ -415,6 +415,8 @@ namespace XQParser {
 %token <str> _ANCESTOR_OR_SELF_ "ancestor-of-self"
 %token <str> _DOCUMENT_ "document"
 %token <str> _NOT_ "not"
+%token <str> _USING_ "using"
+%token <str> _NO_ "no"
 %token <str> _SENSITIVE_ "sensitive"
 %token <str> _INSENSITIVE_ "insensitive"
 %token <str> _DIACRITICS_ "diacritics"
@@ -523,7 +525,7 @@ namespace XQParser {
 %token <str> _FUNCTION_                "function"
 %token <str> _FUNCTION_EXT_                "function (ext)"
 %token <str> _SCORE_                                          "score"
-%token <str> _FTCONTAINS_                                     "ftcontains"
+%token <str> _CONTAINS_                                       "contains"
 %token <str> _WEIGHT_                                         "weight"
 %token <str> _WINDOW_                                         "window"
 %token <str> _DISTANCE_                                       "distance"
@@ -554,7 +556,6 @@ namespace XQParser {
 %token <str> _AFTER_                                          "after"
 %token <str> _REVALIDATION_                                   "revalidation"
 %token <str> _WITH_                                           "with"
-%token <str> _WITH_FT_                                        "with (ft option)"
 %token <str> _NODES_                                          "nodes"
 %token <str> _RENAME_                                         "rename"
 %token <str> _LAST_                                           "last"
@@ -3543,15 +3544,15 @@ ComparisonExpr:
   | FTContainsExpr
   ;
 
-// [51]    FTContainsExpr    ::=    RangeExpr ( "ftcontains" FTSelection FTIgnoreOption? )?
+// [51]    FTContainsExpr    ::=    RangeExpr ( "contains" "text" FTSelection FTIgnoreOption? )?
 FTContainsExpr:
-  RangeExpr _FTCONTAINS_ FTSelection
+  RangeExpr _CONTAINS_ _TEXT_ FTSelection
   {
-    $$ = WRAP(@2, new (MEMMGR) FTContains($1, $3, NULL, MEMMGR));
+    $$ = WRAP(@2, new (MEMMGR) FTContains($1, $4, NULL, MEMMGR));
   }
-  | RangeExpr _FTCONTAINS_ FTSelection FTIgnoreOption
+  | RangeExpr _CONTAINS_ _TEXT_ FTSelection FTIgnoreOption
   {
-    $$ = WRAP(@2, new (MEMMGR) FTContains($1, $3, $4, MEMMGR));
+    $$ = WRAP(@2, new (MEMMGR) FTContains($1, $4, $5, MEMMGR));
   }
   | RangeExpr
   ;
@@ -5069,10 +5070,10 @@ FTBigUnit:
   }
   ;
 
-// [165]    FTMatchOptions    ::=    FTMatchOption+    /* xgc: multiple-match-options */
+// [165]    FTMatchOptions    ::=    ("using" FTMatchOption)+    /* xgc: multiple-match-options */
 FTMatchOptions:
-  FTMatchOption
-| FTMatchOptions FTMatchOption
+  _USING_ FTMatchOption
+| FTMatchOptions _USING_ FTMatchOption
 ;
 
 // [166]    FTMatchOption ::= FTLanguageOption
@@ -5130,41 +5131,41 @@ FTDiacriticsOption:
   }
   ;
 
-// [169]    FTStemOption    ::=    ("with" "stemming") | ("without" "stemming")
+// [169]    FTStemOption    ::=    "stemming" | ("no" "stemming")
 FTStemOption:
-  _WITH_FT_ _STEMMING_
+    _STEMMING_
   {
-    std::cerr << "with stemming" << std::endl;
+    std::cerr << "using stemming" << std::endl;
   }
-  | _WITHOUT_ _STEMMING_
+  | _NO_ _STEMMING_
   {
-    std::cerr << "without stemming" << std::endl;
+    std::cerr << "no stemming" << std::endl;
   }
   ;
 
-// [170]    FTThesaurusOption ::= ("with" "thesaurus" (FTThesaurusID | "default"))
-//                              | ("with" "thesaurus" "(" (FTThesaurusID | "default") ("," FTThesaurusID)* ")")
-//                              | ("without" "thesaurus")
+// [170]    FTThesaurusOption ::= ("thesaurus" (FTThesaurusID | "default"))
+//                              | ("thesaurus" "(" (FTThesaurusID | "default") ("," FTThesaurusID)* ")")
+//                              | ("no" "thesaurus")
 FTThesaurusOption:
-  _WITH_FT_ _THESAURUS_ FTThesaurusID
+    _THESAURUS_ FTThesaurusID
   {
-    std::cerr << "with thesaurus" << std::endl;
+    std::cerr << "using thesaurus" << std::endl;
   }
-  | _WITH_FT_ _THESAURUS_ _DEFAULT_
+  | _THESAURUS_ _DEFAULT_
   {
-    std::cerr << "with thesaurus default" << std::endl;
+    std::cerr << "using thesaurus default" << std::endl;
   }
-  | _WITH_FT_ _THESAURUS_ _LPAR_ FTThesaurusID FTThesaurusIDList _RPAR_
+  | _THESAURUS_ _LPAR_ FTThesaurusID FTThesaurusIDList _RPAR_
   {
-    std::cerr << "with thesaurus ()" << std::endl;
+    std::cerr << "using thesaurus ()" << std::endl;
   }
-  | _WITH_FT_ _THESAURUS_ _LPAR_ _DEFAULT_ FTThesaurusIDList _RPAR_
+  | _THESAURUS_ _LPAR_ _DEFAULT_ FTThesaurusIDList _RPAR_
   {
-    std::cerr << "with thesaurus (default)" << std::endl;
+    std::cerr << "using thesaurus (default)" << std::endl;
   }
-  | _WITHOUT_ _THESAURUS_
+  | _NO_ _THESAURUS_
   {
-    std::cerr << "without thesaurus" << std::endl;
+    std::cerr << "no thesaurus" << std::endl;
   }
   ;
 
@@ -5197,19 +5198,19 @@ FTThesaurusID:
   }
   ;
 
-// [172]    FTStopWordOption ::= ("with" "stop" "words" FTStopWords FTStopWordsInclExcl*)
-//                             | ("without" "stop" "words")
-//                             | ("with" "default" "stop" "words" FTStopWordsInclExcl*)
+// [172]    FTStopWordOption ::= ("stop" "words" FTStopWords FTStopWordsInclExcl*)
+//                             | ("no" "stop" "words")
+//                             | ("stop" "words" "default" FTStopWordsInclExcl*)
 FTStopWordOption:
-  _WITH_FT_ _STOP_ _WORDS_ FTStopWords FTStopWordsInclExclList
+    _STOP_ _WORDS_ FTStopWords FTStopWordsInclExclList
   {
     yyerror(@1, "FTStopWordOption is not supported. [err:FTST0006]");
   }
-  | _WITHOUT_ _STOP_ _WORDS_
+  | _NO_ _STOP_ _WORDS_
   {
     yyerror(@1, "FTStopWordOption is not supported. [err:FTST0006]");
   }
-  | _WITH_FT_ _DEFAULT_ _STOP_ _WORDS_ FTStopWordsInclExclList
+  | _STOP_ _WORDS_ _DEFAULT_ FTStopWordsInclExclList
   {
     yyerror(@1, "FTStopWordOption is not supported. [err:FTST0006]");
   }
@@ -5268,15 +5269,15 @@ FTLanguageOption:
   }
   ;
 
-// [176]    FTWildCardOption    ::=    ("with" "wildcards") | ("without" "wildcards")
+// [176]    FTWildCardOption    ::=    "wildcards" | ("no" "wildcards")
 FTWildCardOption:
-  _WITH_FT_ _WILDCARDS_
+   _WILDCARDS_
   {
-    std::cerr << "with wildcards" << std::endl;
+    std::cerr << "using wildcards" << std::endl;
   }
-  | _WITHOUT_ _WILDCARDS_
+  | _NO_ _WILDCARDS_
   {
-    std::cerr << "without wildcards" << std::endl;
+    std::cerr << "no wildcards" << std::endl;
   }
   ;
 
@@ -5739,7 +5740,7 @@ _LEAST_ | _COLLATION_ | _SOME_ | _EVERY_ | _SATISFIES_ | _CASE_ | _AS_ | _THEN_ 
 _OF_ | _CASTABLE_ | _TO_ | _DIV_ | _MOD_ | _UNION_ | _INTERSECT_ | _EXCEPT_ | _VALIDATE_ | _CAST_ | _TREAT_ | _IS_ |
 _PRESERVE_ | _STRIP_ | _NAMESPACE_ | _EXTERNAL_ | _ENCODING_ | _NO_PRESERVE_ | _INHERIT_ | _NO_INHERIT_ | _DECLARE_ |
 _CONSTRUCTION_ | _ORDERING_ | _DEFAULT_ | _COPY_NAMESPACES_ | _OPTION_ | _VERSION_ | _IMPORT_ | _SCHEMA_ |
-_FUNCTION_ | _SCORE_ | _FTCONTAINS_ | _WEIGHT_ | _WINDOW_ | _DISTANCE_ | _OCCURS_ | _TIMES_ | _SAME_ |
+_FUNCTION_ | _SCORE_ | _USING_ | _NO_ | _CONTAINS_ | _WEIGHT_ | _WINDOW_ | _DISTANCE_ | _OCCURS_ | _TIMES_ | _SAME_ |
 _DIFFERENT_ | _LOWERCASE_ | _UPPERCASE_ | _RELATIONSHIP_ | _LEVELS_ | _LANGUAGE_ | _ANY_ | _ALL_ | _PHRASE_ |
 _EXACTLY_ | _FROM_ | _WORDS_ | _SENTENCES_ | _PARAGRAPHS_ | _SENTENCE_ | _PARAGRAPH_ | _REPLACE_ | _MODIFY_ | _FIRST_ |
 _INSERT_ | _BEFORE_ | _AFTER_ | _REVALIDATION_ | _WITH_ | _NODES_ | _RENAME_ | _LAST_ | _DELETE_ | _INTO_ | _UPDATING_ |
