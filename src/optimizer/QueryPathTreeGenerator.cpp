@@ -1008,6 +1008,12 @@ TupleNode *QueryPathTreeGenerator::optimizeWhereTuple(WhereTuple *item)
   return item;
 }
 
+TupleNode *QueryPathTreeGenerator::optimizeCountTuple(CountTuple *item)
+{
+  optimizeTupleNode(const_cast<TupleNode*>(item->getParent()));
+  return item;
+}
+
 TupleNode *QueryPathTreeGenerator::optimizeOrderByTuple(OrderByTuple *item)
 {
   optimizeTupleNode(const_cast<TupleNode*>(item->getParent()));

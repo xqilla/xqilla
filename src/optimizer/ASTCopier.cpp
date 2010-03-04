@@ -605,6 +605,16 @@ TupleNode *ASTCopier::optimizeWhereTuple(WhereTuple *item)
   return result;
 }
 
+TupleNode *ASTCopier::optimizeCountTuple(CountTuple *item)
+{
+  CountTuple *result = new (mm_) CountTuple(item->getParent(), item->getVarURI(), item->getVarName(), mm_);
+  ASTVisitor::optimizeCountTuple(result);
+  result->setLocationInfo(item);
+  result->setMin(item->getMin());
+  result->setMax(item->getMax());
+  return result;
+}
+
 TupleNode *ASTCopier::optimizeOrderByTuple(OrderByTuple *item)
 {
   OrderByTuple *result = new (mm_) OrderByTuple(item->getParent(), item->getExpression(), item->getModifiers(),

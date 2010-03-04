@@ -162,6 +162,7 @@
         <file name='include/xqilla/ast/LetTuple.hpp'/>
         <file name='include/xqilla/ast/OrderByTuple.hpp'/>
         <file name='include/xqilla/ast/WhereTuple.hpp'/>
+        <file name='include/xqilla/ast/CountTuple.hpp'/>
         <file name='include/xqilla/ast/XQNamespaceBinding.hpp'/>
         <file name='include/xqilla/ast/XQCallTemplate.hpp'/>
         <file name='include/xqilla/ast/XQApplyTemplates.hpp'/>
@@ -538,6 +539,7 @@
         <file name="src/ast/StaticAnalysis.cpp"/>
         <file name="src/ast/StaticType.cpp"/>
         <file name="src/ast/WhereTuple.cpp"/>
+        <file name="src/ast/CountTuple.cpp"/>
         <file name="src/ast/XPath1Compat.cpp"/>
         <file name="src/ast/XQAnalyzeString.cpp"/>
         <file name="src/ast/XQApplyTemplates.cpp"/>

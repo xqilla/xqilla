@@ -107,6 +107,7 @@
 #include <xqilla/ast/LetTuple.hpp>
 #include <xqilla/ast/WhereTuple.hpp>
 #include <xqilla/ast/OrderByTuple.hpp>
+#include <xqilla/ast/CountTuple.hpp>
 
 #include <xqilla/parser/QName.hpp>
 
@@ -468,6 +469,7 @@ namespace XQParser {
 %token <str> _IN_                "in"
 %token <str> _LET_              "let"
 %token <str> _WHERE_              "where"
+%token <str> _COUNT_              "count"
 %token <str> _BY_                    "by"
 %token <str> _ORDER_              "order"
 %token <str> _STABLE_                 "stable"
@@ -709,7 +711,7 @@ namespace XQParser {
 %type <copyBindingList> TransformBindingList
 %type <templateArg>     TemplateArgument WithParamAttrs_XSLT WithParam_XSLT
 %type <templateArgs>    TemplateArgumentList ApplyTemplatesContent_XSLT CallTemplateContent_XSLT
-%type <tupleNode>       ForBinding LetBinding WhereClause FLWORTuples OrderByClause OrderSpec OrderSpecList
+%type <tupleNode>       ForBinding LetBinding WhereClause FLWORTuples OrderByClause OrderSpec OrderSpecList CountClause
 %type <tupleNode>       ForClause LetClause ForBindingList LetBindingList QuantifyBinding QuantifyBindingList InitialClause IntermediateClause
 %type <letTuple>        VariableAttrs_XSLT
 %type <caseClause>      CaseClause DefaultCase
@@ -3189,7 +3191,7 @@ FLWORTuples:
 InitialClause: ForClause | LetClause;
 
 // [44] IntermediateClause ::= InitialClause | WhereClause | GroupByClause | OrderByClause | CountClause
-IntermediateClause: InitialClause | WhereClause;
+IntermediateClause: InitialClause | WhereClause | CountClause;
 
 // [35]    ForClause    ::=    "for" "$" VarName TypeDeclaration? PositionalVar? FTScoreVar? "in" ExprSingle
 //                                        ("," "$" VarName TypeDeclaration? PositionalVar? FTScoreVar? "in" ExprSingle)*
@@ -3285,6 +3287,14 @@ WhereClause:
     $$ = WRAP(@1, new (MEMMGR) WhereTuple(0, $2, MEMMGR));
   }
 ;
+
+// [60] CountClause ::= "count" "$" VarName
+CountClause:
+    _COUNT_ _DOLLAR_ VarName
+  {
+    $$ = WRAP(@1, new (MEMMGR) CountTuple(0, $3, MEMMGR));
+  }
+  ;
 
 // [40]    OrderByClause    ::=    (<"order" "by"> |  <"stable" "order" "by">) OrderSpecList 
 OrderByClause:

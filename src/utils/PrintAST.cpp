@@ -110,6 +110,7 @@
 #include <xqilla/ast/ForTuple.hpp>
 #include <xqilla/ast/LetTuple.hpp>
 #include <xqilla/ast/WhereTuple.hpp>
+#include <xqilla/ast/CountTuple.hpp>
 #include <xqilla/ast/OrderByTuple.hpp>
 #include <xqilla/debug/TupleDebugHook.hpp>
 
@@ -2070,6 +2071,8 @@ string PrintAST::printTupleNode(const TupleNode *item, const DynamicContext *con
     return printLetTuple((LetTuple*)item, context, indent);
   case TupleNode::WHERE:
     return printWhereTuple((WhereTuple*)item, context, indent);
+  case TupleNode::COUNT:
+    return printCountTuple((CountTuple*)item, context, indent);
   case TupleNode::ORDER_BY:
     return printOrderByTuple((OrderByTuple*)item, context, indent);
   case TupleNode::DEBUG_HOOK:
@@ -2140,6 +2143,25 @@ string PrintAST::printWhereTuple(const WhereTuple *item, const DynamicContext *c
   s << printTupleNode(item->getParent(), context, indent + INDENT);
   s << printASTNode(item->getExpression(), context, indent + INDENT);
   s << in << "</WhereTuple>" << endl;
+
+  return s.str();
+}
+
+string PrintAST::printCountTuple(const CountTuple *item, const DynamicContext *context, int indent)
+{
+  ostringstream s;
+
+  string in(getIndent(indent));
+
+  s << in << "<CountTuple";
+  if(item->getVarName()) {
+    s << " uri=\"" << UTF8(item->getVarURI())
+      << "\" name=\"" << UTF8(item->getVarName())
+      << "\"";
+  }
+  s << ">" << endl;
+  s << printTupleNode(item->getParent(), context, indent + INDENT);
+  s << in << "</CountTuple>" << endl;
 
   return s.str();
 }

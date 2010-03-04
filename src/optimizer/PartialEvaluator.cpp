@@ -377,6 +377,20 @@ protected:
     return item;
   }
 
+  virtual TupleNode *optimizeCountTuple(CountTuple *item)
+  {
+    item->setParent(optimizeTupleNode(const_cast<TupleNode*>(item->getParent())));
+
+    if(required_ && required_->isVariableUsed(item->getVarURI(), item->getVarName()))
+      inScope_ = false;
+
+    if(XPath2Utils::equals(uri_, item->getVarURI()) &&
+       XPath2Utils::equals(name_, item->getVarName()))
+      active_ = false;
+
+    return item;
+  }
+
   virtual ASTNode *optimizeReturn(XQReturn *item)
   {
     AutoReset<bool> reset(active_);
@@ -1026,6 +1040,18 @@ protected:
     return item;
   }
 
+  virtual TupleNode *optimizeCountTuple(CountTuple *item)
+  {
+    item->setParent(optimizeTupleNode(const_cast<TupleNode*>(item->getParent())));
+
+    unsigned int tcount = count_;
+    count_ = 0;
+
+    count_ = uadd(tcount, umultiply(count_, item->getParent()->getMax()));
+
+    return item;
+  }
+
   virtual TupleNode *optimizeWhereTuple(WhereTuple *item)
   {
     item->setParent(optimizeTupleNode(const_cast<TupleNode*>(item->getParent())));
@@ -1142,6 +1168,9 @@ static void findLetsToInline(TupleNode *ancestor, vector<LetTuple*> &toInline, m
     findLetsToInline(ancestor->getParent(), toInline, toCount);
     countLetUsage(((ForTuple*)ancestor)->getExpression(), toCount,
                   ancestor->getParent()->getMax());
+    break;
+  case TupleNode::COUNT:
+    findLetsToInline(ancestor->getParent(), toInline, toCount);
     break;
   case TupleNode::CONTEXT_TUPLE:
   case TupleNode::DEBUG_HOOK:

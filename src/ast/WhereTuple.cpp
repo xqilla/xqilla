@@ -67,9 +67,11 @@ static bool canPushWhereBack(TupleNode *ancestor, const StaticAnalysis &exprSrc)
   }
   case TupleNode::WHERE:
     return canPushWhereBack(ancestor->getParent(), exprSrc);
+  case TupleNode::COUNT:
   case TupleNode::CONTEXT_TUPLE:
     break;
-  default:
+  case TupleNode::ORDER_BY:
+  case TupleNode::DEBUG_HOOK:
     return true;
   }
   return false;

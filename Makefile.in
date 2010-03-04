@@ -108,7 +108,7 @@ am_libxqilla_la_OBJECTS = ReferenceCounted.lo BaseMemoryManager.lo \
 	XQValidate.lo XQTypeswitch.lo XPath1Compat.lo \
 	ConvertFunctionArg.lo XQDocumentOrder.lo XQPredicate.lo \
 	XQReturn.lo TupleNode.lo ContextTuple.lo ForTuple.lo \
-	LetTuple.lo WhereTuple.lo OrderByTuple.lo \
+	LetTuple.lo WhereTuple.lo CountTuple.lo OrderByTuple.lo \
 	XQNamespaceBinding.lo XQCallTemplate.lo XQApplyTemplates.lo \
 	ASTDebugHook.lo DebugHookDecorator.lo TupleDebugHook.lo \
 	InputParser.lo InteractiveDebugger.lo StackFrame.lo \
@@ -587,6 +587,7 @@ src/ast/ContextTuple.cpp \
 src/ast/ForTuple.cpp \
 src/ast/LetTuple.cpp \
 src/ast/WhereTuple.cpp \
+src/ast/CountTuple.cpp \
 src/ast/OrderByTuple.cpp \
 src/ast/XQNamespaceBinding.cpp \
 src/ast/XQCallTemplate.cpp \
@@ -1360,6 +1361,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ContextTuple.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ContextUtils.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ConvertFunctionArg.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/CountTuple.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DatatypeFactory.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DatatypeLookup.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DateOrTimeType.Plo@am__quote@
@@ -2596,6 +2598,13 @@ WhereTuple.lo: src/ast/WhereTuple.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/ast/WhereTuple.cpp' object='WhereTuple.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o WhereTuple.lo `test -f 'src/ast/WhereTuple.cpp' || echo '$(srcdir)/'`src/ast/WhereTuple.cpp
+
+CountTuple.lo: src/ast/CountTuple.cpp
+@am__fastdepCXX_TRUE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT CountTuple.lo -MD -MP -MF $(DEPDIR)/CountTuple.Tpo -c -o CountTuple.lo `test -f 'src/ast/CountTuple.cpp' || echo '$(srcdir)/'`src/ast/CountTuple.cpp
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/CountTuple.Tpo $(DEPDIR)/CountTuple.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/ast/CountTuple.cpp' object='CountTuple.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o CountTuple.lo `test -f 'src/ast/CountTuple.cpp' || echo '$(srcdir)/'`src/ast/CountTuple.cpp
 
 OrderByTuple.lo: src/ast/OrderByTuple.cpp
 @am__fastdepCXX_TRUE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT OrderByTuple.lo -MD -MP -MF $(DEPDIR)/OrderByTuple.Tpo -c -o OrderByTuple.lo `test -f 'src/ast/OrderByTuple.cpp' || echo '$(srcdir)/'`src/ast/OrderByTuple.cpp

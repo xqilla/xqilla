@@ -17,41 +17,32 @@
  * limitations under the License.
  */
 
-#include <xqilla/ast/ForTuple.hpp>
-#include <xqilla/ast/LetTuple.hpp>
 #include <xqilla/ast/CountTuple.hpp>
 #include <xqilla/context/DynamicContext.hpp>
-#include <xqilla/context/VariableTypeStore.hpp>
-#include <xqilla/runtime/ResultBuffer.hpp>
-#include <xqilla/runtime/ClosureResult.hpp>
+#include <xqilla/utils/XStr.hpp>
 #include <xqilla/utils/XPath2NSUtils.hpp>
 #include <xqilla/utils/XPath2Utils.hpp>
-#include <xqilla/exceptions/StaticErrorException.hpp>
-#include <xqilla/utils/XStr.hpp>
+#include <xqilla/context/ItemFactory.hpp>
 
-LetTuple::LetTuple(TupleNode *parent, const XMLCh *varQName, ASTNode *expr, XPath2MemoryManager *mm)
-  : TupleNode(LET, parent, mm),
-    seqType(0),
+CountTuple::CountTuple(TupleNode *parent, const XMLCh *varQName, XPath2MemoryManager *mm)
+  : TupleNode(COUNT, parent, mm),
     varQName_(varQName),
     varURI_(0),
     varName_(0),
-    varSrc_(mm),
-    expr_(expr)
+    varSrc_(mm)
 {
 }
 
-LetTuple::LetTuple(TupleNode *parent, const XMLCh *varURI, const XMLCh *varName, ASTNode *expr, XPath2MemoryManager *mm)
-  : TupleNode(LET, parent, mm),
-    seqType(0),
+CountTuple::CountTuple(TupleNode *parent, const XMLCh *varURI, const XMLCh *varName, XPath2MemoryManager *mm)
+  : TupleNode(COUNT, parent, mm),
     varQName_(0),
     varURI_(varURI),
     varName_(varName),
-    varSrc_(mm),
-    expr_(expr)
+    varSrc_(mm)
 {
 }
 
-TupleNode *LetTuple::staticResolution(StaticContext *context)
+TupleNode *CountTuple::staticResolution(StaticContext *context)
 {
   parent_ = parent_->staticResolution(context);
 
@@ -60,54 +51,31 @@ TupleNode *LetTuple::staticResolution(StaticContext *context)
     varName_ = XPath2NSUtils::getLocalName(varQName_);
   }
 
-  expr_ = expr_->staticResolution(context);
-
   return this;
 }
 
-static bool canPushLetBack(TupleNode *ancestor, const StaticAnalysis &exprSrc)
+static bool canPushCountBack(TupleNode *ancestor)
 {
   switch(ancestor->getType()) {
-  case TupleNode::FOR: {
-    ForTuple *f = (ForTuple*)ancestor;
-    if(!exprSrc.isVariableUsed(f->getVarURI(), f->getVarName()) &&
-       !exprSrc.isVariableUsed(f->getPosURI(), f->getPosName()))
-      return true;
-    break;
-  }
-  case TupleNode::LET: {
-    LetTuple *f = (LetTuple*)ancestor;
-    if(!exprSrc.isVariableUsed(f->getVarURI(), f->getVarName()))
-      return canPushLetBack(f->getParent(), exprSrc);
-    break;
-  }
   case TupleNode::COUNT: {
-    CountTuple *f = (CountTuple*)ancestor;
-    if(!exprSrc.isVariableUsed(f->getVarURI(), f->getVarName()))
-      return canPushLetBack(f->getParent(), exprSrc);
-    break;
+    return canPushCountBack(ancestor->getParent());
   }
   case TupleNode::ORDER_BY:
   case TupleNode::WHERE:
-    return canPushLetBack(ancestor->getParent(), exprSrc);
+  case TupleNode::FOR:
   case TupleNode::CONTEXT_TUPLE:
     break;
+  case TupleNode::LET:
   case TupleNode::DEBUG_HOOK:
     return true;
   }
   return false;
 }
 
-TupleNode *LetTuple::staticTypingImpl(StaticContext *context)
+TupleNode *CountTuple::staticTypingImpl(StaticContext *context)
 {
-  if(expr_->getStaticAnalysis().isUpdating()) {
-    XQThrow(StaticErrorException,X("LetTuple::staticTypingSetup"),
-            X("It is a static error for the let expression of a FLWOR expression "
-              "to be an updating expression [err:XUST0001]"));
-  }
-
   // Push back if possible
-  if(!expr_->getStaticAnalysis().isCreative() && canPushLetBack(parent_, expr_->getStaticAnalysis())) {
+  if(canPushCountBack(parent_)) {
     // Swap parent_ and this LetTuple, re-executing their staticTypingImpl() methods
     TupleNode *tmp = parent_;
     parent_ = tmp->getParent();
@@ -121,33 +89,37 @@ TupleNode *LetTuple::staticTypingImpl(StaticContext *context)
   return this;
 }
 
-TupleNode *LetTuple::staticTypingTeardown(StaticContext *context, StaticAnalysis &usedSrc)
+TupleNode *CountTuple::staticTypingTeardown(StaticContext *context, StaticAnalysis &usedSrc)
 {
-  usedSrc.removeVariable(varURI_, varName_);
+  // Remove our binding variable from the StaticAnalysis data (removing it if it's not used)
+  if(varName_ && !usedSrc.removeVariable(varURI_, varName_)) {
+    varURI_ = 0;
+    varName_ = 0;
+  }
 
-  usedSrc.add(expr_->getStaticAnalysis());
   parent_ = parent_->staticTypingTeardown(context, usedSrc);
 
-  // TBD Combine LetTuple that compute the same expression? - jpcs
+  if(varName_ == 0)
+    return parent_;
 
   return this;
 }
 
-class LetTupleResult : public TupleResult
+class CountTupleResult : public TupleResult
 {
 public:
-  LetTupleResult(const LetTuple *ast, const TupleResult::Ptr &parent)
+  CountTupleResult(const CountTuple *ast, const TupleResult::Ptr &parent)
     : TupleResult(ast),
       ast_(ast),
       parent_(parent),
-      values_(0)
+      position_(0)      
   {
   }
 
   virtual Result getVar(const XMLCh *namespaceURI, const XMLCh *name) const
   {
     if(XPath2Utils::equals(name, ast_->getVarName()) && XPath2Utils::equals(namespaceURI, ast_->getVarURI()))
-      return values_.createResult();
+      return posItem_;
 
     return parent_->getVar(namespaceURI, name);
   }
@@ -155,6 +127,7 @@ public:
   virtual void getInScopeVariables(std::vector<std::pair<const XMLCh*, const XMLCh*> > &variables) const
   {
     variables.push_back(std::pair<const XMLCh*, const XMLCh*>(ast_->getVarURI(), ast_->getVarName()));
+
     parent_->getInScopeVariables(variables);
   }
 
@@ -165,19 +138,19 @@ public:
     if(!parent_->next(context))
       return false;
 
-    // TBD Use counts for the variable - jpcs
-    values_ = ResultBuffer(ClosureResult::create(ast_->getExpression(), context, parent_));
+    posItem_ = context->getItemFactory()->createInteger(++position_, context);
     return true;
   }
 
 private:
-  const LetTuple *ast_;
+  const CountTuple *ast_;
   TupleResult::Ptr parent_;
-  mutable ResultBuffer values_;
+  Item::Ptr posItem_;
+  int position_;
 };
 
-TupleResult::Ptr LetTuple::createResult(DynamicContext* context) const
+TupleResult::Ptr CountTuple::createResult(DynamicContext* context) const
 {
-  return new LetTupleResult(this, parent_->createResult(context));
+  return new CountTupleResult(this, parent_->createResult(context));
 }
 

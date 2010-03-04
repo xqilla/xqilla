@@ -818,6 +818,8 @@ TupleNode *ASTVisitor::optimizeTupleNode(TupleNode *item)
     return optimizeLetTuple((LetTuple*)item);
   case TupleNode::WHERE:
     return optimizeWhereTuple((WhereTuple*)item);
+  case TupleNode::COUNT:
+    return optimizeCountTuple((CountTuple*)item);
   case TupleNode::ORDER_BY:
     return optimizeOrderByTuple((OrderByTuple*)item);
   case TupleNode::DEBUG_HOOK:
@@ -856,6 +858,12 @@ TupleNode *ASTVisitor::optimizeWhereTuple(WhereTuple *item)
 {
   item->setParent(optimizeTupleNode(const_cast<TupleNode*>(item->getParent())));
   item->setExpression(optimize(item->getExpression()));
+  return item;
+}
+
+TupleNode *ASTVisitor::optimizeCountTuple(CountTuple *item)
+{
+  item->setParent(optimizeTupleNode(const_cast<TupleNode*>(item->getParent())));
   return item;
 }
 

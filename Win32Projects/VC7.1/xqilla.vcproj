@@ -108,6 +108,7 @@
       <File RelativePath="..\..\include\xqilla\ast\LetTuple.hpp"/>
       <File RelativePath="..\..\include\xqilla\ast\OrderByTuple.hpp"/>
       <File RelativePath="..\..\include\xqilla\ast\WhereTuple.hpp"/>
+      <File RelativePath="..\..\include\xqilla\ast\CountTuple.hpp"/>
       <File RelativePath="..\..\include\xqilla\ast\XQNamespaceBinding.hpp"/>
       <File RelativePath="..\..\include\xqilla\ast\XQCallTemplate.hpp"/>
       <File RelativePath="..\..\include\xqilla\ast\XQApplyTemplates.hpp"/>
@@ -484,6 +485,7 @@
       <File RelativePath="..\..\src\ast\StaticAnalysis.cpp"/>
       <File RelativePath="..\..\src\ast\StaticType.cpp"/>
       <File RelativePath="..\..\src\ast\WhereTuple.cpp"/>
+      <File RelativePath="..\..\src\ast\CountTuple.cpp"/>
       <File RelativePath="..\..\src\ast\XPath1Compat.cpp"/>
       <File RelativePath="..\..\src\ast\XQAnalyzeString.cpp"/>
       <File RelativePath="..\..\src\ast\XQApplyTemplates.cpp"/>

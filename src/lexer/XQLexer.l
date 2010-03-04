@@ -490,6 +490,13 @@ void XQLexer::undoLessThan()
     return error("Unrecognized token '#'");
   }
 }
+<INITIAL>"count" {
+  if(isVersion11() && lookAhead() == _DOLLAR_) {
+    RECOGNIZE_VALUE(_COUNT_, yytext);
+  } else {
+    RECOGNIZE_VALUE(_QNAME_, yytext);
+  }
+}
 
 <INITIAL>"let" {
   if(isXQuery()) {

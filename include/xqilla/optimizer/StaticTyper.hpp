@@ -57,6 +57,7 @@ protected:
   virtual TupleNode *optimizeForTuple(ForTuple *item);
   virtual TupleNode *optimizeLetTuple(LetTuple *item);
   virtual TupleNode *optimizeWhereTuple(WhereTuple *item);
+  virtual TupleNode *optimizeCountTuple(CountTuple *item);
   virtual TupleNode *optimizeOrderByTuple(OrderByTuple *item);
 
   void optimizeCase(const StaticAnalysis &var_src, XQTypeswitch::Case *item);

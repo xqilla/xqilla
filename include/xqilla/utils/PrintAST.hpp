@@ -120,6 +120,7 @@ class ContextTuple;
 class ForTuple;
 class LetTuple;
 class WhereTuple;
+class CountTuple;
 class OrderByTuple;
 class TupleDebugHook;
 
@@ -221,6 +222,7 @@ public:
   virtual std::string printForTuple(const ForTuple *item, const DynamicContext *context, int indent);
   virtual std::string printLetTuple(const LetTuple *item, const DynamicContext *context, int indent);
   virtual std::string printWhereTuple(const WhereTuple *item, const DynamicContext *context, int indent);
+  virtual std::string printCountTuple(const CountTuple *item, const DynamicContext *context, int indent);
   virtual std::string printOrderByTuple(const OrderByTuple *item, const DynamicContext *context, int indent);
   virtual std::string printTupleDebugHook(const TupleDebugHook *item, const DynamicContext *context, int indent);
   virtual std::string printUnknownTupleNode(const TupleNode *item, const DynamicContext *context, int indent);

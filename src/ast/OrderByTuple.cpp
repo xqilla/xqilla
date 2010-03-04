@@ -67,6 +67,7 @@ static bool canPushOrderByBack(TupleNode *ancestor, const StaticAnalysis &exprSr
   }
   case TupleNode::WHERE:
     return canPushOrderByBack(ancestor->getParent(), exprSrc);
+  case TupleNode::COUNT:
   case TupleNode::ORDER_BY:
   case TupleNode::CONTEXT_TUPLE:
     break;

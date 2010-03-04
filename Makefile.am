@@ -87,6 +87,7 @@ src/ast/ContextTuple.cpp \
 src/ast/ForTuple.cpp \
 src/ast/LetTuple.cpp \
 src/ast/WhereTuple.cpp \
+src/ast/CountTuple.cpp \
 src/ast/OrderByTuple.cpp \
 src/ast/XQNamespaceBinding.cpp \
 src/ast/XQCallTemplate.cpp \

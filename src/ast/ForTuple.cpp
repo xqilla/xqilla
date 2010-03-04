@@ -123,6 +123,10 @@ TupleNode *ForTuple::staticTypingTeardown(StaticContext *context, StaticAnalysis
   usedSrc.add(expr_->getStaticAnalysis());
   parent_ = parent_->staticTypingTeardown(context, usedSrc);
 
+  const StaticType &sType = expr_->getStaticAnalysis().getStaticType();
+  if(varName_ == 0 && posName_ == 0 && sType.getMin() == 1 && sType.getMax() == 1)
+    return parent_;
+
   return this;
 }
 

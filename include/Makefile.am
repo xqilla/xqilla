@@ -58,6 +58,7 @@ xqilla/ast/ForTuple.hpp \
 xqilla/ast/LetTuple.hpp \
 xqilla/ast/OrderByTuple.hpp \
 xqilla/ast/WhereTuple.hpp \
+xqilla/ast/CountTuple.hpp \
 xqilla/ast/XQNamespaceBinding.hpp \
 xqilla/ast/XQCallTemplate.hpp \
 xqilla/ast/XQApplyTemplates.hpp \

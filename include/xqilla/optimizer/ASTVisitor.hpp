@@ -68,6 +68,7 @@
 #include <xqilla/ast/ForTuple.hpp>
 #include <xqilla/ast/LetTuple.hpp>
 #include <xqilla/ast/WhereTuple.hpp>
+#include <xqilla/ast/CountTuple.hpp>
 #include <xqilla/ast/OrderByTuple.hpp>
 #include <xqilla/debug/TupleDebugHook.hpp>
 
@@ -186,6 +187,7 @@
   virtual TupleNode *optimizeLetTuple(LetTuple *item); \
   virtual TupleNode *optimizeWhereTuple(WhereTuple *item); \
   virtual TupleNode *optimizeOrderByTuple(OrderByTuple *item); \
+  virtual TupleNode *optimizeCountTuple(CountTuple *item); \
   virtual TupleNode *optimizeTupleDebugHook(TupleDebugHook *item);
 
 

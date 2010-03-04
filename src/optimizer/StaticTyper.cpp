@@ -492,6 +492,31 @@ TupleNode *StaticTyper::optimizeWhereTuple(WhereTuple *item)
   return item;
 }
 
+TupleNode *StaticTyper::optimizeCountTuple(CountTuple *item)
+{
+  item->setParent(optimizeTupleNode(const_cast<TupleNode*>(item->getParent())));
+
+  if(context_) {
+    VariableTypeStore* varStore = context_->getVariableTypeStore();
+
+    if(tupleSetup_) {
+      varStore->addLogicalBlockScope();
+
+      if(item->getVarName()) {
+        // Declare the positional variable binding
+        StaticAnalysis &varSrc = const_cast<StaticAnalysis&>(item->getVarSRC());
+        varSrc.getStaticType() = StaticType::DECIMAL_TYPE;
+        varStore->declareVar(item->getVarURI(), item->getVarName(), varSrc);
+      }
+    }
+    else {
+      varStore->removeScope();
+    }
+  }
+
+  return item;
+}
+
 TupleNode *StaticTyper::optimizeOrderByTuple(OrderByTuple *item)
 {
   item->setParent(optimizeTupleNode(const_cast<TupleNode*>(item->getParent())));

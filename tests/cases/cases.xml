@@ -125,12 +125,36 @@
         <query name="flwor2"/>
         <output-file compare="Fragment">flwor2.out</output-file>
       </test-case>
+      <test-case name="count1" FilePath="xquery11/flwor">
+        <query name="count1"/>
+        <output-file compare="Fragment">count1.out</output-file>
+      </test-case>
+      <test-case name="count2" FilePath="xquery11/flwor">
+        <query name="count2"/>
+        <output-file compare="Fragment">count2.out</output-file>
+      </test-case>
+      <test-case name="count3" FilePath="xquery11/flwor">
+        <query name="count3"/>
+        <output-file compare="Fragment">count3.out</output-file>
+      </test-case>
+      <test-case name="count4" FilePath="xquery11/flwor">
+        <query name="count4"/>
+        <output-file compare="Fragment">count4.out</output-file>
+      </test-case>
+      <test-case name="count5" FilePath="xquery11/flwor">
+        <query name="count5"/>
+        <output-file compare="Fragment">count5.out</output-file>
+      </test-case>
+      <test-case name="count6" FilePath="xquery11/flwor">
+        <query name="count6"/>
+        <output-file compare="Fragment">count6.out</output-file>
+      </test-case>
+      <test-case name="count7" FilePath="xquery11/flwor">
+        <query name="count7"/>
+        <output-file compare="Fragment">count7.out</output-file>
+      </test-case>
     </test-group>
 
-<!--     <test-case name="xquery11_1" FilePath="xquery11/"> -->
-<!--       <query name="xquery11_1"/> -->
-<!--       <output-file compare="Fragment">xquery11_1.out</output-file> -->
-<!--     </test-case> -->
   </test-group>
 
   <test-group name="tailcall">

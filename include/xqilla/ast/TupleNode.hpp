@@ -35,6 +35,7 @@ public:
     LET,
     WHERE,
     ORDER_BY,
+    COUNT,
     DEBUG_HOOK
   };
 
