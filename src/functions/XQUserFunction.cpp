@@ -555,11 +555,6 @@ void XQUserFunction::staticTyping(StaticContext *context, StaticTyper *styper)
     ciTypeSet = true;
     ciType = StaticType::ITEM_TYPE;
   }
-  if(!isTemplate_ && name_ == 0) {
-    // Inline function
-    ciTypeSet = true;
-    ciType = StaticType::ITEM_TYPE;
-  }
 
   // define the new variables in a new scope and assign them the proper values
   if(context) {

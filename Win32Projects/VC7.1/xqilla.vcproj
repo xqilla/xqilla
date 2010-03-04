@@ -87,6 +87,7 @@
       <File RelativePath="..\..\include\xqilla\ast\XQFunctionCall.hpp"/>
       <File RelativePath="..\..\include\xqilla\ast\XQFunctionConversion.hpp"/>
       <File RelativePath="..\..\include\xqilla\ast\XQFunctionDeref.hpp"/>
+      <File RelativePath="..\..\include\xqilla\ast\XQPartialApply.hpp"/>
       <File RelativePath="..\..\include\xqilla\ast\XQFunctionRef.hpp"/>
       <File RelativePath="..\..\include\xqilla\ast\XQGlobalVariable.hpp"/>
       <File RelativePath="..\..\include\xqilla\ast\XQOrderingChange.hpp"/>
@@ -509,6 +510,7 @@
       <File RelativePath="..\..\src\ast\XQFunctionCall.cpp"/>
       <File RelativePath="..\..\src\ast\XQFunctionConversion.cpp"/>
       <File RelativePath="..\..\src\ast\XQFunctionDeref.cpp"/>
+      <File RelativePath="..\..\src\ast\XQPartialApply.cpp"/>
       <File RelativePath="..\..\src\ast\XQFunctionRef.cpp"/>
       <File RelativePath="..\..\src\ast\XQGlobalVariable.cpp"/>
       <File RelativePath="..\..\src\ast\XQIf.cpp"/>

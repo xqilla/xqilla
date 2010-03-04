@@ -79,6 +79,7 @@ class XQCallTemplate;
 class XQApplyTemplates;
 class XQInlineFunction;
 class XQFunctionDeref;
+class XQPartialApply;
 class XQFunctionRef;
 class XQUserFunction;
 class XQUserFunctionInstance;
@@ -181,6 +182,7 @@ public:
   virtual std::string printApplyTemplates(const XQApplyTemplates *item, const DynamicContext *context, int indent);
   virtual std::string printInlineFunction(const XQInlineFunction *item, const DynamicContext *context, int indent);
   virtual std::string printFunctionDeref(const XQFunctionDeref *item, const DynamicContext *context, int indent);
+  virtual std::string printPartialApply(const XQPartialApply *item, const DynamicContext *context, int indent);
   virtual std::string printFunctionRef(const XQFunctionRef *item, const DynamicContext *context, int indent);
   virtual std::string printMap(const XQMap *item, const DynamicContext *context, int indent);
   virtual std::string printUnknown(const ASTNode *item, const DynamicContext *context, int indent);

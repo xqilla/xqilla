@@ -77,6 +77,7 @@
 #include <xqilla/ast/XQInlineFunction.hpp>
 #include <xqilla/ast/XQFunctionDeref.hpp>
 #include <xqilla/ast/XQFunctionRef.hpp>
+#include <xqilla/ast/XQPartialApply.hpp>
 #include <xqilla/ast/XQMap.hpp>
 
 #include <xqilla/fulltext/FTContains.hpp>
@@ -4167,7 +4168,23 @@ FunctionCall:
   }
   | FunctionName _LPAR_ FunctionCallArgumentList _RPAR_
   {
-    $$ = WRAP(@1, new (MEMMGR) XQFunctionCall($1, $3, MEMMGR));
+    bool partial = false;
+    VectorOfASTNodes::iterator i;
+    for(i = $3->begin(); i != $3->end(); ++i) {
+      if(*i == 0) {
+        partial = true;
+        break;
+      }
+    }
+
+    if(partial) {
+      // This is a partial function application
+      XQFunctionRef *ref = WRAP(@1, new (MEMMGR) XQFunctionRef($1, $3->size(), MEMMGR));
+      $$ = WRAP(@2, new (MEMMGR) XQPartialApply(ref, $3, MEMMGR));
+    }
+    else {
+      $$ = WRAP(@1, new (MEMMGR) XQFunctionCall($1, $3, MEMMGR));
+    }
   }
   ;
 
@@ -5731,7 +5748,23 @@ DynamicFunctionInvocation:
   | PostfixExpr _LPAR_ FunctionCallArgumentList _RPAR_
   {
     REJECT_NOT_VERSION11(DynamicFunctionInvocation, @1);
-    $$ = WRAP(@2, new (MEMMGR) XQFunctionDeref($1, $3, MEMMGR));
+
+    bool partial = false;
+    VectorOfASTNodes::iterator i;
+    for(i = $3->begin(); i != $3->end(); ++i) {
+      if(*i == 0) {
+        partial = true;
+        break;
+      }
+    }
+
+    if(partial) {
+      // This is a partial function application
+      $$ = WRAP(@2, new (MEMMGR) XQPartialApply($1, $3, MEMMGR));
+    }
+    else {
+      $$ = WRAP(@2, new (MEMMGR) XQFunctionDeref($1, $3, MEMMGR));
+    }
   }
   ;
 

@@ -38,6 +38,7 @@ xqilla/ast/XQTextConstructor.hpp \
 xqilla/ast/XQFunctionCall.hpp \
 xqilla/ast/XQFunctionConversion.hpp \
 xqilla/ast/XQFunctionDeref.hpp \
+xqilla/ast/XQPartialApply.hpp \
 xqilla/ast/XQFunctionRef.hpp \
 xqilla/ast/XQGlobalVariable.hpp \
 xqilla/ast/XQOrderingChange.hpp \

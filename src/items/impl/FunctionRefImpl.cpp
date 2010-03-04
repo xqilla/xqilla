@@ -133,7 +133,7 @@ Result FunctionRefImpl::execute(const VectorOfResults &args, DynamicContext *con
     XPath2Utils::numToBuf((unsigned int)args.size(), buf);
     buf.append(X(" arguments - found item of type "));
     typeToBuffer(context, buf);
-    buf.append(X(" [err:TBD]"));
+    buf.append(X(" [err:XPTY0004]"));
     XQThrow3(XPath2TypeMatchException, X("FunctionRefImpl::execute"), buf.getRawBuffer(), location);
   }
 

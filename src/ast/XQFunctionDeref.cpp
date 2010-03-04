@@ -36,17 +36,15 @@ XQFunctionDeref::XQFunctionDeref(ASTNode *expr, VectorOfASTNodes *args, XPath2Me
 {
 }
 
-static const XMLCh err_TBD[] = { 'e', 'r', 'r', ':', 'T', 'B', 'D', 0 };
-
 ASTNode *XQFunctionDeref::staticResolution(StaticContext *context)
 {
   XPath2MemoryManager *mm = context->getMemoryManager();
 
   SequenceType *seqType = new (mm) SequenceType(new (mm) SequenceType::ItemType(SequenceType::ItemType::TEST_FUNCTION),
-                                                SequenceType::QUESTION_MARK);
+                                                SequenceType::EXACTLY_ONE);
   seqType->setLocationInfo(this);
 
-  expr_ = new (mm) XQTreatAs(expr_, seqType, mm, err_TBD);
+  expr_ = new (mm) XQTreatAs(expr_, seqType, mm);
   expr_->setLocationInfo(this);
   expr_ = expr_->staticResolution(context);
 
@@ -77,11 +75,6 @@ ASTNode *XQFunctionDeref::staticTypingImpl(StaticContext *context)
   else {
     _src.getStaticType() = StaticType(StaticType::ITEM_TYPE, 0, StaticType::UNLIMITED);
   }
-
-  // TBD Work out if these are really needed - jpcs
-  _src.contextItemUsed(true);
-  _src.contextPositionUsed(true);
-  _src.contextSizeUsed(true);
 
   return this;
 }

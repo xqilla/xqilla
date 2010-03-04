@@ -1517,6 +1517,29 @@ ASTNode *QueryPathTreeGenerator::optimizeFunctionDeref(XQFunctionDeref *item)
   return item;
 }
 
+ASTNode *QueryPathTreeGenerator::optimizePartialApply(XQPartialApply *item)
+{
+  // TBD Could be better - jpcs
+  context_->setProjection(false);
+
+  // We could trace which function instances could possibly be called here
+  // and treat the function dereference as the union of all the functions
+  // it could call.
+
+  generate(item->getExpression());
+
+  VectorOfASTNodes *args = const_cast<VectorOfASTNodes*>(item->getArguments());
+  if(args) {
+    for(VectorOfASTNodes::iterator i = args->begin(); i != args->end(); ++i) {
+      if(*i != 0)
+        generate(*i).markRoot();
+    }
+  }
+
+  push(PathResult());
+  return item;
+}
+
 #define UNCHANGED_FULL(methodname, classname) \
 ASTNode *QueryPathTreeGenerator::optimize ## methodname (classname *item) \
 { \

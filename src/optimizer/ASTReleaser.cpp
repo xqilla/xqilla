@@ -348,6 +348,18 @@ ASTNode *ASTReleaser::optimizeFunctionDeref(XQFunctionDeref *item)
   RELEASE_IMPL();
 }
 
+ASTNode *ASTReleaser::optimizePartialApply(XQPartialApply *item)
+{
+  ASTVisitor::optimizePartialApply(item);
+
+  // Release the argument vector
+  VectorOfASTNodes *args = const_cast<VectorOfASTNodes*>(item->getArguments());
+  args->~VectorOfASTNodes();
+  item->getMemoryManager()->deallocate(args);
+
+  RELEASE_IMPL();
+}
+
 ASTNode *ASTReleaser::optimizeUTransform(UTransform *item)
 {
   ASTVisitor::optimizeUTransform(item);

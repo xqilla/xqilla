@@ -95,6 +95,7 @@ public:
     INLINE_FUNCTION,
     FUNCTION_REF,
     FUNCTION_DEREF,
+    PARTIAL_APPLY,
     COPY_OF,
     COPY,
     MAP,

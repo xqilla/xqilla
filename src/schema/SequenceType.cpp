@@ -620,7 +620,7 @@ void SequenceType::ItemType::toBuffer(XMLBuffer &buffer, bool addBrackets) const
   }
   case TEST_FUNCTION: {
     if(returnType_ == 0) {
-      buffer.append(X("function()"));
+      buffer.append(X("function(*)"));
     }
     else {
       addBrackets = addBrackets && returnType_->getOccurrenceIndicator() == EXACTLY_ONE;

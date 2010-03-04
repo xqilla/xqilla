@@ -546,6 +546,21 @@ ASTNode *ASTCopier::optimizeFunctionDeref(XQFunctionDeref *item)
   COPY_IMPL();
 }
 
+ASTNode *ASTCopier::optimizePartialApply(XQPartialApply *item)
+{
+  VectorOfASTNodes *newArgs = 0;
+  VectorOfASTNodes *args = const_cast<VectorOfASTNodes *>(item->getArguments());
+  if(args) {
+    newArgs = new (mm_) VectorOfASTNodes(XQillaAllocator<ASTNode*>(mm_));
+    *newArgs = *args;
+  }
+
+  XQPartialApply *result = new (mm_) XQPartialApply(item->getExpression(), newArgs, mm_);
+
+  ASTVisitor::optimizePartialApply(item);
+  COPY_IMPL();
+}
+
 ASTNode *ASTCopier::optimizeUTransform(UTransform *item)
 {
   VectorOfCopyBinding *newBindings = new (mm_) VectorOfCopyBinding(XQillaAllocator<CopyBinding*>(mm_));

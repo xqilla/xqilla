@@ -198,6 +198,8 @@ ASTNode *ASTVisitor::optimize(ASTNode *item)
     return optimizeFunctionRef((XQFunctionRef *)item);
   case ASTNode::FUNCTION_DEREF:
     return optimizeFunctionDeref((XQFunctionDeref *)item);
+  case ASTNode::PARTIAL_APPLY:
+    return optimizePartialApply((XQPartialApply *)item);
   }
   return optimizeUnknown(item);
 }
@@ -576,6 +578,21 @@ ASTNode *ASTVisitor::optimizeFunctionDeref(XQFunctionDeref *item)
   if(args) {
     for(VectorOfASTNodes::iterator i = args->begin(); i != args->end(); ++i) {
       *i = optimize(*i);
+    }
+  }
+
+  return item;
+}
+
+ASTNode *ASTVisitor::optimizePartialApply(XQPartialApply *item)
+{
+  item->setExpression(optimize(item->getExpression()));
+
+  VectorOfASTNodes *args = const_cast<VectorOfASTNodes*>(item->getArguments());
+  if(args) {
+    for(VectorOfASTNodes::iterator i = args->begin(); i != args->end(); ++i) {
+      if(*i != 0)
+        *i = optimize(*i);
     }
   }
 

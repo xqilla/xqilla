@@ -75,6 +75,7 @@
 #include <xqilla/ast/XQApplyTemplates.hpp>
 #include <xqilla/ast/XQInlineFunction.hpp>
 #include <xqilla/ast/XQFunctionDeref.hpp>
+#include <xqilla/ast/XQPartialApply.hpp>
 #include <xqilla/ast/XQFunctionRef.hpp>
 #include <xqilla/ast/XQMap.hpp>
 #include <xqilla/debug/ASTDebugHook.hpp>
@@ -500,6 +501,10 @@ string PrintAST::printASTNode(const ASTNode *item, const DynamicContext *context
   }
   case ASTNode::FUNCTION_DEREF: {
     return printFunctionDeref((XQFunctionDeref*)item, context, indent);
+    break;
+  }
+  case ASTNode::PARTIAL_APPLY: {
+    return printPartialApply((XQPartialApply*)item, context, indent);
     break;
   }
   case ASTNode::FUNCTION_REF: {
@@ -2019,6 +2024,30 @@ string PrintAST::printFunctionDeref(const XQFunctionDeref *item, const DynamicCo
   }
 
   s << in << "</FunctionDeref>" << endl;
+
+  return s.str();
+}
+
+string PrintAST::printPartialApply(const XQPartialApply *item, const DynamicContext *context, int indent)
+{
+  ostringstream s;
+
+  string in(getIndent(indent));
+
+  s << in << "<PartialApply>" << endl;
+  s << printASTNode(item->getExpression(), context, indent + INDENT);
+
+  const VectorOfASTNodes *args = item->getArguments();
+  if(args != 0 && !args->empty()) {
+    s << in << "  <Arguments>" << endl;
+    for(VectorOfASTNodes::const_iterator i = args->begin(); i != args->end(); ++i) {
+      if(*i == 0) s << in << "    <ArgumentPlaceholder/>" << endl;
+      else s << printASTNode(*i, context, indent + INDENT + INDENT);
+    }
+    s << in << "  </Arguments>" << endl;
+  }
+
+  s << in << "</PartialApply>" << endl;
 
   return s.str();
 }

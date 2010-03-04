@@ -141,6 +141,7 @@
         <file name='include/xqilla/ast/XQFunctionCall.hpp'/>
         <file name='include/xqilla/ast/XQFunctionConversion.hpp'/>
         <file name='include/xqilla/ast/XQFunctionDeref.hpp'/>
+        <file name='include/xqilla/ast/XQPartialApply.hpp'/>
         <file name='include/xqilla/ast/XQFunctionRef.hpp'/>
         <file name='include/xqilla/ast/XQGlobalVariable.hpp'/>
         <file name='include/xqilla/ast/XQOrderingChange.hpp'/>
@@ -563,6 +564,7 @@
         <file name="src/ast/XQFunctionCall.cpp"/>
         <file name="src/ast/XQFunctionConversion.cpp"/>
         <file name="src/ast/XQFunctionDeref.cpp"/>
+        <file name="src/ast/XQPartialApply.cpp"/>
         <file name="src/ast/XQFunctionRef.cpp"/>
         <file name="src/ast/XQGlobalVariable.cpp"/>
         <file name="src/ast/XQIf.cpp"/>

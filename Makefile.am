@@ -71,6 +71,7 @@ src/ast/XQTextConstructor.cpp \
 src/ast/XQFunctionCall.cpp \
 src/ast/XQFunctionConversion.cpp \
 src/ast/XQFunctionDeref.cpp \
+src/ast/XQPartialApply.cpp \
 src/ast/XQFunctionRef.cpp \
 src/ast/XQGlobalVariable.cpp \
 src/ast/XQOrderingChange.cpp \

@@ -62,6 +62,7 @@
 #include <xqilla/ast/XQInlineFunction.hpp>
 #include <xqilla/ast/XQFunctionRef.hpp>
 #include <xqilla/ast/XQFunctionDeref.hpp>
+#include <xqilla/ast/XQPartialApply.hpp>
 #include <xqilla/ast/XQMap.hpp>
 
 #include <xqilla/ast/ContextTuple.hpp>
@@ -151,6 +152,7 @@
   virtual ASTNode *optimizeInlineFunction(XQInlineFunction *item); \
   virtual ASTNode *optimizeFunctionRef(XQFunctionRef *item); \
   virtual ASTNode *optimizeFunctionDeref(XQFunctionDeref *item); \
+  virtual ASTNode *optimizePartialApply(XQPartialApply *item); \
   virtual ASTNode *optimizeMap(XQMap *item); \
 \
   virtual ASTNode *optimizeUDelete(UDelete *item); \

@@ -105,6 +105,46 @@
       <query name="hof4"/>
       <output-file compare="Fragment">hof4.out</output-file>
     </test-case>
+    <test-case name="hofunctions5" FilePath="hofunctions/">
+      <query name="hof5"/>
+      <output-file compare="Fragment">hof5.out</output-file>
+    </test-case>
+    <test-case name="hofunctions6" FilePath="hofunctions/">
+      <query name="hof6"/>
+      <output-file compare="Fragment">hof6.out</output-file>
+    </test-case>
+    <test-case name="hofunctions7" FilePath="hofunctions/">
+      <query name="hof7"/>
+      <expected-error>XPTY0004</expected-error>
+    </test-case>
+    <test-case name="hofunctions8" FilePath="hofunctions/">
+      <query name="hof8"/>
+      <expected-error>XPTY0004</expected-error>
+    </test-case>
+    <test-case name="hofunctions9" FilePath="hofunctions/">
+      <query name="hof9"/>
+      <expected-error>XPTY0004</expected-error>
+    </test-case>
+    <test-case name="hofunctions10" FilePath="hofunctions/">
+      <query name="hof10"/>
+      <output-file compare="Fragment">hof10.out</output-file>
+    </test-case>
+    <test-case name="hofunctions11" FilePath="hofunctions/">
+      <query name="hof11"/>
+      <expected-error>XPTY0004</expected-error>
+    </test-case>
+    <test-case name="hofunctions12" FilePath="hofunctions/">
+      <query name="hof12"/>
+      <expected-error>XPTY0004</expected-error>
+    </test-case>
+    <test-case name="hofunctions13" FilePath="hofunctions/">
+      <query name="hof13"/>
+      <expected-error>XPDY0002</expected-error>
+    </test-case>
+<!--     <test-case name="hofunctions14" FilePath="hofunctions/"> -->
+<!--       <query name="hof14"/> -->
+<!--       <expected-error>XPDY0002</expected-error> -->
+<!--     </test-case> -->
   </test-group>
 
   <test-group name="xquery11">
