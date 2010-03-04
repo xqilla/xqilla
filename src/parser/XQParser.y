@@ -146,6 +146,7 @@
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/exceptions/NamespaceLookupException.hpp>
 #include <xqilla/exceptions/ContextException.hpp>
+#include <xqilla/exceptions/StaticErrorException.hpp>
 
 #include <xqilla/utils/XPath2Utils.hpp>
 #include <xqilla/utils/XPath2NSUtils.hpp>
@@ -709,7 +710,7 @@ namespace XQParser {
 %type <templateArg>     TemplateArgument WithParamAttrs_XSLT WithParam_XSLT
 %type <templateArgs>    TemplateArgumentList ApplyTemplatesContent_XSLT CallTemplateContent_XSLT
 %type <tupleNode>       ForBinding LetBinding WhereClause FLWORTuples OrderByClause OrderSpec OrderSpecList
-%type <tupleNode>       FlworExprForLetList ForClause LetClause ForBindingList LetBindingList QuantifyBinding QuantifyBindingList
+%type <tupleNode>       ForClause LetClause ForBindingList LetBindingList QuantifyBinding QuantifyBindingList InitialClause IntermediateClause
 %type <letTuple>        VariableAttrs_XSLT
 %type <caseClause>      CaseClause DefaultCase
 %type <caseClauses>     CaseClauseList
@@ -3118,50 +3119,77 @@ ExprSingle:
   | ApplyTemplatesExpr
   ;
 
-// [34]    FLWORExpr    ::=    (ForClause |  LetClause)+ WhereClause? OrderByClause? "return" ExprSingle 
+// [42] FLWORExpr ::= InitialClause IntermediateClause* ReturnClause
 FLWORExpr:
       FLWORTuples _RETURN_ ExprSingle
     {
       // Add a ContextTuple at the start
-      TupleNode *tmp = setLastAncestor($1, WRAP(@1, new (MEMMGR) ContextTuple(MEMMGR)));
+      TupleNode *tuples = setLastAncestor($1, WRAP(@1, new (MEMMGR) ContextTuple(MEMMGR)));
+
+      // Check the correct clause order for XQuery 1.0
+      // FLWORExpr ::= (ForClause |  LetClause)+ WhereClause? OrderByClause? "return" ExprSingle
+      if(!QP->_lexer->isVersion11()) {
+        const TupleNode *where = 0;
+        const TupleNode *forlet = 0;
+        const TupleNode *node = tuples;
+        while(node) {
+          switch(node->getType()) {
+          case TupleNode::ORDER_BY:
+            if(where)
+              XQThrow3(StaticErrorException, X("XQParser"), X("Where clause after order by clause [err:XPST0003]"), where);
+            else if(forlet)
+              XQThrow3(StaticErrorException, X("XQParser"), X("For or let clause after order by clause [err:XPST0003]"), forlet);
+            break;
+          case TupleNode::WHERE:
+            if(where)
+              XQThrow3(StaticErrorException, X("XQParser"), X("Duplicate where clause [err:XPST0003]"), where);
+            else if(forlet)
+              XQThrow3(StaticErrorException, X("XQParser"), X("For or let clause after where clause [err:XPST0003]"), forlet);
+            where = node;
+            break;
+          case TupleNode::FOR:
+          case TupleNode::LET:
+            forlet = node;
+            break;
+          default:
+            break;
+          }
+
+          node = node->getParent();
+        }
+      }
 
       // Add the return expression
-      $$ = WRAP(@2, new (MEMMGR) XQReturn(tmp, $3, MEMMGR));
+      $$ = WRAP(@2, new (MEMMGR) XQReturn(tuples, $3, MEMMGR));
     }
   ;
 
 FLWORTuples:
-      FlworExprForLetList WhereClause OrderByClause
-    {
-      $$ = setLastAncestor($3, setLastAncestor($2, $1));
+    InitialClause
+  | FLWORTuples OrderByClause
+  {
+    // Order by has a special check here, because a single OrderByClause can result
+    // in multiple OrderByTuple objects.
+    const TupleNode *node = $1;
+    while(node) {
+      if(node->getType() == TupleNode::ORDER_BY)
+        XQThrow3(StaticErrorException, X("XQParser"), X("Duplicate order by clause [err:XPST0003]"), $2);
+      node = node->getParent();
     }
-    | FlworExprForLetList WhereClause
-    {
-      $$ = setLastAncestor($2, $1);
-    }
-    | FlworExprForLetList OrderByClause
-    {
-      $$ = setLastAncestor($2, $1);
-    }
-    | FlworExprForLetList
+
+    $$ = setLastAncestor($2, $1);
+  }
+  | FLWORTuples IntermediateClause
+  {
+    $$ = setLastAncestor($2, $1);
+  }
   ;
 
-FlworExprForLetList:
-    FlworExprForLetList ForClause
-    {
-      REJECT_NOT_XQUERY(FlworExprForLetList, @2);
+// [43] InitialClause ::= ForClause | LetClause | WindowClause
+InitialClause: ForClause | LetClause;
 
-      $$ = setLastAncestor($2, $1);
-    }
-    | FlworExprForLetList LetClause
-    {
-      REJECT_NOT_XQUERY(FlworExprForLetList, @2);
-
-      $$ = setLastAncestor($2, $1);
-    }
-    | ForClause
-    | LetClause
-      ;
+// [44] IntermediateClause ::= InitialClause | WhereClause | GroupByClause | OrderByClause | CountClause
+IntermediateClause: InitialClause | WhereClause;
 
 // [35]    ForClause    ::=    "for" "$" VarName TypeDeclaration? PositionalVar? FTScoreVar? "in" ExprSingle
 //                                        ("," "$" VarName TypeDeclaration? PositionalVar? FTScoreVar? "in" ExprSingle)*

@@ -107,6 +107,32 @@
     </test-case>
   </test-group>
 
+  <test-group name="xquery11">
+    <GroupInfo>
+      <title>Tests for XQuery 1.1 functionality</title>
+    </GroupInfo>
+
+    <test-group name="flwor">
+      <GroupInfo>
+        <title>Tests for XQuery 1.1 FLWOR</title>
+      </GroupInfo>
+
+      <test-case name="flwor1" FilePath="xquery11/flwor">
+        <query name="flwor1"/>
+        <output-file compare="Fragment">flwor1.out</output-file>
+      </test-case>
+      <test-case name="flwor2" FilePath="xquery11/flwor">
+        <query name="flwor2"/>
+        <output-file compare="Fragment">flwor2.out</output-file>
+      </test-case>
+    </test-group>
+
+<!--     <test-case name="xquery11_1" FilePath="xquery11/"> -->
+<!--       <query name="xquery11_1"/> -->
+<!--       <output-file compare="Fragment">xquery11_1.out</output-file> -->
+<!--     </test-case> -->
+  </test-group>
+
   <test-group name="tailcall">
     <GroupInfo>
       <title>Tests for tail calls</title>
