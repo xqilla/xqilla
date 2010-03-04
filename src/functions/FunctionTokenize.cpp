@@ -55,6 +55,9 @@ FunctionTokenize::FunctionTokenize(const VectorOfASTNodes &args, XPath2MemoryMan
 
 ASTNode *FunctionTokenize::staticTypingImpl(StaticContext *context)
 {
+  ASTNode *result = calculateSRCForArguments(context);
+  if(result != this) return result;
+
   //either there are 2 args, and regexp should be a constant,
   //or there is a flags argument as well, and it should also be a constant
   if(context && !regExp_ && _args[1]->isConstant() &&
