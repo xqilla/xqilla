@@ -481,8 +481,10 @@ void TestSuiteParser::endElement(const XMLCh* const uri, const XMLCh* const loca
       else if(szName == "output-file")
       {
         readingChars_=false;
-        chars_=UTF8(XMLURL(urlBasePathReferenceFiles_, chars_.c_str()).getURLText());
-        testCase_.outputFiles[chars_]=compareMethod_;
+        if(chars_ != "") {
+          chars_=UTF8(XMLURL(urlBasePathReferenceFiles_, chars_.c_str()).getURLText());
+          testCase_.outputFiles[chars_]=compareMethod_;
+        }
         compareMethod_="";
       }
       else if(szName == "expected-error")
