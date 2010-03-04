@@ -177,6 +177,7 @@ public:
   bool isXSLT() const { return (m_language & XQilla::XSLT2) != 0; }
   bool isFullText() const { return (m_language & XQilla::FULLTEXT) != 0; }
   bool isUpdate() const { return (m_language & XQilla::UPDATE) != 0; }
+  bool isVersion11() const { return (m_language & XQilla::VERSION11) != 0; }
   bool isExtensions() const { return (m_language & XQilla::EXTENSIONS) != 0; }
 
   void setGenerateErrorException(bool bEnable) { m_bGenerateErrorException=bEnable; }

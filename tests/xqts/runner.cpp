@@ -117,6 +117,7 @@ void usage(const char *progname)
   cout << "-u             : Parse XQuery Update (also uses Xerces-C data model)" << endl;
   cout << "-s             : Parse XSLT 2.0" << endl;
   cout << "-f             : Parse XQuery Full Text 1.0" << endl;
+  cout << "-1             : Parse XQuery 1.1" << endl;
   cout << "-x             : Use the Xerces-C data model (default is FastXDM)" << endl;
 }
 
@@ -162,7 +163,7 @@ int main(int argc, char *argv[])
         break;
       }
       case 'f': {
-        lang = XQilla::XQUERY_FULLTEXT;
+        lang = (XQilla::Language)(lang | XQilla::FULLTEXT);
         userSetParserLang = true;
         break;
       }
@@ -171,13 +172,18 @@ int main(int argc, char *argv[])
         break;
       }
       case 'u': {
-        lang = XQilla::XQUERY_UPDATE;
+        lang = (XQilla::Language)(lang | XQilla::UPDATE);
         userSetParserLang = true;
         conf = &xercesConf;
         break;
       }
+      case '1': {
+        lang = (XQilla::Language)(lang | XQilla::VERSION11);
+        userSetParserLang = true;
+        break;
+      }
       case 's': {
-        lang = XQilla::XSLT2;
+        lang = (XQilla::Language)(lang | XQilla::XSLT2);
         userSetParserLang = true;
         break;
       }
@@ -595,7 +601,7 @@ void XQillaTestSuiteRunner::detectDefaultConf()
   if(m_conf != NULL)
     return;
 
-  if(m_lang == XQilla::XQUERY_UPDATE){
+  if(m_lang & XQilla::UPDATE){
     m_conf = m_xercesConf;
   } 
   else {

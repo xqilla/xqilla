@@ -62,12 +62,22 @@ public:
     UPDATE     = 0x04,
     EXTENSIONS = 0x08,
     XSLT2      = 0x10,
+    VERSION11  = 0x20,
 
-    XQUERY_FULLTEXT        = (XQUERY | FULLTEXT),
-    XPATH2_FULLTEXT        = (XPATH2 | FULLTEXT),
-    XQUERY_UPDATE          = (XQUERY | UPDATE),
-    XQUERY_FULLTEXT_UPDATE = (XQUERY | FULLTEXT | UPDATE),
-    XSLT2_FULLTEXT         = (XSLT2 | FULLTEXT)
+    XQUERY_FULLTEXT          = (XQUERY | FULLTEXT),
+    XQUERY_UPDATE            = (XQUERY | UPDATE),
+    XQUERY_FULLTEXT_UPDATE   = (XQUERY | FULLTEXT | UPDATE),
+    XPATH2_FULLTEXT          = (XPATH2 | FULLTEXT),
+    XSLT2_FULLTEXT           = (XSLT2 | FULLTEXT),
+
+    XQUERY11                 = (XQUERY | VERSION11),
+    XQUERY11_FULLTEXT        = (XQUERY | VERSION11 | FULLTEXT),
+    XQUERY11_UPDATE          = (XQUERY | VERSION11 | UPDATE),
+    XQUERY11_FULLTEXT_UPDATE = (XQUERY | VERSION11 | FULLTEXT | UPDATE),
+    XPATH21                  = (XPATH2 | VERSION11),
+    XPATH21_FULLTEXT         = (XPATH2 | VERSION11 | FULLTEXT),
+    XSLT21                   = (XSLT2 | VERSION11),
+    XSLT21_FULLTEXT          = (XSLT2 | VERSION11 | FULLTEXT),
   };
                                                                                                                                                               
   /**

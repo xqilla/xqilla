@@ -183,7 +183,7 @@ void *alloca (size_t);
 #define MEMMGR   (CONTEXT->getMemoryManager())
 
 #define REJECT_NOT_XQUERY(where,pos)      if(!QP->_lexer->isXQuery()) { yyerror(LANGUAGE, #where, (pos).first_line, (pos).first_column); }
-#define REJECT_NOT_EXTENSION(where,pos)   if(!QP->_lexer->isExtensions()) { yyerror(LANGUAGE, #where, (pos).first_line, (pos).first_column); }
+#define REJECT_NOT_VERSION11(where,pos)   if(!QP->_lexer->isVersion11()) { yyerror(LANGUAGE, #where, (pos).first_line, (pos).first_column); }
 
 #define WRAP(pos,object)        (wrapForDebug((QP), (object), (pos).first_line, (pos).first_column))
 
@@ -664,7 +664,7 @@ namespace XQParser {
 %type <astNode>      Expr ExprSingle OrExpr AndExpr EnclosedExpr FLWORExpr IfExpr ComparisonExpr DecimalLiteral VarRef
 %type <astNode>      RangeExpr AdditiveExpr MultiplicativeExpr UnionExpr QuantifiedExpr StringLiteral Literal ContextItemExpr
 %type <astNode>      UnaryExpr ValidateExpr CastExpr TreatExpr IntersectExceptExpr ParenthesizedExpr PrimaryExpr FunctionCall
-%type <astNode>      RelativePathExpr StepExpr AxisStep FilterExpr TypeswitchExpr ValueExpr PathExpr NumericLiteral IntegerLiteral 
+%type <astNode>      RelativePathExpr StepExpr AxisStep PostfixExpr TypeswitchExpr ValueExpr PathExpr NumericLiteral IntegerLiteral 
 %type <astNode>      CastableExpr Constructor ComputedConstructor DirElemConstructor DirCommentConstructor DirPIConstructor  
 %type <astNode>      CompElemConstructor CompTextConstructor CompPIConstructor CompCommentConstructor OrderedExpr UnorderedExpr
 %type <astNode>      CompAttrConstructor CompDocConstructor DoubleLiteral InstanceofExpr DirectConstructor 
@@ -672,7 +672,8 @@ namespace XQParser {
 %type <astNode>      InsertExpr DeleteExpr RenameExpr ReplaceExpr TransformExpr CompElementName CompAttrName
 %type <astNode>      ForwardStep ReverseStep AbbrevForwardStep AbbrevReverseStep OrderExpr CompPIConstructorContent
 %type <astNode>      PathPattern_XSLT IdValue_XSLT KeyValue_XSLT CallTemplateExpr ApplyTemplatesExpr
-%type <astNode>      DereferencedFunctionCall InlineFunction LiteralFunctionRef FunctionRef
+%type <astNode>      DynamicFunctionInvocation InlineFunction LiteralFunctionItem FunctionItemExpr
+%type <astNode>      ForwardStepPredicateList ReverseStepPredicateList Argument
 %type <astNode>      LiteralResultElement_XSLT ValueOf_XSLT ValueOfAttrs_XSLT Text_XSLT TextNode_XSLT ApplyTemplates_XSLT
 %type <astNode>      ApplyTemplatesAttrs_XSLT CallTemplate_XSLT CallTemplateAttrs_XSLT Sequence_XSLT Choose_XSLT If_XSLT
 %type <astNode>      WhenList_XSLT When_XSLT Otherwise_XSLT Variable_XSLT Comment_XSLT CommentAttrs_XSLT
@@ -694,7 +695,7 @@ namespace XQParser {
 %type <itemList>        DirElementContent DirAttributeList QuotAttrValueContent AposAttrValueContent DirAttributeValue FunctionCallArgumentList
 %type <itemList>        ContentExpr LiteralDirAttributeValue LiteralQuotAttrValueContent LiteralAposAttrValueContent AttrValueTemplate_XSLT Pattern_XSLT
 %type <itemList>        LiteralResultElementAttrs_XSLT
-%type <predicates>      PredicateList PatternStepPredicateList_XSLT
+%type <predicates>      PatternStepPredicateList_XSLT
 %type <axis>            ForwardAxis ReverseAxis
 %type <nodeTest>        NodeTest NameTest Wildcard PatternAxis_XSLT
 %type <qName>           QName AtomicType TypeName ElementName AttributeName ElementNameOrWildcard AttribNameOrWildcard AttributeDeclaration ElementDeclaration
@@ -702,7 +703,7 @@ namespace XQParser {
 %type <sequenceTypes>   FunctionTypeArguments
 %type <occurrence>      OccurrenceIndicator SingleTypeOccurrence
 %type <itemType>        ItemType KindTest AttributeTest SchemaAttributeTest PITest CommentTest TextTest AnyKindTest ElementTest DocumentTest SchemaElementTest
-%type <itemType>        FunctionType ParenthesizedItemType
+%type <itemType>        FunctionTest AnyFunctionTest TypedFunctionTest ParenthesizedItemType
 %type <copyBinding>     TransformBinding
 %type <copyBindingList> TransformBindingList
 %type <templateArg>     TemplateArgument WithParamAttrs_XSLT WithParam_XSLT
@@ -736,8 +737,7 @@ namespace XQParser {
 // 3 arise from the xgs:occurrence-indicator grammar constriant (http://www.w3.org/TR/xquery/#parse-note-occurence-indicators)
 // 17 are due to template extensions
 // 21 are due to Variable_XSLT
-// 1 is due to FunctionType
-%expect 90
+%expect 89
 
 %%
 
@@ -2341,7 +2341,7 @@ PatternStepPredicateList_XSLT:
   {
     $$ = new (MEMMGR) VectorOfPredicates(MEMMGR);
   }
-  | PredicateList _LSQUARE_ Expr _RSQUARE_
+  | PatternStepPredicateList_XSLT _LSQUARE_ Expr _RSQUARE_
   {
     XQPredicate *pred = WRAP(@2, new (MEMMGR) XQPredicate($3, MEMMGR));
     $1->push_back(pred);
@@ -3825,21 +3825,35 @@ RelativePathExpr:
   | StepExpr
   ;
 
-// [73]    StepExpr    ::=    AxisStep |  FilterExpr 
-StepExpr: AxisStep | FilterExpr;
+// [73]    StepExpr    ::=    AxisStep |  PostfixExpr
+StepExpr: AxisStep | PostfixExpr;
 
 // [74]    AxisStep    ::=    (ForwardStep |  ReverseStep) PredicateList 
 AxisStep:
-  ForwardStep PredicateList
+    ForwardStepPredicateList
+  | ReverseStepPredicateList
   {
-    $$ = XQPredicate::addPredicates($1, $2);
-  }
-  | ReverseStep PredicateList
-  {
-    $$ = XQPredicate::addReversePredicates($1, $2);
-    $$ = WRAP(@1, new (MEMMGR) XQDocumentOrder($$, MEMMGR));
+    $$ = WRAP(@1, new (MEMMGR) XQDocumentOrder($1, MEMMGR));
   }
   ;
+
+// [85]    PredicateList    ::=    Predicate* 
+// [86]    Predicate    ::=    "[" Expr "]" 
+ForwardStepPredicateList:
+    ForwardStep
+  | ForwardStepPredicateList _LSQUARE_ Expr _RSQUARE_
+  {
+    $$ = WRAP(@2, new (MEMMGR) XQPredicate($1, $3, MEMMGR));
+  }
+  ;
+ReverseStepPredicateList:
+    ReverseStep
+  | ReverseStepPredicateList _LSQUARE_ Expr _RSQUARE_
+  {
+    $$ = WRAP(@2, new (MEMMGR) XQPredicate($1, $3, /*reverse*/true, MEMMGR));
+  }
+  ;
+
 
 // [75]    ForwardStep    ::=    (ForwardAxis NodeTest) |  AbbrevForwardStep 
 ForwardStep:
@@ -4025,31 +4039,19 @@ Wildcard:
   }
   ;
 
-// [84]    FilterExpr    ::=    PrimaryExpr PredicateList 
-FilterExpr:
-  PrimaryExpr PredicateList
+// [121]   	PostfixExpr	   ::=   	PrimaryExpr (Predicate | ArgumentList)*
+// [124]   	Predicate	   ::=   	"[" Expr "]"
+PostfixExpr:
+    PrimaryExpr
+  | PostfixExpr _LSQUARE_ Expr _RSQUARE_
   {
-    $$ = XQPredicate::addPredicates($1, $2);
+    $$ = WRAP(@2, new (MEMMGR) XQPredicate($1, $3, MEMMGR));
   }
-  ;
-
-// [85]    PredicateList    ::=    Predicate* 
-// [86]    Predicate    ::=    "[" Expr "]" 
-PredicateList:
-  /* empty */
-  {
-    $$ = new (MEMMGR) VectorOfPredicates(MEMMGR);
-  }
-  | PredicateList _LSQUARE_ Expr _RSQUARE_
-  {
-    XQPredicate *pred = WRAP(@2, new (MEMMGR) XQPredicate($3, MEMMGR));
-    $1->push_back(pred);
-    $$ = $1; 
-  }
+  | DynamicFunctionInvocation
   ;
 
 // [87]    PrimaryExpr    ::=    Literal |  VarRef | ParenthesizedExpr | ContextItemExpr | FunctionCall | Constructor | OrderedExpr | UnorderedExpr
-//                               | FunctionRef | DereferencedFunctionCall
+//                               | FunctionItemExpr
 PrimaryExpr:
     Literal
   | VarRef
@@ -4059,8 +4061,7 @@ PrimaryExpr:
   | Constructor
   | OrderedExpr 
   | UnorderedExpr
-  | FunctionRef
-  | DereferencedFunctionCall
+  | FunctionItemExpr
   ;
 
 // [88]    Literal    ::=    NumericLiteral |  StringLiteral 
@@ -4120,7 +4121,7 @@ UnorderedExpr:
   }
   ;
 
-// FunctionCall ::= QName "(" (ExprSingle ("," ExprSingle)*)? ")"
+// [134]   	FunctionCall	   ::=   	QName "(" (Argument ("," Argument)*)? ")"
 FunctionCall:
   FunctionName _LPAR_ _RPAR_
   {
@@ -4133,16 +4134,27 @@ FunctionCall:
   ;
 
 FunctionCallArgumentList:
-  FunctionCallArgumentList _COMMA_ ExprSingle
+  FunctionCallArgumentList _COMMA_ Argument
   {
     $1->push_back($3);
     $$ = $1;
   }
-  | ExprSingle
+  | Argument
   {
     $$ = new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR));
     $$->push_back($1);
   }  
+  ;
+
+// [135]   	Argument	   ::=   	ExprSingle | ArgumentPlaceholder
+// [136]   	ArgumentPlaceholder	   ::=   	"?"
+Argument:
+    ExprSingle
+  | _QUESTION_MARK_
+  {
+    REJECT_NOT_VERSION11(Argument, @1);
+    $$ = 0;
+  }
   ;
 
 // [97]    Constructor    ::=    DirectConstructor | ComputedConstructor 
@@ -4594,7 +4606,7 @@ OccurrenceIndicator:
   { $$ = SequenceType::QUESTION_MARK; }
   ;
 
-// ItemType ::= KindTest | "item" "(" ")" | AtomicType | FunctionType | ParenthesizedItemType
+// ItemType ::= KindTest | "item" "(" ")" | AtomicType | FunctionTest | ParenthesizedItemType
 ItemType:
     AtomicType 
   {
@@ -4605,7 +4617,7 @@ ItemType:
     $$ = new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_ANYTHING);
   }
   | KindTest
-  | FunctionType
+  | FunctionTest
   | ParenthesizedItemType
   ;
 
@@ -5648,20 +5660,20 @@ TemplateArgument:
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-// Higher Order Functions Extension Rules
+// XQuery 1.1 Functionality
 
-// FunctionRef ::= LiteralFunctionRef | InlineFunction
-FunctionRef: LiteralFunctionRef | InlineFunction;
+// [161] FunctionItemExpr ::= LiteralFunctionItem | InlineFunction
+FunctionItemExpr: LiteralFunctionItem | InlineFunction;
 
-// LiteralFunctionRef ::= QName "#" IntegerLiteral
-LiteralFunctionRef:
+// [162] LiteralFunctionItem ::= QName "#" IntegerLiteral
+LiteralFunctionItem:
     FunctionName _HASH_ _INTEGER_LITERAL_
   {
     $$ = WRAP(@1, new (MEMMGR) XQFunctionRef($1, atoi(UTF8($3)), MEMMGR));
   }
   ;
 
-// InlineFunction ::= "function" "(" ParamList? ")" ("as" SequenceType)? EnclosedExpr
+// [163] InlineFunction ::= "function" "(" ParamList? ")" ("as" SequenceType)? EnclosedExpr
 InlineFunction:
     _FUNCTION_EXT_ FunctionParamList TypeDeclaration EnclosedExpr
   {
@@ -5670,27 +5682,35 @@ InlineFunction:
   }
   ;
 
-// DereferencedFunctionCall ::= FilterExpr "(" (ExprSingle ("," ExprSingle)*)? ")"
-DereferencedFunctionCall:
-    FilterExpr _LPAR_ _RPAR_
+// [121]   	PostfixExpr	   ::=   	PrimaryExpr (Predicate | ArgumentList)*
+// [122]   	ArgumentList	   ::=   	"(" (Argument ("," Argument)*)? ")"
+DynamicFunctionInvocation:
+    PostfixExpr _LPAR_ _RPAR_
   {
-    REJECT_NOT_EXTENSION(DereferencedFunctionCall, @1);
+    REJECT_NOT_VERSION11(DynamicFunctionInvocation, @1);
     $$ = WRAP(@2, new (MEMMGR) XQFunctionDeref($1, new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR)), MEMMGR));
   }
-  | FilterExpr _LPAR_ FunctionCallArgumentList _RPAR_
+  | PostfixExpr _LPAR_ FunctionCallArgumentList _RPAR_
   {
-    REJECT_NOT_EXTENSION(DereferencedFunctionCall, @1);
+    REJECT_NOT_VERSION11(DynamicFunctionInvocation, @1);
     $$ = WRAP(@2, new (MEMMGR) XQFunctionDeref($1, $3, MEMMGR));
   }
   ;
 
-// FunctionType ::= "function" "(" ")" | "function" "(" (SequenceType ("," SequenceType)*)?  ")" "as" SequenceType
-FunctionType:
-    _FUNCTION_EXT_ _LPAR_ _RPAR_
+// [189] FunctionTest ::= AnyFunctionTest | TypedFunctionTest
+FunctionTest: AnyFunctionTest | TypedFunctionTest;
+
+// [190] AnyFunctionTest ::= "function" "(" "*" ")"
+AnyFunctionTest:
+    _FUNCTION_EXT_ _LPAR_ _ASTERISK_ _RPAR_
   {
     $$ = new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_FUNCTION);
   }
-  | _FUNCTION_EXT_ _LPAR_ _RPAR_ _AS_ SequenceType
+  ;
+
+// [191] TypedFunctionTest ::= "function" "(" (SequenceType ("," SequenceType)*)? ")" "as" SequenceType
+TypedFunctionTest:
+    _FUNCTION_EXT_ _LPAR_ _RPAR_ _AS_ SequenceType
   {
     $$ = new (MEMMGR) SequenceType::ItemType(new (MEMMGR) VectorOfSequenceTypes(XQillaAllocator<SequenceType*>(MEMMGR)), $5);
   }
@@ -5713,7 +5733,7 @@ FunctionTypeArguments:
   }
   ;
 
-// ParenthesizedItemType ::= "(" ItemType ")"
+// [192] ParenthesizedItemType ::= "(" ItemType ")"
 ParenthesizedItemType:
     _LPAR_ ItemType _RPAR_
   {

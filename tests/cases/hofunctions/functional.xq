@@ -82,7 +82,7 @@ declare function func:zipWith($f, $a, $b)
   ($f($a[1], $b[1]), func:zipWith($f, func:tail($a), func:tail($b)))
 };
 
-declare function func:curry($f as function()) as function(item()*) as item()*
+declare function func:curry($f as function(*)) as function(item()*) as item()*
 {
   if(function-arity($f) eq 0) then error(xs:QName("func:FNDY0001"), "Can't curry a 0 arity function item")
   else if(function-arity($f) eq 1) then $f

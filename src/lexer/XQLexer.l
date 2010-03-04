@@ -477,14 +477,14 @@ void XQLexer::undoLessThan()
   }
 }
 <INITIAL>"function" {
-  if(isExtensions()) {
+  if(isVersion11()) {
     RECOGNIZE_VALUE(_FUNCTION_EXT_, yytext);
   } else {
     RECOGNIZE_VALUE(_FUNCTION_, yytext);
   }
 }
 <INITIAL>"#" {
-  if(isExtensions()) {
+  if(isVersion11()) {
     RECOGNIZE(_HASH_);
   } else {
     return error("Unrecognized token '#'");

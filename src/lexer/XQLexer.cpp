@@ -15110,7 +15110,7 @@ case 176:
 YY_RULE_SETUP
 #line 472 "XQLexer.l"
 {
-  if(isExtensions()) {
+  if(isVersion11()) {
     RECOGNIZE_VALUE(_MODE_, yytext);
   } else {
     RECOGNIZE_VALUE(_QNAME_, yytext);
@@ -15121,7 +15121,7 @@ case 177:
 YY_RULE_SETUP
 #line 479 "XQLexer.l"
 {
-  if(isExtensions()) {
+  if(isVersion11()) {
     RECOGNIZE_VALUE(_FUNCTION_EXT_, yytext);
   } else {
     RECOGNIZE_VALUE(_FUNCTION_, yytext);
