@@ -84,6 +84,18 @@ protected:
 class XQILLA_API XQUserFunction : public FuncFactory, public LocationInfo
 {
 public:
+  class Options
+  {
+  public:
+    Options() : updating(DEFAULT), nondeterministic(DEFAULT), privateOption(DEFAULT) {}
+
+    enum OptionValue { DEFAULT, TRUE, FALSE };
+
+    OptionValue updating;
+    OptionValue nondeterministic;
+    OptionValue privateOption;
+  };
+
   class Mode : public LocationInfo
   {
   public:
@@ -165,7 +177,7 @@ public:
   typedef std::vector<ArgumentSpec*,XQillaAllocator<ArgumentSpec*> > ArgumentSpecs;
 
   // Constructor for an XQuery function
-  XQUserFunction(const XMLCh *qname, ArgumentSpecs *argSpecs, ASTNode *body, SequenceType *returnType, bool isUpdating, bool isGlobal, XPath2MemoryManager *mm);
+  XQUserFunction(const XMLCh *qname, ArgumentSpecs *argSpecs, ASTNode *body, SequenceType *returnType, Options *options, bool isGlobal, XPath2MemoryManager *mm);
   // Constructor for an XQuery template
   XQUserFunction(const XMLCh *qname, VectorOfASTNodes *pattern, ArgumentSpecs *argSpecs, ASTNode *body, SequenceType *returnType, XPath2MemoryManager *mm);
 
@@ -190,8 +202,9 @@ public:
   ASTNode *getTemplateInstance() const { return templateInstance_; }
   void setTemplateInstance(ASTNode *ast) { templateInstance_ = ast; }
 
+  const Options *getOptions() const { return options_; }
+
   bool isGlobal() const { return isGlobal_; }
-  bool isUpdating() const { return isUpdating_; }
   bool isTemplate() const { return isTemplate_; }
 
   bool isRecursive() const { return recursive_; }
@@ -235,8 +248,9 @@ protected:
   SequenceType *returnType_;
   ArgumentSpecs *argSpecs_;
   bool isGlobal_;
-  bool isUpdating_;
   bool isTemplate_;
+
+  Options *options_;
 
   XPath2MemoryManager *memMgr_;
   StaticAnalysis src_;

@@ -404,7 +404,6 @@ void XQLexer::undoLessThan()
 <INITIAL>"end"                    RECOGNIZE_VALUE(_END_, yytext);
 <INITIAL>"most"                   RECOGNIZE_VALUE(_MOST_, yytext);
 <INITIAL>"revalidation"           RECOGNIZE_VALUE(_REVALIDATION_, yytext);
-<INITIAL>"updating"               RECOGNIZE_VALUE(_UPDATING_, yytext);
 <INITIAL>"skip"                   RECOGNIZE_VALUE(_SKIP_, yytext);
 <INITIAL>"value"                  RECOGNIZE_VALUE(_VALUE_, yytext);
 <INITIAL>"first"                  RECOGNIZE_VALUE(_FIRST_, yytext);
@@ -497,6 +496,34 @@ void XQLexer::undoLessThan()
     RECOGNIZE_VALUE(_QNAME_, yytext);
   }
 }
+<INITIAL>"private" {
+  if(isVersion11()) {
+    RECOGNIZE_VALUE(_PRIVATE_, yytext);
+  } else {
+    RECOGNIZE_VALUE(_QNAME_, yytext);
+  }
+}
+<INITIAL>"public" {
+  if(isVersion11()) {
+    RECOGNIZE_VALUE(_PUBLIC_, yytext);
+  } else {
+    RECOGNIZE_VALUE(_QNAME_, yytext);
+  }
+}
+<INITIAL>"deterministic" {
+  if(isVersion11()) {
+    RECOGNIZE_VALUE(_DETERMINISTIC_, yytext);
+  } else {
+    RECOGNIZE_VALUE(_QNAME_, yytext);
+  }
+}
+<INITIAL>"nondeterministic" {
+  if(isVersion11()) {
+    RECOGNIZE_VALUE(_NONDETERMINISTIC_, yytext);
+  } else {
+    RECOGNIZE_VALUE(_QNAME_, yytext);
+  }
+}
 
 <INITIAL>"let" {
   if(isXQuery()) {
@@ -570,6 +597,13 @@ void XQLexer::undoLessThan()
   }
 }
 
+<INITIAL>"updating" {
+  if(isUpdate()) {
+    RECOGNIZE_VALUE(_UPDATING_, yytext);
+  } else {
+    RECOGNIZE_VALUE(_QNAME_, yytext);
+  }
+}
 <INITIAL>"insert" {
   if(isUpdate()) {
     RECOGNIZE_VALUE(_INSERT_, yytext);
@@ -607,7 +641,8 @@ void XQLexer::undoLessThan()
 }
 
 <INITIAL>"xquery" {
-  if(lookAhead() == _VERSION_) {
+  int tok = lookAhead();
+  if(tok == _VERSION_ || (isVersion11() && tok == _ENCODING_)) {
     RECOGNIZE_VALUE(_XQUERY_, yytext);
   } else {
     RECOGNIZE_VALUE(_QNAME_, yytext);

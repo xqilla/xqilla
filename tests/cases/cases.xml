@@ -13,6 +13,8 @@
     <schema ID="schema1" uri="" FileName="schema/schema1.xsd"/>
 
     <module ID="functional" FileName="hofunctions/functional"/>
+    <module ID="private_module1" FileName="xquery11/functiondecl/private_module1"/>
+    <module ID="private_module2" FileName="xquery11/functiondecl/private_module2"/>
 
 <!--     <collection ID="categoryCollection"> -->
 <!--       <input-document>category</input-document> -->
@@ -192,6 +194,52 @@
       <test-case name="count7" FilePath="xquery11/flwor">
         <query name="count7"/>
         <output-file compare="Fragment">count7.out</output-file>
+      </test-case>
+    </test-group>
+
+    <test-group name="functiondecl">
+      <GroupInfo>
+        <title>Tests for XQuery 1.1 Function Declarations</title>
+      </GroupInfo>
+
+      <test-case name="private1" FilePath="xquery11/functiondecl">
+        <module namespace="http://snelson.org.uk/test/private_module1">private_module1</module>
+        <query name="private1"/>
+        <expected-error>XPST0017</expected-error>
+      </test-case>
+      <test-case name="private2" FilePath="xquery11/functiondecl">
+        <module namespace="http://snelson.org.uk/test/private_module1">private_module1</module>
+        <query name="private2"/>
+        <output-file compare="Fragment">private2.out</output-file>
+      </test-case>
+      <test-case name="private3" FilePath="xquery11/functiondecl">
+        <module namespace="http://snelson.org.uk/test/private_module1">private_module1</module>
+        <query name="private3"/>
+        <output-file compare="Fragment">private3.out</output-file>
+      </test-case>
+      <test-case name="private4" FilePath="xquery11/functiondecl">
+        <query name="private4"/>
+        <output-file compare="Fragment">private4.out</output-file>
+      </test-case>
+      <test-case name="private5" FilePath="xquery11/functiondecl">
+        <module namespace="http://snelson.org.uk/test/private_module2">private_module2</module>
+        <query name="private5"/>
+        <expected-error>XQST0048</expected-error>
+      </test-case>
+    </test-group>
+
+    <test-group name="versiondecl">
+      <GroupInfo>
+        <title>Tests for XQuery 1.1 Version Declaration</title>
+      </GroupInfo>
+
+      <test-case name="version1" FilePath="xquery11/versiondecl">
+        <query name="version1"/>
+        <output-file compare="Fragment">version1.out</output-file>
+      </test-case>
+      <test-case name="version2" FilePath="xquery11/versiondecl">
+        <query name="version2"/>
+        <expected-error>XPST0003</expected-error>
       </test-case>
     </test-group>
 

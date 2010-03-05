@@ -518,7 +518,7 @@ void XQQuery::importModule(const XMLCh* szUri, VectorOfStrings* locations, Stati
       if((*itFn)->isTemplate()) {
         context->addTemplate(*itFn);
       }
-      else if((*itFn)->getName()) {
+      else if((*itFn)->getName() && (*itFn)->getOptions()->privateOption != XQUserFunction::Options::TRUE) {
         context->addCustomFunction(*itFn);
       }
     }

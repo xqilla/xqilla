@@ -109,6 +109,7 @@ typedef union {
   XQUserFunction::ArgumentSpecs* argSpecs;
   XQUserFunction::Mode* mode;
   XQUserFunction::ModeList* modeList;
+  XQUserFunction::Options *functionOptions;
   XQGlobalVariable *globalVar;
   NodeTest *nodeTest;
   XQStep::Axis axis;
@@ -179,6 +180,12 @@ public:
   bool isUpdate() const { return (m_language & XQilla::UPDATE) != 0; }
   bool isVersion11() const { return (m_language & XQilla::VERSION11) != 0; }
   bool isExtensions() const { return (m_language & XQilla::EXTENSIONS) != 0; }
+
+  void setVersion11(bool value)
+  {
+    m_language = (XQilla::Language)((m_language & ~(XQilla::VERSION11)) |
+                                    (value ? XQilla::VERSION11 : 0));
+  }
 
   void setGenerateErrorException(bool bEnable) { m_bGenerateErrorException=bEnable; }
 

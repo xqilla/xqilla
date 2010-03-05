@@ -129,7 +129,7 @@ ASTNode* XQTreatAs::staticResolution(StaticContext *context)
     XQFunctionDeref *body = new (mm) XQFunctionDeref(funcVar, argList, mm);
     body->setLocationInfo(this);
 
-    XQUserFunction *func = new (mm) XQUserFunction(0, paramList, body, type->getReturnType(), false, false, mm);
+    XQUserFunction *func = new (mm) XQUserFunction(0, paramList, body, type->getReturnType(), 0, false, mm);
     func->setLocationInfo(this);
 
     _funcConvert = new (mm) XQInlineFunction(func, mm);

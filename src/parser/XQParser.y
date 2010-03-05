@@ -235,6 +235,7 @@ XERCES_CPP_NAMESPACE_USE;
 using namespace std;
 
 static const XMLCh sz1_0[] = { chDigit_1, chPeriod, chDigit_0, chNull };
+static const XMLCh sz1_1[] = { chDigit_1, chPeriod, chDigit_1, chNull };
 static const XMLCh option_projection[] = { 'p', 'r', 'o', 'j', 'e', 'c', 't', 'i', 'o', 'n', 0 };
 static const XMLCh option_psvi[] = { 'p', 's', 'v', 'i', 0 };
 static const XMLCh option_lint[] = { 'l', 'i', 'n', 't', 0 };
@@ -578,6 +579,10 @@ namespace XQParser {
 %token <str> _FTOR_                                           "ftor"
 %token <str> _FTAND_                                          "ftand"
 %token <str> _FTNOT_                                          "ftnot"
+%token <str> _PRIVATE_                                        "private"
+%token <str> _PUBLIC_                                         "public"
+%token <str> _DETERMINISTIC_                                  "deterministic"
+%token <str> _NONDETERMINISTIC_                               "nondeterministic"
 
 /* XSLT 2.0 tokens */
 %token _XSLT_END_ELEMENT_                                     "<XSLT end element>"
@@ -661,7 +666,7 @@ namespace XQParser {
 %token _XHTML_                                                "xhtml"
 
 
-%type <functDecl>    FunctionDecl FunctionDecl_XQ TemplateDecl FunctionAttrs_XSLT TemplateAttrs_XSLT
+%type <functDecl>    FunctionDecl TemplateDecl FunctionAttrs_XSLT TemplateAttrs_XSLT
 %type <globalVar>    GlobalVariableAttrs_XSLT GlobalParamAttrs_XSLT
 %type <argSpec>      Param Param_XSLT ParamAttrs_XSLT
 %type <argSpecs>     ParamList FunctionParamList TemplateParamList ParamList_XSLT
@@ -724,8 +729,8 @@ namespace XQParser {
 
 %type <modeList>        TemplateModes_XSLT TemplateDeclModesSection TemplateDeclModes
 %type <mode>            ApplyTemplatesMode_XSLT ApplyTemplatesMode TemplateDeclMode
-
-%type <boolean> FunctionDeclUpdating PreserveMode InheritMode
+%type <functionOptions> FunctionOptions
+%type <boolean>         PreserveMode InheritMode PrivateOption DeterministicOption
 
 %start SelectLanguage
 
@@ -932,7 +937,7 @@ Function_XSLT:
 FunctionAttrs_XSLT:
     _XSLT_FUNCTION_
   {
-    $$ = WRAP(@1, new (MEMMGR) XQUserFunction(0, 0, 0, 0, false, true, MEMMGR));
+    $$ = WRAP(@1, new (MEMMGR) XQUserFunction(0, 0, 0, 0, 0, true, MEMMGR));
   }
   | FunctionAttrs_XSLT _XSLT_NAME_
   {
@@ -2395,7 +2400,7 @@ Prolog_XQ:
   {
     QP->_flags.set(BIT_DECLARE_SECOND_STEP);
   }
-  | Prolog_XQ FunctionDecl_XQ Separator
+  | Prolog_XQ FunctionDecl Separator
   {
     QP->_flags.set(BIT_DECLARE_SECOND_STEP);
     XQUserFunction* decl=$2;
@@ -2429,29 +2434,6 @@ Setter_XQ:
   | EmptyOrderDecl 
   | CopyNamespacesDecl 
 ;  
-
-// [26]    FunctionDecl      ::=   "declare" "function" QName "(" ParamList? ")" ("as" SequenceType)?
-//                    (EnclosedExpr | "external")
-FunctionDecl_XQ:
-  _DECLARE_ FunctionKeyword FunctionName FunctionParamList EnclosedExpr
-  {
-    $$ = WRAP(@1, new (MEMMGR) XQUserFunction($3, $4, $5, NULL, false, true, MEMMGR));
-  }
-  | _DECLARE_ FunctionKeyword FunctionName FunctionParamList _AS_ SequenceType EnclosedExpr
-  {
-    $$ = WRAP(@1, new (MEMMGR) XQUserFunction($3, $4, $7, $6, false, true, MEMMGR));
-  }
-  | _DECLARE_ FunctionKeyword FunctionName FunctionParamList _EXTERNAL_
-  {
-    $$ = WRAP(@1, new (MEMMGR) XQUserFunction($3, $4, NULL, NULL, false, true, MEMMGR));
-  }
-  | _DECLARE_ FunctionKeyword FunctionName FunctionParamList _AS_ SequenceType _EXTERNAL_
-  {
-    $$ = WRAP(@1, new (MEMMGR) XQUserFunction($3, $4, NULL, $6, false, true, MEMMGR));
-  }
-  ;
-
-FunctionKeyword: _FUNCTION_ | _FUNCTION_EXT_;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // XQuery Fulltext rules
@@ -2494,7 +2476,7 @@ Prolog_XQF:
   {
     QP->_flags.set(BIT_DECLARE_SECOND_STEP);
   }
-  | Prolog_XQF FunctionDecl_XQ Separator
+  | Prolog_XQF FunctionDecl Separator
   {
     QP->_flags.set(BIT_DECLARE_SECOND_STEP);
     XQUserFunction* decl=$2;
@@ -2587,30 +2569,44 @@ Module:
   ;
 
 // [2]    VersionDecl    ::=    <"xquery" "version" StringLiteral> ("encoding" StringLiteral)? Separator
+// [2]   	VersionDecl	   ::=   	"xquery" (("encoding" StringLiteral) | ("version" StringLiteral ("encoding" StringLiteral)?)) Separator
 VersionDecl:
-  _XQUERY_ _VERSION_ _STRING_LITERAL_ Separator
-  {
-    if(!XPath2Utils::equals($3,sz1_0))
-      yyerror(@2, "This XQuery processor only supports version 1.0 of the specs [err:XQST0031]");
-  }
-  | _XQUERY_ _VERSION_ _STRING_LITERAL_ _ENCODING_ _STRING_LITERAL_ Separator
-  {
-    if(!XPath2Utils::equals($3, sz1_0))
-      yyerror(@2, "This XQuery processor only supports version 1.0 of the specs [err:XQST0031]");
+  _XQUERY_ Version Separator
+  | _XQUERY_ Version Encoding Separator
+  | _XQUERY_ Encoding Separator
+  ;
 
-    XMLCh *encName = $5;
+Version:
+    _VERSION_ _STRING_LITERAL_
+  {
+    // TBD Set the language correctly on the context - jpcs
+    if(XPath2Utils::equals($2,sz1_0))
+      QP->_lexer->setVersion11(false);
+    else if(XPath2Utils::equals($2,sz1_1)) {
+      if(!QP->_lexer->isVersion11()) {
+        yyerror(@1, "This XQuery processor is not configured to support XQuery 1.1 [err:XQST0031]");
+      }
+      QP->_lexer->setVersion11(true);
+    }
+    else
+      yyerror(@1, "This XQuery processor only supports version 1.0 and 1.1 [err:XQST0031]");
+  }
+  ;
+
+Encoding:
+    _ENCODING_ _STRING_LITERAL_
+  {
+    XMLCh *encName = $2;
     if((*encName < chLatin_A || *encName > chLatin_Z) && (*encName < chLatin_a || *encName > chLatin_z))
-      yyerror(@5, "The specified encoding does not conform to the definition of EncName [err:XQST0087]");
+      yyerror(@1, "The specified encoding does not conform to the definition of EncName [err:XQST0087]");
 
     for(++encName; *encName; ++encName) {
       if((*encName < chLatin_A || *encName > chLatin_Z) &&
          (*encName < chLatin_a || *encName > chLatin_z) &&
          (*encName < chDigit_0 || *encName > chDigit_9) &&
          *encName != chPeriod && *encName != chDash)
-        yyerror(@5, "The specified encoding does not conform to the definition of EncName [err:XQST0087]");
+        yyerror(@1, "The specified encoding does not conform to the definition of EncName [err:XQST0087]");
     }
-
-    // TODO: store the encoding somewhere
   }
   ;
 
@@ -2998,26 +2994,28 @@ ConstructionDecl:
   }
   ;
 
-// [26]    FunctionDecl      ::=   "declare" "updating"? "function" QName "(" ParamList? ")" ("as" SequenceType)?
-//                    (EnclosedExpr | "external")
+// [31]   	FunctionDecl	   ::=   	"declare" FunctionOptions "function" QName "(" ParamList? ")" ("as" SequenceType)? (FunctionBody | "external")
+// [37]   	FunctionBody	   ::=   	EnclosedExpr
 FunctionDecl:
-    _DECLARE_ FunctionDeclUpdating FunctionKeyword FunctionName FunctionParamList EnclosedExpr
+    _DECLARE_ FunctionOptions FunctionKeyword FunctionName FunctionParamList EnclosedExpr
     {
       $$ = WRAP(@1, new (MEMMGR) XQUserFunction($4,$5,WRAP(@6, $6),NULL, $2, true, MEMMGR));
     }
-  | _DECLARE_ FunctionDeclUpdating FunctionKeyword FunctionName FunctionParamList _AS_ SequenceType EnclosedExpr
+  | _DECLARE_ FunctionOptions FunctionKeyword FunctionName FunctionParamList _AS_ SequenceType EnclosedExpr
     {
       $$ = WRAP(@1, new (MEMMGR) XQUserFunction($4,$5,WRAP(@8, $8),$7, $2, true, MEMMGR));
     }
-  | _DECLARE_ FunctionDeclUpdating FunctionKeyword FunctionName FunctionParamList _EXTERNAL_
+  | _DECLARE_ FunctionOptions FunctionKeyword FunctionName FunctionParamList _EXTERNAL_
     {
       $$ = WRAP(@1, new (MEMMGR) XQUserFunction($4,$5,NULL,NULL, $2, true, MEMMGR));
     }
-  | _DECLARE_ FunctionDeclUpdating FunctionKeyword FunctionName FunctionParamList _AS_ SequenceType _EXTERNAL_
+  | _DECLARE_ FunctionOptions FunctionKeyword FunctionName FunctionParamList _AS_ SequenceType _EXTERNAL_
     {
       $$ = WRAP(@1, new (MEMMGR) XQUserFunction($4,$5,NULL,$7, $2, true, MEMMGR));
     }
   ;
+
+FunctionKeyword: _FUNCTION_ | _FUNCTION_EXT_;
 
 FunctionParamList:
   _LPAR_ _RPAR_
@@ -3030,15 +3028,52 @@ FunctionParamList:
   }
   ;
 
-FunctionDeclUpdating:
+// [32]   	FunctionOptions	   ::=   	(PrivateOption | DeterministicOption | "updating")*
+FunctionOptions:
+    /* empty */
   {
-    $$ = false;
+    $$ = new (MEMMGR) XQUserFunction::Options();
   }
-  | _UPDATING_
+  | FunctionOptions PrivateOption
   {
-    $$ = true;
+    switch($1->privateOption) {
+    case XQUserFunction::Options::TRUE:
+      yyerror(@2, "Function option 'private' already specified [err:XQST0106]");
+    case XQUserFunction::Options::FALSE:
+      yyerror(@2, "Function option 'public' already specified [err:XQST0106]");
+    case XQUserFunction::Options::DEFAULT:
+      $1->privateOption = $2 ? XQUserFunction::Options::TRUE : XQUserFunction::Options::FALSE;
+      break;
+    }
+    $$ = $1;
+  }
+  | FunctionOptions DeterministicOption
+  {
+    switch($1->nondeterministic) {
+    case XQUserFunction::Options::TRUE:
+      yyerror(@2, "Function option 'nondeterministic' already specified [err:XQST0106]");
+    case XQUserFunction::Options::FALSE:
+      yyerror(@2, "Function option 'deterministic' already specified [err:XQST0106]");
+    case XQUserFunction::Options::DEFAULT:
+      $1->nondeterministic = $2 ? XQUserFunction::Options::TRUE : XQUserFunction::Options::FALSE;
+      break;
+    }
+    $$ = $1;
+  }
+  | FunctionOptions _UPDATING_
+  {
+    if($1->updating != XQUserFunction::Options::DEFAULT)
+      yyerror(@2, "Function option 'updating' already specified [err:XPST0003]");
+    $1->updating = XQUserFunction::Options::TRUE;
+    $$ = $1;
   }
   ;
+
+// [33]   	PrivateOption	   ::=   	"private" | "public"
+PrivateOption: _PRIVATE_ { $$ = true; } | _PUBLIC_ { $$ = false; };
+
+// [34]   	DeterministicOption	   ::=   	"deterministic" | "nondeterministic"
+DeterministicOption: _DETERMINISTIC_ { $$ = false; } | _NONDETERMINISTIC_ { $$ = true; };
 
 // [28]    ParamList    ::=    Param ("," Param)* 
 ParamList:
@@ -5732,7 +5767,7 @@ LiteralFunctionItem:
 InlineFunction:
     _FUNCTION_EXT_ FunctionParamList TypeDeclaration EnclosedExpr
   {
-    XQUserFunction *func = WRAP(@1, new (MEMMGR) XQUserFunction(0, $2, $4, $3, false, false, MEMMGR));
+    XQUserFunction *func = WRAP(@1, new (MEMMGR) XQUserFunction(0, $2, $4, $3, 0, false, MEMMGR));
     $$ = WRAP(@1, new (MEMMGR) XQInlineFunction(func, MEMMGR));
   }
   ;
@@ -5836,7 +5871,7 @@ _DIFFERENT_ | _LOWERCASE_ | _UPPERCASE_ | _RELATIONSHIP_ | _LEVELS_ | _LANGUAGE_
 _EXACTLY_ | _FROM_ | _WORDS_ | _SENTENCES_ | _PARAGRAPHS_ | _SENTENCE_ | _PARAGRAPH_ | _REPLACE_ | _MODIFY_ | _FIRST_ |
 _INSERT_ | _BEFORE_ | _AFTER_ | _REVALIDATION_ | _WITH_ | _NODES_ | _RENAME_ | _LAST_ | _DELETE_ | _INTO_ | _UPDATING_ |
 _ORDERED_ | _UNORDERED_ | _ID_ | _KEY_ | _TEMPLATE_ | _MATCHES_ | _NAME_ | _CALL_ | _APPLY_ | _TEMPLATES_ | _MODE_ |
-_FTOR_ | _FTAND_ | _FTNOT_
+_FTOR_ | _FTAND_ | _FTNOT_ | _PRIVATE_ | _PUBLIC_ | _DETERMINISTIC_ | _NONDETERMINISTIC_
   ;
 
 /* _XQUERY_ | */

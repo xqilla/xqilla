@@ -71,7 +71,7 @@ const XMLCh XQUserFunction::XMLChXQueryLocalFunctionsURI[] =
 };
 
 XQUserFunction::XQUserFunction(const XMLCh *qname, ArgumentSpecs *argSpecs, ASTNode *body,
-                               SequenceType *returnType, bool isUpdating, bool isGlobal,
+                               SequenceType *returnType, Options *options, bool isGlobal,
                                XPath2MemoryManager *mm)
   : FuncFactory(argSpecs == 0 ? 0 : argSpecs->size(), mm),
     body_(body),
@@ -83,8 +83,8 @@ XQUserFunction::XQUserFunction(const XMLCh *qname, ArgumentSpecs *argSpecs, ASTN
     returnType_(returnType),
     argSpecs_(argSpecs),
     isGlobal_(isGlobal),
-    isUpdating_(isUpdating),
     isTemplate_(false),
+    options_(options ? options : new (mm) Options()),
     memMgr_(mm),
     src_(mm),
     staticTyped_(false),
@@ -105,8 +105,8 @@ XQUserFunction::XQUserFunction(const XMLCh *qname, VectorOfASTNodes *pattern, Ar
     returnType_(returnType),
     argSpecs_(argSpecs),
     isGlobal_(true),
-    isUpdating_(false),
     isTemplate_(true),
+    options_(new (mm) Options()),
     memMgr_(mm),
     src_(mm),
     staticTyped_(false),
@@ -126,8 +126,8 @@ XQUserFunction::XQUserFunction(const XQUserFunction *o, XPath2MemoryManager *mm)
     returnType_(o->returnType_),
     argSpecs_(0),
     isGlobal_(o->isGlobal_),
-    isUpdating_(o->isUpdating_),
     isTemplate_(o->isTemplate_),
+    options_(new (mm) Options(*o->options_)),
     memMgr_(mm),
     src_(mm),
     staticTyped_(o->staticTyped_),
@@ -380,7 +380,7 @@ void XQUserFunction::staticResolutionStage1(StaticContext *context)
     src_.getStaticType() = StaticType(StaticType::ITEM_TYPE, 0, StaticType::UNLIMITED);
   }
 
-  if(isUpdating_) {
+  if(options_->updating == Options::TRUE) {
     src_.updating(true);
   }
 
@@ -525,7 +525,7 @@ void XQUserFunction::staticTyping(StaticContext *context, StaticTyper *styper)
   // Nothing more to do for external functions
   if(body_ == NULL) return;
 
-  if(isUpdating_ && returnType_ != NULL) {
+  if(options_->updating == Options::TRUE && returnType_ != NULL) {
     XQThrow(StaticErrorException, X("XQUserFunction::staticTyping"),
             X("It is a static error for an updating function to declare a return type [err:XUST0028]"));
   }
@@ -581,7 +581,7 @@ void XQUserFunction::staticTyping(StaticContext *context, StaticTyper *styper)
   if(context)
     context->getVariableTypeStore()->removeScope();
 
-  if(isUpdating_) {
+  if(options_->updating == Options::TRUE) {
     if(!body_->getStaticAnalysis().isUpdating() && !body_->getStaticAnalysis().isPossiblyUpdating())
       XQThrow(StaticErrorException, X("XQUserFunction::staticTyping"),
               X("It is a static error for the body expression of a user defined updating function "
