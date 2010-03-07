@@ -68,6 +68,7 @@ XQQuery::XQQuery(const XMLCh* queryText, DynamicContext *context, bool contextOw
     m_szQueryText(m_context->getMemoryManager()->getPooledString(queryText)),
     m_szCurrentFile(NULL),
     m_userDefFns(XQillaAllocator<XQUserFunction*>(memMgr)),
+    m_delayedFunctions(XQillaAllocator<DelayedFuncFactory*>(memMgr)),
     m_userDefVars(XQillaAllocator<XQGlobalVariable*>(memMgr)),
     m_importedModules(XQillaAllocator<XQQuery*>(memMgr))
 {
@@ -378,6 +379,15 @@ void XQQuery::addFunction(XQUserFunction* fnDef)
   m_userDefFns.push_back(fnDef);
 }
 
+void XQQuery::addDelayedFunction(const XMLCh *uri, const XMLCh *name, size_t numArgs,
+                                 const XMLCh *functionDeclaration, int line, int column)
+{
+  DelayedFuncFactory *f = new (m_context->getMemoryManager())
+	  DelayedFuncFactory(uri, name, numArgs, functionDeclaration, line, column, this);
+  m_delayedFunctions.push_back(f);
+  m_context->addCustomFunction(f);
+}
+
 void XQQuery::addVariable(XQGlobalVariable* varDef)
 {
   m_userDefVars.push_back(varDef);
@@ -497,6 +507,7 @@ void XQQuery::importModule(const XMLCh* szUri, VectorOfStrings* locations, Stati
     moduleCtx->setXMLEntityResolver(&loopDetector);
 
     AutoDelete<XQQuery> pParsedQuery(XQilla::parse(*srcToUse, ctxGuard.adopt(), XQilla::NO_OPTIMIZATION));
+    moduleCtx->setXMLEntityResolver(context->getXMLEntityResolver());
 
     if(!pParsedQuery->getIsLibraryModule()) {
       XMLBuffer buf(1023,context->getMemoryManager());
@@ -512,37 +523,9 @@ void XQQuery::importModule(const XMLCh* szUri, VectorOfStrings* locations, Stati
       buf.append(X(" specifies a different namespace [err:XQST0059]"));
       XQThrow3(StaticErrorException, X("XQQuery::ImportModule"), buf.getRawBuffer(), location);
     }
-    // now move the variable declarations and the function definitions into my context
-    for(UserFunctions::iterator itFn = pParsedQuery->m_userDefFns.begin(); itFn != pParsedQuery->m_userDefFns.end(); ++itFn) {
-      (*itFn)->setModuleDocumentCache(const_cast<DocumentCache*>(moduleCtx->getDocumentCache()));
-      if((*itFn)->isTemplate()) {
-        context->addTemplate(*itFn);
-      }
-      else if((*itFn)->getName() && (*itFn)->getOptions()->privateOption != XQUserFunction::Options::TRUE) {
-        context->addCustomFunction(*itFn);
-      }
-    }
-    for(GlobalVariables::iterator itVar = pParsedQuery->m_userDefVars.begin(); itVar != pParsedQuery->m_userDefVars.end(); ++itVar) {
-      for(ImportedModules::const_iterator modIt = m_importedModules.begin();
-          modIt != m_importedModules.end(); ++modIt) {
-        for(GlobalVariables::const_iterator varIt = (*modIt)->m_userDefVars.begin();
-            varIt != (*modIt)->m_userDefVars.end(); ++varIt) {
-          if(XPath2Utils::equals((*varIt)->getVariableURI(), (*itVar)->getVariableURI()) &&
-             XPath2Utils::equals((*varIt)->getVariableLocalName(), (*itVar)->getVariableLocalName())) {
-            XMLBuffer buf(1023,context->getMemoryManager());
-            buf.set(X("An imported variable {"));
-            buf.append((*itVar)->getVariableURI());
-            buf.append(X("}"));
-            buf.append((*itVar)->getVariableLocalName());
-            buf.append(X(" conflicts with an already defined global variable [err:XQST0049]."));
-            XQThrow3(StaticErrorException, X("XQQuery::ImportModule"), buf.getRawBuffer(), *varIt);
-          }
-        }
-      }
-    }
 
-    moduleCtx->setXMLEntityResolver(context->getXMLEntityResolver());
-    m_importedModules.push_back(pParsedQuery.adopt());
+    importModule(pParsedQuery);
+    pParsedQuery.adopt();
 
     bFound=true;
   }
@@ -554,6 +537,56 @@ void XQQuery::importModule(const XMLCh* szUri, VectorOfStrings* locations, Stati
     buf.append(X("\" [err:XQST0059]"));
     XQThrow3(StaticErrorException,X("XQQuery::ImportModule"), buf.getRawBuffer(), location);
   }
+}
+
+void XQQuery::importModule(XQQuery *module)
+{
+  const DynamicContext *moduleCtx = module->getStaticContext();
+
+  // Move the function definitions into my context
+  for(UserFunctions::iterator itFn = module->m_userDefFns.begin(); itFn != module->m_userDefFns.end(); ++itFn) {
+    (*itFn)->setModuleDocumentCache(const_cast<DocumentCache*>(moduleCtx->getDocumentCache()));
+    if((*itFn)->isTemplate()) {
+      m_context->addTemplate(*itFn);
+    }
+    else if((*itFn)->getName() && (*itFn)->getOptions()->privateOption != XQUserFunction::Options::TRUE) {
+      m_context->addCustomFunction(*itFn);
+    }
+  }
+
+  // Move the delayed function definitions into my context
+  for(DelayedFunctions::iterator itd = module->m_delayedFunctions.begin(); itd != module->m_delayedFunctions.end(); ++itd) {
+    if(!(*itd)->isParsed()) {
+      try {
+        m_context->addCustomFunction(*itd);
+      }
+      catch(StaticErrorException &e) {
+        // TBD Don't ignore this error when we've implemented built in modules - jpcs
+      }
+    }
+  }
+
+  // Move the variable declarations into my context
+  for(GlobalVariables::iterator itVar = module->m_userDefVars.begin(); itVar != module->m_userDefVars.end(); ++itVar) {
+    for(ImportedModules::const_iterator modIt = m_importedModules.begin();
+        modIt != m_importedModules.end(); ++modIt) {
+      for(GlobalVariables::const_iterator varIt = (*modIt)->m_userDefVars.begin();
+          varIt != (*modIt)->m_userDefVars.end(); ++varIt) {
+        if(XPath2Utils::equals((*varIt)->getVariableURI(), (*itVar)->getVariableURI()) &&
+           XPath2Utils::equals((*varIt)->getVariableLocalName(), (*itVar)->getVariableLocalName())) {
+          XMLBuffer buf;
+          buf.set(X("An imported variable {"));
+          buf.append((*itVar)->getVariableURI());
+          buf.append(X("}"));
+          buf.append((*itVar)->getVariableLocalName());
+          buf.append(X(" conflicts with an already defined global variable [err:XQST0049]."));
+          XQThrow3(StaticErrorException, X("XQQuery::ImportModule"), buf.getRawBuffer(), *varIt);
+        }
+      }
+    }
+  }
+
+  m_importedModules.push_back(module);
 }
 
 const XMLCh* XQQuery::getFile() const

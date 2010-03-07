@@ -159,7 +159,8 @@ ASTNode *XQTreatAs::staticTypingImpl(StaticContext *context)
   _src.add(_expr->getStaticAnalysis());
 
   if(!_expr->getStaticAnalysis().isUpdating()) {
-    if(match.type == StaticType::NEVER || match.cardinality == StaticType::NEVER) {
+    if((match.type == StaticType::NEVER || match.cardinality == StaticType::NEVER) &&
+       _errorCode != err_XPDY0050) {
       // It never matches
       XMLBuffer buf;
       buf.set(X("Expression does not match type "));

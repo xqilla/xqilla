@@ -48,5 +48,6 @@ void FuncFactory::setURINameHash(const XMLCh *uri, const XMLCh *name)
   name_ = name;
 
   uriname_.set(name);
+  uriname_.append(':');
   uriname_.append(uri);
 }

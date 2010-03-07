@@ -34,6 +34,8 @@ public:
 
 protected:
   virtual void optimize(XQQuery *query);
+  virtual XQUserFunction *optimizeFunctionDef(XQUserFunction *item);
+
   virtual ASTNode *optimize(ASTNode *item);
   virtual ASTNode *optimizePredicate(XQPredicate *item);
   virtual ASTNode *optimizeAnalyzeString(XQAnalyzeString *item);

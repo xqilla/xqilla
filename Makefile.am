@@ -7,7 +7,7 @@ LDADD = libxqilla.la
 ACLOCAL_AMFLAGS = -I autotools/m4
 
 bin_PROGRAMS = xqilla
-noinst_PROGRAMS = xqtsRunner xmarkRunner simple-basic simple-context-item xqc-basic xqc-context-item
+noinst_PROGRAMS = xqtsRunner xmarkRunner simple-basic simple-context-item xqc-basic xqc-context-item compile-delayed-module
 
 if BUILD_DOM_SAMPLES
 noinst_PROGRAMS += dom-basic dom-context-item dom-resolver
@@ -154,6 +154,7 @@ src/utils/XPath2Utils.cpp \
 src/utils/UnicodeTransformer.cpp \
 src/utils/utf8proc/utf8proc.c \
 src/utils/utf8proc/utf8proc_data.h \
+src/utils/DelayedModule.cpp \
 src/exceptions/XQillaException.cpp \
 src/exceptions/XQException.cpp \
 src/exceptions/InvalidLexicalSpaceException.hpp \
@@ -501,6 +502,8 @@ src/optimizer/ASTCopier.cpp \
 src/optimizer/ASTReleaser.cpp \
 src/optimizer/ASTVisitor.cpp \
 src/optimizer/PartialEvaluator.cpp \
+src/optimizer/CoreTranslator.cpp \
+src/optimizer/CoreModule.hpp \
 src/optimizer/StaticTyper.cpp \
 src/optimizer/QueryPathNode.cpp \
 src/optimizer/QueryPathTreeGenerator.cpp \
@@ -538,6 +541,7 @@ src/samples/dom-api/data.xml \
 src/samples/dom-api/data.xsd \
 src/samples/dom-api/foo.xml \
 src/samples/simple-api/foo.xml \
+src/optimizer/CoreModule.xq \
 LICENSE \
 TODO \
 README \
@@ -630,6 +634,12 @@ src/samples/xqc-api/xqc-basic.c
 nodist_EXTRA_xqc_context_item_SOURCES = dummy.cpp
 xqc_context_item_SOURCES = \
 src/samples/xqc-api/xqc-context-item.c
+
+compile_delayed_module_SOURCES = \
+src/tools/compile-delayed-module.cpp
+
+$(top_srcdir)/src/optimizer/CoreModule.hpp: $(top_srcdir)/src/optimizer/CoreModule.xq
+	./compile-delayed-module $(top_srcdir)/src/optimizer/CoreModule.xq >$(top_srcdir)/src/optimizer/CoreModule.hpp
 
 LEXERFILE   = $(top_srcdir)/src/lexer/XQLexer.cpp
 LEXTEMPLATE = $(top_srcdir)/src/lexer/XQLexer.l

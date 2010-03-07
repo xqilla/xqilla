@@ -34,9 +34,11 @@ class XQUserFunction;
 class XQGlobalVariable;
 class XQUserFunctionInstance;
 class XQQuery;
+class DelayedModule;
 
 typedef std::vector<XQGlobalVariable*, XQillaAllocator<XQGlobalVariable*> > GlobalVariables;
 typedef std::vector<XQQuery*, XQillaAllocator<XQQuery*> > ImportedModules;
+typedef std::vector<DelayedFuncFactory*, XQillaAllocator<DelayedFuncFactory*> > DelayedFunctions;
 
 /**
  * Encapsulates a query expression. XQQuery objects are thread safe, and can be
@@ -220,6 +222,13 @@ public:
   /// Returns a vector of all XQUserFunction objects from the query
   const UserFunctions &getFunctions() const { return m_userDefFns; }
 
+  /// Adds a function defined in XQuery syntax. Parsing is delayed until the function
+  /// is actually needed.
+  void addDelayedFunction(const XMLCh *uri, const XMLCh *name, size_t numArgs,
+	  const XMLCh *functionDeclaration, int line = 1, int column = 1);
+  /// Returns a vector of all XQUserFunction objects from the query
+  const DelayedFunctions &getDelayedFunctions() const { return m_delayedFunctions; }
+
   /// Adds a XQGlobalVariable to the query
   void addVariable(XQGlobalVariable* varDef);
   /// Returns a vector of all XQGlobalVariable objects from the query
@@ -250,6 +259,7 @@ public:
   const XMLCh* getModuleTargetNamespace() const;
   /// Performs a module import from the given target namespace and locations
   void importModule(const XMLCh* szUri, VectorOfStrings* locations, StaticContext* context, const LocationInfo *location);
+  void importModule(XQQuery *module);
 
   //@}
 
@@ -293,11 +303,13 @@ private:
   const XMLCh* m_szCurrentFile;
 
   UserFunctions m_userDefFns;
+  DelayedFunctions m_delayedFunctions;
   GlobalVariables m_userDefVars;
   ImportedModules m_importedModules;
 
   friend class QueryResult;
   friend class XQilla;
+  friend class DelayedModule;
 };
 
 #endif

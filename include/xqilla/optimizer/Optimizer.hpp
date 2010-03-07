@@ -26,6 +26,7 @@ class ASTNode;
 class DynamicContext;
 
 class XQQuery;
+class XQUserFunction;
 
 class XQILLA_API Optimizer
 {
@@ -35,11 +36,13 @@ public:
 
   void startOptimize(XQQuery *query);
   ASTNode *startOptimize(ASTNode *item);
+  XQUserFunction *startOptimize(XQUserFunction *item);
   void reset();
 
 protected:
   virtual void optimize(XQQuery *query) = 0;
   virtual ASTNode *optimize(ASTNode *item) = 0;
+  virtual XQUserFunction *optimizeFunctionDef(XQUserFunction *item) = 0;
   virtual void resetInternal();
 
 private:
@@ -54,12 +57,11 @@ class XQILLA_API StaticResolver : public Optimizer
 public:
   StaticResolver(DynamicContext *xpc, Optimizer *parent = 0)
     : Optimizer(parent), xpc_(xpc) {}
-  virtual ~StaticResolver() {}
 
 protected:
   virtual void optimize(XQQuery *query);
   virtual ASTNode *optimize(ASTNode *item);
-  virtual void resetInternal() {}
+  virtual XQUserFunction *optimizeFunctionDef(XQUserFunction *item);
 
 private:
   DynamicContext *xpc_;

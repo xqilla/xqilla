@@ -21,6 +21,7 @@
 #include <xqilla/ast/ASTNode.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/simple-api/XQQuery.hpp>
+#include <xqilla/functions/XQUserFunction.hpp>
 
 using namespace std;
 
@@ -56,6 +57,14 @@ ASTNode *Optimizer::startOptimize(ASTNode *item)
   return optimize(item);
 }
 
+XQUserFunction *Optimizer::startOptimize(XQUserFunction *item)
+{
+  if(parent_ != 0) {
+    item = parent_->startOptimize(item);
+  }
+  return optimizeFunctionDef(item);
+}
+
 void Optimizer::reset()
 {
   if(parent_ != 0) {
@@ -72,5 +81,11 @@ void StaticResolver::optimize(XQQuery *query)
 ASTNode *StaticResolver::optimize(ASTNode *item)
 {
   return item->staticResolution(xpc_);
+}
+
+XQUserFunction *StaticResolver::optimizeFunctionDef(XQUserFunction *item)
+{
+  item->staticResolutionStage2(xpc_);
+  return item;
 }
 

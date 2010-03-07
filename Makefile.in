@@ -39,7 +39,8 @@ target_triplet = @target@
 bin_PROGRAMS = xqilla$(EXEEXT)
 noinst_PROGRAMS = xqtsRunner$(EXEEXT) xmarkRunner$(EXEEXT) \
 	simple-basic$(EXEEXT) simple-context-item$(EXEEXT) \
-	xqc-basic$(EXEEXT) xqc-context-item$(EXEEXT) $(am__EXEEXT_1)
+	xqc-basic$(EXEEXT) xqc-context-item$(EXEEXT) \
+	compile-delayed-module$(EXEEXT) $(am__EXEEXT_1)
 @BUILD_DOM_SAMPLES_TRUE@am__append_1 = dom-basic dom-context-item dom-resolver
 subdir = .
 DIST_COMMON = README $(am__configure_deps) $(srcdir)/Makefile.am \
@@ -125,7 +126,7 @@ am_libxqilla_la_OBJECTS = ReferenceCounted.lo BaseMemoryManager.lo \
 	XQQuery.lo UTF8Str.lo XMLChCompare.lo XStr.lo ContextUtils.lo \
 	DateUtils.lo NumUtils.lo XQillaPlatformUtils.lo PrintAST.lo \
 	XPath2NSUtils.lo XPath2Utils.lo UnicodeTransformer.lo \
-	utf8proc.lo XQillaException.lo XQException.lo \
+	utf8proc.lo DelayedModule.lo XQillaException.lo XQException.lo \
 	EXSLTMathFunction.lo ExternalFunction.lo XQillaFunction.lo \
 	FunctionParseXML.lo FuncFactory.lo FunctionLookup.lo \
 	FunctionAbs.lo FunctionAcos.lo FunctionAsin.lo FunctionAtan.lo \
@@ -234,12 +235,12 @@ am_libxqilla_la_OBJECTS = ReferenceCounted.lo BaseMemoryManager.lo \
 	XercesConfiguration.lo XercesNodeImpl.lo \
 	XercesSequenceBuilder.lo XercesUpdateFactory.lo \
 	XercesURIResolver.lo Optimizer.lo ASTCopier.lo ASTReleaser.lo \
-	ASTVisitor.lo PartialEvaluator.lo StaticTyper.lo \
-	QueryPathNode.lo QueryPathTreeGenerator.lo yajl_buf.lo yajl.lo \
-	yajl_encode.lo yajl_gen.lo yajl_lex.lo yajl_parser.lo \
-	XQillaXQCImplementation.lo XQillaXQCStaticContext.lo \
-	XQillaXQCDynamicContext.lo XQillaXQCExpression.lo \
-	XQillaXQCSequence.lo
+	ASTVisitor.lo PartialEvaluator.lo CoreTranslator.lo \
+	StaticTyper.lo QueryPathNode.lo QueryPathTreeGenerator.lo \
+	yajl_buf.lo yajl.lo yajl_encode.lo yajl_gen.lo yajl_lex.lo \
+	yajl_parser.lo XQillaXQCImplementation.lo \
+	XQillaXQCStaticContext.lo XQillaXQCDynamicContext.lo \
+	XQillaXQCExpression.lo XQillaXQCSequence.lo
 libxqilla_la_OBJECTS = $(am_libxqilla_la_OBJECTS)
 libxqilla_la_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
@@ -248,6 +249,10 @@ libxqilla_la_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
 @BUILD_DOM_SAMPLES_TRUE@	dom-context-item$(EXEEXT) \
 @BUILD_DOM_SAMPLES_TRUE@	dom-resolver$(EXEEXT)
 PROGRAMS = $(bin_PROGRAMS) $(noinst_PROGRAMS)
+am_compile_delayed_module_OBJECTS = compile-delayed-module.$(OBJEXT)
+compile_delayed_module_OBJECTS = $(am_compile_delayed_module_OBJECTS)
+compile_delayed_module_LDADD = $(LDADD)
+compile_delayed_module_DEPENDENCIES = libxqilla.la
 am_dom_basic_OBJECTS = dom-basic.$(OBJEXT)
 dom_basic_OBJECTS = $(am_dom_basic_OBJECTS)
 dom_basic_LDADD = $(LDADD)
@@ -310,14 +315,16 @@ CXXLD = $(CXX)
 CXXLINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 	--mode=link $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) \
 	$(LDFLAGS) -o $@
-SOURCES = $(libxqilla_la_SOURCES) $(dom_basic_SOURCES) \
-	$(dom_context_item_SOURCES) $(dom_resolver_SOURCES) \
-	$(simple_basic_SOURCES) $(simple_context_item_SOURCES) \
-	$(xmarkRunner_SOURCES) $(xqc_basic_SOURCES) \
-	$(nodist_EXTRA_xqc_basic_SOURCES) $(xqc_context_item_SOURCES) \
+SOURCES = $(libxqilla_la_SOURCES) $(compile_delayed_module_SOURCES) \
+	$(dom_basic_SOURCES) $(dom_context_item_SOURCES) \
+	$(dom_resolver_SOURCES) $(simple_basic_SOURCES) \
+	$(simple_context_item_SOURCES) $(xmarkRunner_SOURCES) \
+	$(xqc_basic_SOURCES) $(nodist_EXTRA_xqc_basic_SOURCES) \
+	$(xqc_context_item_SOURCES) \
 	$(nodist_EXTRA_xqc_context_item_SOURCES) $(xqilla_SOURCES) \
 	$(xqtsRunner_SOURCES)
-DIST_SOURCES = $(libxqilla_la_SOURCES) $(dom_basic_SOURCES) \
+DIST_SOURCES = $(libxqilla_la_SOURCES) \
+	$(compile_delayed_module_SOURCES) $(dom_basic_SOURCES) \
 	$(dom_context_item_SOURCES) $(dom_resolver_SOURCES) \
 	$(simple_basic_SOURCES) $(simple_context_item_SOURCES) \
 	$(xmarkRunner_SOURCES) $(xqc_basic_SOURCES) \
@@ -654,6 +661,7 @@ src/utils/XPath2Utils.cpp \
 src/utils/UnicodeTransformer.cpp \
 src/utils/utf8proc/utf8proc.c \
 src/utils/utf8proc/utf8proc_data.h \
+src/utils/DelayedModule.cpp \
 src/exceptions/XQillaException.cpp \
 src/exceptions/XQException.cpp \
 src/exceptions/InvalidLexicalSpaceException.hpp \
@@ -1001,6 +1009,8 @@ src/optimizer/ASTCopier.cpp \
 src/optimizer/ASTReleaser.cpp \
 src/optimizer/ASTVisitor.cpp \
 src/optimizer/PartialEvaluator.cpp \
+src/optimizer/CoreTranslator.cpp \
+src/optimizer/CoreModule.hpp \
 src/optimizer/StaticTyper.cpp \
 src/optimizer/QueryPathNode.cpp \
 src/optimizer/QueryPathTreeGenerator.cpp \
@@ -1038,6 +1048,7 @@ src/samples/dom-api/data.xml \
 src/samples/dom-api/data.xsd \
 src/samples/dom-api/foo.xml \
 src/samples/simple-api/foo.xml \
+src/optimizer/CoreModule.xq \
 LICENSE \
 TODO \
 README \
@@ -1131,6 +1142,9 @@ src/samples/xqc-api/xqc-basic.c
 nodist_EXTRA_xqc_context_item_SOURCES = dummy.cpp
 xqc_context_item_SOURCES = \
 src/samples/xqc-api/xqc-context-item.c
+
+compile_delayed_module_SOURCES = \
+src/tools/compile-delayed-module.cpp
 
 LEXERFILE = $(top_srcdir)/src/lexer/XQLexer.cpp
 LEXTEMPLATE = $(top_srcdir)/src/lexer/XQLexer.l
@@ -1278,6 +1292,9 @@ clean-noinstPROGRAMS:
 	list=`for p in $$list; do echo "$$p"; done | sed 's/$(EXEEXT)$$//'`; \
 	echo " rm -f" $$list; \
 	rm -f $$list
+compile-delayed-module$(EXEEXT): $(compile_delayed_module_OBJECTS) $(compile_delayed_module_DEPENDENCIES) 
+	@rm -f compile-delayed-module$(EXEEXT)
+	$(CXXLINK) $(compile_delayed_module_OBJECTS) $(compile_delayed_module_LDADD) $(LIBS)
 dom-basic$(EXEEXT): $(dom_basic_OBJECTS) $(dom_basic_DEPENDENCIES) 
 	@rm -f dom-basic$(EXEEXT)
 	$(CXXLINK) $(dom_basic_OBJECTS) $(dom_basic_LDADD) $(LIBS)
@@ -1362,6 +1379,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ContextTuple.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ContextUtils.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ConvertFunctionArg.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/CoreTranslator.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/CountTuple.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DatatypeFactory.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DatatypeLookup.Plo@am__quote@
@@ -1370,6 +1388,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DebugHookDecorator.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DefaultTokenStore.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DefaultTokenizer.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DelayedModule.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DescendantAxis.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DescendantOrSelfAxis.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Divide.Plo@am__quote@
@@ -1711,6 +1730,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XercesSequenceBuilder.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XercesURIResolver.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XercesUpdateFactory.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/compile-delayed-module.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dom-basic.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dom-context-item.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dom-resolver.Po@am__quote@
@@ -2978,6 +2998,13 @@ UnicodeTransformer.lo: src/utils/UnicodeTransformer.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/utils/UnicodeTransformer.cpp' object='UnicodeTransformer.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o UnicodeTransformer.lo `test -f 'src/utils/UnicodeTransformer.cpp' || echo '$(srcdir)/'`src/utils/UnicodeTransformer.cpp
+
+DelayedModule.lo: src/utils/DelayedModule.cpp
+@am__fastdepCXX_TRUE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT DelayedModule.lo -MD -MP -MF $(DEPDIR)/DelayedModule.Tpo -c -o DelayedModule.lo `test -f 'src/utils/DelayedModule.cpp' || echo '$(srcdir)/'`src/utils/DelayedModule.cpp
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/DelayedModule.Tpo $(DEPDIR)/DelayedModule.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/utils/DelayedModule.cpp' object='DelayedModule.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DelayedModule.lo `test -f 'src/utils/DelayedModule.cpp' || echo '$(srcdir)/'`src/utils/DelayedModule.cpp
 
 XQillaException.lo: src/exceptions/XQillaException.cpp
 @am__fastdepCXX_TRUE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT XQillaException.lo -MD -MP -MF $(DEPDIR)/XQillaException.Tpo -c -o XQillaException.lo `test -f 'src/exceptions/XQillaException.cpp' || echo '$(srcdir)/'`src/exceptions/XQillaException.cpp
@@ -4869,6 +4896,13 @@ PartialEvaluator.lo: src/optimizer/PartialEvaluator.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o PartialEvaluator.lo `test -f 'src/optimizer/PartialEvaluator.cpp' || echo '$(srcdir)/'`src/optimizer/PartialEvaluator.cpp
 
+CoreTranslator.lo: src/optimizer/CoreTranslator.cpp
+@am__fastdepCXX_TRUE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT CoreTranslator.lo -MD -MP -MF $(DEPDIR)/CoreTranslator.Tpo -c -o CoreTranslator.lo `test -f 'src/optimizer/CoreTranslator.cpp' || echo '$(srcdir)/'`src/optimizer/CoreTranslator.cpp
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/CoreTranslator.Tpo $(DEPDIR)/CoreTranslator.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/optimizer/CoreTranslator.cpp' object='CoreTranslator.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o CoreTranslator.lo `test -f 'src/optimizer/CoreTranslator.cpp' || echo '$(srcdir)/'`src/optimizer/CoreTranslator.cpp
+
 StaticTyper.lo: src/optimizer/StaticTyper.cpp
 @am__fastdepCXX_TRUE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT StaticTyper.lo -MD -MP -MF $(DEPDIR)/StaticTyper.Tpo -c -o StaticTyper.lo `test -f 'src/optimizer/StaticTyper.cpp' || echo '$(srcdir)/'`src/optimizer/StaticTyper.cpp
 @am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/StaticTyper.Tpo $(DEPDIR)/StaticTyper.Plo
@@ -4924,6 +4958,20 @@ XQillaXQCSequence.lo: src/xqc/XQillaXQCSequence.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/xqc/XQillaXQCSequence.cpp' object='XQillaXQCSequence.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQillaXQCSequence.lo `test -f 'src/xqc/XQillaXQCSequence.cpp' || echo '$(srcdir)/'`src/xqc/XQillaXQCSequence.cpp
+
+compile-delayed-module.o: src/tools/compile-delayed-module.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT compile-delayed-module.o -MD -MP -MF $(DEPDIR)/compile-delayed-module.Tpo -c -o compile-delayed-module.o `test -f 'src/tools/compile-delayed-module.cpp' || echo '$(srcdir)/'`src/tools/compile-delayed-module.cpp
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/compile-delayed-module.Tpo $(DEPDIR)/compile-delayed-module.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/tools/compile-delayed-module.cpp' object='compile-delayed-module.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o compile-delayed-module.o `test -f 'src/tools/compile-delayed-module.cpp' || echo '$(srcdir)/'`src/tools/compile-delayed-module.cpp
+
+compile-delayed-module.obj: src/tools/compile-delayed-module.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT compile-delayed-module.obj -MD -MP -MF $(DEPDIR)/compile-delayed-module.Tpo -c -o compile-delayed-module.obj `if test -f 'src/tools/compile-delayed-module.cpp'; then $(CYGPATH_W) 'src/tools/compile-delayed-module.cpp'; else $(CYGPATH_W) '$(srcdir)/src/tools/compile-delayed-module.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/compile-delayed-module.Tpo $(DEPDIR)/compile-delayed-module.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/tools/compile-delayed-module.cpp' object='compile-delayed-module.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o compile-delayed-module.obj `if test -f 'src/tools/compile-delayed-module.cpp'; then $(CYGPATH_W) 'src/tools/compile-delayed-module.cpp'; else $(CYGPATH_W) '$(srcdir)/src/tools/compile-delayed-module.cpp'; fi`
 
 dom-basic.o: src/samples/dom-api/dom-basic.cpp
 @am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT dom-basic.o -MD -MP -MF $(DEPDIR)/dom-basic.Tpo -c -o dom-basic.o `test -f 'src/samples/dom-api/dom-basic.cpp' || echo '$(srcdir)/'`src/samples/dom-api/dom-basic.cpp
@@ -5488,6 +5536,9 @@ uninstall-am: uninstall-binPROGRAMS uninstall-libLTLIBRARIES
 	tags tags-recursive uninstall uninstall-am \
 	uninstall-binPROGRAMS uninstall-libLTLIBRARIES
 
+
+$(top_srcdir)/src/optimizer/CoreModule.hpp: $(top_srcdir)/src/optimizer/CoreModule.xq
+	./compile-delayed-module $(top_srcdir)/src/optimizer/CoreModule.xq >$(top_srcdir)/src/optimizer/CoreModule.hpp
 
 $(LEXERFILE): $(LEXTEMPLATE) $(LEXSKEL)
 	$(LEX) -BUs -Pxq -S$(LEXSKEL) -o$(LEXERFILE) $(LEXTEMPLATE) # This can take a long time

@@ -30,6 +30,7 @@
 #include <xqilla/context/impl/VarStoreImpl.hpp>
 
 class XQUserFunction;
+class XQQuery;
 
 class XQILLA_API XQUserFunctionInstance : public XQFunction, public ExternalFunction::Arguments
 {
@@ -261,6 +262,22 @@ protected:
   friend class XQUserFunctionInstance;
   friend class ASTCopier;
   friend class ASTReleaser;
+};
+
+class XQILLA_API DelayedFuncFactory : public FuncFactory
+{
+public:
+  DelayedFuncFactory(const XMLCh *uri, const XMLCh *name, size_t numArgs,
+	  const XMLCh *body, int line, int column, XQQuery *query);
+  virtual ASTNode *createInstance(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr) const;
+
+  bool isParsed() const { return function_ != 0; }
+
+private:
+  const XMLCh *body_;
+  int line_, column_;
+  XQQuery *query_;
+  XQUserFunction *function_;
 };
 
 #endif

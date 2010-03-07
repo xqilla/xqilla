@@ -515,6 +515,7 @@
         <file name='include/xqilla/utils/XQillaPlatformUtils.hpp'/>
         <file name='include/xqilla/utils/utf8proc.h'/>
         <file name='include/xqilla/utils/UnicodeTransformer.hpp'/>
+        <file name='include/xqilla/utils/DelayedModule.hpp'/>
         <file name='include/xqilla/framework/ReferenceCounted.hpp'/>
         <file name='include/xqilla/framework/XPath2MemoryManager.hpp'/>
         <file name='include/xqilla/framework/BaseMemoryManager.hpp'/>
@@ -954,6 +955,7 @@
         <file name="src/optimizer/Optimizer.cpp"/>
         <file name="src/optimizer/QueryPathNode.cpp"/>
         <file name="src/optimizer/QueryPathTreeGenerator.cpp"/>
+        <file name="src/optimizer/CoreModule.hpp"/>
       </filter>
       <filter name="parser">
         <file name="src/parser/QName.cpp"/>
@@ -1014,6 +1016,7 @@
         <file name="src/utils/XPath2Utils.cpp"/>
         <file name="src/utils/XQillaPlatformUtils.cpp"/>
         <file name="src/utils/XStr.cpp"/>
+        <file name="src/utils/DelayedModule.cpp"/>
       </filter>
       <filter name="xerces">
         <file name="src/xerces/AncestorAxis.cpp"/>

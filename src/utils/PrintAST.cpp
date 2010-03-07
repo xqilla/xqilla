@@ -180,6 +180,11 @@ string PrintAST::print(const XQQuery *query, const DynamicContext *context, int 
   return s.str();
 }
 
+string PrintAST::print(const XQUserFunction *item, const DynamicContext *context, int indent)
+{
+  return PrintAST().printXQUserFunction(item, context, indent);
+}
+
 string PrintAST::printXQUserFunction(const XQUserFunction *f, const DynamicContext *context, int indent)
 {
   ostringstream s;

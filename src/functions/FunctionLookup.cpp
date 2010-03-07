@@ -24,6 +24,7 @@
 #include <xqilla/functions/ExternalFunction.hpp>
 #include <xqilla/exceptions/StaticErrorException.hpp>
 #include <xqilla/framework/XPath2MemoryManagerImpl.hpp>
+#include <xqilla/utils/XPath2Utils.hpp>
 
 XERCES_CPP_NAMESPACE_USE
 
@@ -44,8 +45,6 @@ FunctionLookup::~FunctionLookup()
 
 void FunctionLookup::insertFunction(FuncFactory *func)
 {
-  size_t secondaryKey = SECONDARY_KEY(func);
-
   // Use similar algorithm to lookup in order to detect overlaps
   // in argument numbers
   RefHash2KeysTableOfEnumerator<FuncFactory> iterator(const_cast<RefHash2KeysTableOf< FuncFactory >* >(&_funcTable));
@@ -66,14 +65,17 @@ void FunctionLookup::insertFunction(FuncFactory *func)
       buf.append(func->getURI());
       buf.append(X("}"));
       buf.append(func->getName());
-      buf.append(X("/"));
-      XMLCh szInt[10];
-      XMLString::binToText((unsigned int)secondaryKey,szInt,9,10);
-      buf.append(szInt);
+      buf.append(X("#"));
+      if(func->getMinArgs() >= entry->getMinArgs() &&
+         func->getMinArgs() <= entry->getMaxArgs())
+        XPath2Utils::numToBuf(func->getMinArgs(), buf);
+      else
+        XPath2Utils::numToBuf(entry->getMinArgs(), buf);
       buf.append(X(" [err:XQST0034]."));
       XQThrow2(StaticErrorException,X("FunctionLookup::insertFunction"), buf.getRawBuffer());
     }
   // Ok to add function
+  size_t secondaryKey = SECONDARY_KEY(func);
   _funcTable.put((void*)func->getURINameHash(), (int)secondaryKey, func);
 }
 
@@ -100,6 +102,7 @@ ASTNode* FunctionLookup::lookUpFunction(const XMLCh* URI, const XMLCh* fname,
   //
   XMLBuffer key;
   key.set(fname);
+  key.append(':');
   key.append(URI);
   iterator.setPrimaryKey(key.getRawBuffer());
   size_t nargs = args.size();
@@ -127,6 +130,7 @@ const ExternalFunction *FunctionLookup::lookUpExternalFunction(
   size_t secondaryKey = numArgs;
   XMLBuffer key;
   key.set(fname);
+  key.append(':');
   key.append(URI);
   return _exFuncTable.get(key.getRawBuffer(), (int)secondaryKey);
 }

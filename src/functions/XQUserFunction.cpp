@@ -40,6 +40,9 @@
 #include <xqilla/exceptions/StaticErrorException.hpp>
 #include <xqilla/runtime/ClosureResult.hpp>
 #include <xqilla/optimizer/ASTVisitor.hpp>
+#include <xqilla/optimizer/StaticTyper.hpp>
+
+#include "../lexer/XQLexer.hpp"
 
 #include <xercesc/util/XMLString.hpp>
 #include <xercesc/framework/XMLBuffer.hpp>
@@ -872,5 +875,43 @@ Item::Ptr XQUserFunctionInstance::ExternalFunctionEvaluatorResult::nextOrTail(Re
 
   tail = _di->getFunctionDefinition()->getExternalFunction()->execute(_di, context);
   return 0;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+DelayedFuncFactory::DelayedFuncFactory(const XMLCh *uri, const XMLCh *name, size_t numArgs,
+                                       const XMLCh *body, int line, int column, XQQuery *query)
+  : FuncFactory(uri, name, numArgs, numArgs, query->getStaticContext()->getMemoryManager()),
+    body_(body),
+    line_(line),
+    column_(column),
+    query_(query),
+    function_(0)
+{
+}
+
+ASTNode *DelayedFuncFactory::createInstance(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr) const
+{
+  if(function_ == 0) {
+    DynamicContext *context = (DynamicContext*)query_->getStaticContext();
+
+    XQLexer lexer(memMgr, _LANG_FUNCDECL_, query_->getFile(), line_, column_, body_);
+    XQParserArgs args(&lexer, query_);
+    XQParser::yyparse(&args);
+
+    query_->addFunction(args._function);
+
+    args._function->staticResolutionStage1(context);
+    const_cast<XQUserFunction*&>(function_) = args._function;
+
+    UserFunctions &fns = const_cast<UserFunctions&>(query_->getFunctions());
+    for(UserFunctions::iterator j = fns.begin(); j != fns.end(); ++j) {
+      (*j)->resetStaticTypingOnce();
+    }
+
+    AutoDelete<Optimizer> optimizer(XQilla::createOptimizer(context, XQilla::NO_OPTIMIZATION));
+    optimizer->startOptimize(function_);
+  }
+  return function_->createInstance(args, memMgr);
 }
 

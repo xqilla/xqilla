@@ -53,6 +53,19 @@ XQLexer::XQLexer(XPath2MemoryManager* memMgr, const XMLCh *queryFile, const XMLC
   }
 }
 
+XQLexer::XQLexer(XPath2MemoryManager* memMgr, int firstToken, const XMLCh *queryFile, int line, int column, const XMLCh *query)
+  : Lexer(memMgr, (XQilla::Language)(XQilla::XQUERY_FULLTEXT_UPDATE | XQilla::EXTENSIONS), queryFile, line, column),
+    firstToken_(firstToken),
+    mode_(MODE_NORMAL),
+    m_szQuery(XPath2Utils::normalizeEOL(query, memMgr)),
+    m_nLength(XPath2Utils::uintStrlen(m_szQuery)),
+    m_position(0),
+    m_index(0),
+    m_currentOffset(0),
+    m_nOpenComments(0)
+{
+}
+
 XQLexer::XQLexer(XPath2MemoryManager* memMgr, const XMLCh *queryFile, int line, int column, const XMLCh* query,
                  unsigned int length, const std::vector<ValueOffset> &offsets, XQilla::Language lang, StartMode mode)
   : Lexer(memMgr, lang, queryFile, line, column),

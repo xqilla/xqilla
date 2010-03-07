@@ -134,6 +134,7 @@ public:
   static std::string print(const XQQuery *query, const DynamicContext *context, int indent = 0);
   static std::string print(const ASTNode *item, const DynamicContext *context, int indent = 0);
   static std::string print(const TupleNode *item, const DynamicContext *context, int indent = 0);
+  static std::string print(const XQUserFunction *item, const DynamicContext *context, int indent = 0);
 
   virtual std::string printASTNode(const ASTNode *item, const DynamicContext *context, int indent = 0);
   virtual std::string printFunction(const XQFunction *item, const DynamicContext *context, int indent);
@@ -244,23 +245,29 @@ public:
 class PrintASTOptimizer : public Optimizer
 {
 public:
-	PrintASTOptimizer(std::string label, const DynamicContext *context, Optimizer *parent = 0)
-		: Optimizer(parent), label_(label), context_(context) {}
+  PrintASTOptimizer(std::string label, const DynamicContext *context, Optimizer *parent = 0)
+    : Optimizer(parent), label_(label), context_(context) {}
 protected:
-	virtual void optimize(XQQuery *query)
-	{
-		std::cerr << label_ << ":" << std::endl;
-		std::cerr << PrintAST::print(query, context_) << std::endl;
-	}
-	virtual ASTNode *optimize(ASTNode *item)
-	{
-		std::cerr << label_ << ":" << std::endl;
-		std::cerr << PrintAST::print(item, context_) << std::endl;
-		return item;
-	}
+  virtual void optimize(XQQuery *query)
+  {
+    std::cerr << label_ << ":" << std::endl;
+    std::cerr << PrintAST::print(query, context_) << std::endl;
+  }
+  virtual ASTNode *optimize(ASTNode *item)
+  {
+    std::cerr << label_ << ":" << std::endl;
+    std::cerr << PrintAST::print(item, context_) << std::endl;
+    return item;
+  }
+  virtual XQUserFunction *optimizeFunctionDef(XQUserFunction *item)
+  {
+    std::cerr << label_ << ":" << std::endl;
+    std::cerr << PrintAST::print(item, context_) << std::endl;
+    return item;
+  }
 private:
-	std::string label_;
-	const DynamicContext *context_;
+  std::string label_;
+  const DynamicContext *context_;
 };
 
 #endif

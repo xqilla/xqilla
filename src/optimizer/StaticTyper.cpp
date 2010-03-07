@@ -47,6 +47,12 @@ void StaticTyper::optimize(XQQuery *query)
   query->staticTyping(this);
 }
 
+XQUserFunction *StaticTyper::optimizeFunctionDef(XQUserFunction *item)
+{
+  item->staticTypingOnce(context_, this);
+  return item;
+}
+
 ASTNode *StaticTyper::optimize(ASTNode *item)
 {
   ASTNode *result = ASTVisitor::optimize(item);

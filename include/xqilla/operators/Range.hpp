@@ -26,13 +26,11 @@
 
 class Numeric;
 
-/** Range operator function*/
 class XQILLA_API Range : public XQOperator
 {
 public:
   static const XMLCh name[];
 
-  ///Constructor
   Range(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
   
   virtual ASTNode* staticResolution(StaticContext *context);
@@ -55,6 +53,4 @@ private:
   };
 };
 
-#endif // _RANGE_HPP
-
-
+#endif

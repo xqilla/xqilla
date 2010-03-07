@@ -232,6 +232,7 @@ public:
   };
 
   XQLexer(XPath2MemoryManager* memMgr, const XMLCh *queryFile, const XMLCh* query, XQilla::Language lang);
+  XQLexer(XPath2MemoryManager* memMgr, int firstToken, const XMLCh *queryFile, int line, int column, const XMLCh *query);
   XQLexer(XPath2MemoryManager* memMgr, const XMLCh *queryFile, int line, int column, const XMLCh* query,
           unsigned int length, const std::vector<ValueOffset> &offsets, XQilla::Language lang, StartMode mode = MODE_NORMAL);
   ~XQLexer();
@@ -285,22 +286,32 @@ protected:
   int m_nOpenComments;
 };
 
-class XQParserArgs
+class XQILLA_API XQParserArgs
 {
 public:
-  XQParserArgs()
-    : _lexer(0), _context(0), _query(0), _flags(32), _namespaceDecls(13) {}
+  XQParserArgs(Lexer *lexer, XQQuery *query)
+    : _lexer(lexer),
+      _context((DynamicContext*)query->getStaticContext()),
+      _query(query),
+      _function(0),
+      _moduleName(0),
+      _flags(32),
+      _namespaceDecls(13)
+  {
+  }
 
   Lexer* _lexer;
   DynamicContext* _context;
   XQQuery* _query;
+  XQUserFunction *_function;
+  const XMLCh *_moduleName;
   XERCES_CPP_NAMESPACE_QUALIFIER BitSet _flags;
   XERCES_CPP_NAMESPACE_QUALIFIER RefHashTableOf<XMLCh> _namespaceDecls;
 };
 
 namespace XQParser {
-  extern int yyparse(void *);
-  extern int yydebug;
+  extern XQILLA_API int yyparse(void *);
+  extern XQILLA_API int yydebug;
 }
 
 

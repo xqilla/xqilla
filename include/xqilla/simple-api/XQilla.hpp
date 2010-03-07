@@ -30,11 +30,17 @@ class DynamicContext;
 class XQQuery;
 class XPath2MemoryManager;
 class XQillaConfiguration;
+class Optimizer;
+class DelayedFuncFactory;
 
 XERCES_CPP_NAMESPACE_BEGIN
 class InputSource;
 class XMLBuffer;
 XERCES_CPP_NAMESPACE_END
+
+namespace CompileDelayedModule {
+void compile(const XMLCh *queryFile);
+}
 
 /**
  * Provides factory methods for creating XQQuery and DynamicContext objects.
@@ -184,6 +190,13 @@ private:
   static bool readQuery(const XERCES_CPP_NAMESPACE_QUALIFIER InputSource& querySrc, 
                         XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* memMgr, 
                         XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer& queryText);
+  static Optimizer *createOptimizer(DynamicContext *context, unsigned int flags);
+
+  static void compileDelayedModule(const XMLCh* queryFile, XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *memMgr =
+                                   XERCES_CPP_NAMESPACE_QUALIFIER XMLPlatformUtils::fgMemoryManager);
+
+  friend void CompileDelayedModule::compile(const XMLCh *queryFile);
+  friend class DelayedFuncFactory;
 };
 
 #endif
