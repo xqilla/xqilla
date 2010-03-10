@@ -23,9 +23,11 @@ using namespace std;
 
 void ASTVisitor::optimize(XQQuery *query)
 {
-  ImportedModules &modules = const_cast<ImportedModules&>(query->getImportedModules());
-  for(ImportedModules::iterator it2 = modules.begin(); it2 != modules.end(); ++it2) {
-    optimize(*it2);
+  if(query->isModuleCacheOwned()) {
+    ImportedModules &modules = const_cast<ImportedModules&>(query->getModuleCache()->ordered_);
+    for(ImportedModules::iterator it2 = modules.begin(); it2 != modules.end(); ++it2) {
+      optimize(*it2);
+    }
   }
 
   vector<XQGlobalVariable*> newVars;

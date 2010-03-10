@@ -27,11 +27,11 @@
 #include <xercesc/util/XMemory.hpp>
 
 class DynamicContext;
-class XQQuery;
 class XPath2MemoryManager;
 class XQillaConfiguration;
 class Optimizer;
 class DelayedFuncFactory;
+class XQQuery;
 
 XERCES_CPP_NAMESPACE_BEGIN
 class InputSource;
@@ -124,7 +124,8 @@ public:
                         const XMLCh* queryFile = NULL,
                         unsigned int flags = 0,
                         XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *memMgr =
-                        XERCES_CPP_NAMESPACE_QUALIFIER XMLPlatformUtils::fgMemoryManager);
+                        XERCES_CPP_NAMESPACE_QUALIFIER XMLPlatformUtils::fgMemoryManager,
+                        XQQuery *result = 0);
 
   /**
    * Parse the expression from the given InputSource.
@@ -144,7 +145,8 @@ public:
                         DynamicContext* context = 0,
                         unsigned int flags = 0,
                         XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *memMgr =
-                        XERCES_CPP_NAMESPACE_QUALIFIER XMLPlatformUtils::fgMemoryManager);
+                        XERCES_CPP_NAMESPACE_QUALIFIER XMLPlatformUtils::fgMemoryManager,
+                        XQQuery *result = 0);
 
   /**
    * Parse the expression residing at the given URL.
@@ -164,7 +166,8 @@ public:
                                DynamicContext* context = 0,
                                unsigned int flags = 0,
                                XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *memMgr =
-                               XERCES_CPP_NAMESPACE_QUALIFIER XMLPlatformUtils::fgMemoryManager);
+                               XERCES_CPP_NAMESPACE_QUALIFIER XMLPlatformUtils::fgMemoryManager,
+                               XQQuery *result = 0);
 
   //@}
 

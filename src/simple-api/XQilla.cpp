@@ -28,9 +28,9 @@
 #include <xqilla/optimizer/QueryPathTreeGenerator.hpp>
 #include <xqilla/optimizer/PartialEvaluator.hpp>
 #include <xqilla/optimizer/StaticTyper.hpp>
-#include <xqilla/optimizer/CoreTranslator.hpp>
 #include <xqilla/debug/DebugHookDecorator.hpp>
 #include <xqilla/utils/PrintAST.hpp>
+#include <xqilla/functions/BuiltInModules.hpp>
 #include "../lexer/XQLexer.hpp"
 #include "../lexer/XSLT2Lexer.hpp"
 
@@ -60,8 +60,6 @@ Optimizer *XQilla::createOptimizer(DynamicContext *context, unsigned int flags)
 
   if((flags & NO_STATIC_RESOLUTION) == 0) {
 //     optimizer = new PrintASTOptimizer("Initial", context, optimizer);
-    optimizer = new CoreTranslator(context, optimizer);
-//     optimizer = new PrintASTOptimizer("After core translation", context, optimizer);
     optimizer = new StaticResolver(context, optimizer);
 //     optimizer = new PrintASTOptimizer("After static resolution", context, optimizer);
     optimizer = new StaticTyper(context, optimizer);
@@ -84,12 +82,12 @@ Optimizer *XQilla::createOptimizer(DynamicContext *context, unsigned int flags)
 
 XQQuery* XQilla::parse(const XMLCh* inputQuery, DynamicContext* context,
                        const XMLCh* queryFile, unsigned int flags,
-                       MemoryManager *memMgr)
+                       MemoryManager *memMgr, XQQuery *result)
 {
   if(context != 0 && (context->getLanguage() & XQilla::XSLT2) != 0) {
     MemBufInputSource src((XMLByte*)inputQuery, XMLString::stringLen(inputQuery) * sizeof(XMLCh), queryFile);
     src.setEncoding(XMLUni::fgUTF16EncodingString);
-    return parse(src, context, flags, memMgr);
+    return parse(src, context, flags, memMgr, result);
   }
 
   bool contextOwned = (flags & NO_ADOPT_CONTEXT) == 0;
@@ -98,23 +96,39 @@ XQQuery* XQilla::parse(const XMLCh* inputQuery, DynamicContext* context,
     context = createContext(XQilla::XQUERY, 0, memMgr);
   }
 
-  Janitor<XQQuery> query(new (memMgr) XQQuery(inputQuery, context, contextOwned, memMgr));
-  query->setFile(queryFile);
+  AutoDelete<XQQuery> queryGuard(0);
+  if(result == 0) {
+    queryGuard.set(new (memMgr) XQQuery(context, contextOwned, 0, memMgr));
+    result = queryGuard;
+  }
+  result->setQueryText(inputQuery);
+  if(queryFile)
+    result->setFile(queryFile);
+  BuiltInModules::core.importModuleInto(result);
 
   XQLexer lexer(context->getMemoryManager(), queryFile, inputQuery, context->getLanguage());
 
-  XQParserArgs args(&lexer, query.get());
+  XQParserArgs args(&lexer, result);
   XQParser::yyparse(&args);
+
+  for(UserFunctions::iterator itFn = result->m_userDefFns.begin(); itFn != result->m_userDefFns.end(); ++itFn) {
+    (*itFn)->resolveName(context);
+  }
+
+  for(GlobalVariables::iterator itVar = result->m_userDefVars.begin(); itVar != result->m_userDefVars.end(); ++itVar) {
+    (*itVar)->resolveName(context);
+  }
 
   AutoDelete<Optimizer> optGuard(createOptimizer(context, flags));
   if(optGuard.get())
     optGuard->startOptimize(args._query);
 
-  return query.release();
+  queryGuard.adopt();
+  return result;
 }
 
 XQQuery* XQilla::parse(const InputSource& querySrc, DynamicContext* context,
-                       unsigned int flags, MemoryManager *memMgr)
+                       unsigned int flags, MemoryManager *memMgr, XQQuery *result)
 {
   if(context == 0 || (context->getLanguage() & XQilla::XSLT2) == 0) {
     XMLBuffer moduleText;
@@ -134,13 +148,20 @@ XQQuery* XQilla::parse(const InputSource& querySrc, DynamicContext* context,
       XQThrow2(ContextException,X("XQilla::parse"), buf.getRawBuffer());
     }
 
-    return parse(moduleText.getRawBuffer(), context, querySrc.getSystemId(), flags, memMgr);
+    return parse(moduleText.getRawBuffer(), context, querySrc.getSystemId(), flags, memMgr,
+                 result);
   }
 
   bool contextOwned = (flags & NO_ADOPT_CONTEXT) == 0;
 
-  Janitor<XQQuery> query(new (memMgr) XQQuery(0, context, contextOwned, memMgr));
-  query->setFile(querySrc.getSystemId());
+  AutoDelete<XQQuery> queryGuard(0);
+  if(result == 0) {
+    queryGuard.set(new (memMgr) XQQuery(context, contextOwned, 0, memMgr));
+    result = queryGuard;
+  }
+  if(querySrc.getSystemId())
+    result->setFile(querySrc.getSystemId());
+  BuiltInModules::core.importModuleInto(result);
 
 #ifdef HAVE_FAXPP
   FAXPPXSLT2Lexer lexer(context, querySrc, context->getLanguage());
@@ -148,18 +169,28 @@ XQQuery* XQilla::parse(const InputSource& querySrc, DynamicContext* context,
   XercesXSLT2Lexer lexer(context, querySrc, context->getLanguage());
 #endif
 
-  XQParserArgs args(&lexer, query.get());
+  XQParserArgs args(&lexer, result);
   XQParser::yyparse(&args);
+
+  for(UserFunctions::iterator itFn = result->m_userDefFns.begin(); itFn != result->m_userDefFns.end(); ++itFn) {
+    (*itFn)->resolveName(context);
+  }
+
+  for(GlobalVariables::iterator itVar = result->m_userDefVars.begin(); itVar != result->m_userDefVars.end(); ++itVar) {
+    (*itVar)->resolveName(context);
+  }
 
   AutoDelete<Optimizer> optGuard(createOptimizer(context, flags));
   if(optGuard.get())
     optGuard->startOptimize(args._query);
 
-  return query.release();
+  queryGuard.adopt();
+  return result;
 }
 
 XQQuery* XQilla::parseFromURI(const XMLCh* queryFile, DynamicContext* context,
-                              unsigned int flags, MemoryManager *memMgr)
+                              unsigned int flags, MemoryManager *memMgr,
+                              XQQuery *result)
 {
   Janitor<InputSource> srcToFill(0);
   try {
@@ -171,7 +202,7 @@ XQQuery* XQilla::parseFromURI(const XMLCh* queryFile, DynamicContext* context,
   catch(const MalformedURLException&) {
     srcToFill.reset(new (memMgr) LocalFileInputSource(queryFile));
   }
-  return parse(*srcToFill.get(), context, flags, memMgr);
+  return parse(*srcToFill.get(), context, flags, memMgr, result);
 }
 
 static FastXDMConfiguration _gDefaultConfiguration;
@@ -219,7 +250,7 @@ void XQilla::compileDelayedModule(const XMLCh* queryFile, MemoryManager* memMgr)
   Janitor<InputSource> srcToFill(new (memMgr) LocalFileInputSource(queryFile));
 
   DynamicContext *context = XQilla::createContext(XQilla::XQUERY, 0, memMgr);
-  AutoDelete<XQQuery> query(new (memMgr) XQQuery(0, context, true, memMgr));
+  AutoDelete<XQQuery> query(new (memMgr) XQQuery(context, true, 0, memMgr));
 
   XPath2MemoryManager *mm = context->getMemoryManager();
   query->setFile(queryFile);

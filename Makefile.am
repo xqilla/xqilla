@@ -304,6 +304,8 @@ src/functions/FunctionPartialApply.cpp \
 src/functions/FunctionAnalyzeString.cpp \
 src/functions/RegExpFunction.cpp \
 src/functions/XQUserFunction.cpp \
+src/functions/BuiltInModules.cpp \
+src/functions/CoreModule.hpp \
 src/items/impl/ATAnySimpleTypeImpl.cpp \
 src/items/impl/ATAnySimpleTypeImpl.hpp \
 src/items/impl/ATAnyURIOrDerivedImpl.cpp \
@@ -417,7 +419,6 @@ src/operators/NotEquals.cpp \
 src/operators/Or.cpp \
 src/operators/OrderComparison.cpp \
 src/operators/Plus.cpp \
-src/operators/Range.cpp \
 src/operators/UnaryMinus.cpp \
 src/operators/Union.cpp \
 src/schema/DocumentCacheImpl.cpp \
@@ -502,8 +503,6 @@ src/optimizer/ASTCopier.cpp \
 src/optimizer/ASTReleaser.cpp \
 src/optimizer/ASTVisitor.cpp \
 src/optimizer/PartialEvaluator.cpp \
-src/optimizer/CoreTranslator.cpp \
-src/optimizer/CoreModule.hpp \
 src/optimizer/StaticTyper.cpp \
 src/optimizer/QueryPathNode.cpp \
 src/optimizer/QueryPathTreeGenerator.cpp \
@@ -541,7 +540,7 @@ src/samples/dom-api/data.xml \
 src/samples/dom-api/data.xsd \
 src/samples/dom-api/foo.xml \
 src/samples/simple-api/foo.xml \
-src/optimizer/CoreModule.xq \
+src/functions/CoreModule.xq \
 LICENSE \
 TODO \
 README \
@@ -638,8 +637,8 @@ src/samples/xqc-api/xqc-context-item.c
 compile_delayed_module_SOURCES = \
 src/tools/compile-delayed-module.cpp
 
-$(top_srcdir)/src/optimizer/CoreModule.hpp: $(top_srcdir)/src/optimizer/CoreModule.xq
-	./compile-delayed-module $(top_srcdir)/src/optimizer/CoreModule.xq >$(top_srcdir)/src/optimizer/CoreModule.hpp
+$(top_srcdir)/src/functions/CoreModule.hpp: $(top_srcdir)/src/functions/CoreModule.xq
+	./compile-delayed-module $(top_srcdir)/src/functions/CoreModule.xq >$(top_srcdir)/src/functions/CoreModule.hpp
 
 LEXERFILE   = $(top_srcdir)/src/lexer/XQLexer.cpp
 LEXTEMPLATE = $(top_srcdir)/src/lexer/XQLexer.l

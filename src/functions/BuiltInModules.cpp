@@ -1,8 +1,8 @@
 /*
- * Copyright (c) 2001-2008
+ * Copyright (c) 2001, 2008,
  *     DecisionSoft Limited. All rights reserved.
- * Copyright (c) 2004-2009
- *     Oracle. All rights reserved.
+ * Copyright (c) 2004, 2010,
+ *     Oracle and/or its affiliates. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,24 +17,11 @@
  * limitations under the License.
  */
 
-#ifndef _CORETRANSLATOR_HPP
-#define _CORETRANSLATOR_HPP
+#include "../config/xqilla_config.h"
+#include <xqilla/functions/BuiltInModules.hpp>
 
-#include <xqilla/optimizer/ASTVisitor.hpp>
+#include "CoreModule.hpp"
 
-class XQILLA_API CoreTranslator : public ASTVisitor
-{
-public:
-  CoreTranslator(DynamicContext *context, Optimizer *parent = 0)
-	  : ASTVisitor(parent), context_(context), coreModule_(0) {}
+XERCES_CPP_NAMESPACE_USE;
 
-protected:
-  virtual void optimize(XQQuery *query);
-
-  virtual ASTNode *optimizeOperator(XQOperator *item);
-
-  DynamicContext *context_;
-  XQQuery *coreModule_;
-};
-
-#endif
+const DelayedModule &BuiltInModules::core = core_module;

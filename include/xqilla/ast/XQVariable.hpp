@@ -25,12 +25,14 @@
 #include <xqilla/ast/ASTNodeImpl.hpp>
 #include <xqilla/runtime/Sequence.hpp>
 
-/** Deals with all the simple variable stuff.*/
+class XQGlobalVariable;
+
 class XQILLA_API XQVariable : public ASTNodeImpl
 {
 public:
   XQVariable(const XMLCh *qualifiedName, XPath2MemoryManager* memMgr);
   XQVariable(const XMLCh *uri, const XMLCh *name, XPath2MemoryManager* memMgr);
+  XQVariable(const XMLCh *prefix, const XMLCh *uri, const XMLCh *name, XQGlobalVariable *global, XPath2MemoryManager* memMgr);
   ~XQVariable();
 
   virtual Result createResult(DynamicContext* context, int flags=0) const;
@@ -40,11 +42,13 @@ public:
   const XMLCh *getPrefix() const;
   const XMLCh *getURI() const;
   const XMLCh *getName() const;
+  XQGlobalVariable *getGlobal() const { return _global; }
 
 private:
   const XMLCh* _prefix;
   const XMLCh* _uri;
   const XMLCh* _name;
+  XQGlobalVariable *_global;
 };
 
 #endif

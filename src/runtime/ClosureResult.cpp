@@ -61,18 +61,10 @@ ClosureResult::ClosureResult(const ASTNode *ast, DynamicContext *context, const 
   }
 }
 
-Item::Ptr ClosureResult::next(DynamicContext *context)
-{
-  AutoDocumentCacheReset dcReset(context);
-  context->setDocumentCache(docCache_);
-  AutoContextInfoReset ciReset(context, contextItem_, contextPosition_, contextSize_);
-  AutoVariableStoreReset vsReset(context, &varStore_);
-
-  return result_->next(context);
-}
-
 Item::Ptr ClosureResult::nextOrTail(Result &tail, DynamicContext *context)
 {
+  context->testInterrupt();
+
   AutoDocumentCacheReset dcReset(context);
   context->setDocumentCache(docCache_);
   AutoContextInfoReset ciReset(context, contextItem_, contextPosition_, contextSize_);
@@ -95,6 +87,8 @@ ClosureEventGenerator::ClosureEventGenerator(const ASTNode *ast, DynamicContext 
 
 EventGenerator::Ptr ClosureEventGenerator::generateEvents(EventHandler *events, DynamicContext *context)
 {
+  context->testInterrupt();
+
   AutoDocumentCacheReset dcReset(context);
   context->setDocumentCache(docCache_);
   AutoContextInfoReset ciReset(context, contextItem_, contextPosition_, contextSize_);

@@ -85,166 +85,6 @@
     </test-case>
   </test-group>
 
-  <test-group name="hofunctions">
-    <GroupInfo>
-      <title>Tests for higher order functions</title>
-    </GroupInfo>
-    <test-case name="hofunctions1" FilePath="hofunctions/">
-      <query name="hofunctions1"/>
-      <output-file compare="Fragment">hofunctions1.out</output-file>
-    </test-case>
-    <test-case name="hofunctions2" FilePath="hofunctions/">
-      <module namespace="http://snelson.org.uk/functions/functional">functional</module>
-      <query name="curry"/>
-      <output-file compare="Fragment">curry.out</output-file>
-    </test-case>
-    <test-case name="hofunctions3" FilePath="hofunctions/">
-      <module namespace="http://snelson.org.uk/functions/functional">functional</module>
-      <query name="fibonacci"/>
-      <output-file compare="Fragment">fibonacci.out</output-file>
-    </test-case>
-    <test-case name="hofunctions4" FilePath="hofunctions/">
-      <query name="hof4"/>
-      <output-file compare="Fragment">hof4.out</output-file>
-    </test-case>
-    <test-case name="hofunctions5" FilePath="hofunctions/">
-      <query name="hof5"/>
-      <output-file compare="Fragment">hof5.out</output-file>
-    </test-case>
-    <test-case name="hofunctions6" FilePath="hofunctions/">
-      <query name="hof6"/>
-      <output-file compare="Fragment">hof6.out</output-file>
-    </test-case>
-    <test-case name="hofunctions7" FilePath="hofunctions/">
-      <query name="hof7"/>
-      <expected-error>XPTY0004</expected-error>
-    </test-case>
-    <test-case name="hofunctions8" FilePath="hofunctions/">
-      <query name="hof8"/>
-      <expected-error>XPTY0004</expected-error>
-    </test-case>
-    <test-case name="hofunctions9" FilePath="hofunctions/">
-      <query name="hof9"/>
-      <expected-error>XPTY0004</expected-error>
-    </test-case>
-    <test-case name="hofunctions10" FilePath="hofunctions/">
-      <query name="hof10"/>
-      <output-file compare="Fragment">hof10.out</output-file>
-    </test-case>
-    <test-case name="hofunctions11" FilePath="hofunctions/">
-      <query name="hof11"/>
-      <expected-error>XPTY0004</expected-error>
-    </test-case>
-    <test-case name="hofunctions12" FilePath="hofunctions/">
-      <query name="hof12"/>
-      <expected-error>XPTY0004</expected-error>
-    </test-case>
-    <test-case name="hofunctions13" FilePath="hofunctions/">
-      <query name="hof13"/>
-      <expected-error>XPDY0002</expected-error>
-    </test-case>
-<!--     <test-case name="hofunctions14" FilePath="hofunctions/"> -->
-<!--       <query name="hof14"/> -->
-<!--       <expected-error>XPDY0002</expected-error> -->
-<!--     </test-case> -->
-  </test-group>
-
-  <test-group name="xquery11">
-    <GroupInfo>
-      <title>Tests for XQuery 1.1 functionality</title>
-    </GroupInfo>
-
-    <test-group name="flwor">
-      <GroupInfo>
-        <title>Tests for XQuery 1.1 FLWOR</title>
-      </GroupInfo>
-
-      <test-case name="flwor1" FilePath="xquery11/flwor">
-        <query name="flwor1"/>
-        <output-file compare="Fragment">flwor1.out</output-file>
-      </test-case>
-      <test-case name="flwor2" FilePath="xquery11/flwor">
-        <query name="flwor2"/>
-        <output-file compare="Fragment">flwor2.out</output-file>
-      </test-case>
-      <test-case name="count1" FilePath="xquery11/flwor">
-        <query name="count1"/>
-        <output-file compare="Fragment">count1.out</output-file>
-      </test-case>
-      <test-case name="count2" FilePath="xquery11/flwor">
-        <query name="count2"/>
-        <output-file compare="Fragment">count2.out</output-file>
-      </test-case>
-      <test-case name="count3" FilePath="xquery11/flwor">
-        <query name="count3"/>
-        <output-file compare="Fragment">count3.out</output-file>
-      </test-case>
-      <test-case name="count4" FilePath="xquery11/flwor">
-        <query name="count4"/>
-        <output-file compare="Fragment">count4.out</output-file>
-      </test-case>
-      <test-case name="count5" FilePath="xquery11/flwor">
-        <query name="count5"/>
-        <output-file compare="Fragment">count5.out</output-file>
-      </test-case>
-      <test-case name="count6" FilePath="xquery11/flwor">
-        <query name="count6"/>
-        <output-file compare="Fragment">count6.out</output-file>
-      </test-case>
-      <test-case name="count7" FilePath="xquery11/flwor">
-        <query name="count7"/>
-        <output-file compare="Fragment">count7.out</output-file>
-      </test-case>
-    </test-group>
-
-    <test-group name="functiondecl">
-      <GroupInfo>
-        <title>Tests for XQuery 1.1 Function Declarations</title>
-      </GroupInfo>
-
-      <test-case name="private1" FilePath="xquery11/functiondecl">
-        <module namespace="http://snelson.org.uk/test/private_module1">private_module1</module>
-        <query name="private1"/>
-        <expected-error>XPST0017</expected-error>
-      </test-case>
-      <test-case name="private2" FilePath="xquery11/functiondecl">
-        <module namespace="http://snelson.org.uk/test/private_module1">private_module1</module>
-        <query name="private2"/>
-        <output-file compare="Fragment">private2.out</output-file>
-      </test-case>
-      <test-case name="private3" FilePath="xquery11/functiondecl">
-        <module namespace="http://snelson.org.uk/test/private_module1">private_module1</module>
-        <query name="private3"/>
-        <output-file compare="Fragment">private3.out</output-file>
-      </test-case>
-      <test-case name="private4" FilePath="xquery11/functiondecl">
-        <query name="private4"/>
-        <output-file compare="Fragment">private4.out</output-file>
-      </test-case>
-      <test-case name="private5" FilePath="xquery11/functiondecl">
-        <module namespace="http://snelson.org.uk/test/private_module2">private_module2</module>
-        <query name="private5"/>
-        <expected-error>XQST0048</expected-error>
-      </test-case>
-    </test-group>
-
-    <test-group name="versiondecl">
-      <GroupInfo>
-        <title>Tests for XQuery 1.1 Version Declaration</title>
-      </GroupInfo>
-
-      <test-case name="version1" FilePath="xquery11/versiondecl">
-        <query name="version1"/>
-        <output-file compare="Fragment">version1.out</output-file>
-      </test-case>
-      <test-case name="version2" FilePath="xquery11/versiondecl">
-        <query name="version2"/>
-        <expected-error>XPST0003</expected-error>
-      </test-case>
-    </test-group>
-
-  </test-group>
-
   <test-group name="tailcall">
     <GroupInfo>
       <title>Tests for tail calls</title>
@@ -426,4 +266,232 @@
     </test-group>
   </test-group>
   
+  <test-group name="modules">
+    <GroupInfo>
+      <title>Tests for XQuery 1.0 2nd Edition Module Semantics</title>
+    </GroupInfo>
+
+    <test-case name="module1" FilePath="modules">
+      <state time="0">
+        <query name="module1"/>
+        <output-file compare="Fragment">module1.out</output-file>
+      </state>
+    </test-case>
+    <test-case name="module2" FilePath="modules">
+      <state time="0">
+        <query name="module2"/>
+        <output-file compare="Fragment">module2.out</output-file>
+      </state>
+    </test-case>
+    <test-case name="module3" FilePath="modules">
+      <state time="0">
+        <query name="module3"/>
+        <output-file compare="Fragment">module3.out</output-file>
+      </state>
+    </test-case>
+    <test-case name="module4" FilePath="modules">
+      <state time="0">
+        <query name="module4"/>
+        <output-file compare="Fragment">module4.out</output-file>
+      </state>
+    </test-case>
+    <test-case name="module5" FilePath="modules">
+      <query name="module5"/>
+      <expected-error>XQST0054</expected-error>
+    </test-case>
+    <test-case name="module6" FilePath="modules">
+      <query name="module6"/>
+      <output-file compare="Fragment">module6.out</output-file>
+      <expected-error>XPST0008</expected-error>
+    </test-case>
+    <test-case name="module7" FilePath="modules">
+      <query name="module7"/>
+      <expected-error>XQST0054</expected-error>
+    </test-case>
+    <test-case name="module8" FilePath="modules">
+      <query name="module8"/>
+      <output-file compare="Fragment">module8.out</output-file>
+      <expected-error>XPST0008</expected-error>
+    </test-case>
+    <test-case name="module9" FilePath="modules">
+      <query name="module9"/>
+      <output-file compare="Fragment">module9.out</output-file>
+    </test-case>
+  </test-group>
+
+  <test-group name="xquery11">
+    <GroupInfo>
+      <title>Tests for XQuery 1.1 functionality</title>
+    </GroupInfo>
+
+    <test-group name="flwor">
+      <GroupInfo>
+        <title>Tests for XQuery 1.1 FLWOR</title>
+      </GroupInfo>
+
+      <test-case name="flwor1" FilePath="xquery11/flwor">
+        <query name="flwor1"/>
+        <output-file compare="Fragment">flwor1.out</output-file>
+      </test-case>
+      <test-case name="flwor2" FilePath="xquery11/flwor">
+        <query name="flwor2"/>
+        <output-file compare="Fragment">flwor2.out</output-file>
+      </test-case>
+      <test-case name="count1" FilePath="xquery11/flwor">
+        <query name="count1"/>
+        <output-file compare="Fragment">count1.out</output-file>
+      </test-case>
+      <test-case name="count2" FilePath="xquery11/flwor">
+        <query name="count2"/>
+        <output-file compare="Fragment">count2.out</output-file>
+      </test-case>
+      <test-case name="count3" FilePath="xquery11/flwor">
+        <query name="count3"/>
+        <output-file compare="Fragment">count3.out</output-file>
+      </test-case>
+      <test-case name="count4" FilePath="xquery11/flwor">
+        <query name="count4"/>
+        <output-file compare="Fragment">count4.out</output-file>
+      </test-case>
+      <test-case name="count5" FilePath="xquery11/flwor">
+        <query name="count5"/>
+        <output-file compare="Fragment">count5.out</output-file>
+      </test-case>
+      <test-case name="count6" FilePath="xquery11/flwor">
+        <query name="count6"/>
+        <output-file compare="Fragment">count6.out</output-file>
+      </test-case>
+      <test-case name="count7" FilePath="xquery11/flwor">
+        <query name="count7"/>
+        <output-file compare="Fragment">count7.out</output-file>
+      </test-case>
+    </test-group>
+
+    <test-group name="functiondecl">
+      <GroupInfo>
+        <title>Tests for XQuery 1.1 Function Declarations</title>
+      </GroupInfo>
+
+      <test-case name="private1" FilePath="xquery11/functiondecl">
+        <module namespace="http://snelson.org.uk/test/private_module1">private_module1</module>
+        <query name="private1"/>
+        <expected-error>XPST0017</expected-error>
+      </test-case>
+      <test-case name="private2" FilePath="xquery11/functiondecl">
+        <module namespace="http://snelson.org.uk/test/private_module1">private_module1</module>
+        <query name="private2"/>
+        <output-file compare="Fragment">private2.out</output-file>
+      </test-case>
+      <test-case name="private3" FilePath="xquery11/functiondecl">
+        <module namespace="http://snelson.org.uk/test/private_module1">private_module1</module>
+        <query name="private3"/>
+        <output-file compare="Fragment">private3.out</output-file>
+      </test-case>
+      <test-case name="private4" FilePath="xquery11/functiondecl">
+        <query name="private4"/>
+        <output-file compare="Fragment">private4.out</output-file>
+      </test-case>
+      <test-case name="private5" FilePath="xquery11/functiondecl">
+        <module namespace="http://snelson.org.uk/test/private_module2">private_module2</module>
+        <query name="private5"/>
+        <expected-error>XQST0048</expected-error>
+      </test-case>
+    </test-group>
+
+    <test-group name="versiondecl">
+      <GroupInfo>
+        <title>Tests for XQuery 1.1 Version Declaration</title>
+      </GroupInfo>
+
+      <test-case name="version1" FilePath="xquery11/versiondecl">
+        <query name="version1"/>
+        <output-file compare="Fragment">version1.out</output-file>
+      </test-case>
+      <test-case name="version2" FilePath="xquery11/versiondecl">
+        <query name="version2"/>
+        <expected-error>XPST0003</expected-error>
+      </test-case>
+    </test-group>
+
+    <test-group name="hofunctions">
+      <GroupInfo>
+        <title>Tests for higher order functions</title>
+      </GroupInfo>
+      <test-case name="hofunctions1" FilePath="hofunctions/">
+        <query name="hofunctions1"/>
+        <output-file compare="Fragment">hofunctions1.out</output-file>
+      </test-case>
+      <test-case name="hofunctions2" FilePath="hofunctions/">
+        <module namespace="http://snelson.org.uk/functions/functional">functional</module>
+        <query name="curry"/>
+        <output-file compare="Fragment">curry.out</output-file>
+      </test-case>
+      <test-case name="hofunctions3" FilePath="hofunctions/">
+        <module namespace="http://snelson.org.uk/functions/functional">functional</module>
+        <query name="fibonacci"/>
+        <output-file compare="Fragment">fibonacci.out</output-file>
+      </test-case>
+      <test-case name="hofunctions4" FilePath="hofunctions/">
+        <query name="hof4"/>
+        <output-file compare="Fragment">hof4.out</output-file>
+      </test-case>
+      <test-case name="hofunctions5" FilePath="hofunctions/">
+        <query name="hof5"/>
+        <output-file compare="Fragment">hof5.out</output-file>
+      </test-case>
+      <test-case name="hofunctions6" FilePath="hofunctions/">
+        <query name="hof6"/>
+        <output-file compare="Fragment">hof6.out</output-file>
+      </test-case>
+      <test-case name="hofunctions7" FilePath="hofunctions/">
+        <query name="hof7"/>
+        <expected-error>XPTY0004</expected-error>
+      </test-case>
+      <test-case name="hofunctions8" FilePath="hofunctions/">
+        <query name="hof8"/>
+        <expected-error>XPTY0004</expected-error>
+      </test-case>
+      <test-case name="hofunctions9" FilePath="hofunctions/">
+        <query name="hof9"/>
+        <expected-error>XPTY0004</expected-error>
+      </test-case>
+      <test-case name="hofunctions10" FilePath="hofunctions/">
+        <query name="hof10"/>
+        <output-file compare="Fragment">hof10.out</output-file>
+      </test-case>
+      <test-case name="hofunctions11" FilePath="hofunctions/">
+        <query name="hof11"/>
+        <expected-error>XPTY0004</expected-error>
+      </test-case>
+      <test-case name="hofunctions12" FilePath="hofunctions/">
+        <query name="hof12"/>
+        <expected-error>XPTY0004</expected-error>
+      </test-case>
+      <test-case name="hofunctions13" FilePath="hofunctions/">
+        <query name="hof13"/>
+        <expected-error>XPDY0002</expected-error>
+      </test-case>
+<!--       <test-case name="hofunctions14" FilePath="hofunctions/"> -->
+<!--         <query name="hof14"/> -->
+<!--         <expected-error>XPDY0002</expected-error> -->
+<!--       </test-case> -->
+    </test-group>
+
+    <test-group name="modules">
+      <GroupInfo>
+        <title>Tests for XQuery 1.1 Module Semantics</title>
+      </GroupInfo>
+
+      <test-case name="module11_1" FilePath="xquery11/modules">
+        <query name="module11_1"/>
+        <output-file compare="Fragment">module11_1.out</output-file>
+      </test-case>
+      <test-case name="module11_2" FilePath="xquery11/modules">
+        <query name="module11_2"/>
+        <expected-error>XPST0008</expected-error>
+      </test-case>
+    </test-group>
+
+  </test-group>
+
 </test-suite>

@@ -92,6 +92,7 @@ XQUserFunction::XQUserFunction(const XMLCh *qname, ArgumentSpecs *argSpecs, ASTN
     src_(mm),
     staticTyped_(false),
     recursive_(false),
+    delayed_(false),
     moduleDocCache_(NULL)
 {
 }
@@ -114,6 +115,7 @@ XQUserFunction::XQUserFunction(const XMLCh *qname, VectorOfASTNodes *pattern, Ar
     src_(mm),
     staticTyped_(false),
     recursive_(false),
+    delayed_(false),
     moduleDocCache_(NULL)
 {
 }
@@ -135,6 +137,7 @@ XQUserFunction::XQUserFunction(const XQUserFunction *o, XPath2MemoryManager *mm)
     src_(mm),
     staticTyped_(o->staticTyped_),
     recursive_(o->recursive_),
+    delayed_(o->delayed_),
     moduleDocCache_(o->moduleDocCache_)
 {
   if(o->pattern_) {
@@ -242,11 +245,11 @@ bool XQUserFunction::Mode::equals(const Mode *o) const
     XPath2Utils::equals(name_, o->name_);
 }
 
-void XQUserFunction::staticResolutionStage1(StaticContext *context)
+void XQUserFunction::resolveName(StaticContext *context)
 {
   XPath2MemoryManager *mm = context->getMemoryManager();
 
-  if(qname_ != 0) {
+  if(qname_ != 0 && name_ == 0) {
     const XMLCh *prefix = XPath2NSUtils::getPrefix(qname_, mm);
     name_ = XPath2NSUtils::getLocalName(qname_);
 
@@ -260,7 +263,16 @@ void XQUserFunction::staticResolutionStage1(StaticContext *context)
 
   if(name_ != 0) {
     setURINameHash(uri_, name_);
+  }
+}
 
+void XQUserFunction::staticResolutionStage1(StaticContext *context)
+{
+  XPath2MemoryManager *mm = context->getMemoryManager();
+
+  resolveName(context);
+
+  if(name_ != 0) {
     if(!isTemplate_) {
       if(XPath2Utils::equals(uri_, XMLUni::fgXMLURIName) ||
          XPath2Utils::equals(uri_, SchemaSymbols::fgURI_SCHEMAFORSCHEMA) ||
@@ -512,10 +524,49 @@ void XQUserFunction::staticTypingOnce(StaticContext *context, StaticTyper *stype
   // TBD Need to declare everything as being used - jpcs
   if(staticTyped_) {
     recursive_ = true;
+
+    XQGlobalVariable *global = 0;
+    StaticTyper::PrologItem *breadcrumb = styper->getTrail();
+    for(; breadcrumb; breadcrumb = breadcrumb->prev) {
+      if(breadcrumb->global) global = breadcrumb->global;
+      if(breadcrumb->function == this) break;
+    }
+
+    if(global && breadcrumb) {
+      XMLBuffer buf;
+      buf.append(X("The initializing expression for variable {"));
+      buf.append(global->getVariableURI());
+      buf.append(X("}"));
+      buf.append(global->getVariableLocalName());
+      buf.append(X(" depends on itself [err:XQST0054]"));
+      XQThrow3(StaticErrorException, X("XQUserFunction::staticTypingOnce"), buf.getRawBuffer(), global);
+    }
+
     return;
   }
   staticTyped_ = true;
-  staticTyping(context, styper);
+
+  StaticTyper::PrologItem breadcrumb(this, styper->getTrail());
+  AutoReset<StaticTyper::PrologItem*> autorReset2(styper->getTrail());
+  styper->getTrail() = &breadcrumb;;
+
+  GlobalVariables globalsUsed(XQillaAllocator<XQGlobalVariable*>(context->getMemoryManager()));
+  {
+    AutoReset<GlobalVariables*> autoReset(styper->getGlobalsUsed());
+    styper->getGlobalsUsed() = &globalsUsed;
+    staticTyping(context, styper);
+  }
+
+  if(!globalsUsed.empty()) {
+    // Static type the global variables we depend on
+    GlobalVariables::iterator it = globalsUsed.begin();
+    for(; it != globalsUsed.end(); ++it) {
+      (*it)->staticTypingOnce(context, styper);
+    }
+
+    // Re-static type this function definition
+    staticTyping(context, styper);
+  }
 }
 
 void XQUserFunction::resetStaticTypingOnce()
@@ -903,6 +954,7 @@ ASTNode *DelayedFuncFactory::createInstance(const VectorOfASTNodes &args, XPath2
 
     args._function->staticResolutionStage1(context);
     const_cast<XQUserFunction*&>(function_) = args._function;
+    function_->setDelayed(true);
 
     UserFunctions &fns = const_cast<UserFunctions&>(query_->getFunctions());
     for(UserFunctions::iterator j = fns.begin(); j != fns.end(); ++j) {

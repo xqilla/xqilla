@@ -27,6 +27,7 @@
 
 class XQQuery;
 class DynamicContext;
+class ModuleCache;
 
 struct XQILLA_API DelayedModule
 {
@@ -45,7 +46,9 @@ struct XQILLA_API DelayedModule
 
   XQQuery *createModule(DynamicContext* context = 0,
                         XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *memMgr =
-                        XERCES_CPP_NAMESPACE_QUALIFIER XMLPlatformUtils::fgMemoryManager) const;
+                        XERCES_CPP_NAMESPACE_QUALIFIER XMLPlatformUtils::fgMemoryManager,
+                        ModuleCache *moduleCache = 0) const;
+  void importModuleInto(XQQuery *importer) const;
 };
 
 #endif

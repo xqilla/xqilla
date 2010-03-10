@@ -24,7 +24,8 @@
 
 XERCES_CPP_NAMESPACE_USE;
 
-XQQuery *DelayedModule::createModule(DynamicContext* context, MemoryManager *memMgr) const
+XQQuery *DelayedModule::createModule(DynamicContext* context, MemoryManager *memMgr,
+                                     ModuleCache *moduleCache) const
 {
   if(context == 0) {
     context = XQilla::createContext(XQilla::XQUERY, 0, memMgr);
@@ -32,7 +33,7 @@ XQQuery *DelayedModule::createModule(DynamicContext* context, MemoryManager *mem
 
   context->setNamespaceBinding(prefix, uri);
 
-  AutoDelete<XQQuery> query(new (memMgr) XQQuery(0, context, true, memMgr));
+  AutoDelete<XQQuery> query(new (memMgr) XQQuery(context, true, moduleCache, memMgr));
   query->setIsLibraryModule(true);
   query->setModuleTargetNamespace(uri);
   query->setFile(file);
@@ -45,4 +46,19 @@ XQQuery *DelayedModule::createModule(DynamicContext* context, MemoryManager *mem
   }
 
   return query.adopt();
+}
+
+void DelayedModule::importModuleInto(XQQuery *importer) const
+{
+  XQQuery *module = importer->getModuleCache()->getByNamespace(uri);
+
+  if(module == 0) {
+    // Create the module
+    const StaticContext *context = importer->getStaticContext();
+    module = createModule(context->createModuleContext(), context->getMemoryManager(),
+                          importer->getModuleCache());
+    importer->getModuleCache()->put(module);
+  }
+
+  importer->importModule(module);
 }

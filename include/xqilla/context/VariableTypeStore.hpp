@@ -27,6 +27,7 @@
 class SequenceType;
 class XPath2MemoryManager;
 class StaticAnalysis;
+class XQGlobalVariable;
 
 /** This is the wrapper class for the variable store, which implements the 
     lookup and scoping of simple variables. */
@@ -49,11 +50,11 @@ public:
 
   /** Declares and/or sets a variable in the global scope. */
   virtual void declareGlobalVar(const XMLCh* namespaceURI, const XMLCh* name,
-                                const StaticAnalysis &src) = 0;
+                                const StaticAnalysis &src, XQGlobalVariable *global) = 0;
 
   /** Gets a variable from the global scope */
-  virtual const StaticAnalysis* getGlobalVar(const XMLCh* namespaceURI,
-                                                      const XMLCh* name) const = 0;
+  virtual const StaticAnalysis* getGlobalVar(const XMLCh* namespaceURI, const XMLCh* name,
+                                             XQGlobalVariable **global = 0) const = 0;
 
   /** Declare a var in the top level scope (A full set of
       these namespaceURI/name pair methods should be made) */
@@ -63,8 +64,8 @@ public:
   /** Looks up the value of a variable in the current scope, using ident as an
       qname. Returns a boolean (true if successful), and the SequenceType value
       of the variable*/
-  virtual const StaticAnalysis *getVar(const XMLCh* namespaceURI,
-                                                const XMLCh* name) const = 0;
+  virtual const StaticAnalysis *getVar(const XMLCh* namespaceURI, const XMLCh* name,
+                                       XQGlobalVariable **global = 0) const = 0;
 };
 
 #endif

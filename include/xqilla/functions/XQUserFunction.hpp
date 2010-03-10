@@ -210,6 +210,10 @@ public:
 
   bool isRecursive() const { return recursive_; }
 
+  bool isDelayed() const { return delayed_; }
+  void setDelayed(bool v) { delayed_ = v; }
+
+  void resolveName(StaticContext *context);
   /// Resolve URIs, give the function a default static type
   void staticResolutionStage1(StaticContext* context);
   /// Resolve the function body, work out a more static return type
@@ -257,6 +261,7 @@ protected:
   StaticAnalysis src_;
   bool staticTyped_;
   bool recursive_;
+  bool delayed_;
   DocumentCache *moduleDocCache_;
 
   friend class XQUserFunctionInstance;

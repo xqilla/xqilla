@@ -76,8 +76,7 @@ Item::Ptr Divide::execute(const AnyAtomicType::Ptr &atom1, const AnyAtomicType::
     if(atom2->isNumericValue()) {
       return (const Item::Ptr)duration->divide((const Numeric *)atom2.get(), context);
     }
-    else if(atom2->getPrimitiveTypeIndex() == AnyAtomicType::DAY_TIME_DURATION ||
-              atom2->getPrimitiveTypeIndex() == AnyAtomicType::YEAR_MONTH_DURATION) {
+    else if(atom2->getPrimitiveTypeIndex() == atom1->getPrimitiveTypeIndex()) {
       return (const Item::Ptr)duration->divide((const ATDurationOrDerived*)atom2.get(), context);
     }
     else {

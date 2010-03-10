@@ -119,8 +119,8 @@ public:
   virtual void setVariableStore(const VariableStore *store);
   virtual const VariableStore* getGlobalVariableStore() const;
   virtual void setGlobalVariableStore(const VariableStore *store);
-  virtual void setExternalVariable(const XMLCh *namespaceURI, const XMLCh *name, const Sequence &value);
-  virtual void setExternalVariable(const XMLCh *qname, const Sequence &value);
+  virtual void setExternalVariable(const XMLCh *namespaceURI, const XMLCh *name, const Result &value);
+  virtual void setExternalVariable(const XMLCh *qname, const Result &value);
 
   virtual const RegexGroupStore* getRegexGroupStore() const;
   virtual void setRegexGroupStore(const RegexGroupStore *store);
@@ -256,6 +256,9 @@ public:
   /** Gets the listener for warning and trace messages */
   virtual MessageListener *getMessageListener() const;
 
+  virtual void setModule(XQQuery *module) { _module = module; }
+  virtual XQQuery *getModule() const { return _module; }
+
   /////////////////////////////////////////
   //  XQilla context specific accessors  //
   /////////////////////////////////////////
@@ -390,6 +393,9 @@ protected:
 
   /** The message listener, for warnings and trace messages */
   MessageListener *_messageListener;
+
+  /** The module */
+  XQQuery *_module;
 
   /** Base URI. This is an absolute URI, used when necessary in the
    * resolution of relative URIs (for example, by the fn:resolve- uri

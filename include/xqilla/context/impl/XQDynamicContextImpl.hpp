@@ -31,7 +31,7 @@
 class XQILLA_API XQDynamicContextImpl : public DynamicContext
 {
 public:
-  XQDynamicContextImpl(XQillaConfiguration *conf, const StaticContext *staticContext,
+  XQDynamicContextImpl(XQillaConfiguration *conf, const StaticContext *staticContext, VarStoreImpl *defaultVarStore,
                        XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* memMgr);
   ~XQDynamicContextImpl();
 
@@ -112,8 +112,8 @@ public:
   virtual void setVariableStore(const VariableStore *store);
   virtual const VariableStore* getGlobalVariableStore() const;
   virtual void setGlobalVariableStore(const VariableStore *store);
-  virtual void setExternalVariable(const XMLCh *namespaceURI, const XMLCh *name, const Sequence &value);
-  virtual void setExternalVariable(const XMLCh *qname, const Sequence &value);
+  virtual void setExternalVariable(const XMLCh *namespaceURI, const XMLCh *name, const Result &value);
+  virtual void setExternalVariable(const XMLCh *qname, const Result &value);
 
   virtual const RegexGroupStore* getRegexGroupStore() const;
   virtual void setRegexGroupStore(const RegexGroupStore *store);
@@ -249,6 +249,9 @@ public:
   /** Gets the listener for warning and trace messages */
   virtual MessageListener *getMessageListener() const;
 
+  virtual void setModule(XQQuery *module);
+  virtual XQQuery *getModule() const;
+
   /////////////////////////////////////////
   //  XQilla context specific accessors  //
   /////////////////////////////////////////
@@ -308,9 +311,10 @@ protected:
    * available for reference within the expression. The QName
    * represents the name of the variable, and the Sequence represents its
    * value */
+  VarStoreImpl *_defaultVarStore;
+  bool _defaultVarStoreOwned;
   const VariableStore *_varStore;
   const VariableStore *_globalVarStore;
-  VarStoreImpl _defaultVarStore;
 
   const RegexGroupStore *_regexStore;
 
@@ -405,6 +409,8 @@ inline void XQDynamicContextImpl::setNamespaceBinding(const XMLCh* prefix, const
 { XQThrow2(ContextException,X("XQDynamicContextImpl"), X("You cannot change the static context when using a proxying dynamic context")); }
 inline void XQDynamicContextImpl::setDoLintWarnings(bool enabled)
 { XQThrow2(ContextException,X("XQDynamicContextImpl"), X("You cannot change the static context when using a proxying dynamic context")); }
+inline void XQDynamicContextImpl::setModule(XQQuery *module)
+{ XQThrow2(ContextException,X("XQDynamicContextImpl"), X("You cannot change the static context when using a proxying dynamic context")); }
 
 
 inline const StaticType &XQDynamicContextImpl::getContextItemType() const { XQThrow2(ContextException,X("XQDynamicContextImpl"), X("The static context is not available from a proxying dynamic context")); }
@@ -419,6 +425,7 @@ inline bool XQDynamicContextImpl::getXPath1CompatibilityMode() const { XQThrow2(
 inline bool XQDynamicContextImpl::getPreserveBoundarySpace() const { XQThrow2(ContextException,X("XQDynamicContextImpl"), X("The static context is not available from a proxying dynamic context")); }
 inline DocumentCache::ValidationMode XQDynamicContextImpl::getRevalidationMode() const { XQThrow2(ContextException,X("XQDynamicContextImpl"), X("The static context is not available from a proxying dynamic context")); }
 inline bool XQDynamicContextImpl::getDoLintWarnings() const { XQThrow2(ContextException,X("XQDynamicContextImpl"), X("The static context is not available from a proxying dynamic context")); }
+inline XQQuery *XQDynamicContextImpl::getModule() const { XQThrow2(ContextException,X("XQDynamicContextImpl"), X("The static context is not available from a proxying dynamic context")); }
 
 
 inline XQilla::Language XQDynamicContextImpl::getLanguage() const { return _staticContext->getLanguage(); }

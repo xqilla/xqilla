@@ -108,8 +108,7 @@ public:
     SAMEDOC      = 0x010, ///< Results are from the same document as the context node
     ONENODE      = 0x020, ///< Only ever returns one node
     SELF         = 0x040, ///< Only ever returns the context node
-    FORWARDREF   = 0x080, ///< This is a forward reference for a global variable that is declared later
-    UNDEFINEDVAR = 0x100  ///< This is a variable that has been undefined
+    UNDEFINEDVAR = 0x080  ///< This is a variable that has been undefined
   };
 
   unsigned int getProperties() const;

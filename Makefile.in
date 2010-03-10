@@ -187,34 +187,34 @@ am_libxqilla_la_OBJECTS = ReferenceCounted.lo BaseMemoryManager.lo \
 	FunctionParseJSON.lo FunctionSerializeJSON.lo \
 	FunctionParseHTML.lo FunctionPartialApply.lo \
 	FunctionAnalyzeString.lo RegExpFunction.lo XQUserFunction.lo \
-	ATAnySimpleTypeImpl.lo ATAnyURIOrDerivedImpl.lo \
-	ATBase64BinaryOrDerivedImpl.lo ATBooleanOrDerivedImpl.lo \
-	ATDateOrDerivedImpl.lo ATDateTimeOrDerivedImpl.lo \
-	ATDecimalOrDerivedImpl.lo ATDoubleOrDerivedImpl.lo \
-	ATDurationOrDerivedImpl.lo ATFloatOrDerivedImpl.lo \
-	ATGDayOrDerivedImpl.lo ATGMonthDayOrDerivedImpl.lo \
-	ATGMonthOrDerivedImpl.lo ATGYearMonthOrDerivedImpl.lo \
-	ATGYearOrDerivedImpl.lo ATHexBinaryOrDerivedImpl.lo \
-	ATNotationOrDerivedImpl.lo ATQNameOrDerivedImpl.lo \
-	ATStringOrDerivedImpl.lo ATTimeOrDerivedImpl.lo \
-	ATUntypedAtomicImpl.lo FunctionRefImpl.lo DatatypeFactory.lo \
-	DatatypeLookup.lo AnyAtomicType.lo ATDurationOrDerived.lo \
-	ATUntypedAtomic.lo DateOrTimeType.lo Item.lo Node.lo \
-	Numeric.lo Timezone.lo QName.lo XQParser.lo XQLexer.lo \
-	XQLexer2.lo XSLT2Lexer.lo mapm5sin.lo mapm_add.lo mapmasin.lo \
-	mapmasn0.lo mapmcbrt.lo mapmcnst.lo mapm_cpi.lo m_apm.lo \
-	mapm_div.lo mapm_exp.lo mapmfact.lo mapm_fam.lo mapm_fft.lo \
-	mapm_flr.lo mapmfmul.lo mapm_fpf.lo mapm_gcd.lo mapmgues.lo \
-	mapmhasn.lo mapmhsin.lo mapmipwr.lo mapmistr.lo mapm_lg2.lo \
-	mapm_lg3.lo mapm_log.lo mapm_mt.lo mapm_mul.lo mapm_pow.lo \
-	mapmpwr2.lo mapm_rcp.lo mapm_rnd.lo mapmrsin.lo mapm_set.lo \
-	mapm_sin.lo mapmsqrt.lo mapmstck.lo mapmutil.lo mapmutl2.lo \
-	NodeTest.lo SelfAxis.lo And.lo ArithmeticOperator.lo \
-	ComparisonOperator.lo Divide.lo Equals.lo Except.lo \
-	GeneralComp.lo GreaterThan.lo GreaterThanEqual.lo \
-	IntegerDivide.lo Intersect.lo LessThan.lo LessThanEqual.lo \
-	Minus.lo Mod.lo Multiply.lo NodeComparison.lo NotEquals.lo \
-	Or.lo OrderComparison.lo Plus.lo Range.lo UnaryMinus.lo \
+	BuiltInModules.lo ATAnySimpleTypeImpl.lo \
+	ATAnyURIOrDerivedImpl.lo ATBase64BinaryOrDerivedImpl.lo \
+	ATBooleanOrDerivedImpl.lo ATDateOrDerivedImpl.lo \
+	ATDateTimeOrDerivedImpl.lo ATDecimalOrDerivedImpl.lo \
+	ATDoubleOrDerivedImpl.lo ATDurationOrDerivedImpl.lo \
+	ATFloatOrDerivedImpl.lo ATGDayOrDerivedImpl.lo \
+	ATGMonthDayOrDerivedImpl.lo ATGMonthOrDerivedImpl.lo \
+	ATGYearMonthOrDerivedImpl.lo ATGYearOrDerivedImpl.lo \
+	ATHexBinaryOrDerivedImpl.lo ATNotationOrDerivedImpl.lo \
+	ATQNameOrDerivedImpl.lo ATStringOrDerivedImpl.lo \
+	ATTimeOrDerivedImpl.lo ATUntypedAtomicImpl.lo \
+	FunctionRefImpl.lo DatatypeFactory.lo DatatypeLookup.lo \
+	AnyAtomicType.lo ATDurationOrDerived.lo ATUntypedAtomic.lo \
+	DateOrTimeType.lo Item.lo Node.lo Numeric.lo Timezone.lo \
+	QName.lo XQParser.lo XQLexer.lo XQLexer2.lo XSLT2Lexer.lo \
+	mapm5sin.lo mapm_add.lo mapmasin.lo mapmasn0.lo mapmcbrt.lo \
+	mapmcnst.lo mapm_cpi.lo m_apm.lo mapm_div.lo mapm_exp.lo \
+	mapmfact.lo mapm_fam.lo mapm_fft.lo mapm_flr.lo mapmfmul.lo \
+	mapm_fpf.lo mapm_gcd.lo mapmgues.lo mapmhasn.lo mapmhsin.lo \
+	mapmipwr.lo mapmistr.lo mapm_lg2.lo mapm_lg3.lo mapm_log.lo \
+	mapm_mt.lo mapm_mul.lo mapm_pow.lo mapmpwr2.lo mapm_rcp.lo \
+	mapm_rnd.lo mapmrsin.lo mapm_set.lo mapm_sin.lo mapmsqrt.lo \
+	mapmstck.lo mapmutil.lo mapmutl2.lo NodeTest.lo SelfAxis.lo \
+	And.lo ArithmeticOperator.lo ComparisonOperator.lo Divide.lo \
+	Equals.lo Except.lo GeneralComp.lo GreaterThan.lo \
+	GreaterThanEqual.lo IntegerDivide.lo Intersect.lo LessThan.lo \
+	LessThanEqual.lo Minus.lo Mod.lo Multiply.lo NodeComparison.lo \
+	NotEquals.lo Or.lo OrderComparison.lo Plus.lo UnaryMinus.lo \
 	Union.lo DocumentCacheImpl.lo SequenceType.lo \
 	AnyAtomicTypeDatatypeValidator.lo SchemaValidatorFilter.lo \
 	FaxppDocumentCacheImpl.lo ClosureResult.lo EmptyResult.lo \
@@ -235,12 +235,12 @@ am_libxqilla_la_OBJECTS = ReferenceCounted.lo BaseMemoryManager.lo \
 	XercesConfiguration.lo XercesNodeImpl.lo \
 	XercesSequenceBuilder.lo XercesUpdateFactory.lo \
 	XercesURIResolver.lo Optimizer.lo ASTCopier.lo ASTReleaser.lo \
-	ASTVisitor.lo PartialEvaluator.lo CoreTranslator.lo \
-	StaticTyper.lo QueryPathNode.lo QueryPathTreeGenerator.lo \
-	yajl_buf.lo yajl.lo yajl_encode.lo yajl_gen.lo yajl_lex.lo \
-	yajl_parser.lo XQillaXQCImplementation.lo \
-	XQillaXQCStaticContext.lo XQillaXQCDynamicContext.lo \
-	XQillaXQCExpression.lo XQillaXQCSequence.lo
+	ASTVisitor.lo PartialEvaluator.lo StaticTyper.lo \
+	QueryPathNode.lo QueryPathTreeGenerator.lo yajl_buf.lo yajl.lo \
+	yajl_encode.lo yajl_gen.lo yajl_lex.lo yajl_parser.lo \
+	XQillaXQCImplementation.lo XQillaXQCStaticContext.lo \
+	XQillaXQCDynamicContext.lo XQillaXQCExpression.lo \
+	XQillaXQCSequence.lo
 libxqilla_la_OBJECTS = $(am_libxqilla_la_OBJECTS)
 libxqilla_la_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
@@ -811,6 +811,8 @@ src/functions/FunctionPartialApply.cpp \
 src/functions/FunctionAnalyzeString.cpp \
 src/functions/RegExpFunction.cpp \
 src/functions/XQUserFunction.cpp \
+src/functions/BuiltInModules.cpp \
+src/functions/CoreModule.hpp \
 src/items/impl/ATAnySimpleTypeImpl.cpp \
 src/items/impl/ATAnySimpleTypeImpl.hpp \
 src/items/impl/ATAnyURIOrDerivedImpl.cpp \
@@ -924,7 +926,6 @@ src/operators/NotEquals.cpp \
 src/operators/Or.cpp \
 src/operators/OrderComparison.cpp \
 src/operators/Plus.cpp \
-src/operators/Range.cpp \
 src/operators/UnaryMinus.cpp \
 src/operators/Union.cpp \
 src/schema/DocumentCacheImpl.cpp \
@@ -1009,8 +1010,6 @@ src/optimizer/ASTCopier.cpp \
 src/optimizer/ASTReleaser.cpp \
 src/optimizer/ASTVisitor.cpp \
 src/optimizer/PartialEvaluator.cpp \
-src/optimizer/CoreTranslator.cpp \
-src/optimizer/CoreModule.hpp \
 src/optimizer/StaticTyper.cpp \
 src/optimizer/QueryPathNode.cpp \
 src/optimizer/QueryPathTreeGenerator.cpp \
@@ -1048,7 +1047,7 @@ src/samples/dom-api/data.xml \
 src/samples/dom-api/data.xsd \
 src/samples/dom-api/foo.xml \
 src/samples/simple-api/foo.xml \
-src/optimizer/CoreModule.xq \
+src/functions/CoreModule.xq \
 LICENSE \
 TODO \
 README \
@@ -1369,6 +1368,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/AttributeAxis.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Axis.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/BaseMemoryManager.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/BuiltInModules.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ChildAxis.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ClosureResult.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/CodepointCollation.Plo@am__quote@
@@ -1379,7 +1379,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ContextTuple.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ContextUtils.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ConvertFunctionArg.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/CoreTranslator.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/CountTuple.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DatatypeFactory.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DatatypeLookup.Plo@am__quote@
@@ -1603,7 +1602,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/QueryPathNode.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/QueryPathTreeFilter.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/QueryPathTreeGenerator.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Range.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ReferenceCounted.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/RegExpFunction.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Result.Plo@am__quote@
@@ -4028,6 +4026,13 @@ XQUserFunction.lo: src/functions/XQUserFunction.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQUserFunction.lo `test -f 'src/functions/XQUserFunction.cpp' || echo '$(srcdir)/'`src/functions/XQUserFunction.cpp
 
+BuiltInModules.lo: src/functions/BuiltInModules.cpp
+@am__fastdepCXX_TRUE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT BuiltInModules.lo -MD -MP -MF $(DEPDIR)/BuiltInModules.Tpo -c -o BuiltInModules.lo `test -f 'src/functions/BuiltInModules.cpp' || echo '$(srcdir)/'`src/functions/BuiltInModules.cpp
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/BuiltInModules.Tpo $(DEPDIR)/BuiltInModules.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/functions/BuiltInModules.cpp' object='BuiltInModules.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o BuiltInModules.lo `test -f 'src/functions/BuiltInModules.cpp' || echo '$(srcdir)/'`src/functions/BuiltInModules.cpp
+
 ATAnySimpleTypeImpl.lo: src/items/impl/ATAnySimpleTypeImpl.cpp
 @am__fastdepCXX_TRUE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ATAnySimpleTypeImpl.lo -MD -MP -MF $(DEPDIR)/ATAnySimpleTypeImpl.Tpo -c -o ATAnySimpleTypeImpl.lo `test -f 'src/items/impl/ATAnySimpleTypeImpl.cpp' || echo '$(srcdir)/'`src/items/impl/ATAnySimpleTypeImpl.cpp
 @am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/ATAnySimpleTypeImpl.Tpo $(DEPDIR)/ATAnySimpleTypeImpl.Plo
@@ -4462,13 +4467,6 @@ Plus.lo: src/operators/Plus.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o Plus.lo `test -f 'src/operators/Plus.cpp' || echo '$(srcdir)/'`src/operators/Plus.cpp
 
-Range.lo: src/operators/Range.cpp
-@am__fastdepCXX_TRUE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT Range.lo -MD -MP -MF $(DEPDIR)/Range.Tpo -c -o Range.lo `test -f 'src/operators/Range.cpp' || echo '$(srcdir)/'`src/operators/Range.cpp
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/Range.Tpo $(DEPDIR)/Range.Plo
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/operators/Range.cpp' object='Range.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o Range.lo `test -f 'src/operators/Range.cpp' || echo '$(srcdir)/'`src/operators/Range.cpp
-
 UnaryMinus.lo: src/operators/UnaryMinus.cpp
 @am__fastdepCXX_TRUE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT UnaryMinus.lo -MD -MP -MF $(DEPDIR)/UnaryMinus.Tpo -c -o UnaryMinus.lo `test -f 'src/operators/UnaryMinus.cpp' || echo '$(srcdir)/'`src/operators/UnaryMinus.cpp
 @am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/UnaryMinus.Tpo $(DEPDIR)/UnaryMinus.Plo
@@ -4895,13 +4893,6 @@ PartialEvaluator.lo: src/optimizer/PartialEvaluator.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/optimizer/PartialEvaluator.cpp' object='PartialEvaluator.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o PartialEvaluator.lo `test -f 'src/optimizer/PartialEvaluator.cpp' || echo '$(srcdir)/'`src/optimizer/PartialEvaluator.cpp
-
-CoreTranslator.lo: src/optimizer/CoreTranslator.cpp
-@am__fastdepCXX_TRUE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT CoreTranslator.lo -MD -MP -MF $(DEPDIR)/CoreTranslator.Tpo -c -o CoreTranslator.lo `test -f 'src/optimizer/CoreTranslator.cpp' || echo '$(srcdir)/'`src/optimizer/CoreTranslator.cpp
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/CoreTranslator.Tpo $(DEPDIR)/CoreTranslator.Plo
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/optimizer/CoreTranslator.cpp' object='CoreTranslator.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o CoreTranslator.lo `test -f 'src/optimizer/CoreTranslator.cpp' || echo '$(srcdir)/'`src/optimizer/CoreTranslator.cpp
 
 StaticTyper.lo: src/optimizer/StaticTyper.cpp
 @am__fastdepCXX_TRUE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT StaticTyper.lo -MD -MP -MF $(DEPDIR)/StaticTyper.Tpo -c -o StaticTyper.lo `test -f 'src/optimizer/StaticTyper.cpp' || echo '$(srcdir)/'`src/optimizer/StaticTyper.cpp
@@ -5537,8 +5528,8 @@ uninstall-am: uninstall-binPROGRAMS uninstall-libLTLIBRARIES
 	uninstall-binPROGRAMS uninstall-libLTLIBRARIES
 
 
-$(top_srcdir)/src/optimizer/CoreModule.hpp: $(top_srcdir)/src/optimizer/CoreModule.xq
-	./compile-delayed-module $(top_srcdir)/src/optimizer/CoreModule.xq >$(top_srcdir)/src/optimizer/CoreModule.hpp
+$(top_srcdir)/src/functions/CoreModule.hpp: $(top_srcdir)/src/functions/CoreModule.xq
+	./compile-delayed-module $(top_srcdir)/src/functions/CoreModule.xq >$(top_srcdir)/src/functions/CoreModule.hpp
 
 $(LEXERFILE): $(LEXTEMPLATE) $(LEXSKEL)
 	$(LEX) -BUs -Pxq -S$(LEXSKEL) -o$(LEXERFILE) $(LEXTEMPLATE) # This can take a long time

@@ -290,6 +290,7 @@ xqilla/functions/FuncFactory.hpp \
 xqilla/functions/RegExpFunction.hpp \
 xqilla/functions/XQUserFunction.hpp \
 xqilla/functions/XQillaFunction.hpp \
+xqilla/functions/BuiltInModules.hpp \
 xqilla/items/ATAnySimpleType.hpp \
 xqilla/items/ATAnyURIOrDerived.hpp \
 xqilla/items/ATBase64BinaryOrDerived.hpp \
@@ -356,7 +357,6 @@ xqilla/operators/NotEquals.hpp \
 xqilla/operators/OrderComparison.hpp \
 xqilla/operators/Or.hpp \
 xqilla/operators/Plus.hpp \
-xqilla/operators/Range.hpp \
 xqilla/operators/UnaryMinus.hpp \
 xqilla/operators/Union.hpp \
 xqilla/optimizer/Optimizer.hpp \
@@ -364,7 +364,6 @@ xqilla/optimizer/ASTCopier.hpp \
 xqilla/optimizer/ASTReleaser.hpp \
 xqilla/optimizer/ASTVisitor.hpp \
 xqilla/optimizer/PartialEvaluator.hpp \
-xqilla/optimizer/CoreTranslator.hpp \
 xqilla/optimizer/StaticTyper.hpp \
 xqilla/optimizer/QueryPathNode.hpp \
 xqilla/optimizer/QueryPathTreeGenerator.hpp \

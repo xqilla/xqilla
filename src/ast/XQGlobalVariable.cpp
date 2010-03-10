@@ -20,17 +20,25 @@
 #include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/ast/XQGlobalVariable.hpp>
 #include <xqilla/runtime/Sequence.hpp>
+#include <xqilla/runtime/ClosureResult.hpp>
 #include <xqilla/schema/SequenceType.hpp>
 #include <xqilla/context/VariableStore.hpp>
 #include <xqilla/context/VariableTypeStore.hpp>
 #include <xqilla/utils/XPath2NSUtils.hpp>
 #include <xqilla/context/DynamicContext.hpp>
+#include <xqilla/context/ContextHelpers.hpp>
 #include <xqilla/exceptions/IllegalArgumentException.hpp>
 #include <xqilla/exceptions/XPath2TypeMatchException.hpp>
 #include <xqilla/exceptions/StaticErrorException.hpp>
 #include <xercesc/framework/XMLBuffer.hpp>
 #include <xqilla/ast/XQTreatAs.hpp>
 #include <xqilla/functions/XQUserFunction.hpp>
+#include <xqilla/simple-api/XQQuery.hpp>
+#include <xqilla/optimizer/StaticTyper.hpp>
+
+#if defined(XERCES_HAS_CPP_NAMESPACE)
+XERCES_CPP_NAMESPACE_USE
+#endif
 
 XQGlobalVariable::XQGlobalVariable(const XMLCh* varQName, SequenceType* seqType, ASTNode* value, XPath2MemoryManager *mm, bool isParam)
   : isParam_(isParam),
@@ -42,7 +50,7 @@ XQGlobalVariable::XQGlobalVariable(const XMLCh* varQName, SequenceType* seqType,
     m_Type(seqType),
     m_Value(value),
     _src(mm),
-    staticTyped_(false)
+    staticTyped_(BEFORE)
 {
 }
 
@@ -72,7 +80,7 @@ void XQGlobalVariable::execute(DynamicContext* context) const
       }
 
       if(m_Value == NULL) {
-        XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer errMsg;
+        XMLBuffer errMsg;
         errMsg.set(X("A value for the external variable "));
         if(m_szQName != 0) {
           errMsg.append(m_szQName);
@@ -84,17 +92,17 @@ void XQGlobalVariable::execute(DynamicContext* context) const
           errMsg.append(m_szLocalName);
         }
         errMsg.append(X(" has not been provided [err:XPTY0002]"));
-        XQThrow(IllegalArgumentException,X("XQGlobalVariable::createSequence"),errMsg.getRawBuffer());
+        XQThrow(::IllegalArgumentException,X("XQGlobalVariable::createSequence"),errMsg.getRawBuffer());
       }
     }
 
     // TBD Could use our own VariableStore implementation - jpcs
-    // TBD Use a closure rather than toSequence() - jpcs
-    context->setExternalVariable(m_szURI, m_szLocalName, m_Value->createResult(context)->
-                                 toSequence(context));
+    // TBD Use a closure here when module dynamic contexts aren't deleted before the end of the query - jpcs
+    context->setExternalVariable(m_szURI, m_szLocalName, m_Value->createResult(context)->toSequence(context));
+//     context->setExternalVariable(m_szURI, m_szLocalName, ClosureResult::create(m_Value, context));
   }
   catch(const XPath2TypeMatchException &ex) {
-    XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer errMsg;
+    XMLBuffer errMsg;
     errMsg.set(X("The value for the global variable "));
     if(m_szQName != 0) {
       errMsg.append(m_szQName);
@@ -111,13 +119,9 @@ void XQGlobalVariable::execute(DynamicContext* context) const
   }
 }
 
-void XQGlobalVariable::staticResolution(StaticContext* context)
+void XQGlobalVariable::resolveName(StaticContext *context)
 {
   XPath2MemoryManager *mm = context->getMemoryManager();
-
-  xpath1Compat_ = context->getXPath1CompatibilityMode();
-
-  if(m_Type) m_Type->staticResolution(context);
 
   // variables with no prefix are in no namespace
   if(m_szLocalName == 0) {
@@ -126,6 +130,17 @@ void XQGlobalVariable::staticResolution(StaticContext* context)
       m_szURI = context->getUriBoundToPrefix(prefix, this);
     m_szLocalName = XPath2NSUtils::getLocalName(m_szQName);
   }
+}
+
+void XQGlobalVariable::staticResolution(StaticContext* context)
+{
+  XPath2MemoryManager *mm = context->getMemoryManager();
+
+  xpath1Compat_ = context->getXPath1CompatibilityMode();
+
+  resolveName(context);
+
+  if(m_Type) m_Type->staticResolution(context);
 
   if(m_Value != NULL) {
     if(m_Type != NULL) {
@@ -134,13 +149,83 @@ void XQGlobalVariable::staticResolution(StaticContext* context)
     }
     m_Value = m_Value->staticResolution(context);
   }
+
+  // Set up a default StaticType
+  if(m_Type != 0) {
+    bool isPrimitive;
+    m_Type->getStaticType(_src.getStaticType(), context, isPrimitive, m_Type);
+  }
+  else {
+    _src.getStaticType() = StaticType(StaticType::ITEM_TYPE, 0, StaticType::UNLIMITED);
+  }
+  _src.setProperties(0);
 }
 
 void XQGlobalVariable::staticTypingOnce(StaticContext* context, StaticTyper *styper)
 {
-  if(staticTyped_) return;
-  staticTyped_ = true;
-  staticTyping(context, styper);
+  switch(staticTyped_) {
+  case AFTER: return;
+  case DURING: {
+      XMLBuffer buf;
+      buf.append(X("The initializing expression for variable {"));
+      buf.append(m_szURI);
+      buf.append(X("}"));
+      buf.append(m_szLocalName);
+      buf.append(X(" depends on itself [err:XQST0054]"));
+      XQThrow(StaticErrorException, X("XQGlobalVariable::staticTypingOnce"), buf.getRawBuffer());
+  }
+  case BEFORE: break;
+  }
+
+  staticTyped_ = DURING;
+
+  StaticTyper::PrologItem breadcrumb(this, styper->getTrail());
+  AutoReset<StaticTyper::PrologItem*> autorReset2(styper->getTrail());
+  styper->getTrail() = &breadcrumb;;
+
+  GlobalVariables globalsUsed(XQillaAllocator<XQGlobalVariable*>(context->getMemoryManager()));
+  {
+    AutoReset<GlobalVariables*> autoReset(styper->getGlobalsUsed());
+    styper->getGlobalsUsed() = &globalsUsed;
+    staticTyping(context, styper);
+  }
+
+  if(!globalsUsed.empty()) {
+    // Static type the global variables from this module which we depend on
+    GlobalVariables::iterator it = globalsUsed.begin();
+    for(; it != globalsUsed.end(); ++it) {
+      // XQuery 1.0 doesn't allow forward references
+      XQQuery *module = context->getModule();
+      if(!module->getVersion11()) {
+        GlobalVariables::const_iterator it2 = module->getVariables().begin();
+        for(; it2 != module->getVariables().end(); ++it2) {
+          if(*it2 == *it) break;
+          if(*it2 == this) {
+            XMLBuffer errMsg;
+            errMsg.set(X("Cannot refer to global variable with name {"));
+            errMsg.append((*it)->getVariableURI());
+            errMsg.append(X("}"));
+            errMsg.append((*it)->getVariableLocalName());
+            errMsg.append(X(" because it is declared later [err:XPST0008]"));
+            XQThrow(StaticErrorException,X("XQGlobalVariable::staticTypingOnce"), errMsg.getRawBuffer());
+          }
+        }
+      }
+
+      (*it)->staticTypingOnce(context, styper);
+    }
+
+    // Re-static type this global variable
+    staticTyping(context, styper);
+  }
+
+  staticTyped_ = AFTER;
+  styper->getGlobalsOrder()->push_back(this);
+}
+
+void XQGlobalVariable::resetStaticTypingOnce()
+{
+  staticTyped_ = BEFORE;
 }
 
 void XQGlobalVariable::staticTyping(StaticContext* context, StaticTyper *styper)
@@ -149,6 +234,9 @@ void XQGlobalVariable::staticTyping(StaticContext* context, StaticTyper *styper)
 
   if(m_Value != NULL) {
     XQUserFunction::staticTypeFunctionCalls(m_Value, context, styper);
+
+    // Add UNDEFINEDVAR to properties, since variables aren't in scope for themselves
+    _src.setProperties(_src.getProperties() | StaticAnalysis::UNDEFINEDVAR);
 
     m_Value = m_Value->staticTyping(context, styper);
     _src.copy(m_Value->getStaticAnalysis());
@@ -168,9 +256,10 @@ void XQGlobalVariable::staticTyping(StaticContext* context, StaticTyper *styper)
     else {
       _src.getStaticType() = StaticType(StaticType::ITEM_TYPE, 0, StaticType::UNLIMITED);
     }
+    _src.setProperties(0);
   }
 
-  varStore->declareGlobalVar(m_szURI, m_szLocalName, _src);
+  varStore->declareGlobalVar(m_szURI, m_szLocalName, _src, this);
 }
 
 const XMLCh* XQGlobalVariable::getVariableName() const

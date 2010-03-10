@@ -30,8 +30,10 @@ public:
   XQGlobalVariable(const XMLCh* varQName, SequenceType* seqType, ASTNode* value, XPath2MemoryManager *mm, bool isParam = false);
 
   void execute(DynamicContext* context) const;
+  void resolveName(StaticContext *context);
   void staticResolution(StaticContext *context);
   void staticTypingOnce(StaticContext *context, StaticTyper *styper);
+  void resetStaticTypingOnce();
   void staticTyping(StaticContext *context, StaticTyper *styper);
 
   const XMLCh* getVariableName() const;
@@ -62,7 +64,7 @@ protected:
   SequenceType* m_Type;
   ASTNode* m_Value;
   StaticAnalysis _src;
-  bool staticTyped_;
+  enum { BEFORE, DURING, AFTER } staticTyped_;
 };
 
 #endif

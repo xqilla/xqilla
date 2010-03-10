@@ -14,12 +14,6 @@
   <error id="K-NumericAdd-6" reason="result failure"/>
   <error id="K-SeqExprCast-1496" reason="error failure"/>
   <error id="K-SeqExprCast-1497" reason="error failure"/>
-  <error id="caselessmatch04" reason="result failure"/>
-  <error id="caselessmatch05" reason="result failure"/>
-  <error id="caselessmatch06" reason="result failure"/>
-  <error id="caselessmatch07" reason="result failure"/>
-  <error id="caselessmatch08" reason="result failure"/>
-  <error id="caselessmatch13" reason="result failure"/>
   <error id="casthcds9" reason="result failure"/>
   <error id="fn-avg-mix-args-012" reason="result failure"/>
   <error id="fn-avg-mix-args-013" reason="result failure"/>
@@ -111,6 +105,8 @@
   <error id="fn-numberulng1args-3" reason="result failure"/>
   <error id="fn-resolve-uri-4" reason="no error failure"/>
   <error id="fn-resolve-uri-9" reason="result failure"/>
+  <error id="modules-circular" reason="no error failure" action="pass" comment="XQuery 1.0 2nd Edition changes the expected result of this test"/>
+  <error id="modules-schema-context" reason="error failure"/>
   <error id="normalization-1" reason="no error failure"/>
   <error id="validateexpr-26" reason="error failure" action="pass" comment="'Element {}a is not defined as a global element [err:XQDY0084]' returned instead"/>
 </errors>

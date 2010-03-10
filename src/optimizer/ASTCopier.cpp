@@ -48,7 +48,6 @@
 #include <xqilla/operators/Or.hpp>
 #include <xqilla/operators/OrderComparison.hpp>
 #include <xqilla/operators/Plus.hpp>
-#include <xqilla/operators/Range.hpp>
 #include <xqilla/operators/UnaryMinus.hpp>
 #include <xqilla/operators/Union.hpp>
 
@@ -264,7 +263,7 @@ COPY_XQ5(QNameLiteral, TypeURI, TypeName, URI, Prefix, Localname)
 COPY_XQ4(NumericLiteral, TypeURI, TypeName, Value, PrimitiveType)
 COPY_XQ1(Sequence, Children)
 COPY_XQ2(Step, Axis, NodeTest)
-COPY_XQ2(Variable, URI, Name)
+COPY_XQ4(Variable, Prefix, URI, Name, Global)
 COPY_XQ3(If, Test, WhenTrue, WhenFalse)
 COPY_XQ2(InstanceOf, Expression, SequenceType) // SequenceType
 COPY_XQ4(CastableAs, Expression, SequenceType, IsPrimitive, TypeIndex)
@@ -383,7 +382,6 @@ ASTNode *ASTCopier::optimizeOperator(XQOperator *item)
   OP_CHECK(NotEquals);
   OP_CHECK(Or);
   OP_CHECK(Plus);
-  OP_CHECK(Range);
   OP_CHECK(Union);
 
   ASTVisitor::optimizeOperator(result);
@@ -416,7 +414,7 @@ ASTNode *ASTCopier::optimizeFunctionCall(XQFunctionCall *item)
   VectorOfASTNodes *newArgs = new (mm_) VectorOfASTNodes(XQillaAllocator<ASTNode*>(mm_));
   *newArgs = *item->getArguments();
 
-  XQFunctionCall *result = new (mm_) XQFunctionCall(item->getQName(), newArgs, mm_);
+  XQFunctionCall *result = new (mm_) XQFunctionCall(item->getPrefix(), item->getURI(), item->getName(), newArgs, mm_);
 
   ASTVisitor::optimizeFunctionCall(result);
   COPY_IMPL();

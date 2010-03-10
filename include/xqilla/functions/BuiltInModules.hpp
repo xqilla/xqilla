@@ -17,40 +17,15 @@
  * limitations under the License.
  */
 
-#ifndef _RANGE_HPP
-#define _RANGE_HPP
+#ifndef _BUILTINMODULES_HPP
+#define _BUILTINMODULES_HPP
 
-#include <xqilla/framework/XQillaExport.hpp>
+#include <xqilla/utils/DelayedModule.hpp>
 
-#include <xqilla/ast/XQOperator.hpp>
-
-class Numeric;
-
-class XQILLA_API Range : public XQOperator
+class XQILLA_API BuiltInModules
 {
 public:
-  static const XMLCh name[];
-
-  Range(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
-  
-  virtual ASTNode* staticResolution(StaticContext *context);
-  virtual ASTNode *staticTypingImpl(StaticContext *context);
-  Result createResult(DynamicContext* context, int flags=0) const;
-
-private:
-  class RangeResult : public ResultImpl
-  {
-  public:
-    RangeResult(const Range *op, DynamicContext *context);
-
-    Item::Ptr next(DynamicContext *context);
-
-  private:
-    const Range *_op;
-    Numeric::Ptr _last;
-    Numeric::Ptr _step;
-    Numeric::Ptr _end;
-  };
+  static const DelayedModule &core;
 };
 
 #endif

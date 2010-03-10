@@ -247,6 +247,11 @@ public:
   /** Gets the listener for warning and trace messages */
   virtual MessageListener *getMessageListener() const = 0;
 
+  /** Set the module */
+  virtual void setModule(XQQuery *module) = 0;
+  /** Get the module */
+  virtual XQQuery *getModule() const = 0;
+
   /////////////////////////////////////////
   //  XQilla context specific accessors  //
   /////////////////////////////////////////

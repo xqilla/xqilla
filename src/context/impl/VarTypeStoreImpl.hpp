@@ -59,13 +59,15 @@ public:
   /** Declares and/or sets a variable in the global scope. */
   virtual void declareGlobalVar(const XMLCh* namespaceURI,
                                 const XMLCh* name,
-                                const StaticAnalysis &src);
+                                const StaticAnalysis &src,
+                                XQGlobalVariable *global);
 
   /** Looks up the value of a variable in the current scope.
       Returns a boolean (true if successful), and the SequenceType
       value of the variable*/
   virtual const StaticAnalysis* getGlobalVar(const XMLCh* namespaceURI,
-                                                      const XMLCh* name) const;
+                                             const XMLCh* name,
+                                             XQGlobalVariable **global = 0) const;
 
   ///Declares a var in the top level scope
   virtual void declareVar(const XMLCh* namespaceURI,
@@ -76,10 +78,20 @@ public:
       Returns a boolean (true if successful), and the SequenceType
       value of the variable*/
   virtual const StaticAnalysis* getVar(const XMLCh* namespaceURI,
-                                                const XMLCh* name) const;
+                                       const XMLCh* name,
+                                       XQGlobalVariable **global = 0) const;
 
 private:
-  VariableStoreTemplate<const StaticAnalysis*> _store;
+  struct VarType
+  {
+    VarType(const StaticAnalysis *t, XQGlobalVariable *g)
+      : type(t), global(g) {}
+
+    const StaticAnalysis *type;
+    XQGlobalVariable *global;
+  };
+
+  VariableStoreTemplate<VarType> _store;
 };
 
 #endif

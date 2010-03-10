@@ -232,7 +232,7 @@ unsigned int ATStringOrDerivedImpl::getLength() const {
    * false otherwise */
 bool ATStringOrDerivedImpl::equals(const AnyAtomicType::Ptr &target, const DynamicContext* context) const {
   if(this->getPrimitiveTypeIndex() != target->getPrimitiveTypeIndex()) {
-    XQThrow2(IllegalArgumentException,X("ATStringOrDerivedImpl::equals"), X("Equality operator for given types not supported [err:XPTY0004]"));
+    XQThrow2(::IllegalArgumentException,X("ATStringOrDerivedImpl::equals"), X("Equality operator for given types not supported [err:XPTY0004]"));
   }
   return XPath2Utils::equals(target->asString(context), _value);  
 }

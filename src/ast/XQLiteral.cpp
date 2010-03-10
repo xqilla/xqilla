@@ -71,7 +71,7 @@ ASTNode *XQLiteral::create(const Item::Ptr &item, DynamicContext *context, XPath
     return result;
   }
   else {
-    XQThrow2(IllegalArgumentException, X("XQLiteral::create"), X("Cannot create an ASTNode literal for a non atomic item"));
+    XQThrow2(::IllegalArgumentException, X("XQLiteral::create"), X("Cannot create an ASTNode literal for a non atomic item"));
   }
 }
 

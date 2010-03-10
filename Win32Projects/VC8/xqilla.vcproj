@@ -420,6 +420,7 @@
       <File RelativePath="..\..\include\xqilla\functions\RegExpFunction.hpp"/>
       <File RelativePath="..\..\include\xqilla\functions\XQUserFunction.hpp"/>
       <File RelativePath="..\..\include\xqilla\functions\XQillaFunction.hpp"/>
+      <File RelativePath="..\..\include\xqilla\functions\BuiltInModules.hpp"/>
       <File RelativePath="..\..\include\xqilla\items\ATAnySimpleType.hpp"/>
       <File RelativePath="..\..\include\xqilla\items\ATAnyURIOrDerived.hpp"/>
       <File RelativePath="..\..\include\xqilla\items\ATBase64BinaryOrDerived.hpp"/>
@@ -486,7 +487,6 @@
       <File RelativePath="..\..\include\xqilla\operators\OrderComparison.hpp"/>
       <File RelativePath="..\..\include\xqilla\operators\Or.hpp"/>
       <File RelativePath="..\..\include\xqilla\operators\Plus.hpp"/>
-      <File RelativePath="..\..\include\xqilla\operators\Range.hpp"/>
       <File RelativePath="..\..\include\xqilla\operators\UnaryMinus.hpp"/>
       <File RelativePath="..\..\include\xqilla\operators\Union.hpp"/>
       <File RelativePath="..\..\include\xqilla\optimizer\Optimizer.hpp"/>
@@ -853,6 +853,8 @@
       <File RelativePath="..\..\src\functions\RegExpFunction.cpp"/>
       <File RelativePath="..\..\src\functions\XQUserFunction.cpp"/>
       <File RelativePath="..\..\src\functions\XQillaFunction.cpp"/>
+      <File RelativePath="..\..\src\functions\BuiltInModules.cpp"/>
+      <File RelativePath="..\..\src\functions\CoreModule.hpp"/>
     </Filter>
     <Filter Name="items" Filter="">
       <File RelativePath="..\..\src\items\ATDurationOrDerived.cpp"/>
@@ -968,7 +970,6 @@
       <File RelativePath="..\..\src\operators\Or.cpp"/>
       <File RelativePath="..\..\src\operators\OrderComparison.cpp"/>
       <File RelativePath="..\..\src\operators\Plus.cpp"/>
-      <File RelativePath="..\..\src\operators\Range.cpp"/>
       <File RelativePath="..\..\src\operators\UnaryMinus.cpp"/>
       <File RelativePath="..\..\src\operators\Union.cpp"/>
     </Filter>
@@ -981,7 +982,6 @@
       <File RelativePath="..\..\src\optimizer\Optimizer.cpp"/>
       <File RelativePath="..\..\src\optimizer\QueryPathNode.cpp"/>
       <File RelativePath="..\..\src\optimizer\QueryPathTreeGenerator.cpp"/>
-      <File RelativePath="..\..\src\optimizer\CoreModule.hpp"/>
     </Filter>
     <Filter Name="parser" Filter="">
       <File RelativePath="..\..\src\parser\QName.cpp"/>

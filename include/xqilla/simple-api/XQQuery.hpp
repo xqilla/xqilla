@@ -29,16 +29,35 @@
 #include <xqilla/runtime/LazySequenceResult.hpp>
 #include <xqilla/context/StaticContext.hpp>
 
+#include <xercesc/util/RefHashTableOf.hpp>
+
 class DynamicContext;
 class XQUserFunction;
 class XQGlobalVariable;
-class XQUserFunctionInstance;
 class XQQuery;
 class DelayedModule;
+class DelayedFuncFactory;
+class StaticTyper;
 
 typedef std::vector<XQGlobalVariable*, XQillaAllocator<XQGlobalVariable*> > GlobalVariables;
 typedef std::vector<XQQuery*, XQillaAllocator<XQQuery*> > ImportedModules;
 typedef std::vector<DelayedFuncFactory*, XQillaAllocator<DelayedFuncFactory*> > DelayedFunctions;
+
+typedef XERCES_CPP_NAMESPACE_QUALIFIER RefHashTableOf<XQQuery> ModuleMap;
+
+class XQILLA_API ModuleCache : public XERCES_CPP_NAMESPACE_QUALIFIER XMemory
+{
+public:
+  ModuleCache(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *mm);
+
+  void put(XQQuery *module);
+  XQQuery *getByURI(const XMLCh *uri) const;
+  XQQuery *getByNamespace(const XMLCh *ns) const;
+
+  ModuleMap byURI_;
+  ModuleMap byNamespace_;
+  ImportedModules ordered_;
+};
 
 /**
  * Encapsulates a query expression. XQQuery objects are thread safe, and can be
@@ -195,6 +214,7 @@ public:
    * @exception XQException If a static resolution time error occurs
    */
   void staticTyping(StaticTyper *styper = 0);
+  bool staticTypingOnce(StaticTyper *styper = 0);
 
   //@}
 
@@ -202,7 +222,8 @@ public:
   // @{
 
   /// Returns the expression that was parsed to create this XQQuery object.
-  const XMLCh* getQueryText() const;
+  const XMLCh* getQueryText() const { return m_szQueryText; }
+  void setQueryText(const XMLCh *v);
 
   /// Returns the query plan as XML. This is designed for debug and informative purposes only.
   std::string getQueryPlan() const;
@@ -237,12 +258,22 @@ public:
   /// Returns a vector of all XQGlobalVariable objects from the query
   const ImportedModules &getImportedModules() const { return m_importedModules; }
 
+  ModuleCache *getModuleCache() const { return m_moduleCache; }
+  bool isModuleCacheOwned() const { return m_moduleCacheOwned; }
+
   /// Returns the name of the file that this query was parsed from.
-  const XMLCh* getFile() const;
+  const XMLCh* getFile() const { return m_szCurrentFile; }
+
   /// Sets the name of the file that this query was parsed from.
   void setFile(const XMLCh* file);
 
+  bool getVersion11() const { return m_version11; }
+  void setVersion11(bool v) { m_version11 = v; }
+
   const DynamicContext *getStaticContext() const { return m_context; }
+
+  XQQuery *getNext() const { return m_next; }
+  void setNext(XQQuery *n) { m_next = n; }
 
   //@}
 
@@ -258,8 +289,11 @@ public:
   /// Gets the module taget namespace for this query
   const XMLCh* getModuleTargetNamespace() const;
   /// Performs a module import from the given target namespace and locations
-  void importModule(const XMLCh* szUri, VectorOfStrings* locations, StaticContext* context, const LocationInfo *location);
+  void importModule(const XMLCh* szUri, VectorOfStrings* locations, const LocationInfo *location);
   void importModule(XQQuery *module);
+
+  XQQuery *findModuleForVariable(const XMLCh *uri, const XMLCh *name);
+  XQQuery *findModuleForFunction(const XMLCh *uri, const XMLCh *name, int numArgs);
 
   //@}
 
@@ -278,13 +312,13 @@ private:
 
 private:
   /// Private constructor - Can be accessed by an XQilla object, as it is a friend.
-  XQQuery(const XMLCh* queryText, DynamicContext *context, bool contextOwned = false,
-          XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *memMgr =
-          XERCES_CPP_NAMESPACE_QUALIFIER XMLPlatformUtils::fgMemoryManager);
+  XQQuery(DynamicContext *context, bool contextOwned, ModuleCache *moduleCache,
+          XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *memMgr);
 
   XQQuery(const XQQuery &);
   XQQuery &operator=(const XQQuery &);
 
+  XQQuery *parseModule(const XMLCh *ns, const XMLCh *at, const LocationInfo *location) const;
   void executeProlog(DynamicContext *context) const;
 
 private:
@@ -306,6 +340,16 @@ private:
   DelayedFunctions m_delayedFunctions;
   GlobalVariables m_userDefVars;
   ImportedModules m_importedModules;
+
+  ModuleCache *m_moduleCache;
+  bool m_moduleCacheOwned;
+
+  bool m_version11;
+
+  enum { BEFORE, DURING, AFTER } m_staticTyped;
+
+  // The next module with the same target namespace
+  XQQuery *m_next;
 
   friend class QueryResult;
   friend class XQilla;

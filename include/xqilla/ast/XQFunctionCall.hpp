@@ -26,17 +26,22 @@ class XQILLA_API XQFunctionCall : public ASTNodeImpl
 {
 public:
   XQFunctionCall(const XMLCh *qname, VectorOfASTNodes *args, XPath2MemoryManager *mm);
+  XQFunctionCall(const XMLCh *prefix, const XMLCh *uri, const XMLCh *name, VectorOfASTNodes *args, XPath2MemoryManager *mm);
 
   virtual ASTNode* staticResolution(StaticContext *context);
   virtual ASTNode *staticTypingImpl(StaticContext *context);
 
   virtual Result createResult(DynamicContext* context, int flags=0) const;
 
-  const XMLCh *getQName() const { return qname_; }
+  const XMLCh *getPrefix() const { return prefix_; }
+  const XMLCh *getURI() const { return uri_; }
+  const XMLCh *getName() const { return name_; }
   const VectorOfASTNodes *getArguments() const { return args_; }
 
 private:
-  const XMLCh *qname_;
+  const XMLCh *prefix_;
+  const XMLCh *uri_;
+  const XMLCh *name_;
   VectorOfASTNodes *args_;
 };
 

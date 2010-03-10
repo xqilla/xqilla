@@ -403,8 +403,9 @@ void XQillaTestSuiteRunner::runTestCase(const TestCase &testCase)
 
     map<string, string>::const_iterator v;
     for(v=testCase.extraVars.begin();v!=testCase.extraVars.end();v++) {
-      AutoDelete<XQQuery> pInnerQuery(xqilla.parseFromURI(X(v->second.c_str()), context, XQilla::NO_ADOPT_CONTEXT));
-      Sequence doc=pInnerQuery->execute(context)->toSequence(context);
+      AutoDelete<XQQuery> pInnerQuery(xqilla.parseFromURI(X(v->second.c_str())));
+      AutoDelete<DynamicContext> ictxt(context->createModuleDynamicContext(pInnerQuery->getStaticContext()));
+      Sequence doc=pInnerQuery->execute(ictxt)->toSequence(ictxt);
       context->setExternalVariable(X(v->first.c_str()), doc);
     }
     for(v=testCase.inputVars.begin();v!=testCase.inputVars.end();v++) {

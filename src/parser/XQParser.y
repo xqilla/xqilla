@@ -133,7 +133,6 @@
 #include <xqilla/operators/Union.hpp>
 #include <xqilla/operators/Or.hpp>
 #include <xqilla/operators/And.hpp>
-#include <xqilla/operators/Range.hpp>
 
 #include <xqilla/functions/FunctionConstructor.hpp>
 #include <xqilla/functions/FunctionRoot.hpp>
@@ -141,6 +140,7 @@
 #include <xqilla/functions/FunctionId.hpp>
 #include <xqilla/functions/FunctionExists.hpp>
 #include <xqilla/functions/XQillaFunction.hpp>
+#include <xqilla/functions/BuiltInModules.hpp>
 
 #include <xqilla/axis/NodeTest.hpp>
 
@@ -2678,13 +2678,16 @@ Version:
     _VERSION_ _STRING_LITERAL_
   {
     // TBD Set the language correctly on the context - jpcs
-    if(XPath2Utils::equals($2,sz1_0))
+    if(XPath2Utils::equals($2,sz1_0)) {
       QP->_lexer->setVersion11(false);
+      QP->_query->setVersion11(false);
+    }
     else if(XPath2Utils::equals($2,sz1_1)) {
       if(!QP->_lexer->isVersion11()) {
         yyerror(@1, "This XQuery processor is not configured to support XQuery 1.1 [err:XQST0031]");
       }
       QP->_lexer->setVersion11(true);
+      QP->_query->setVersion11(true);
     }
     else
       yyerror(@1, "This XQuery processor only supports version 1.0 and 1.1 [err:XQST0031]");
@@ -3047,7 +3050,7 @@ ModuleImport:
     SET_NAMESPACE(@4, $4, $6);
 
     LOCATION(@1, loc);
-    QP->_query->importModule($6, $7, CONTEXT, &loc);
+    QP->_query->importModule($6, $7, &loc);
   }
   | _IMPORT_ _MODULE_ URILiteral ResourceLocations
   {
@@ -3055,7 +3058,7 @@ ModuleImport:
       yyerror(@3, "The literal that specifies the target namespace in a module import must not be of zero length [err:XQST0088]");
 
     LOCATION(@1, loc);
-    QP->_query->importModule($3, $4, CONTEXT, &loc);
+    QP->_query->importModule($3, $4, &loc);
   }
   ;
 
@@ -3736,7 +3739,10 @@ FTContainsExpr:
 RangeExpr:
   AdditiveExpr _TO_ AdditiveExpr
   {
-    $$ = WRAP(@2, new (MEMMGR) Range(packageArgs($1, $3, MEMMGR),MEMMGR));
+    VectorOfASTNodes *args = new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR));
+    args->push_back($1);
+    args->push_back($3);
+    $$ = WRAP(@2, new (MEMMGR) XQFunctionCall(0, BuiltInModules::core.uri, MEMMGR->getPooledString("to"), args, MEMMGR));
   }
   | AdditiveExpr
   ;

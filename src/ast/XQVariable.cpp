@@ -36,7 +36,8 @@ XERCES_CPP_NAMESPACE_USE;
 
 XQVariable::XQVariable(const XMLCh *qualifiedName, XPath2MemoryManager* memMgr)
   : ASTNodeImpl(VARIABLE, memMgr),
-    _uri(0)
+    _uri(0),
+    _global(0)
 {
   QualifiedName qname(qualifiedName, getMemoryManager());
   _prefix = qname.getPrefix();
@@ -47,7 +48,17 @@ XQVariable::XQVariable(const XMLCh *uri, const XMLCh *name, XPath2MemoryManager*
   : ASTNodeImpl(VARIABLE, memMgr),
     _prefix(0),
     _uri(uri),
-    _name(name)
+    _name(name),
+    _global(0)
+{
+}
+
+XQVariable::XQVariable(const XMLCh *prefix, const XMLCh *uri, const XMLCh *name, XQGlobalVariable *global, XPath2MemoryManager* memMgr)
+  : ASTNodeImpl(VARIABLE, memMgr),
+    _prefix(prefix),
+    _uri(uri),
+    _name(name),
+    _global(global)
 {
 }
 
@@ -74,7 +85,7 @@ ASTNode *XQVariable::staticTypingImpl(StaticContext *context)
 
   _src.clear();
 
-  const StaticAnalysis *var_src = context->getVariableTypeStore()->getVar(_uri, _name);
+  const StaticAnalysis *var_src = context->getVariableTypeStore()->getVar(_uri, _name, &_global);
   if(var_src == NULL || (var_src->getProperties() & StaticAnalysis::UNDEFINEDVAR)!=0) {
     XMLBuffer errMsg;
     errMsg.append(X("A variable called {"));
@@ -83,15 +94,6 @@ ASTNode *XQVariable::staticTypingImpl(StaticContext *context)
     errMsg.append(_name);
     errMsg.append(X(" does not exist [err:XPST0008]"));
     XQThrow(StaticErrorException, X("XQVariable::staticResolution"), errMsg.getRawBuffer());
-  }
-  if((var_src->getProperties() & StaticAnalysis::FORWARDREF)!=0) {
-    XMLBuffer errMsg;
-    errMsg.set(X("Cannot refer to global variable with name {"));
-    errMsg.append(_uri);
-    errMsg.append(X("}"));
-    errMsg.append(_name);
-    errMsg.append(X(" because it is declared later [err:XQST0054]"));
-    XQThrow(StaticErrorException,X("XQVariable::staticResolution"), errMsg.getRawBuffer());
   }
   _src.setProperties(var_src->getProperties() & ~(StaticAnalysis::SUBTREE|StaticAnalysis::SAMEDOC));
   _src.getStaticType() = var_src->getStaticType();

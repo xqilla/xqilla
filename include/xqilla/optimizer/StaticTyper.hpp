@@ -25,10 +25,25 @@
 class XQILLA_API StaticTyper : public ASTVisitor
 {
 public:
+  struct PrologItem {
+    PrologItem(XQGlobalVariable *g, PrologItem *p) : global(g), function(0), prev(p) {}
+    PrologItem(XQUserFunction *f, PrologItem *p) : global(0), function(f), prev(p) {}
+
+    XQGlobalVariable *global;
+    XQUserFunction *function;
+    PrologItem *prev;
+  };
+
   StaticTyper()
-    : ASTVisitor(), context_(0), tupleSetup_(false) {}
+    : ASTVisitor(), context_(0), globalsUsed_(0), globalsOrder_(0),
+    trail_(0), tupleSetup_(false) {}
   StaticTyper(StaticContext *context, Optimizer *parent = 0)
-    : ASTVisitor(parent), context_(context), tupleSetup_(false) {}
+    : ASTVisitor(parent), context_(context), globalsUsed_(0), globalsOrder_(0),
+    trail_(0), tupleSetup_(false) {}
+
+  GlobalVariables *&getGlobalsUsed() { return globalsUsed_; }
+  GlobalVariables *&getGlobalsOrder() { return globalsOrder_; }
+  PrologItem *&getTrail() { return trail_; }
 
   ASTNode *run(ASTNode *item, StaticContext *context);
 
@@ -51,6 +66,8 @@ protected:
   virtual ASTNode *optimizeInlineFunction(XQInlineFunction *item);
   virtual ASTNode *optimizeEffectiveBooleanValue(XQEffectiveBooleanValue *item);
   virtual ASTNode *optimizeUTransform(UTransform *item);
+  virtual ASTNode *optimizeVariable(XQVariable *item);
+  virtual ASTNode *optimizeUserFunction(XQUserFunctionInstance *item);
 
   virtual ASTNode *optimizeFTContains(FTContains *item);
   virtual FTSelection *optimizeFTSelection(FTSelection *selection);
@@ -65,6 +82,9 @@ protected:
   void optimizeCase(const StaticAnalysis &var_src, XQTypeswitch::Case *item);
 
   StaticContext *context_;
+  GlobalVariables *globalsUsed_;
+  GlobalVariables *globalsOrder_;
+  PrologItem *trail_;
   bool tupleSetup_;
 };
 

@@ -30,31 +30,40 @@ XERCES_CPP_NAMESPACE_USE;
 
 XQFunctionCall::XQFunctionCall(const XMLCh *qname, VectorOfASTNodes *args, XPath2MemoryManager *mm)
   : ASTNodeImpl(FUNCTION_CALL, mm),
-    qname_(qname),
+    prefix_(XPath2NSUtils::getPrefix(qname, mm)),
+    uri_(0),
+    name_(XPath2NSUtils::getLocalName(qname)),
+    args_(args ? args : new (mm) VectorOfASTNodes(XQillaAllocator<ASTNode*>(mm)))
+{
+}
+
+XQFunctionCall::XQFunctionCall(const XMLCh *prefix, const XMLCh *uri, const XMLCh *name, VectorOfASTNodes *args, XPath2MemoryManager *mm)
+  : ASTNodeImpl(FUNCTION_CALL, mm),
+    prefix_(prefix),
+    uri_(uri),
+    name_(name),
     args_(args ? args : new (mm) VectorOfASTNodes(XQillaAllocator<ASTNode*>(mm)))
 {
 }
 
 ASTNode* XQFunctionCall::staticResolution(StaticContext *context) 
 {
-  const XMLCh *prefix = XPath2NSUtils::getPrefix(qname_, context->getMemoryManager());
-  const XMLCh *name = XPath2NSUtils::getLocalName(qname_);
-
-  const XMLCh *uri = 0;
-  if(prefix == 0 || *prefix == 0) {
-    uri = context->getDefaultFuncNS();
-  }
-  else {
-    uri = context->getUriBoundToPrefix(prefix, this);
+  if(uri_ == 0) {
+    if(prefix_ == 0 || *prefix_ == 0) {
+      uri_ = context->getDefaultFuncNS();
+    }
+    else {
+      uri_ = context->getUriBoundToPrefix(prefix_, this);
+    }
   }
 
-  ASTNode *result = context->lookUpFunction(uri, name, *args_);
+  ASTNode *result = context->lookUpFunction(uri_, name_, *args_);
   if(result == 0) {
     XMLBuffer buf;
     buf.set(X("A function called {"));
-    buf.append(uri);
+    buf.append(uri_);
     buf.append(X("}"));
-    buf.append(name);
+    buf.append(name_);
     buf.append(X(" with "));
     XPath2Utils::numToBuf(args_ ? (unsigned int)args_->size() : 0, buf);
     buf.append(X(" arguments is not defined [err:XPST0017]"));

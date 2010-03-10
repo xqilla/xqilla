@@ -150,10 +150,17 @@ string PrintAST::print(const XQQuery *query, const DynamicContext *context, int 
   }
   s << ">" << endl;
 
+  ImportedModules::const_iterator it1;
+  if(query->isModuleCacheOwned()) {
+    const ImportedModules &modules = query->getModuleCache()->ordered_;
+    for(it1 = modules.begin(); it1 != modules.end(); ++it1) {
+      s << print(*it1, context, indent + INDENT);
+    }
+  }
+
   const ImportedModules &modules = query->getImportedModules();
-  for(ImportedModules::const_iterator it1 = modules.begin();
-      it1 != modules.end(); ++it1) {
-    s << print(*it1, context, indent + INDENT);
+  for(it1 = modules.begin(); it1 != modules.end(); ++it1) {
+    s << in << "  <ImportedModule targetNamespace=\"" << UTF8((*it1)->getModuleTargetNamespace()) << "\"/>" << endl;
   }
 
   PrintAST p;
@@ -1024,12 +1031,21 @@ string PrintAST::printFunctionCall(const XQFunctionCall *item, const DynamicCont
 
   string in(getIndent(indent));
 
+  s << in << "<FunctionCall name=\"";
+  if(item->getURI()) {
+    s << "{" << UTF8(item->getURI()) << "}";
+  }
+  else if(item->getPrefix()) {
+    s << UTF8(item->getPrefix()) << ":";
+  }
+  s << UTF8(item->getName());
+
   const VectorOfASTNodes *args = item->getArguments();
   if(args->empty()) {
-    s << in << "<FunctionCall name=\"" << UTF8(item->getQName()) << "\"/>" << endl;
+    s << "\"/>" << endl;
   }
   else {
-    s << in << "<FunctionCall name=\"" << UTF8(item->getQName()) << "\">" << endl;
+    s << "\">" << endl;
     for(VectorOfASTNodes::const_iterator i = args->begin(); i != args->end(); ++i) {
       s << printASTNode(*i, context, indent + INDENT);
     }

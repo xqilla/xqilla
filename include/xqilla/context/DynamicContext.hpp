@@ -24,6 +24,7 @@
 #include <xqilla/items/ATDurationOrDerived.hpp>
 
 class Sequence;
+class Result;
 class Item;
 class URIResolver;
 class VariableStore;
@@ -69,9 +70,9 @@ public:
   /** set the variable store for globally scoped variables */
   virtual void setGlobalVariableStore(const VariableStore *store) = 0;
   /** set the value of an external global variable with the given uri/localname pair */
-  virtual void setExternalVariable(const XMLCh *namespaceURI, const XMLCh *name, const Sequence &value) = 0;
+  virtual void setExternalVariable(const XMLCh *namespaceURI, const XMLCh *name, const Result &value) = 0;
   /** set the value of an external global variable with the given QName */
-  virtual void setExternalVariable(const XMLCh *qname, const Sequence &value) = 0;
+  virtual void setExternalVariable(const XMLCh *qname, const Result &value) = 0;
 
   /** get the regex group store */
   virtual const RegexGroupStore* getRegexGroupStore() const = 0;

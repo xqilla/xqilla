@@ -75,6 +75,7 @@ XQContextImpl::XQContextImpl(XQillaConfiguration *conf, XQilla::Language languag
     _bPreserveBoundarySpace(false),
     _revalidationMode(DocumentCache::VALIDATION_LAX),
     _messageListener(0),
+    _module(0),
     _varStore(&_defaultVarStore),
     _globalVarStore(&_defaultVarStore),
     _defaultVarStore(&_internalMM),
@@ -226,10 +227,14 @@ DynamicContext *XQContextImpl::createModuleContext(MemoryManager *memMgr) const
 
 DynamicContext *XQContextImpl::createModuleDynamicContext(const DynamicContext* moduleCtx, MemoryManager *memMgr) const
 {
-  DynamicContext* moduleDCtx = new (memMgr) XQDynamicContextImpl(_conf, moduleCtx, memMgr);
+  XQDynamicContextImpl* moduleDCtx = new (memMgr) XQDynamicContextImpl(_conf, moduleCtx, (VarStoreImpl*)&_defaultVarStore, memMgr);
 
   // Force the context to use our memory manager
   moduleDCtx->setMemoryManager(getMemoryManager());
+
+  // Use the variables from our context
+  moduleDCtx->setGlobalVariableStore(getGlobalVariableStore());
+  moduleDCtx->setVariableStore(getVariableStore());
 
   // Add our URIResolvers to the module context
   moduleDCtx->setDefaultURIResolver(_defaultResolver.resolver, /*adopt*/false);
@@ -254,7 +259,7 @@ DynamicContext *XQContextImpl::createModuleDynamicContext(const DynamicContext* 
 
 DynamicContext *XQContextImpl::createDynamicContext(MemoryManager *memMgr) const
 {
-  DynamicContext *result = new (memMgr) XQDynamicContextImpl(_conf, this, memMgr);
+  DynamicContext *result = new (memMgr) XQDynamicContextImpl(_conf, this, 0, memMgr);
   _conf->populateDynamicContext(result);
   return result;
 }
@@ -283,7 +288,7 @@ DynamicContext *XQContextImpl::createDebugQueryContext(const Item::Ptr &contextI
   variables->getInScopeVariables(inScopeVars);
   std::vector<std::pair<const XMLCh *, const XMLCh*> >::iterator i = inScopeVars.begin();
   for(; i != inScopeVars.end(); ++i) {
-    store->declareGlobalVar(i->first, i->second, *src);
+    store->declareGlobalVar(i->first, i->second, *src, 0);
   }
 
   // Set up all the in-scope namespaces
@@ -608,12 +613,12 @@ void XQContextImpl::setGlobalVariableStore(const VariableStore *store)
   _globalVarStore = store;
 }
 
-void XQContextImpl::setExternalVariable(const XMLCh *namespaceURI, const XMLCh *name, const Sequence &value)
+void XQContextImpl::setExternalVariable(const XMLCh *namespaceURI, const XMLCh *name, const Result &value)
 {
   _defaultVarStore.setVar(namespaceURI, name, value);
 }
 
-void XQContextImpl::setExternalVariable(const XMLCh *qname, const Sequence &value)
+void XQContextImpl::setExternalVariable(const XMLCh *qname, const Result &value)
 {
   const XMLCh *uri = getUriBoundToPrefix(XPath2NSUtils::getPrefix(qname, getMemoryManager()), 0);
   const XMLCh *name = XPath2NSUtils::getLocalName(qname);

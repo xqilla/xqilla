@@ -41,7 +41,8 @@
 
 XERCES_CPP_NAMESPACE_USE;
 
-XQDynamicContextImpl::XQDynamicContextImpl(XQillaConfiguration *conf, const StaticContext *staticContext, MemoryManager* memMgr)
+XQDynamicContextImpl::XQDynamicContextImpl(XQillaConfiguration *conf, const StaticContext *staticContext,
+                                           VarStoreImpl *defaultVarStore, MemoryManager* memMgr)
   : _conf(conf),
     _staticContext(staticContext),
     _createdWith(memMgr),
@@ -52,9 +53,10 @@ XQDynamicContextImpl::XQDynamicContextImpl(XQillaConfiguration *conf, const Stat
     _contextItem(0),
     _contextPosition(1),
     _contextSize(1),
-    _varStore(&_defaultVarStore),
-    _globalVarStore(&_defaultVarStore),
-    _defaultVarStore(&_internalMM),
+    _defaultVarStore(defaultVarStore ? defaultVarStore : new VarStoreImpl(&_internalMM)),
+    _defaultVarStoreOwned(defaultVarStore == 0),
+    _varStore(_defaultVarStore),
+    _globalVarStore(_defaultVarStore),
     _regexStore(0),
     _implicitTimezone(0),
     _resolvers(XQillaAllocator<ResolverEntry>(&_internalMM)),
@@ -85,7 +87,10 @@ XQDynamicContextImpl::~XQDynamicContextImpl()
 {
   _contextItem = 0;
   _implicitTimezone = 0;
-  _defaultVarStore.clear();
+  if(_defaultVarStoreOwned) {
+    _defaultVarStore->clear();
+    delete _defaultVarStore;
+  }
 
   if(_itemFactoryOwned) delete _itemFactory;
   delete _docCache;
@@ -107,10 +112,14 @@ DynamicContext *XQDynamicContextImpl::createModuleContext(MemoryManager *memMgr)
 
 DynamicContext *XQDynamicContextImpl::createModuleDynamicContext(const DynamicContext* moduleCtx, MemoryManager *memMgr) const
 {
-  DynamicContext* moduleDCtx = new (memMgr) XQDynamicContextImpl(_conf, moduleCtx, memMgr);
+  XQDynamicContextImpl* moduleDCtx = new (memMgr) XQDynamicContextImpl(_conf, moduleCtx, _defaultVarStore, memMgr);
 
   // Force the context to use our memory manager
   moduleDCtx->setMemoryManager(getMemoryManager());
+
+  // Use the variables from our context
+  moduleDCtx->setGlobalVariableStore(getGlobalVariableStore());
+  moduleDCtx->setVariableStore(getVariableStore());
 
   // Add our URIResolvers to the module context
   moduleDCtx->setDefaultURIResolver(_defaultResolver.resolver, /*adopt*/false);
@@ -168,9 +177,9 @@ void XQDynamicContextImpl::clearDynamicContext()
   _contextPosition = 1;
   _implicitTimezone = 0;
 
-  _defaultVarStore.clear();
-  _varStore = &_defaultVarStore;
-  _globalVarStore = &_defaultVarStore;
+  _defaultVarStore->clear();
+  _varStore = _defaultVarStore;
+  _globalVarStore = _defaultVarStore;
 
 //   if(_defaultResolver.adopt)
 //     delete _defaultResolver.resolver;
@@ -254,17 +263,17 @@ void XQDynamicContextImpl::setGlobalVariableStore(const VariableStore *store)
   _globalVarStore = store;
 }
 
-void XQDynamicContextImpl::setExternalVariable(const XMLCh *namespaceURI, const XMLCh *name, const Sequence &value)
+void XQDynamicContextImpl::setExternalVariable(const XMLCh *namespaceURI, const XMLCh *name, const Result &value)
 {
-  _defaultVarStore.setVar(namespaceURI, name, value);
+  _defaultVarStore->setVar(namespaceURI, name, value);
 }
 
-void XQDynamicContextImpl::setExternalVariable(const XMLCh *qname, const Sequence &value)
+void XQDynamicContextImpl::setExternalVariable(const XMLCh *qname, const Result &value)
 {
   const XMLCh *uri = getUriBoundToPrefix(XPath2NSUtils::getPrefix(qname, getMemoryManager()), 0);
   const XMLCh *name = XPath2NSUtils::getLocalName(qname);
 
-  _defaultVarStore.setVar(uri, name, value);
+  _defaultVarStore->setVar(uri, name, value);
 }
 
 const RegexGroupStore *XQDynamicContextImpl::getRegexGroupStore() const

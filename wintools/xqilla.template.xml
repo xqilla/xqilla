@@ -32,16 +32,16 @@
     <libname config='Static Release'>@XQILLA_STATIC_LIB@</libname>
     <platform name='Win32 x64 IA64' vsver="7.10 8.00">
       <config type='Debug'>
-	<libdir>$(OutDir)</libdir>
+        <libdir>$(OutDir)</libdir>
       </config>
       <config type='Release'>
-	<libdir>$(OutDir)</libdir>
+        <libdir>$(OutDir)</libdir>
       </config>
       <config type='Static Debug'>
-	<libdir>$(OutDir)</libdir>
+        <libdir>$(OutDir)</libdir>
       </config>
       <config type='Static Release'>
-	<libdir>$(OutDir)</libdir>
+        <libdir>$(OutDir)</libdir>
       </config>
     </platform>
   </library>
@@ -52,44 +52,44 @@
     <libname config="Static Release">@XERCES_STATIC_LIB@</libname>
     <platform name="Win32" vsver="7.10">
       <config type="Debug">
-	<libdir>@XERCES_LIBHOME7@/Win32/VC7.1/$(ConfigurationName)</libdir>
+        <libdir>@XERCES_LIBHOME7@/Win32/VC7.1/$(ConfigurationName)</libdir>
       </config>
       <config type="Release">
-	<libdir>@XERCES_LIBHOME7@/Win32/VC7.1/$(ConfigurationName)</libdir>
+        <libdir>@XERCES_LIBHOME7@/Win32/VC7.1/$(ConfigurationName)</libdir>
       </config>
       <config type="Static Debug">
-	<libdir>@XERCES_LIBHOME7@/Win32/VC7.1/$(ConfigurationName)</libdir>
+        <libdir>@XERCES_LIBHOME7@/Win32/VC7.1/$(ConfigurationName)</libdir>
       </config>
       <config type="Static Release">
-	<libdir>@XERCES_LIBHOME7@/Win32/VC7.1/$(ConfigurationName)</libdir>
+        <libdir>@XERCES_LIBHOME7@/Win32/VC7.1/$(ConfigurationName)</libdir>
       </config>
     </platform>
     <platform name="Win32" vsver="8.00">
       <config type="Debug">
-	<libdir>@XERCES_LIBHOME8@/Win32/VC8/$(ConfigurationName)</libdir>
+        <libdir>@XERCES_LIBHOME8@/Win32/VC8/$(ConfigurationName)</libdir>
       </config>
       <config type="Release">
-	<libdir>@XERCES_LIBHOME8@/Win32/VC8/$(ConfigurationName)</libdir>
+        <libdir>@XERCES_LIBHOME8@/Win32/VC8/$(ConfigurationName)</libdir>
       </config>
       <config type="Static Debug">
-	<libdir>@XERCES_LIBHOME8@/Win32/VC8/$(ConfigurationName)</libdir>
+        <libdir>@XERCES_LIBHOME8@/Win32/VC8/$(ConfigurationName)</libdir>
       </config>
       <config type="Static Release">
-	<libdir>@XERCES_LIBHOME8@/Win32/VC8/$(ConfigurationName)</libdir>
+        <libdir>@XERCES_LIBHOME8@/Win32/VC8/$(ConfigurationName)</libdir>
       </config>
     </platform>
     <platform name="x64" vsver="8.00">
       <config type="Debug">
-	<libdir>@XERCES_LIBHOME8@/Win64/VC8/$(ConfigurationName)</libdir>
+        <libdir>@XERCES_LIBHOME8@/Win64/VC8/$(ConfigurationName)</libdir>
       </config>
       <config type="Release">
-	<libdir>@XERCES_LIBHOME8@/Win64/VC8/$(ConfigurationName)</libdir>
+        <libdir>@XERCES_LIBHOME8@/Win64/VC8/$(ConfigurationName)</libdir>
       </config>
       <config type="Static Debug">
-	<libdir>@XERCES_LIBHOME8@/Win64/VC8/$(ConfigurationName)</libdir>
+        <libdir>@XERCES_LIBHOME8@/Win64/VC8/$(ConfigurationName)</libdir>
       </config>
       <config type="Static Release">
-	<libdir>@XERCES_LIBHOME8@/Win64/VC8/$(ConfigurationName)</libdir>
+        <libdir>@XERCES_LIBHOME8@/Win64/VC8/$(ConfigurationName)</libdir>
       </config>
     </platform>
   </library>
@@ -250,17 +250,17 @@
         <file name='include/xqilla/exceptions/XQException.hpp'/>
         <file name='include/xqilla/exceptions/QueryInterruptedException.hpp'/>
         <file name='include/xqilla/exceptions/QueryTimeoutException.hpp'/>
-	<file name='include/xqilla/functions/EXSLTMathFunction.hpp'/>
+        <file name='include/xqilla/functions/EXSLTMathFunction.hpp'/>
         <file name='include/xqilla/functions/ExternalFunction.hpp'/>
         <file name='include/xqilla/functions/FunctionLookup.hpp'/>
         <file name='include/xqilla/functions/FunctionAnalyzeString.hpp'/>
         <file name='include/xqilla/functions/FunctionAbs.hpp'/>
-	<file name='include/xqilla/functions/FunctionAcos.hpp'/>
+        <file name='include/xqilla/functions/FunctionAcos.hpp'/>
         <file name='include/xqilla/functions/FunctionAdjustDateTimeToTimezone.hpp'/>
         <file name='include/xqilla/functions/FunctionAdjustDateToTimezone.hpp'/>
         <file name='include/xqilla/functions/FunctionAdjustTimeToTimezone.hpp'/>
-	<file name='include/xqilla/functions/FunctionAsin.hpp'/>
-	<file name='include/xqilla/functions/FunctionAtan.hpp'/>
+        <file name='include/xqilla/functions/FunctionAsin.hpp'/>
+        <file name='include/xqilla/functions/FunctionAtan.hpp'/>
         <file name='include/xqilla/functions/FunctionAvg.hpp'/>
         <file name='include/xqilla/functions/FunctionBaseURI.hpp'/>
         <file name='include/xqilla/functions/FunctionBoolean.hpp'/>
@@ -273,7 +273,7 @@
         <file name='include/xqilla/functions/FunctionConcat.hpp'/>
         <file name='include/xqilla/functions/FunctionConstructor.hpp'/>
         <file name='include/xqilla/functions/FunctionContains.hpp'/>
-	<file name='include/xqilla/functions/FunctionCos.hpp'/>
+        <file name='include/xqilla/functions/FunctionCos.hpp'/>
         <file name='include/xqilla/functions/FunctionCount.hpp'/>
         <file name='include/xqilla/functions/FunctionCurrentDate.hpp'/>
         <file name='include/xqilla/functions/FunctionCurrentDateTime.hpp'/>
@@ -297,7 +297,7 @@
         <file name='include/xqilla/functions/FunctionEscapeHtmlUri.hpp'/>
         <file name='include/xqilla/functions/FunctionExactlyOne.hpp'/>
         <file name='include/xqilla/functions/FunctionExists.hpp'/>
-	<file name='include/xqilla/functions/FunctionExp.hpp'/>
+        <file name='include/xqilla/functions/FunctionExp.hpp'/>
         <file name='include/xqilla/functions/FunctionFalse.hpp'/>
         <file name='include/xqilla/functions/FunctionFloor.hpp'/>
         <file name='include/xqilla/functions/FunctionFunctionArity.hpp'/>
@@ -316,7 +316,7 @@
         <file name='include/xqilla/functions/FunctionLast.hpp'/>
         <file name='include/xqilla/functions/FunctionLocalNameFromQName.hpp'/>
         <file name='include/xqilla/functions/FunctionLocalname.hpp'/>
-	<file name='include/xqilla/functions/FunctionLog.hpp'/>
+        <file name='include/xqilla/functions/FunctionLog.hpp'/>
         <file name='include/xqilla/functions/FunctionLowerCase.hpp'/>
         <file name='include/xqilla/functions/FunctionMatches.hpp'/>
         <file name='include/xqilla/functions/FunctionMax.hpp'/>
@@ -341,12 +341,12 @@
         <file name='include/xqilla/functions/FunctionParseHTML.hpp'/>
         <file name='include/xqilla/functions/FunctionParseJSON.hpp'/>
         <file name='include/xqilla/functions/FunctionSerializeJSON.hpp'/>
-	<file name='include/xqilla/functions/FunctionSin.hpp'/>
-	<file name='include/xqilla/functions/FunctionSqrt.hpp'/>
+        <file name='include/xqilla/functions/FunctionSin.hpp'/>
+        <file name='include/xqilla/functions/FunctionSqrt.hpp'/>
         <file name='include/xqilla/functions/FunctionParseXML.hpp'/>
         <file name='include/xqilla/functions/FunctionPartialApply.hpp'/>
         <file name='include/xqilla/functions/FunctionPosition.hpp'/>
-	<file name='include/xqilla/functions/FunctionPower.hpp'/>
+        <file name='include/xqilla/functions/FunctionPower.hpp'/>
         <file name='include/xqilla/functions/FunctionPrefixFromQName.hpp'/>
         <file name='include/xqilla/functions/FunctionQName.hpp'/>
         <file name='include/xqilla/functions/FunctionRegexGroup.hpp'/>
@@ -373,7 +373,7 @@
         <file name='include/xqilla/functions/FunctionSubstringBefore.hpp'/>
         <file name='include/xqilla/functions/FunctionSubstring.hpp'/>
         <file name='include/xqilla/functions/FunctionSum.hpp'/>
-	<file name='include/xqilla/functions/FunctionTan.hpp'/>
+        <file name='include/xqilla/functions/FunctionTan.hpp'/>
         <file name='include/xqilla/functions/FunctionTime.hpp'/>
         <file name='include/xqilla/functions/FunctionTimezoneFromDate.hpp'/>
         <file name='include/xqilla/functions/FunctionTimezoneFromDateTime.hpp'/>
@@ -394,6 +394,7 @@
         <file name='include/xqilla/functions/RegExpFunction.hpp'/>
         <file name='include/xqilla/functions/XQUserFunction.hpp'/>
         <file name='include/xqilla/functions/XQillaFunction.hpp'/>
+        <file name='include/xqilla/functions/BuiltInModules.hpp'/>
         <file name='include/xqilla/items/ATAnySimpleType.hpp'/>
         <file name='include/xqilla/items/ATAnyURIOrDerived.hpp'/>
         <file name='include/xqilla/items/ATBase64BinaryOrDerived.hpp'/>
@@ -460,7 +461,6 @@
         <file name='include/xqilla/operators/OrderComparison.hpp'/>
         <file name='include/xqilla/operators/Or.hpp'/>
         <file name='include/xqilla/operators/Plus.hpp'/>
-        <file name='include/xqilla/operators/Range.hpp'/>
         <file name='include/xqilla/operators/UnaryMinus.hpp'/>
         <file name='include/xqilla/operators/Union.hpp'/>
         <file name='include/xqilla/optimizer/Optimizer.hpp'/>
@@ -682,18 +682,18 @@
         <file name="src/fulltext/FTWords.cpp"/>
       </filter>
       <filter name="functions">
-	<file name="src/functions/EXSLTMathFunction.cpp"/>
+        <file name="src/functions/EXSLTMathFunction.cpp"/>
         <file name="src/functions/ExternalFunction.cpp"/>
         <file name="src/functions/FuncFactory.cpp"/>
         <file name="src/functions/FuncFactoryTemplate.hpp"/>
         <file name="src/functions/FunctionAbs.cpp"/>
-	<file name="src/functions/FunctionAcos.cpp"/>
+        <file name="src/functions/FunctionAcos.cpp"/>
         <file name="src/functions/FunctionAdjustDateTimeToTimezone.cpp"/>
         <file name="src/functions/FunctionAdjustDateToTimezone.cpp"/>
         <file name="src/functions/FunctionAdjustTimeToTimezone.cpp"/>
         <file name="src/functions/FunctionAnalyzeString.cpp"/>
-	<file name="src/functions/FunctionAsin.cpp"/>
-	<file name="src/functions/FunctionAtan.cpp"/>
+        <file name="src/functions/FunctionAsin.cpp"/>
+        <file name="src/functions/FunctionAtan.cpp"/>
         <file name="src/functions/FunctionAvg.cpp"/>
         <file name="src/functions/FunctionBaseURI.cpp"/>
         <file name="src/functions/FunctionBoolean.cpp"/>
@@ -706,7 +706,7 @@
         <file name="src/functions/FunctionConcat.cpp"/>
         <file name="src/functions/FunctionConstructor.cpp"/>
         <file name="src/functions/FunctionContains.cpp"/>
-	<file name="src/functions/FunctionCos.cpp"/>
+        <file name="src/functions/FunctionCos.cpp"/>
         <file name="src/functions/FunctionCount.cpp"/>
         <file name="src/functions/FunctionCurrentDate.cpp"/>
         <file name="src/functions/FunctionCurrentDateTime.cpp"/>
@@ -730,7 +730,7 @@
         <file name="src/functions/FunctionEscapeHtmlUri.cpp"/>
         <file name="src/functions/FunctionExactlyOne.cpp"/>
         <file name="src/functions/FunctionExists.cpp"/>
-	<file name="src/functions/FunctionExp.cpp"/>
+        <file name="src/functions/FunctionExp.cpp"/>
         <file name="src/functions/FunctionFalse.cpp"/>
         <file name="src/functions/FunctionFloor.cpp"/>
         <file name="src/functions/FunctionFunctionArity.cpp"/>
@@ -749,7 +749,7 @@
         <file name="src/functions/FunctionLast.cpp"/>
         <file name="src/functions/FunctionLocalNameFromQName.cpp"/>
         <file name="src/functions/FunctionLocalname.cpp"/>
-	<file name="src/functions/FunctionLog.cpp"/>
+        <file name="src/functions/FunctionLog.cpp"/>
         <file name="src/functions/FunctionLookup.cpp"/>
         <file name="src/functions/FunctionLowerCase.cpp"/>
         <file name="src/functions/FunctionMatches.cpp"/>
@@ -777,7 +777,7 @@
         <file name="src/functions/FunctionParseXML.cpp"/>
         <file name="src/functions/FunctionPartialApply.cpp"/>
         <file name="src/functions/FunctionPosition.cpp"/>
-	<file name="src/functions/FunctionPower.cpp"/>
+        <file name="src/functions/FunctionPower.cpp"/>
         <file name="src/functions/FunctionPrefixFromQName.cpp"/>
         <file name="src/functions/FunctionQName.cpp"/>
         <file name="src/functions/FunctionRegexGroup.cpp"/>
@@ -794,8 +794,8 @@
         <file name="src/functions/FunctionSecondsFromTime.cpp"/>
         <file name="src/functions/FunctionSentences.cpp"/>
         <file name="src/functions/FunctionSerializeJSON.cpp"/>
-	<file name="src/functions/FunctionSin.cpp"/>
-	<file name="src/functions/FunctionSqrt.cpp"/>
+        <file name="src/functions/FunctionSin.cpp"/>
+        <file name="src/functions/FunctionSqrt.cpp"/>
         <file name="src/functions/FunctionStartsWith.cpp"/>
         <file name="src/functions/FunctionStaticBaseURI.cpp"/>
         <file name="src/functions/FunctionString.cpp"/>
@@ -807,7 +807,7 @@
         <file name="src/functions/FunctionSubstringAfter.cpp"/>
         <file name="src/functions/FunctionSubstringBefore.cpp"/>
         <file name="src/functions/FunctionSum.cpp"/>
-	<file name="src/functions/FunctionTan.cpp"/>
+        <file name="src/functions/FunctionTan.cpp"/>
         <file name="src/functions/FunctionTime.cpp"/>
         <file name="src/functions/FunctionTimezoneFromDate.cpp"/>
         <file name="src/functions/FunctionTimezoneFromDateTime.cpp"/>
@@ -827,6 +827,8 @@
         <file name="src/functions/RegExpFunction.cpp"/>
         <file name="src/functions/XQUserFunction.cpp"/>
         <file name="src/functions/XQillaFunction.cpp"/>
+        <file name="src/functions/BuiltInModules.cpp"/>
+        <file name="src/functions/CoreModule.hpp"/>
       </filter>
       <filter name="items">
         <file name="src/items/ATDurationOrDerived.cpp"/>
@@ -942,7 +944,6 @@
         <file name="src/operators/Or.cpp"/>
         <file name="src/operators/OrderComparison.cpp"/>
         <file name="src/operators/Plus.cpp"/>
-        <file name="src/operators/Range.cpp"/>
         <file name="src/operators/UnaryMinus.cpp"/>
         <file name="src/operators/Union.cpp"/>
       </filter>
@@ -955,7 +956,6 @@
         <file name="src/optimizer/Optimizer.cpp"/>
         <file name="src/optimizer/QueryPathNode.cpp"/>
         <file name="src/optimizer/QueryPathTreeGenerator.cpp"/>
-        <file name="src/optimizer/CoreModule.hpp"/>
       </filter>
       <filter name="parser">
         <file name="src/parser/QName.cpp"/>

@@ -41,7 +41,6 @@
 #include <xqilla/operators/NodeComparison.hpp>
 #include <xqilla/operators/OrderComparison.hpp>
 #include <xqilla/operators/GeneralComp.hpp>
-#include <xqilla/operators/Range.hpp>
 #include <xqilla/operators/Intersect.hpp>
 #include <xqilla/operators/Except.hpp>
 #include <xqilla/operators/Union.hpp>
