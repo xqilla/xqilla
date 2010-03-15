@@ -88,9 +88,9 @@ public:
   class Options
   {
   public:
-    Options() : updating(DEFAULT), nondeterministic(DEFAULT), privateOption(DEFAULT) {}
+    Options() : updating(OP_DEFAULT), nondeterministic(OP_DEFAULT), privateOption(OP_DEFAULT) {}
 
-    enum OptionValue { DEFAULT, TRUE, FALSE };
+    enum OptionValue { OP_DEFAULT, OP_TRUE, OP_FALSE };
 
     OptionValue updating;
     OptionValue nondeterministic;

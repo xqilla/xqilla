@@ -325,7 +325,7 @@ void XQQuery::staticResolution()
         if((*itFn)->isTemplate()) {
           m_context->addTemplate(*itFn);
         }
-        else if((*itFn)->getName() && (*itFn)->getOptions()->privateOption != XQUserFunction::Options::TRUE) {
+        else if((*itFn)->getName() && (*itFn)->getOptions()->privateOption != XQUserFunction::Options::OP_TRUE) {
           m_context->addCustomFunction(*itFn);
         }
       }

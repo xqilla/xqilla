@@ -8642,12 +8642,12 @@ yyreduce:
 #line 3131 "../src/parser/XQParser.y"
     {
     switch((yyvsp[(1) - (2)].functionOptions)->privateOption) {
-    case XQUserFunction::Options::TRUE:
+    case XQUserFunction::Options::OP_TRUE:
       yyerror((yylsp[(2) - (2)]), "Function option 'private' already specified [err:XQST0106]");
-    case XQUserFunction::Options::FALSE:
+    case XQUserFunction::Options::OP_FALSE:
       yyerror((yylsp[(2) - (2)]), "Function option 'public' already specified [err:XQST0106]");
-    case XQUserFunction::Options::DEFAULT:
-      (yyvsp[(1) - (2)].functionOptions)->privateOption = (yyvsp[(2) - (2)].boolean) ? XQUserFunction::Options::TRUE : XQUserFunction::Options::FALSE;
+    case XQUserFunction::Options::OP_DEFAULT:
+      (yyvsp[(1) - (2)].functionOptions)->privateOption = (yyvsp[(2) - (2)].boolean) ? XQUserFunction::Options::OP_TRUE : XQUserFunction::Options::OP_FALSE;
       break;
     }
     (yyval.functionOptions) = (yyvsp[(1) - (2)].functionOptions);
@@ -8660,12 +8660,12 @@ yyreduce:
 #line 3144 "../src/parser/XQParser.y"
     {
     switch((yyvsp[(1) - (2)].functionOptions)->nondeterministic) {
-    case XQUserFunction::Options::TRUE:
+    case XQUserFunction::Options::OP_TRUE:
       yyerror((yylsp[(2) - (2)]), "Function option 'nondeterministic' already specified [err:XQST0106]");
-    case XQUserFunction::Options::FALSE:
+    case XQUserFunction::Options::OP_FALSE:
       yyerror((yylsp[(2) - (2)]), "Function option 'deterministic' already specified [err:XQST0106]");
-    case XQUserFunction::Options::DEFAULT:
-      (yyvsp[(1) - (2)].functionOptions)->nondeterministic = (yyvsp[(2) - (2)].boolean) ? XQUserFunction::Options::TRUE : XQUserFunction::Options::FALSE;
+    case XQUserFunction::Options::OP_DEFAULT:
+      (yyvsp[(1) - (2)].functionOptions)->nondeterministic = (yyvsp[(2) - (2)].boolean) ? XQUserFunction::Options::OP_TRUE : XQUserFunction::Options::OP_FALSE;
       break;
     }
     (yyval.functionOptions) = (yyvsp[(1) - (2)].functionOptions);
@@ -8677,9 +8677,9 @@ yyreduce:
 /* Line 1455 of yacc.c  */
 #line 3157 "../src/parser/XQParser.y"
     {
-    if((yyvsp[(1) - (2)].functionOptions)->updating != XQUserFunction::Options::DEFAULT)
+    if((yyvsp[(1) - (2)].functionOptions)->updating != XQUserFunction::Options::OP_DEFAULT)
       yyerror((yylsp[(2) - (2)]), "Function option 'updating' already specified [err:XPST0003]");
-    (yyvsp[(1) - (2)].functionOptions)->updating = XQUserFunction::Options::TRUE;
+    (yyvsp[(1) - (2)].functionOptions)->updating = XQUserFunction::Options::OP_TRUE;
     (yyval.functionOptions) = (yyvsp[(1) - (2)].functionOptions);
   }
     break;

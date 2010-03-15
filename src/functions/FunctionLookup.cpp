@@ -68,9 +68,9 @@ void FunctionLookup::insertFunction(FuncFactory *func)
       buf.append(X("#"));
       if(func->getMinArgs() >= entry->getMinArgs() &&
          func->getMinArgs() <= entry->getMaxArgs())
-        XPath2Utils::numToBuf(func->getMinArgs(), buf);
+        XPath2Utils::numToBuf((unsigned int)func->getMinArgs(), buf);
       else
-        XPath2Utils::numToBuf(entry->getMinArgs(), buf);
+        XPath2Utils::numToBuf((unsigned int)entry->getMinArgs(), buf);
       buf.append(X(" [err:XQST0034]."));
       XQThrow2(StaticErrorException,X("FunctionLookup::insertFunction"), buf.getRawBuffer());
     }

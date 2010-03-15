@@ -3130,12 +3130,12 @@ FunctionOptions:
   | FunctionOptions PrivateOption
   {
     switch($1->privateOption) {
-    case XQUserFunction::Options::TRUE:
+    case XQUserFunction::Options::OP_TRUE:
       yyerror(@2, "Function option 'private' already specified [err:XQST0106]");
-    case XQUserFunction::Options::FALSE:
+    case XQUserFunction::Options::OP_FALSE:
       yyerror(@2, "Function option 'public' already specified [err:XQST0106]");
-    case XQUserFunction::Options::DEFAULT:
-      $1->privateOption = $2 ? XQUserFunction::Options::TRUE : XQUserFunction::Options::FALSE;
+    case XQUserFunction::Options::OP_DEFAULT:
+      $1->privateOption = $2 ? XQUserFunction::Options::OP_TRUE : XQUserFunction::Options::OP_FALSE;
       break;
     }
     $$ = $1;
@@ -3143,21 +3143,21 @@ FunctionOptions:
   | FunctionOptions DeterministicOption
   {
     switch($1->nondeterministic) {
-    case XQUserFunction::Options::TRUE:
+    case XQUserFunction::Options::OP_TRUE:
       yyerror(@2, "Function option 'nondeterministic' already specified [err:XQST0106]");
-    case XQUserFunction::Options::FALSE:
+    case XQUserFunction::Options::OP_FALSE:
       yyerror(@2, "Function option 'deterministic' already specified [err:XQST0106]");
-    case XQUserFunction::Options::DEFAULT:
-      $1->nondeterministic = $2 ? XQUserFunction::Options::TRUE : XQUserFunction::Options::FALSE;
+    case XQUserFunction::Options::OP_DEFAULT:
+      $1->nondeterministic = $2 ? XQUserFunction::Options::OP_TRUE : XQUserFunction::Options::OP_FALSE;
       break;
     }
     $$ = $1;
   }
   | FunctionOptions _UPDATING_
   {
-    if($1->updating != XQUserFunction::Options::DEFAULT)
+    if($1->updating != XQUserFunction::Options::OP_DEFAULT)
       yyerror(@2, "Function option 'updating' already specified [err:XPST0003]");
-    $1->updating = XQUserFunction::Options::TRUE;
+    $1->updating = XQUserFunction::Options::OP_TRUE;
     $$ = $1;
   }
   ;
