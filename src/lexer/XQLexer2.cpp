@@ -58,6 +58,7 @@ XQLexer::XQLexer(XPath2MemoryManager* memMgr, int firstToken, const XMLCh *query
     firstToken_(firstToken),
     mode_(MODE_NORMAL),
     m_szQuery(XPath2Utils::normalizeEOL(query, memMgr)),
+    m_ownQuery(true),
     m_nLength(XPath2Utils::uintStrlen(m_szQuery)),
     m_position(0),
     m_index(0),
