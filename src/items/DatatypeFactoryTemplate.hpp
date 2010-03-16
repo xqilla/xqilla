@@ -28,7 +28,6 @@
 #include <xqilla/items/DatatypeFactory.hpp>
 #include <xqilla/items/ATDurationOrDerived.hpp>
 #include <xqilla/context/DynamicContext.hpp>
-#include <xqilla/functions/FunctionConstructor.hpp>
 #include "impl/ATStringOrDerivedImpl.hpp"
 
 class AnyAtomicType;

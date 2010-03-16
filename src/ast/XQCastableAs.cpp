@@ -36,9 +36,10 @@
 #include <xqilla/ast/XQAtomize.hpp>
 #include <xqilla/context/ContextHelpers.hpp>
 #include <xqilla/utils/XPath2Utils.hpp>
-#include <xqilla/functions/FunctionConstructor.hpp>
 
 #include <xercesc/validators/schema/SchemaSymbols.hpp>
+
+XERCES_CPP_NAMESPACE_USE;
 
 XQCastableAs::XQCastableAs(ASTNode* expr, SequenceType* exprType, XPath2MemoryManager* memMgr)
   : ASTNodeImpl(CASTABLE_AS, memMgr),
@@ -63,10 +64,6 @@ Result XQCastableAs::createResult(DynamicContext* context, int flags) const
   return new CastableAsResult(this);
 }
 
-static XMLCh szNOTATION[] =  { XERCES_CPP_NAMESPACE_QUALIFIER chLatin_N, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_O, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_T, 
-                               XERCES_CPP_NAMESPACE_QUALIFIER chLatin_A, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_T, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_I, 
-                               XERCES_CPP_NAMESPACE_QUALIFIER chLatin_O, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_N, XERCES_CPP_NAMESPACE_QUALIFIER chNull }; 
-
 ASTNode* XQCastableAs::staticResolution(StaticContext *context)
 {
   XPath2MemoryManager *mm = context->getMemoryManager();
@@ -74,9 +71,8 @@ ASTNode* XQCastableAs::staticResolution(StaticContext *context)
   _exprType->staticResolution(context);
 
   const SequenceType::ItemType* itemType = _exprType->getItemType();
-  if((XPath2Utils::equals(itemType->getTypeURI(), XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA) &&
-      XPath2Utils::equals(itemType->getType()->getName(), szNOTATION)) ||
-     (XPath2Utils::equals(itemType->getTypeURI(), FunctionConstructor::XMLChXPath2DatatypesURI) &&
+  if(XPath2Utils::equals(itemType->getTypeURI(), SchemaSymbols::fgURI_SCHEMAFORSCHEMA) &&
+     (XPath2Utils::equals(itemType->getType()->getName(), XMLUni::fgNotationString) ||
       XPath2Utils::equals(itemType->getType()->getName(), AnyAtomicType::fgDT_ANYATOMICTYPE)))
     XQThrow(TypeErrorException,X("XQCastableAs::staticResolution"),
             X("The target type of a castable expression must be an atomic type that is in the in-scope schema types "

@@ -177,7 +177,6 @@ src/functions/FunctionCodepointsToString.cpp \
 src/functions/FunctionCollection.cpp \
 src/functions/FunctionCompare.cpp \
 src/functions/FunctionConcat.cpp \
-src/functions/FunctionConstructor.cpp \
 src/functions/FunctionContains.cpp \
 src/functions/FunctionCount.cpp \
 src/functions/FunctionCos.cpp \

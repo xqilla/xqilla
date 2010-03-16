@@ -22,10 +22,10 @@
 #include <xqilla/ast/ConvertFunctionArg.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/schema/SequenceType.hpp>
-#include <xqilla/functions/FunctionConstructor.hpp>
 #include <xqilla/utils/XPath2Utils.hpp>
 #include <xqilla/exceptions/XPath2TypeCastException.hpp>
 #include <xqilla/exceptions/XPath2ErrorException.hpp>
+#include <xqilla/context/ItemFactory.hpp>
 
 #include <xercesc/validators/schema/SchemaSymbols.hpp>
 

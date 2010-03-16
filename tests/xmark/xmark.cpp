@@ -42,7 +42,6 @@
 #include <xqilla/context/VariableStore.hpp>
 #include <xqilla/context/ModuleResolver.hpp>
 #include <xqilla/context/URIResolver.hpp>
-#include <xqilla/functions/FunctionConstructor.hpp>
 #include <xqilla/utils/XQillaPlatformUtils.hpp>
 #include <xqilla/xerces/XercesConfiguration.hpp>
 #include <xqilla/fastxdm/FastXDMConfiguration.hpp>

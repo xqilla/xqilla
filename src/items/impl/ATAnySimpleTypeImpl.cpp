@@ -28,10 +28,10 @@
 #include <xqilla/items/DatatypeFactory.hpp>
 #include <xqilla/utils/XStr.hpp>
 #include <xqilla/framework/XPath2MemoryManager.hpp>
-#include <xqilla/functions/FunctionConstructor.hpp>
 #include <xqilla/utils/XPath2Utils.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 #include <xercesc/util/XMLString.hpp>
+#include <xqilla/context/ItemFactory.hpp>
 
 // We ignore the type URI and typeName passed in, since they are always xdt:anySimpleType
 // (you cannot derived from it)

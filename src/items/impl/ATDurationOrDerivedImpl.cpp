@@ -26,7 +26,6 @@
 #include <xqilla/exceptions/IllegalArgumentException.hpp>
 #include <xqilla/framework/XPath2MemoryManager.hpp>
 #include <xqilla/context/DynamicContext.hpp>
-#include <xqilla/functions/FunctionConstructor.hpp>
 #include <xercesc/util/XMLUniDefs.hpp>
 #include <xercesc/util/XMLString.hpp>
 #include <xercesc/framework/XMLBuffer.hpp>
@@ -34,6 +33,7 @@
 #include <xqilla/mapm/m_apm.h>
 #include "../../utils/DateUtils.hpp"
 #include <xqilla/utils/XPath2Utils.hpp>
+#include <xqilla/context/ItemFactory.hpp>
 
 #if defined(XERCES_HAS_CPP_NAMESPACE)
 XERCES_CPP_NAMESPACE_USE
@@ -78,10 +78,10 @@ void ATDurationOrDerivedImpl::init(const DynamicContext* context)
     }
   }
 
-  if(this->isInstanceOfType (FunctionConstructor::XMLChXPath2DatatypesURI,
+  if(this->isInstanceOfType (SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
                              ATDurationOrDerived::fgDT_DAYTIMEDURATION, context)) {
     _durationType = DAY_TIME_DURATION;
-  } else if (this->isInstanceOfType (FunctionConstructor::XMLChXPath2DatatypesURI,
+  } else if (this->isInstanceOfType (SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
                                      ATDurationOrDerived::fgDT_YEARMONTHDURATION, context)) {
     _durationType = YEAR_MONTH_DURATION;
   } else {

@@ -57,7 +57,7 @@ ASTNode* XQFunctionCall::staticResolution(StaticContext *context)
     }
   }
 
-  ASTNode *result = context->lookUpFunction(uri_, name_, *args_);
+  ASTNode *result = context->lookUpFunction(uri_, name_, *args_, this);
   if(result == 0) {
     XMLBuffer buf;
     buf.set(X("A function called {"));
@@ -70,7 +70,6 @@ ASTNode* XQFunctionCall::staticResolution(StaticContext *context)
 
     XQThrow(StaticErrorException, X("XQFunctionCall::staticResolution"), buf.getRawBuffer());
   }
-  result->setLocationInfo(this);
 
   // Our arguments don't belong to us anymore
   for(VectorOfASTNodes::iterator i = args_->begin(); i != args_->end(); ++i) {

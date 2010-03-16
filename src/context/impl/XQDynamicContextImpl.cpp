@@ -32,7 +32,6 @@
 #include <xqilla/ast/XQFunction.hpp>
 #include <xqilla/items/DatatypeLookup.hpp>
 #include <xqilla/functions/FunctionLookup.hpp>
-#include <xqilla/functions/FunctionConstructor.hpp>
 #include <xqilla/dom-api/impl/XQillaNSResolverImpl.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
 #include <xqilla/context/URIResolver.hpp>

@@ -223,7 +223,5 @@ ASTNode *FunctionRefImpl::createInstance(const XMLCh *uri, const XMLCh *name, un
     newArgs.push_back(var);
   }
 
-  ASTNode *instance = context->lookUpFunction(uri, name, newArgs);
-  if(instance) instance->setLocationInfo(location);
-  return instance;
+  return context->lookUpFunction(uri, name, newArgs, location);
 }

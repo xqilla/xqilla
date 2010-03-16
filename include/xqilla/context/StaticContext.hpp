@@ -181,7 +181,7 @@ public:
   /** removes a custom function to the function table */
   virtual void removeCustomFunction(FuncFactory *func) = 0;
   /** returns a function object with the given uri, localname and number of arguments triple */
-  virtual ASTNode *lookUpFunction(const XMLCh *uri, const XMLCh *name, const VectorOfASTNodes &v) const = 0;
+  virtual ASTNode *lookUpFunction(const XMLCh *uri, const XMLCh *name, const VectorOfASTNodes &v, const LocationInfo *location = 0) const = 0;
 
   /** Register a callback object for resolving external function implementations */
   virtual void setExternalFunctionResolver(ExternalFunctionResolver *resolver) = 0;

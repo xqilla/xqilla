@@ -157,7 +157,7 @@ void XercesSequenceBuilder::textEvent(const XMLCh *value)
     // Combine adjacent text nodes
     ((DOMText *)currentNode_)->appendData(value);
   }
-  else if(currentParent_ == 0 || value != 0 && *value != 0) {
+  else if(currentParent_ == 0 || (value != 0 && *value != 0)) {
 		// Text nodes with a zero length value can only exist
 		// when they have no parent
     DOMText *node = document_->createTextNode(value);

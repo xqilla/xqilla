@@ -23,7 +23,6 @@
 
 #include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/functions/XQUserFunction.hpp>
-#include <xqilla/functions/FunctionConstructor.hpp>
 #include <xqilla/exceptions/FunctionException.hpp>
 #include <xqilla/exceptions/XPath2TypeMatchException.hpp>
 #include <xqilla/exceptions/StaticErrorException.hpp>
@@ -277,7 +276,7 @@ void XQUserFunction::staticResolutionStage1(StaticContext *context)
        XPath2Utils::equals(uri_, SchemaSymbols::fgURI_SCHEMAFORSCHEMA) ||
        XPath2Utils::equals(uri_, SchemaSymbols::fgURI_XSI) ||
        XPath2Utils::equals(uri_, XQFunction::XMLChFunctionURI) ||
-       XPath2Utils::equals(uri_, FunctionConstructor::XMLChXPath2DatatypesURI)) {
+       XPath2Utils::equals(uri_, SchemaSymbols::fgURI_SCHEMAFORSCHEMA)) {
       XQThrow(FunctionException, X("XQUserFunction::staticResolutionStage1"),
               X("A user defined function must not be in the namespaces xml, xsd, xsi, fn or xdt [err:XQST0045]"));
     }

@@ -164,7 +164,6 @@ xqilla/functions/FunctionCodepointsToString.hpp \
 xqilla/functions/FunctionCollection.hpp \
 xqilla/functions/FunctionCompare.hpp \
 xqilla/functions/FunctionConcat.hpp \
-xqilla/functions/FunctionConstructor.hpp \
 xqilla/functions/FunctionContains.hpp \
 xqilla/functions/FunctionCos.hpp \
 xqilla/functions/FunctionCount.hpp \

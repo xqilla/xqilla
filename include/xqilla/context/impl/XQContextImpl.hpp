@@ -201,7 +201,7 @@ public:
 
   virtual void addCustomFunction(FuncFactory *func);
   virtual void removeCustomFunction(FuncFactory *func);
-  virtual ASTNode *lookUpFunction(const XMLCh *uri, const XMLCh* name, const VectorOfASTNodes &v) const;
+  virtual ASTNode *lookUpFunction(const XMLCh *uri, const XMLCh* name, const VectorOfASTNodes &v, const LocationInfo *location) const;
 
   virtual void addExternalFunction(const ExternalFunction *func);
   virtual const ExternalFunction *lookUpExternalFunction(const XMLCh *uri, const XMLCh *name, size_t numArgs) const;

@@ -25,7 +25,6 @@
 #include <xqilla/items/ATDurationOrDerived.hpp>
 #include <xqilla/items/ATStringOrDerived.hpp>
 #include <xqilla/items/ATUntypedAtomic.hpp>
-#include <xqilla/functions/FunctionConstructor.hpp>
 #include <xqilla/utils/XPath2Utils.hpp>
 #include <xqilla/exceptions/StaticErrorException.hpp>
 

@@ -37,7 +37,6 @@
 #include <xqilla/items/ATUntypedAtomic.hpp>
 #include <xqilla/items/Node.hpp>
 #include <xqilla/items/FunctionRef.hpp>
-#include <xqilla/functions/FunctionConstructor.hpp>
 #include <xqilla/functions/FunctionString.hpp>
 #include <xqilla/functions/FunctionNumber.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
@@ -189,7 +188,7 @@ void SequenceType::ItemType::staticResolution(StaticContext *context, const Loca
         XQThrow3(StaticErrorException, X("SequenceType::ItemType::staticResolution"), buf.getRawBuffer(), location);
       }
       if(!context->getDocumentCache()->isTypeOrDerivedFromType(m_TypeURI, m_pType->getName(),
-                                                               FunctionConstructor::XMLChXPath2DatatypesURI,
+                                                               SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
                                                                AnyAtomicType::fgDT_ANYATOMICTYPE)) {
         XMLBuffer buf;
         buf.set(X("Type {"));

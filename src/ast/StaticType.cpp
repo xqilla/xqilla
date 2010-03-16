@@ -25,8 +25,9 @@
 #include <xqilla/context/ItemFactory.hpp>
 #include <xqilla/context/StaticContext.hpp>
 #include <xqilla/utils/XPath2Utils.hpp>
-#include <xqilla/functions/FunctionConstructor.hpp>
 #include <xqilla/utils/XStr.hpp>
+
+#include <xercesc/validators/schema/SchemaSymbols.hpp>
 
 XERCES_CPP_NAMESPACE_USE;
 
@@ -36,7 +37,7 @@ StaticType StaticType::create(const XMLCh *uri, const XMLCh *name, const StaticC
                               bool &isExact)
 {
   if(XPath2Utils::equals(name, AnyAtomicType::fgDT_ANYATOMICTYPE) &&
-     XPath2Utils::equals(uri, FunctionConstructor::XMLChXPath2DatatypesURI)) {
+     XPath2Utils::equals(uri, SchemaSymbols::fgURI_SCHEMAFORSCHEMA)) {
     isExact = true;
     return ANY_ATOMIC_TYPE;
   }

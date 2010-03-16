@@ -33,9 +33,11 @@
 #include <xqilla/items/AnyAtomicType.hpp>
 #include <xqilla/ast/XQAtomize.hpp>
 #include <xqilla/utils/XPath2Utils.hpp>
-#include <xqilla/functions/FunctionConstructor.hpp>
+#include <xqilla/context/ItemFactory.hpp>
 
 #include <xercesc/validators/schema/SchemaSymbols.hpp>
+
+XERCES_CPP_NAMESPACE_USE;
 
 XQCastAs::XQCastAs(ASTNode* expr, SequenceType* exprType, XPath2MemoryManager* memMgr)
   : ASTNodeImpl(CAST_AS, memMgr),
@@ -60,10 +62,6 @@ Result XQCastAs::createResult(DynamicContext* context, int flags) const
   return new CastAsResult(this);
 }
 
-static XMLCh szNOTATION[] =  { XERCES_CPP_NAMESPACE_QUALIFIER chLatin_N, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_O, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_T, 
-                               XERCES_CPP_NAMESPACE_QUALIFIER chLatin_A, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_T, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_I, 
-                               XERCES_CPP_NAMESPACE_QUALIFIER chLatin_O, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_N, XERCES_CPP_NAMESPACE_QUALIFIER chNull }; 
-
 ASTNode* XQCastAs::staticResolution(StaticContext *context)
 {
   XPath2MemoryManager *mm = context->getMemoryManager();
@@ -72,9 +70,8 @@ ASTNode* XQCastAs::staticResolution(StaticContext *context)
 
   const SequenceType::ItemType *itemType = _exprType->getItemType();
   if(itemType != NULL) {
-    if((XPath2Utils::equals(itemType->getTypeURI(), XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA) &&
-        XPath2Utils::equals(itemType->getType()->getName(), szNOTATION)) ||
-       (XPath2Utils::equals(itemType->getTypeURI(), FunctionConstructor::XMLChXPath2DatatypesURI) &&
+    if(XPath2Utils::equals(itemType->getTypeURI(), SchemaSymbols::fgURI_SCHEMAFORSCHEMA) &&
+       (XPath2Utils::equals(itemType->getType()->getName(), XMLUni::fgNotationString) ||
         XPath2Utils::equals(itemType->getType()->getName(), AnyAtomicType::fgDT_ANYATOMICTYPE)))
       XQThrow(TypeErrorException,X("XQCastAs::CastAsResult::getSingleResult"),
               X("The target type of a cast expression must be an atomic type that is in the in-scope schema types and is not xs:NOTATION or xdt:anyAtomicType [err:XPST0080]"));
@@ -219,7 +216,7 @@ Item::Ptr XQCastAs::CastAsResult::getSingleResult(DynamicContext *context) const
 
   const Item::Ptr first = toBeCasted->next(context);
 
-  if(first == NULLRCP) {
+  if(first.isNull()) {
     //    3. If the result of atomization is an empty sequence:
     //       1. If ? is specified after the target type, the result of the cast expression is an empty sequence.
     //       2. If ? is not specified after the target type, a type error is raised [err:XPTY0004].
@@ -235,7 +232,7 @@ Item::Ptr XQCastAs::CastAsResult::getSingleResult(DynamicContext *context) const
   const Item::Ptr second = toBeCasted->next(context);
 
   //    2. If the result of atomization is a sequence of more than one atomic value, a type error is raised.[err:XPTY0004]
-  if(second != NULLRCP) {
+  if(second.notNull()) {
     XQThrow(TypeErrorException,X("XQCastAs::CastAsResult::getSingleResult"),
             X("The input to a cast as expression is more than one atomic value [err:XPTY0004]"));
   }

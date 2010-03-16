@@ -26,10 +26,13 @@
 #include <xercesc/util/XMLUni.hpp>
 #include <xercesc/validators/schema/SchemaSymbols.hpp>
 #include <xqilla/framework/XPath2MemoryManager.hpp>
-#include <xqilla/functions/FunctionConstructor.hpp>
 #include <xqilla/utils/XPath2Utils.hpp>
 #include <xqilla/context/DynamicContext.hpp>
-#include <xercesc/util/XMLString.hpp>
+#include <xqilla/context/ItemFactory.hpp>
+
+#include <xercesc/validators/schema/SchemaSymbols.hpp>
+
+XERCES_CPP_NAMESPACE_USE;
 
 // We ignore the type URI and typeName passed in, since they are always xdt:untypedAtomic
 // (you cannot derived from it)
@@ -61,7 +64,7 @@ const XMLCh* ATUntypedAtomicImpl::getPrimitiveName()  {
 
 /* Get the namespace uri of the primitive type (basic type) of this type */
 const XMLCh* ATUntypedAtomicImpl::getPrimitiveTypeURI() const{
-  return FunctionConstructor::XMLChXPath2DatatypesURI;
+  return SchemaSymbols::fgURI_SCHEMAFORSCHEMA;
 }
 
 /* Get the name of this type  (ie "integer" for xs:integer)-- 

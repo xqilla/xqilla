@@ -39,7 +39,6 @@
 
 #include <xqilla/xqilla-simple.hpp>
 #include <xqilla/context/VariableStore.hpp>
-#include <xqilla/functions/FunctionConstructor.hpp>
 #include <xqilla/utils/XQillaPlatformUtils.hpp>
 #include <xqilla/events/ContentSequenceFilter.hpp>
 

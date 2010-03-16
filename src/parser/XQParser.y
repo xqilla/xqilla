@@ -133,7 +133,6 @@
 #include <xqilla/operators/Or.hpp>
 #include <xqilla/operators/And.hpp>
 
-#include <xqilla/functions/FunctionConstructor.hpp>
 #include <xqilla/functions/FunctionRoot.hpp>
 #include <xqilla/functions/FunctionQName.hpp>
 #include <xqilla/functions/FunctionId.hpp>

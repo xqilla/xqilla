@@ -27,7 +27,6 @@
 #include <xqilla/exceptions/ItemException.hpp>
 #include <xqilla/items/ATQNameOrDerived.hpp>
 #include <xqilla/items/ATUntypedAtomic.hpp>
-#include <xqilla/functions/FunctionConstructor.hpp>
 #include <xqilla/schema/DocumentCache.hpp>
 #include <xqilla/utils/XPath2Utils.hpp>
 #include <xqilla/utils/XMLChCompare.hpp>
@@ -36,6 +35,7 @@
 #include <xqilla/axis/NodeTest.hpp>
 #include <xqilla/events/EventSerializer.hpp>
 #include <xqilla/events/NSFixupFilter.hpp>
+#include <xqilla/context/ItemFactory.hpp>
 
 #include <xercesc/framework/MemBufFormatTarget.hpp>
 #include <xercesc/validators/datatype/ListDatatypeValidator.hpp>

@@ -33,6 +33,7 @@
 #include <xqilla/ast/XQFunction.hpp>
 #include <xqilla/ast/XQSequence.hpp>
 #include <xqilla/ast/XQVariable.hpp>
+#include <xqilla/ast/XQCastAs.hpp>
 #include <xqilla/utils/XPath2NSUtils.hpp>
 #include <xqilla/utils/XPath2Utils.hpp>
 #include <xqilla/utils/ContextUtils.hpp>
@@ -45,7 +46,6 @@
 #include <xqilla/items/DatatypeLookup.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
 #include <xqilla/functions/FunctionLookup.hpp>
-#include <xqilla/functions/FunctionConstructor.hpp>
 #include <xqilla/functions/XQUserFunction.hpp>
 #include <xqilla/functions/XQillaFunction.hpp>
 #include <xqilla/dom-api/impl/XQillaNSResolverImpl.hpp>
@@ -708,22 +708,37 @@ Collation* XQContextImpl::getDefaultCollation(const LocationInfo *location) cons
   return getCollation(_defaultCollation, location);
 }
 
-ASTNode *XQContextImpl::lookUpFunction(const XMLCh *uri, const XMLCh* name, const VectorOfASTNodes &v) const
+ASTNode *XQContextImpl::lookUpFunction(const XMLCh *uri, const XMLCh* name, const VectorOfASTNodes &v, const LocationInfo *location) const
 {
   ASTNode* functionImpl = FunctionLookup::lookUpGlobalFunction(uri, name, v, getMemoryManager(), _functionTable);
-
-  if(functionImpl == NULL && v.size() == 1) {
-    // maybe it's not a function, but a datatype
-    try {
-      bool isPrimitive;
-      _itemFactory->getPrimitiveTypeIndex(uri, name, isPrimitive);
-      functionImpl = new (getMemoryManager())
-        FunctionConstructor(uri, name, v, getMemoryManager());
-    }
-    catch(TypeNotFoundException&) {
-      // ignore this exception: it means the type has not been found
-    }
+  if(functionImpl) {
+    functionImpl->setLocationInfo(location);
+    return functionImpl;
   }
+
+  if(v.size() != 1) return 0;
+
+  // maybe it's not a function, but a datatype
+  try {
+    bool isPrimitive;
+    _itemFactory->getPrimitiveTypeIndex(uri, name, isPrimitive);
+  }
+  catch(TypeNotFoundException&) {
+    // ignore this exception: it means the type has not been found
+    return 0;
+  }
+
+  if((XPath2Utils::equals(name, XMLUni::fgNotationString) || XPath2Utils::equals(name, AnyAtomicType::fgDT_ANYATOMICTYPE)) &&
+     XPath2Utils::equals(uri, SchemaSymbols::fgURI_SCHEMAFORSCHEMA))
+    return 0;
+
+  XPath2MemoryManager *mm = getMemoryManager();
+
+  SequenceType *seqType = new (mm) SequenceType(uri, name, SequenceType::QUESTION_MARK, mm);
+  seqType->setLocationInfo(location);
+
+  functionImpl = new (mm) XQCastAs(v[0], seqType, mm);
+  functionImpl->setLocationInfo(location);
   return functionImpl;
 }
 

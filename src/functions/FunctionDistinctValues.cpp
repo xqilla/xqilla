@@ -33,7 +33,6 @@
 #include <xqilla/items/ATUntypedAtomic.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
-#include <xqilla/functions/FunctionConstructor.hpp>
 #include <xqilla/context/ItemFactory.hpp>
 #include <xqilla/context/ContextHelpers.hpp>
 

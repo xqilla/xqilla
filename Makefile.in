@@ -132,25 +132,25 @@ am_libxqilla_la_OBJECTS = ReferenceCounted.lo BaseMemoryManager.lo \
 	FunctionAbs.lo FunctionAcos.lo FunctionAsin.lo FunctionAtan.lo \
 	FunctionBaseURI.lo FunctionCaseFold.lo FunctionCeiling.lo \
 	FunctionCodepointsToString.lo FunctionCollection.lo \
-	FunctionCompare.lo FunctionConcat.lo FunctionConstructor.lo \
-	FunctionContains.lo FunctionCount.lo FunctionCos.lo \
-	FunctionCurrentDate.lo FunctionCurrentDateTime.lo \
-	FunctionCurrentTime.lo FunctionDateTime.lo \
-	FunctionDefaultCollation.lo FunctionDistinctValues.lo \
-	FunctionDocAvailable.lo FunctionDoc.lo FunctionDocument.lo \
-	FunctionDocumentURI.lo FunctionEmpty.lo FunctionEndsWith.lo \
-	FunctionError.lo FunctionExists.lo FunctionExp.lo \
-	FunctionFloor.lo FunctionFunctionArity.lo \
-	FunctionFunctionName.lo FunctionId.lo FunctionIdref.lo \
-	FunctionImplicitTimezone.lo FunctionLang.lo FunctionLast.lo \
-	FunctionLocalname.lo FunctionLocalNameFromQName.lo \
-	FunctionLog.lo FunctionLowerCase.lo FunctionMatches.lo \
-	FunctionMax.lo FunctionMin.lo FunctionName.lo \
-	FunctionNamespaceUri.lo FunctionNamespaceURIFromQName.lo \
-	FunctionNilled.lo FunctionNodeName.lo \
-	FunctionNormalizeSpace.lo FunctionNormalizeUnicode.lo \
-	FunctionNot.lo FunctionNumber.lo FunctionPosition.lo \
-	FunctionPower.lo FunctionPrefixFromQName.lo FunctionQName.lo \
+	FunctionCompare.lo FunctionConcat.lo FunctionContains.lo \
+	FunctionCount.lo FunctionCos.lo FunctionCurrentDate.lo \
+	FunctionCurrentDateTime.lo FunctionCurrentTime.lo \
+	FunctionDateTime.lo FunctionDefaultCollation.lo \
+	FunctionDistinctValues.lo FunctionDocAvailable.lo \
+	FunctionDoc.lo FunctionDocument.lo FunctionDocumentURI.lo \
+	FunctionEmpty.lo FunctionEndsWith.lo FunctionError.lo \
+	FunctionExists.lo FunctionExp.lo FunctionFloor.lo \
+	FunctionFunctionArity.lo FunctionFunctionName.lo FunctionId.lo \
+	FunctionIdref.lo FunctionImplicitTimezone.lo FunctionLang.lo \
+	FunctionLast.lo FunctionLocalname.lo \
+	FunctionLocalNameFromQName.lo FunctionLog.lo \
+	FunctionLowerCase.lo FunctionMatches.lo FunctionMax.lo \
+	FunctionMin.lo FunctionName.lo FunctionNamespaceUri.lo \
+	FunctionNamespaceURIFromQName.lo FunctionNilled.lo \
+	FunctionNodeName.lo FunctionNormalizeSpace.lo \
+	FunctionNormalizeUnicode.lo FunctionNot.lo FunctionNumber.lo \
+	FunctionPosition.lo FunctionPower.lo \
+	FunctionPrefixFromQName.lo FunctionQName.lo \
 	FunctionRegexGroup.lo FunctionReplace.lo FunctionResolveURI.lo \
 	FunctionRoot.lo FunctionRound.lo FunctionRoundHalfToEven.lo \
 	FunctionSin.lo FunctionSqrt.lo FunctionTan.lo \
@@ -674,7 +674,6 @@ src/functions/FunctionCodepointsToString.cpp \
 src/functions/FunctionCollection.cpp \
 src/functions/FunctionCompare.cpp \
 src/functions/FunctionConcat.cpp \
-src/functions/FunctionConstructor.cpp \
 src/functions/FunctionContains.cpp \
 src/functions/FunctionCount.cpp \
 src/functions/FunctionCos.cpp \
@@ -1403,7 +1402,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionCollection.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionCompare.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionConcat.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionConstructor.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionContains.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionCos.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionCount.Plo@am__quote@
@@ -3080,13 +3078,6 @@ FunctionConcat.lo: src/functions/FunctionConcat.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/functions/FunctionConcat.cpp' object='FunctionConcat.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o FunctionConcat.lo `test -f 'src/functions/FunctionConcat.cpp' || echo '$(srcdir)/'`src/functions/FunctionConcat.cpp
-
-FunctionConstructor.lo: src/functions/FunctionConstructor.cpp
-@am__fastdepCXX_TRUE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT FunctionConstructor.lo -MD -MP -MF $(DEPDIR)/FunctionConstructor.Tpo -c -o FunctionConstructor.lo `test -f 'src/functions/FunctionConstructor.cpp' || echo '$(srcdir)/'`src/functions/FunctionConstructor.cpp
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/FunctionConstructor.Tpo $(DEPDIR)/FunctionConstructor.Plo
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/functions/FunctionConstructor.cpp' object='FunctionConstructor.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o FunctionConstructor.lo `test -f 'src/functions/FunctionConstructor.cpp' || echo '$(srcdir)/'`src/functions/FunctionConstructor.cpp
 
 FunctionContains.lo: src/functions/FunctionContains.cpp
 @am__fastdepCXX_TRUE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT FunctionContains.lo -MD -MP -MF $(DEPDIR)/FunctionContains.Tpo -c -o FunctionContains.lo `test -f 'src/functions/FunctionContains.cpp' || echo '$(srcdir)/'`src/functions/FunctionContains.cpp

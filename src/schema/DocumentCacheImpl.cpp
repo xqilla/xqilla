@@ -38,7 +38,6 @@
 #include <xqilla/exceptions/DynamicErrorException.hpp>
 #include <xqilla/exceptions/StaticErrorException.hpp>
 #include <xqilla/exceptions/XMLParseException.hpp>
-#include <xqilla/functions/FunctionConstructor.hpp>
 #include <xqilla/items/ATUntypedAtomic.hpp>
 #include <xqilla/items/AnyAtomicType.hpp>
 #include <xqilla/items/ATDurationOrDerived.hpp>
@@ -552,7 +551,7 @@ bool DocumentCacheImpl::isTypeOrDerivedFromType(const XMLCh* const uri, const XM
     return true;
 
   if(XPath2Utils::equals(typeNameToCheck, AnyAtomicType::fgDT_ANYATOMICTYPE) &&
-     XPath2Utils::equals(uriToCheck, FunctionConstructor::XMLChXPath2DatatypesURI) )
+     XPath2Utils::equals(uriToCheck, SchemaSymbols::fgURI_SCHEMAFORSCHEMA) )
     return dtvDerived->isAtomic();
 
   DatatypeValidator* dtvBase = grammarResolver_->getDatatypeValidator(nullToZeroLength(uriToCheck), typeNameToCheck);

@@ -30,7 +30,6 @@
 #include <xqilla/items/Item.hpp>
 #include <xqilla/utils/XPath2Utils.hpp>
 #include <xqilla/items/ATUntypedAtomic.hpp>
-#include <xqilla/functions/FunctionConstructor.hpp>
 #include <xqilla/exceptions/XPath2TypeMatchException.hpp>
 #include <xqilla/context/ContextHelpers.hpp>
 #include <xqilla/context/MessageListener.hpp>

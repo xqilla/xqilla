@@ -270,7 +270,6 @@
         <file name='include/xqilla/functions/FunctionCollection.hpp'/>
         <file name='include/xqilla/functions/FunctionCompare.hpp'/>
         <file name='include/xqilla/functions/FunctionConcat.hpp'/>
-        <file name='include/xqilla/functions/FunctionConstructor.hpp'/>
         <file name='include/xqilla/functions/FunctionContains.hpp'/>
         <file name='include/xqilla/functions/FunctionCos.hpp'/>
         <file name='include/xqilla/functions/FunctionCount.hpp'/>
@@ -695,7 +694,6 @@
         <file name="src/functions/FunctionCollection.cpp"/>
         <file name="src/functions/FunctionCompare.cpp"/>
         <file name="src/functions/FunctionConcat.cpp"/>
-        <file name="src/functions/FunctionConstructor.cpp"/>
         <file name="src/functions/FunctionContains.cpp"/>
         <file name="src/functions/FunctionCos.cpp"/>
         <file name="src/functions/FunctionCount.cpp"/>

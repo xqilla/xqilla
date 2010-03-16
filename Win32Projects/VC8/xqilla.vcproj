@@ -296,7 +296,6 @@
       <File RelativePath="..\..\include\xqilla\functions\FunctionCollection.hpp"/>
       <File RelativePath="..\..\include\xqilla\functions\FunctionCompare.hpp"/>
       <File RelativePath="..\..\include\xqilla\functions\FunctionConcat.hpp"/>
-      <File RelativePath="..\..\include\xqilla\functions\FunctionConstructor.hpp"/>
       <File RelativePath="..\..\include\xqilla\functions\FunctionContains.hpp"/>
       <File RelativePath="..\..\include\xqilla\functions\FunctionCos.hpp"/>
       <File RelativePath="..\..\include\xqilla\functions\FunctionCount.hpp"/>
@@ -721,7 +720,6 @@
       <File RelativePath="..\..\src\functions\FunctionCollection.cpp"/>
       <File RelativePath="..\..\src\functions\FunctionCompare.cpp"/>
       <File RelativePath="..\..\src\functions\FunctionConcat.cpp"/>
-      <File RelativePath="..\..\src\functions\FunctionConstructor.cpp"/>
       <File RelativePath="..\..\src\functions\FunctionContains.cpp"/>
       <File RelativePath="..\..\src\functions\FunctionCos.cpp"/>
       <File RelativePath="..\..\src\functions\FunctionCount.cpp"/>

@@ -224,7 +224,6 @@ const ExternalFunction *FunctionLookup::lookUpGlobalExternalFunction(
 #include <xqilla/functions/FunctionCollection.hpp>
 #include <xqilla/functions/FunctionCompare.hpp>
 #include <xqilla/functions/FunctionConcat.hpp>
-#include <xqilla/functions/FunctionConstructor.hpp>
 #include <xqilla/functions/FunctionContains.hpp>
 #include <xqilla/functions/FunctionCount.hpp>
 #include <xqilla/functions/FunctionCurrentDate.hpp>

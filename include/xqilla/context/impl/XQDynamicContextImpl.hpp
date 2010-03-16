@@ -194,7 +194,7 @@ public:
 
   virtual void addCustomFunction(FuncFactory *func);
   virtual void removeCustomFunction(FuncFactory *func);
-  virtual ASTNode *lookUpFunction(const XMLCh *uri, const XMLCh* name, const VectorOfASTNodes &v) const;
+  virtual ASTNode *lookUpFunction(const XMLCh *uri, const XMLCh* name, const VectorOfASTNodes &v, const LocationInfo *location) const;
 
   virtual void addExternalFunction(const ExternalFunction *func);
   virtual const ExternalFunction *lookUpExternalFunction(const XMLCh *uri, const XMLCh *name, size_t numArgs) const;
@@ -418,7 +418,7 @@ inline const XMLCh* XQDynamicContextImpl::getDefaultFuncNS() const { XQThrow2(Co
 inline StaticContext::NodeSetOrdering XQDynamicContextImpl::getNodeSetOrdering() const { XQThrow2(ContextException,X("XQDynamicContextImpl"), X("The static context is not available from a proxying dynamic context")); }
 inline ModuleResolver * XQDynamicContextImpl::getModuleResolver() const { XQThrow2(ContextException,X("XQDynamicContextImpl"), X("The static context is not available from a proxying dynamic context")); }
 inline ExternalFunctionResolver * XQDynamicContextImpl::getExternalFunctionResolver() const { XQThrow2(ContextException,X("XQDynamicContextImpl"), X("The static context is not available from a proxying dynamic context")); }
-inline ASTNode* XQDynamicContextImpl::lookUpFunction(const XMLCh* uri, const XMLCh* name, const VectorOfASTNodes& v) const { XQThrow2(ContextException,X("XQDynamicContextImpl"), X("The static context is not available from a proxying dynamic context")); }
+inline ASTNode* XQDynamicContextImpl::lookUpFunction(const XMLCh* uri, const XMLCh* name, const VectorOfASTNodes& v, const LocationInfo *location) const { XQThrow2(ContextException,X("XQDynamicContextImpl"), X("The static context is not available from a proxying dynamic context")); }
 inline const ExternalFunction *XQDynamicContextImpl::lookUpExternalFunction(const XMLCh *uri, const XMLCh *name, size_t numArgs) const { XQThrow2(ContextException,X("XQDynamicContextImpl"), X("The static context is not available from a proxying dynamic context")); }
 inline StaticContext::FLWOROrderingMode XQDynamicContextImpl::getDefaultFLWOROrderingMode() const { XQThrow2(ContextException,X("XQDynamicContextImpl"), X("The static context is not available from a proxying dynamic context")); }
 inline bool XQDynamicContextImpl::getXPath1CompatibilityMode() const { XQThrow2(ContextException,X("XQDynamicContextImpl"), X("The static context is not available from a proxying dynamic context")); }

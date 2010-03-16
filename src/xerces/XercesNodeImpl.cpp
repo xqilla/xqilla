@@ -32,13 +32,13 @@
 #include <xqilla/items/ATQNameOrDerived.hpp>
 #include <xqilla/items/ATUntypedAtomic.hpp>
 #include <xqilla/utils/XPath2NSUtils.hpp>
-#include <xqilla/functions/FunctionConstructor.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
 #include <xqilla/schema/DocumentCache.hpp>
 #include <xqilla/utils/XPath2Utils.hpp>
 #include <xqilla/events/EventHandler.hpp>
 #include <xqilla/events/EventSerializer.hpp>
 #include <xqilla/events/NSFixupFilter.hpp>
+#include <xqilla/context/ItemFactory.hpp>
 
 #include "AncestorAxis.hpp"
 #include "AncestorOrSelfAxis.hpp"
@@ -425,7 +425,7 @@ const XMLCh* XercesNodeImpl::dmStringValue(const DynamicContext* context) const 
         //   returns the concatenation of the string-values of all its text node descendants in document order. 
         //   It returns "" if the element has no text node descendants.
         // - If the element has a complex type with empty content, returns "".
-        if(XPath2Utils::equals(typeName, DocumentCache::g_szUntyped) && XPath2Utils::equals(typeUri, FunctionConstructor::XMLChXPath2DatatypesURI)
+        if((XPath2Utils::equals(typeName, DocumentCache::g_szUntyped) && XPath2Utils::equals(typeUri, SchemaSymbols::fgURI_SCHEMAFORSCHEMA))
            || context->getDocumentCache()->getComplexTypeInfo(typeUri, typeName)!=NULL)
           addStringValueToBuffer(fNode,str);
         else
@@ -479,8 +479,8 @@ const XMLCh* XercesNodeImpl::dmStringValue(const DynamicContext* context) const 
             getTypeUriAndName(typeUri,typeName);
             // Returns the value calculated as follows:
             //  - If the attribute type is xdt:untypedAtomic, xs:string, or a type derived from xs:string, returns that string.
-            if(XPath2Utils::equals(typeName, ATUntypedAtomic::fgDT_UNTYPEDATOMIC) &&
-               XPath2Utils::equals(typeUri, FunctionConstructor::XMLChXPath2DatatypesURI) ||
+            if((XPath2Utils::equals(typeName, ATUntypedAtomic::fgDT_UNTYPEDATOMIC) &&
+                XPath2Utils::equals(typeUri, SchemaSymbols::fgURI_SCHEMAFORSCHEMA)) ||
                context->getDocumentCache()->isTypeOrDerivedFromType(typeUri,typeName,SchemaSymbols::fgURI_SCHEMAFORSCHEMA, SchemaSymbols::fgDT_STRING))
                 return context->getMemoryManager()->getPooledString(fNode->getNodeValue());
             //  - If the attribute type is xs:anyURI, returns the characters of the URI.
@@ -614,7 +614,7 @@ Sequence XercesNodeImpl::dmTypedValue(DynamicContext* context) const {
 
             // If the attribute is of type xdt:untypedAtomic: its typed-value is its dm:string-value as an xdt:untypedAtomic
             if(XPath2Utils::equals(typeName, ATUntypedAtomic::fgDT_UNTYPEDATOMIC) &&
-               XPath2Utils::equals(typeUri, FunctionConstructor::XMLChXPath2DatatypesURI))
+               XPath2Utils::equals(typeUri, SchemaSymbols::fgURI_SCHEMAFORSCHEMA))
             {
                 item = (const Item::Ptr)context->getItemFactory()->createUntypedAtomic(dmStringValue(context), context);
                 return Sequence(item, context->getMemoryManager()); 
@@ -659,7 +659,7 @@ Sequence XercesNodeImpl::dmTypedValue(DynamicContext* context) const {
             getMemberTypeUriAndName(typeUri,typeName);
 
             // If the element is of type xdt:untyped or xs:anyType, its typed-value is its dm:string-value as an xdt:untypedAtomic.
-            if((XPath2Utils::equals(typeName, DocumentCache::g_szUntyped) && XPath2Utils::equals(typeUri, FunctionConstructor::XMLChXPath2DatatypesURI)) ||
+            if((XPath2Utils::equals(typeName, DocumentCache::g_szUntyped) && XPath2Utils::equals(typeUri, SchemaSymbols::fgURI_SCHEMAFORSCHEMA)) ||
                (XPath2Utils::equals(typeName, SchemaSymbols::fgATTVAL_ANYTYPE) && XPath2Utils::equals(typeUri, SchemaSymbols::fgURI_SCHEMAFORSCHEMA))
               )
             {
@@ -1129,7 +1129,7 @@ void XercesNodeImpl::typeUriAndName(const DOMNode *node, const XMLCh*& uri, cons
             // ignore it; the implementation of getInterface for Xerces < 2.6 will throw it
         }
         // we are xdt:untyped
-        uri=FunctionConstructor::XMLChXPath2DatatypesURI;
+        uri=SchemaSymbols::fgURI_SCHEMAFORSCHEMA;
         name=DocumentCache::g_szUntyped;
         return;
     }
@@ -1181,13 +1181,13 @@ void XercesNodeImpl::typeUriAndName(const DOMNode *node, const XMLCh*& uri, cons
             }
         }
         // we are xdt:untypedAtomic
-        uri=FunctionConstructor::XMLChXPath2DatatypesURI;
+        uri=SchemaSymbols::fgURI_SCHEMAFORSCHEMA;
         name=ATUntypedAtomic::fgDT_UNTYPEDATOMIC;
         return;
     }
     else if(nodeType == DOMNode::TEXT_NODE || 
             nodeType == DOMNode::CDATA_SECTION_NODE) {
-        uri=FunctionConstructor::XMLChXPath2DatatypesURI;
+        uri=SchemaSymbols::fgURI_SCHEMAFORSCHEMA;
         name=ATUntypedAtomic::fgDT_UNTYPEDATOMIC;
         return;
     }
