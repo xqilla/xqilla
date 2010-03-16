@@ -25,6 +25,7 @@
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/utils/XPath2NSUtils.hpp>
 #include <xqilla/utils/XPath2Utils.hpp>
+#include <xqilla/functions/FunctionSignature.hpp>
 
 #include <xercesc/framework/XMLBuffer.hpp>
 
@@ -144,9 +145,9 @@ ASTNode* XQCallTemplate::staticResolution(StaticContext *context)
   vector<bool> argUsed(args_ ? args_->size() : 0, false);
   VectorOfASTNodes newArgs = VectorOfASTNodes(XQillaAllocator<ASTNode*>(mm));
 
-  if(tplt->getArgumentSpecs() != 0) {
-    XQUserFunction::ArgumentSpecs::const_iterator argIt;
-    for(argIt = tplt->getArgumentSpecs()->begin(); argIt != tplt->getArgumentSpecs()->end(); ++argIt) {
+  if(tplt->getSignature()->argSpecs != 0) {
+    ArgumentSpecs::const_iterator argIt;
+    for(argIt = tplt->getSignature()->argSpecs->begin(); argIt != tplt->getSignature()->argSpecs->end(); ++argIt) {
 
       bool found = false;
       if(args_ != 0) {

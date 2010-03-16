@@ -26,10 +26,10 @@
 #ifndef _FUNCTIONSTARTSWITH_HPP
 #define _FUNCTIONSTARTSWITH_HPP
 
-#include <xqilla/ast/ConstantFoldingFunction.hpp>
+#include <xqilla/ast/XQFunction.hpp>
 
 /** StartsWith function. */
-class XQILLA_API FunctionStartsWith : public ConstantFoldingFunction
+class XQILLA_API FunctionStartsWith : public XQFunction
 {
 public:
   static const XMLCh name[];

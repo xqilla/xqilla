@@ -43,13 +43,13 @@ const unsigned int FunctionPut::maxArgs = 2;
  * fn:put($node as node(), $uri as xs:string?) as empty-sequence()
  */
 FunctionPut::FunctionPut(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
-  : XQFunction(name, minArgs, maxArgs, "node(), string?", args, memMgr),
+  : XQFunction(name, "updating ($node as node(), $uri as xs:string?) as empty-sequence()", args, memMgr),
     baseURI_(0)
 {
 }
 
 FunctionPut::FunctionPut(const XMLCh *baseURI, const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
-  : XQFunction(name, minArgs, maxArgs, "node(), string?", args, memMgr),
+  : XQFunction(name, "updating ($node as node(), $uri as xs:string?) as empty-sequence()", args, memMgr),
     baseURI_(baseURI)
 {
 }
@@ -57,7 +57,8 @@ FunctionPut::FunctionPut(const XMLCh *baseURI, const VectorOfASTNodes &args, XPa
 ASTNode* FunctionPut::staticResolution(StaticContext *context)
 {
   baseURI_ = context->getBaseURI();
-  return resolveArguments(context);
+  resolveArguments(context);
+  return this;
 }
 
 ASTNode *FunctionPut::staticTypingImpl(StaticContext *context)
@@ -66,7 +67,8 @@ ASTNode *FunctionPut::staticTypingImpl(StaticContext *context)
 
   _src.forceNoFolding(true);
   _src.updating(true);
-  return calculateSRCForArguments(context);
+  calculateSRCForArguments(context);
+  return this;
 }
 
 PendingUpdateList FunctionPut::createUpdateList(DynamicContext *context) const

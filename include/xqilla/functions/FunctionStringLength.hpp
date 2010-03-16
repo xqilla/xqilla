@@ -32,7 +32,6 @@ public:
   FunctionStringLength(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
   
   virtual ASTNode *staticResolution(StaticContext *context);
-  virtual ASTNode *staticTypingImpl(StaticContext *context);
 
   Sequence createSequence(DynamicContext* context, int flags=0) const;
 };

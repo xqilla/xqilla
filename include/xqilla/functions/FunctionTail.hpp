@@ -20,9 +20,9 @@
 
 #include <xqilla/framework/XQillaExport.hpp>
 
-#include <xqilla/ast/ConstantFoldingFunction.hpp>
+#include <xqilla/ast/XQFunction.hpp>
 
-class XQILLA_API FunctionTail : public ConstantFoldingFunction
+class XQILLA_API FunctionTail : public XQFunction
 {
 public:
   static const XMLCh name[];
@@ -31,7 +31,6 @@ public:
 
   FunctionTail(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
   
-  ASTNode* staticResolution(StaticContext *context);
   ASTNode *staticTypingImpl(StaticContext *context);
   Result createResult(DynamicContext* context, int flags=0) const;
 };

@@ -38,25 +38,23 @@ const unsigned int FunctionUnordered::maxArgs = 1;
 **/
 
 FunctionUnordered::FunctionUnordered(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
-  : XQFunction(name, minArgs, maxArgs, "item()*", args, memMgr)
+  : XQFunction(name, "($sourceSeq as item()*) as item()*", args, memMgr)
 {
 }
 
 ASTNode* FunctionUnordered::staticResolution(StaticContext *context)
 {
   AutoNodeSetOrderingReset orderReset(context);
-  return resolveArguments(context);
+  resolveArguments(context);
+  return this;
 }
 
 ASTNode *FunctionUnordered::staticTypingImpl(StaticContext *context)
 {
-  _src.clear();
-
-  ASTNode *result = calculateSRCForArguments(context);
-  if(result == this) {
-    _src.getStaticType() = _args.front()->getStaticAnalysis().getStaticType();
-  }
-  return result;
+  _src.clearExceptType();
+  calculateSRCForArguments(context);
+  _src.getStaticType() = _args.front()->getStaticAnalysis().getStaticType();
+  return this;
 }
 
 Result FunctionUnordered::createResult(DynamicContext* context, int flags) const

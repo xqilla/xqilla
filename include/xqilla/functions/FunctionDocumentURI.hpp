@@ -28,12 +28,12 @@
 
 #include <xqilla/framework/XQillaExport.hpp>
 
-#include <xqilla/ast/ConstantFoldingFunction.hpp>
+#include <xqilla/ast/XQFunction.hpp>
 
 class Sequence;
 
 /* document-uri function */
-class XQILLA_API FunctionDocumentURI : public ConstantFoldingFunction
+class XQILLA_API FunctionDocumentURI : public XQFunction
 {
 public:
   static const XMLCh name[];

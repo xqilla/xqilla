@@ -32,15 +32,8 @@ const unsigned int FunctionSqrt::maxArgs = 1;
  * math:sqrt($arg as numeric?) as numeric?
  */
 FunctionSqrt::FunctionSqrt(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
-  : EXSLTMathFunction(name, minArgs, maxArgs, "anyAtomicType?", args, memMgr)
+  : EXSLTMathFunction(name, "($arg as xs:anyAtomicType?) as xs:anyAtomicType?", args, memMgr)
 {
-}
-
-ASTNode *FunctionSqrt::staticTypingImpl(StaticContext *context)
-{
-  _src.clear();
-  _src.getStaticType() = StaticType(StaticType::NUMERIC_TYPE, 0, 1);
-  return NumericFunction::staticTypingImpl(context);
 }
 
 Result FunctionSqrt::createResult(DynamicContext* context, int flags) const

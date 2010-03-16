@@ -52,9 +52,8 @@ const unsigned int FunctionEndsWith::maxArgs = 3;
  */
 
 FunctionEndsWith::FunctionEndsWith(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
-  : ConstantFoldingFunction(name, minArgs, maxArgs, "string?,string?,string", args, memMgr)
+  : XQFunction(name, "($arg1 as xs:string?, $arg2 as xs:string?, $collation as xs:string) as xs:boolean", args, memMgr)
 {
-  _src.getStaticType() = StaticType::BOOLEAN_TYPE;
 }
 
 Sequence FunctionEndsWith::createSequence(DynamicContext* context, int flags) const

@@ -49,15 +49,14 @@ const unsigned int FunctionReplace::maxArgs = 4;
  */
   
 FunctionReplace::FunctionReplace(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
-  : RegExpFunction(name, minArgs, maxArgs, "string?, string, string, string", args, memMgr)
+  : RegExpFunction(name, "($input as xs:string?, $pattern as xs:string, $replacement as xs:string, $flags as xs:string) as xs:string", args, memMgr)
 {
-  _src.getStaticType() = StaticType::STRING_TYPE;
 }
 
 ASTNode *FunctionReplace::staticTypingImpl(StaticContext *context)
 {
-  ASTNode *result = calculateSRCForArguments(context);
-  if(result != this) return result;
+  _src.clearExceptType();
+  calculateSRCForArguments(context);
 
   //either there are 3 args, and regexp should be a constant,
   //or there is a flags argument as well, and it should also be a constant
@@ -159,6 +158,7 @@ Sequence FunctionReplace::createSequence(DynamicContext* context, int flags) con
   }
 
   // Never happens
+  return Sequence(memMgr);
 }
 
 const XMLCh *FunctionReplace::replace(const XMLCh *input, const XMLCh *pattern, const XMLCh *replacement, const XMLCh *options, MemoryManager *mm)

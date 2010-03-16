@@ -27,6 +27,7 @@
 #include <xqilla/exceptions/XPath2TypeMatchException.hpp>
 #include <xqilla/fulltext/FTSelection.hpp>
 #include <xqilla/fulltext/DefaultTokenizer.hpp>
+#include <xqilla/schema/SequenceType.hpp>
 
 #include "../items/impl/FunctionRefImpl.hpp"
 

@@ -50,9 +50,8 @@ const unsigned int FunctionStartsWith::maxArgs = 3;
 **/
 
 FunctionStartsWith::FunctionStartsWith(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
-  : ConstantFoldingFunction(name, minArgs, maxArgs, "string?, string?, string", args, memMgr)
+  : XQFunction(name, "($arg1 as xs:string?, $arg2 as xs:string?, $collation as xs:string) as xs:boolean", args, memMgr)
 {
-  _src.getStaticType() = StaticType::BOOLEAN_TYPE;
 }
 
 Sequence FunctionStartsWith::createSequence(DynamicContext* context, int flags) const

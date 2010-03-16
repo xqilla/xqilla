@@ -44,9 +44,8 @@ const unsigned int FunctionCompare::maxArgs = 3;
 **/
 
 FunctionCompare::FunctionCompare(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
-  : ConstantFoldingFunction(name, minArgs, maxArgs, "string?,string?,string", args, memMgr)
+  : XQFunction(name, "($comparand1 as xs:string?, $comparand2 as xs:string?, $collation as xs:string) as xs:integer?", args, memMgr)
 {
-  _src.getStaticType() = StaticType(StaticType::DECIMAL_TYPE, 0, 1);
 }
 
 Sequence FunctionCompare::createSequence(DynamicContext* context, int flags) const

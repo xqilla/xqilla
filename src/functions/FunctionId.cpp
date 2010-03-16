@@ -39,24 +39,25 @@ const unsigned int FunctionId::maxArgs = 2;
 **/
 
 FunctionId::FunctionId(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
-  : XQFunction(name, minArgs, maxArgs, "string*, node()", args, memMgr)
+  : XQFunction(name, "($arg as xs:string*, $node as node()) as element()*", args, memMgr)
 {
 }
 
-ASTNode* FunctionId::staticResolution(StaticContext *context) {
+ASTNode* FunctionId::staticResolution(StaticContext *context)
+{
   if(_args.size()==2 && _args.back()->getType()==ASTNode::CONTEXT_ITEM)
       _args.pop_back();
-  return resolveArguments(context);
+  resolveArguments(context);
+  return this;
 }
 
 ASTNode *FunctionId::staticTypingImpl(StaticContext *context)
 {
-  _src.clear();
-
-  _src.getStaticType() = StaticType(StaticType::ELEMENT_TYPE, 0, StaticType::UNLIMITED);
+  _src.clearExceptType();
   if(_args.size()==1)
     _src.contextItemUsed(true);
-  return calculateSRCForArguments(context);
+  calculateSRCForArguments(context);
+  return this;
 }
 
 Sequence FunctionId::createSequence(DynamicContext* context, int flags) const

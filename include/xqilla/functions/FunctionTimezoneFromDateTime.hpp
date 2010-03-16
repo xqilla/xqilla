@@ -22,14 +22,14 @@
 
 #include <xqilla/framework/XQillaExport.hpp>
 
-#include <xqilla/ast/ConstantFoldingFunction.hpp>
+#include <xqilla/ast/XQFunction.hpp>
 
 /**
  * Getter function for the timezone component of dateTime
  *
  *  timezone-from-dateTime(dateTime $srcval) => xdt:dayTimeDuration?
  */
-class XQILLA_API FunctionTimezoneFromDateTime : public ConstantFoldingFunction
+class XQILLA_API FunctionTimezoneFromDateTime : public XQFunction
 {
 public:
   static const XMLCh name[];

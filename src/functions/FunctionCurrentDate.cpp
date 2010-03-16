@@ -39,21 +39,16 @@ const unsigned int FunctionCurrentDate::maxArgs = 0;
 **/
 
 FunctionCurrentDate::FunctionCurrentDate(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
-  : XQFunction(name, minArgs, maxArgs, "empty()", args, memMgr)
+  : XQFunction(name, "() as xs:date", args, memMgr)
 {
-}
-
-ASTNode* FunctionCurrentDate::staticResolution(StaticContext *context) {
-  return resolveArguments(context);
 }
 
 ASTNode *FunctionCurrentDate::staticTypingImpl(StaticContext *context)
 {
-  _src.clear();
-
-  _src.getStaticType() = StaticType::DATE_TYPE;
+  _src.clearExceptType();
   _src.currentTimeUsed(true);
-  return calculateSRCForArguments(context);
+  calculateSRCForArguments(context);
+  return this;
 }
 
 Sequence FunctionCurrentDate::createSequence(DynamicContext* context, int flags) const

@@ -32,15 +32,8 @@ const unsigned int FunctionTan::maxArgs = 1;
  * math:tan($arg as numeric?) as numeric?
  */
 FunctionTan::FunctionTan(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
-  : EXSLTMathFunction(name, minArgs, maxArgs, "anyAtomicType?", args, memMgr)
+  : EXSLTMathFunction(name, "($arg as xs:anyAtomicType?) as xs:anyAtomicType?", args, memMgr)
 {
-}
-
-ASTNode *FunctionTan::staticTypingImpl(StaticContext *context)
-{
-  _src.clear();
-  _src.getStaticType() = StaticType(StaticType::NUMERIC_TYPE, 0, 1);
-  return NumericFunction::staticTypingImpl(context);
 }
 
 Result FunctionTan::createResult(DynamicContext* context, int flags) const

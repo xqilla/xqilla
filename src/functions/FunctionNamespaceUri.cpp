@@ -43,25 +43,27 @@ const unsigned int FunctionNamespaceUri::maxArgs = 1;
 **/
 
 FunctionNamespaceUri::FunctionNamespaceUri(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
-  : XQFunction(name, minArgs, maxArgs, "node()?", args, memMgr)
+  : XQFunction(name, "($arg as node()?) as xs:anyURI", args, memMgr)
 {
 }
 
-ASTNode* FunctionNamespaceUri::staticResolution(StaticContext *context) {
+ASTNode* FunctionNamespaceUri::staticResolution(StaticContext *context)
+{
   if(!_args.empty() && (*_args.begin())->getType()==ASTNode::CONTEXT_ITEM)
       _args.clear();
-  return resolveArguments(context);
+  resolveArguments(context);
+  return this;
 }
 
 ASTNode *FunctionNamespaceUri::staticTypingImpl(StaticContext *context)
 {
-  _src.clear();
+  _src.clearExceptType();
 
   if(_args.empty()) {
     _src.contextItemUsed(true);
   }
-  _src.getStaticType() = StaticType::ANY_URI_TYPE;
-  return calculateSRCForArguments(context);
+  calculateSRCForArguments(context);
+  return this;
 }
 
 Sequence FunctionNamespaceUri::createSequence(DynamicContext* context, int flags) const

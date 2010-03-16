@@ -17,12 +17,6 @@
  * limitations under the License.
  */
 
-/*
-
-  day-from-dateTime(dateTime $srcval) => integer
-
-*/
-
 #ifndef _FUNCTIONGETDAYFROMDATETIME_HPP
 #define _FUNCTIONGETDAYFROMDATETIME_HPP
 
@@ -39,13 +33,12 @@ public:
 
   FunctionDayFromDateTime(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
 
-  ASTNode* staticResolution(StaticContext *context);
   virtual ASTNode *staticTypingImpl(StaticContext *context);
 
   Sequence createSequence(DynamicContext* context, int flags=0) const;
 };
 
-#endif // _FUNCTIONGETDAYFROMDATETIME_HPP
+#endif
 
 
 

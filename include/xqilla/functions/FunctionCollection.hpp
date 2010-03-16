@@ -35,7 +35,6 @@ public:
 
   FunctionCollection(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
   
-  virtual ASTNode* staticResolution(StaticContext *context);
   virtual ASTNode *staticTypingImpl(StaticContext *context);
 
   /** resolve the uri and return the DOM tree **/

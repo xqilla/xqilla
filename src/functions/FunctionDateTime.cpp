@@ -43,21 +43,15 @@ const unsigned int FunctionDateTime::maxArgs = 2;
 **/
 
 FunctionDateTime::FunctionDateTime(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
-  : XQFunction(name, minArgs, maxArgs, "date?, time?", args, memMgr)
+  : XQFunction(name, "($arg1 as xs:date?, $arg2 as xs:time?) as xs:dateTime?", args, memMgr)
 {
-}
-
-ASTNode* FunctionDateTime::staticResolution(StaticContext *context)
-{
-  return resolveArguments(context, /*checkTimezone*/true);
 }
 
 ASTNode *FunctionDateTime::staticTypingImpl(StaticContext *context)
 {
-  _src.clear();
-
-  _src.getStaticType() = StaticType(StaticType::DATE_TIME_TYPE, 0, 1);
-  return calculateSRCForArguments(context, /*checkTimezone*/true);
+  _src.clearExceptType();
+  calculateSRCForArguments(context, /*checkTimezone*/true);
+  return this;
 }
 
 Sequence FunctionDateTime::createSequence(DynamicContext* context, int flags) const

@@ -44,9 +44,8 @@ const unsigned int FunctionSubstring::maxArgs = 3;
 **/
 
 FunctionSubstring::FunctionSubstring(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
-  : ConstantFoldingFunction(name, minArgs, maxArgs, "string?, double, double", args, memMgr)
+  : XQFunction(name, "($sourceString as xs:string?, $startingLoc as xs:double, $length as xs:double) as xs:string", args, memMgr)
 {
-  _src.getStaticType() = StaticType::STRING_TYPE;
 }
 
 Sequence FunctionSubstring::createSequence(DynamicContext* context, int flags) const

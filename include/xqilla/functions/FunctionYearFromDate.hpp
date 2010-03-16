@@ -24,11 +24,6 @@
 
 #include <xqilla/ast/XQFunction.hpp>
 
-/**
- * Getter function for year component of date.
- *
- * xf:year-from-date(date $srcval) => integer
- */
 class XQILLA_API FunctionYearFromDate : public XQFunction
 {
 public:
@@ -36,21 +31,14 @@ public:
   static const unsigned int minArgs;
   static const unsigned int maxArgs;
 
-  /**
-   * Constructor
-   */
   FunctionYearFromDate(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
 
-  ASTNode* staticResolution(StaticContext *context);
   virtual ASTNode *staticTypingImpl(StaticContext *context);
 
-  /**
-   * Returns the integer representing the year in the value of $srcval
-   */
   Sequence createSequence(DynamicContext* context, int flags=0) const;
 };
 
-#endif // _FUNCTIONGETYEARFROMDATE_HPP
+#endif
 
 
 

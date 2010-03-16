@@ -36,6 +36,7 @@
 #include <xqilla/context/VariableTypeStore.hpp>
 #include <xqilla/functions/XQUserFunction.hpp>
 #include <xqilla/context/impl/VarStoreImpl.hpp>
+#include <xqilla/functions/FunctionSignature.hpp>
 #include "../items/impl/FunctionRefImpl.hpp"
 
 #include <xercesc/validators/schema/SchemaSymbols.hpp>
@@ -101,7 +102,7 @@ ASTNode* XQTreatAs::staticResolution(StaticContext *context)
 
     // Simultaneously create the XQInlineFunction parameter spec and the
     // XQFunctionDeref argument list
-    XQUserFunction::ArgumentSpecs *paramList = new (mm) XQUserFunction::ArgumentSpecs(XQillaAllocator<XQUserFunction::ArgumentSpec*>(mm));
+    ArgumentSpecs *paramList = new (mm) ArgumentSpecs(XQillaAllocator<ArgumentSpec*>(mm));
     VectorOfASTNodes *argList = new (mm) VectorOfASTNodes(XQillaAllocator<ASTNode*>(mm));
 
     VectorOfSequenceTypes *argTypes = type->getArgumentTypes();
@@ -113,7 +114,7 @@ ASTNode* XQTreatAs::staticResolution(StaticContext *context)
       ++count;
       const XMLCh *argName = mm->getPooledString(buf.getRawBuffer());
 
-      XQUserFunction::ArgumentSpec *argSpec = new (mm) XQUserFunction::ArgumentSpec(argName, *i, mm);
+      ArgumentSpec *argSpec = new (mm) ArgumentSpec(argName, *i, mm);
       argSpec->setLocationInfo(*i);
       paramList->push_back(argSpec);
 
@@ -128,7 +129,9 @@ ASTNode* XQTreatAs::staticResolution(StaticContext *context)
     XQFunctionDeref *body = new (mm) XQFunctionDeref(funcVar, argList, mm);
     body->setLocationInfo(this);
 
-    XQUserFunction *func = new (mm) XQUserFunction(0, paramList, body, type->getReturnType(), 0, false, mm);
+    FunctionSignature *signature = new (mm) FunctionSignature(paramList, type->getReturnType(), mm);
+
+    XQUserFunction *func = new (mm) XQUserFunction(0, signature, body, false, mm);
     func->setLocationInfo(this);
 
     _funcConvert = new (mm) XQInlineFunction(func, mm);

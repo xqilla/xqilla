@@ -36,7 +36,7 @@ const unsigned int FunctionNot::maxArgs = 1;
 **/
 
 FunctionNot::FunctionNot(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
-  : ConstantFoldingFunction(name, minArgs, maxArgs, "item()*", args, memMgr)
+  : XQFunction(name, "($arg as item()*) as xs:boolean", args, memMgr)
 {
 }
 
@@ -46,15 +46,8 @@ ASTNode* FunctionNot::staticResolution(StaticContext *context)
 
   _args[0] = new (mm) XQEffectiveBooleanValue(_args[0], mm);
   _args[0]->setLocationInfo(this);
-  _args[0] = _args[0]->staticResolution(context);
 
-  return this;
-}
-
-ASTNode *FunctionNot::staticTypingImpl(StaticContext *context)
-{
-  _src.clear();
-  _src.copy(_args[0]->getStaticAnalysis());
+  resolveArguments(context);
   return this;
 }
 

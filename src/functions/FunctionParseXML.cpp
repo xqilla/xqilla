@@ -36,24 +36,26 @@ const unsigned int FunctionParseXML::minArgs = 1;
 const unsigned int FunctionParseXML::maxArgs = 1;
 
 /**
- * xqilla:parse-xml($xml as xs:string?) as document?
+ * xqilla:parse-xml($xml as xs:string?) as document-node()?
  */
 FunctionParseXML::FunctionParseXML(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
-  : XQillaFunction(name, minArgs, maxArgs, "string?", args, memMgr),
+  : XQillaFunction(name, "($xml as xs:string?) as document-node()?", args, memMgr),
     queryPathTree_(0)
 {
 }
 
 ASTNode *FunctionParseXML::staticTypingImpl(StaticContext *context)
 {
-  _src.clear();
+  _src.clearExceptType();
+
+  calculateSRCForArguments(context);
 
   _src.setProperties(StaticAnalysis::DOCORDER | StaticAnalysis::GROUPED |
                      StaticAnalysis::PEER | StaticAnalysis::SUBTREE | StaticAnalysis::ONENODE);
   _src.getStaticType() = StaticType(StaticType::DOCUMENT_TYPE, 0, 1);
   _src.creative(true);
 
-  return calculateSRCForArguments(context);
+  return this;
 }
 
 Sequence FunctionParseXML::createSequence(DynamicContext* context, int flags) const

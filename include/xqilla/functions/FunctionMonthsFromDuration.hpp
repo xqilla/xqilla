@@ -22,14 +22,14 @@
 
 #include <xqilla/framework/XQillaExport.hpp>
 
-#include <xqilla/ast/ConstantFoldingFunction.hpp>
+#include <xqilla/ast/XQFunction.hpp>
 
 /**
  * Getter function for the months component of yearMonthDuration.
  *
  * months-from-duration(yearMonthDuration? $srcval) => integer?
  */
-class XQILLA_API FunctionMonthsFromDuration : public ConstantFoldingFunction
+class XQILLA_API FunctionMonthsFromDuration : public XQFunction
 {
 public:
   static const XMLCh name[];

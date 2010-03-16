@@ -45,7 +45,7 @@ const unsigned int FunctionResolveURI::maxArgs = 2;
  **/
 
 FunctionResolveURI::FunctionResolveURI(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
-  : XQFunction(name, minArgs, maxArgs, "string?, string", args, memMgr),
+  : XQFunction(name, "($relative as xs:string?, $base as xs:string) as xs:anyURI?", args, memMgr),
     baseURI_(0)
 {
 }
@@ -56,15 +56,8 @@ ASTNode* FunctionResolveURI::staticResolution(StaticContext *context)
     baseURI_ = context->getBaseURI();
   }
 
-  return resolveArguments(context);
-}
-
-ASTNode *FunctionResolveURI::staticTypingImpl(StaticContext *context)
-{
-  _src.clear();
-
-  _src.getStaticType() = StaticType(StaticType::ANY_URI_TYPE, 0, 1);
-  return calculateSRCForArguments(context);
+  resolveArguments(context);
+  return this;
 }
 
 Sequence FunctionResolveURI::createSequence(DynamicContext* context, int flags) const

@@ -49,9 +49,8 @@ const unsigned int FunctionNormalizeUnicode::maxArgs = 2;
  **/
 
 FunctionNormalizeUnicode::FunctionNormalizeUnicode(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
-  : ConstantFoldingFunction(name, minArgs, maxArgs, "string?,string", args, memMgr)
+  : XQFunction(name, "($arg as xs:string?, $normalizationForm as xs:string) as xs:string", args, memMgr)
 {
-  _src.getStaticType() = StaticType::STRING_TYPE;
 }
 
 Sequence FunctionNormalizeUnicode::createSequence(DynamicContext* context, int flags) const

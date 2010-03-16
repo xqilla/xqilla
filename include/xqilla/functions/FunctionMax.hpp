@@ -27,9 +27,9 @@
 
 #include <xqilla/framework/XQillaExport.hpp>
 
-#include <xqilla/ast/ConstantFoldingFunction.hpp>
+#include <xqilla/ast/XQFunction.hpp>
 
-class XQILLA_API FunctionMax : public ConstantFoldingFunction
+class XQILLA_API FunctionMax : public XQFunction
 {
 public:
   static const XMLCh name[];

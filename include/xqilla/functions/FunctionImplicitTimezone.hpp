@@ -17,19 +17,11 @@
  * limitations under the License.
  */
 
-/*
-
-   implicit-timezone function
-
-*/
-
-
 #ifndef _FUNCTIONIMPLICITTIMEZONE_HPP
 #define _FUNCTIONIMPLICITTIMEZONE_HPP
 
 #include <xqilla/ast/XQFunction.hpp>
 
-/** implicit-timezone function*/
 class XQILLA_API FunctionImplicitTimezone : public XQFunction
 {
 public:
@@ -39,10 +31,9 @@ public:
 
   FunctionImplicitTimezone(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
   
-  virtual ASTNode* staticResolution(StaticContext *context);
   virtual ASTNode *staticTypingImpl(StaticContext *context);
 
   Sequence createSequence(DynamicContext* context, int flags=0) const;
 };
 
-#endif // _FUNCTIONIMPLICITTIMEZONE_HPP
+#endif

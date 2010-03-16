@@ -17,12 +17,6 @@
  * limitations under the License.
  */
 
-/*
-
-  Distinct-values function
-  
-*/
-
 #ifndef _FUNCTIONDISTINCTVALUES_HPP
 #define _FUNCTIONDISTINCTVALUES_HPP
 
@@ -30,8 +24,6 @@
 
 #include <xqilla/ast/XQFunction.hpp>
 
-// Distinct values is not really an aggregate function, but since its behaviour is so
-// similar (in terms of sequence validation) we will extend from it.
 class XQILLA_API FunctionDistinctValues : public XQFunction
 {
 public:
@@ -41,7 +33,6 @@ public:
 
   FunctionDistinctValues(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
   
-  virtual ASTNode* staticResolution(StaticContext *context);
   virtual ASTNode *staticTypingImpl(StaticContext *context);
   virtual Result createResult(DynamicContext* context, int flags=0) const;
 };

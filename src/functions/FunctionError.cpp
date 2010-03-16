@@ -40,25 +40,23 @@ const unsigned int FunctionError::maxArgs = 3;
  */
 
 FunctionError::FunctionError(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
-  : XQFunction(name, minArgs, maxArgs, "QName?, string, item()*", args, memMgr)
+  : XQFunction(name, args.size() == 1 ?
+               "($error as xs:QName) as empty-sequence()" :
+               "($error as xs:QName?, $description as xs:string, $error-object as item()*) as empty-sequence()", args, memMgr)
 {
-}
-
-ASTNode* FunctionError::staticResolution(StaticContext *context)
-{
-  return resolveArguments(context);
 }
 
 ASTNode *FunctionError::staticTypingImpl(StaticContext *context)
 {
-  _src.clear();
+  _src.clearExceptType();
+  _src.forceNoFolding(true);
+  _src.possiblyUpdating(true);
+  calculateSRCForArguments(context);
 
   // we need to specify item()*, or we get constant folded away all the time
   _src.getStaticType() = StaticType(StaticType::ITEM_TYPE, 0, StaticType::UNLIMITED);
 
-  _src.forceNoFolding(true);
-  _src.possiblyUpdating(true);
-  return calculateSRCForArguments(context);
+  return this;
 }
 
 PendingUpdateList FunctionError::createUpdateList(DynamicContext *context) const

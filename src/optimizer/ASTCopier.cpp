@@ -56,6 +56,7 @@
 #include "xqilla/functions/FunctionMatches.hpp"
 #include "xqilla/functions/FunctionReplace.hpp"
 #include "xqilla/functions/FunctionTokenize.hpp"
+#include <xqilla/functions/FunctionSignature.hpp>
 
 XERCES_CPP_NAMESPACE_USE;
 
@@ -337,6 +338,8 @@ ASTNode *ASTCopier::optimizeFunction(XQFunction *item)
 
   if(result == 0)
     result = (XQFunction*)context_->lookUpFunction(item->getFunctionURI(), item->getFunctionName(), item->getArguments());
+
+  result->setSignature(new (mm_) FunctionSignature(item->getSignature(), mm_));
 
   ASTVisitor::optimizeFunction(result);
   COPY_IMPL();

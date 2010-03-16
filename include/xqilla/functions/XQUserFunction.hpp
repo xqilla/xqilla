@@ -23,14 +23,14 @@
 #include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/functions/FuncFactory.hpp>
 #include <xqilla/functions/ExternalFunction.hpp>
-#include <xqilla/schema/SequenceType.hpp>
-#include <xqilla/schema/DocumentCache.hpp>
 #include <xqilla/ast/XQFunction.hpp>
 #include <xqilla/ast/StaticAnalysis.hpp>
-#include <xqilla/context/impl/VarStoreImpl.hpp>
 
 class XQUserFunction;
 class XQQuery;
+class FunctionSignature;
+class DocumentCache;
+class VarStoreImpl;
 
 class XQILLA_API XQUserFunctionInstance : public XQFunction, public ExternalFunction::Arguments
 {
@@ -85,19 +85,7 @@ protected:
 class XQILLA_API XQUserFunction : public FuncFactory, public LocationInfo
 {
 public:
-  class Options
-  {
-  public:
-    Options() : updating(OP_DEFAULT), nondeterministic(OP_DEFAULT), privateOption(OP_DEFAULT) {}
-
-    enum OptionValue { OP_DEFAULT, OP_TRUE, OP_FALSE };
-
-    OptionValue updating;
-    OptionValue nondeterministic;
-    OptionValue privateOption;
-  };
-
-  class Mode : public LocationInfo
+  class XQILLA_API Mode : public LocationInfo
   {
   public:
     enum State {
@@ -131,56 +119,10 @@ public:
 
   typedef std::vector<Mode*,XQillaAllocator<Mode*> > ModeList;
 
-  class ArgumentSpec : public LocationInfo
-  {
-  public:
-    ArgumentSpec(const XMLCh *qname, SequenceType *type, XPath2MemoryManager *memMgr)
-      : qname_(memMgr->getPooledString(qname)),
-        uri_(0),
-        name_(0),
-        used_(true),
-        seqType_(type),
-        src_(memMgr)
-    {
-    }
-    ArgumentSpec(const ArgumentSpec *o, XPath2MemoryManager *memMgr)
-      : qname_(o->qname_),
-        uri_(o->uri_),
-        name_(o->name_),
-        used_(o->used_),
-        seqType_(o->seqType_),
-        src_(memMgr)
-    {
-    }
-
-    const XMLCh *getURI() const { return uri_; }
-    void setURI(const XMLCh *uri) { uri_ = uri; }
-    const XMLCh *getName() const { return name_; }
-    void setName(const XMLCh *name) { name_ = name; }
-    const XMLCh *getQName() const { return qname_; }
-    SequenceType *getType() const { return seqType_; }
-    void setType(SequenceType *type) { seqType_ = type; }
-
-    bool isUsed() const { return used_; }
-    void setNotUsed() { used_ = false; }
-
-    const StaticAnalysis &getStaticAnalysis() const { return src_; }
-
-    void staticResolution(StaticContext* context);
-
-  private:
-    const XMLCh *qname_, *uri_, *name_;
-    bool used_;
-    SequenceType *seqType_;
-    StaticAnalysis src_;
-  };
-
-  typedef std::vector<ArgumentSpec*,XQillaAllocator<ArgumentSpec*> > ArgumentSpecs;
-
   // Constructor for an XQuery function
-  XQUserFunction(const XMLCh *qname, ArgumentSpecs *argSpecs, ASTNode *body, SequenceType *returnType, Options *options, bool isGlobal, XPath2MemoryManager *mm);
+  XQUserFunction(const XMLCh *qname, FunctionSignature *signature, ASTNode *body, bool isGlobal, XPath2MemoryManager *mm);
   // Constructor for an XQuery template
-  XQUserFunction(const XMLCh *qname, VectorOfASTNodes *pattern, ArgumentSpecs *argSpecs, ASTNode *body, SequenceType *returnType, XPath2MemoryManager *mm);
+  XQUserFunction(const XMLCh *qname, VectorOfASTNodes *pattern, FunctionSignature *signature, ASTNode *body, XPath2MemoryManager *mm);
 
   // from FuncFactory
   virtual ASTNode *createInstance(const VectorOfASTNodes &args, XPath2MemoryManager* expr) const;
@@ -194,16 +136,10 @@ public:
   ModeList *getModeList() const { return modes_; }
   void setModeList(ModeList *modes) { modes_ = modes; }
 
-  const ArgumentSpecs* getArgumentSpecs() const { return argSpecs_; }
-  void setArgumentSpecs(ArgumentSpecs *argSpecs) { argSpecs_ = argSpecs; }
-
-  const SequenceType* getReturnType() const { return returnType_; }
-  void setReturnType(SequenceType *returnType) { returnType_ = returnType; }
+  FunctionSignature *getSignature() const { return signature_; }
 
   ASTNode *getTemplateInstance() const { return templateInstance_; }
   void setTemplateInstance(ASTNode *ast) { templateInstance_ = ast; }
-
-  const Options *getOptions() const { return options_; }
 
   bool isGlobal() const { return isGlobal_; }
   bool isTemplate() const { return isTemplate_; }
@@ -250,12 +186,10 @@ protected:
   ASTNode *templateInstance_;
   ModeList *modes_;
 
-  SequenceType *returnType_;
-  ArgumentSpecs *argSpecs_;
+  FunctionSignature *signature_;
+
   bool isGlobal_;
   bool isTemplate_;
-
-  Options *options_;
 
   XPath2MemoryManager *memMgr_;
   StaticAnalysis src_;

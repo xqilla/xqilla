@@ -24,6 +24,7 @@
 #include <xqilla/runtime/SingleResult.hpp>
 #include <xqilla/context/VariableTypeStore.hpp>
 #include <xqilla/utils/XPath2Utils.hpp>
+#include <xqilla/functions/FunctionSignature.hpp>
 
 #include "../items/impl/FunctionRefImpl.hpp"
 
@@ -33,7 +34,7 @@ using namespace std;
 XQInlineFunction::XQInlineFunction(XQUserFunction *func, XPath2MemoryManager *mm)
   : ASTNodeImpl(INLINE_FUNCTION, mm),
     func_(func),
-    numArgs_((unsigned int)(func->getArgumentSpecs() ? func->getArgumentSpecs()->size() : 0)),
+    numArgs_((unsigned int)(func->getSignature()->argSpecs ? func->getSignature()->argSpecs->size() : 0)),
     instance_(0)
 {
 }

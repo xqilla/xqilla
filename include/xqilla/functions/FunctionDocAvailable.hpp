@@ -17,10 +17,6 @@
  * limitations under the License.
  */
 
-/*
-  doc-available function
-*/
-
 #ifndef _FUNCTIONDOCAVAILABLE_HPP
 #define _FUNCTIONDOCAVAILABLE_HPP
 
@@ -37,10 +33,9 @@ public:
 
   FunctionDocAvailable(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
   
-  virtual ASTNode* staticResolution(StaticContext *context);
   virtual ASTNode *staticTypingImpl(StaticContext *context);
 
   Sequence createSequence(DynamicContext* context, int flags=0) const;
 };
 
-#endif // _FUNCTIONDOCAVAILABLE_HPP
+#endif

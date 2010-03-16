@@ -42,9 +42,8 @@ const unsigned int FunctionLowerCase::maxArgs = 1;
  */
 
 FunctionLowerCase::FunctionLowerCase(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
-  : ConstantFoldingFunction(name, minArgs, maxArgs, "string?", args, memMgr)
+  : XQFunction(name, "($arg as xs:string?) as xs:string", args, memMgr)
 {
-  _src.getStaticType() = StaticType::STRING_TYPE;
 }
 
 Sequence FunctionLowerCase::createSequence(DynamicContext* context, int flags) const

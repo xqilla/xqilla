@@ -154,7 +154,6 @@
       <File RelativePath="..\..\include\xqilla\ast\XQVariable.hpp"/>
       <File RelativePath="..\..\include\xqilla\ast\StaticAnalysis.hpp"/>
       <File RelativePath="..\..\include\xqilla\ast\StaticType.hpp"/>
-      <File RelativePath="..\..\include\xqilla\ast\ConstantFoldingFunction.hpp"/>
       <File RelativePath="..\..\include\xqilla\ast\NumericFunction.hpp"/>
       <File RelativePath="..\..\include\xqilla\ast\XQDOMConstructor.hpp"/>
       <File RelativePath="..\..\include\xqilla\ast\XQDocumentConstructor.hpp"/>
@@ -409,6 +408,7 @@
       <File RelativePath="..\..\include\xqilla\functions\FuncFactory.hpp"/>
       <File RelativePath="..\..\include\xqilla\functions\RegExpFunction.hpp"/>
       <File RelativePath="..\..\include\xqilla\functions\XQUserFunction.hpp"/>
+      <File RelativePath="..\..\include\xqilla\functions\FunctionSignature.hpp"/>
       <File RelativePath="..\..\include\xqilla\functions\XQillaFunction.hpp"/>
       <File RelativePath="..\..\include\xqilla\functions\BuiltInModules.hpp"/>
       <File RelativePath="..\..\include\xqilla\items\ATAnySimpleType.hpp"/>
@@ -546,7 +546,6 @@
     </Filter>
     <Filter Name="ast" Filter="">
       <File RelativePath="..\..\src\ast\ASTNodeImpl.cpp"/>
-      <File RelativePath="..\..\src\ast\ConstantFoldingFunction.cpp"/>
       <File RelativePath="..\..\src\ast\TupleNode.cpp"/>
       <File RelativePath="..\..\src\ast\ContextTuple.cpp"/>
       <File RelativePath="..\..\src\ast\ConvertFunctionArg.cpp"/>
@@ -843,6 +842,7 @@
       <File RelativePath="..\..\src\functions\FunctionZeroOrOne.cpp"/>
       <File RelativePath="..\..\src\functions\RegExpFunction.cpp"/>
       <File RelativePath="..\..\src\functions\XQUserFunction.cpp"/>
+      <File RelativePath="..\..\src\functions\FunctionSignature.cpp"/>
       <File RelativePath="..\..\src\functions\XQillaFunction.cpp"/>
       <File RelativePath="..\..\src\functions\BuiltInModules.cpp"/>
       <File RelativePath="..\..\src\functions\CoreModule.hpp"/>

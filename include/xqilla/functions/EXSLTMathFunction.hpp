@@ -25,6 +25,6 @@ class XQILLA_API EXSLTMathFunction : public NumericFunction
 public:
   static const XMLCh XMLChFunctionURI[];
 
-  EXSLTMathFunction(const XMLCh* name, unsigned int argsFrom, unsigned int argsTo, const char* paramDecl, const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
+  EXSLTMathFunction(const XMLCh* name, const char *signature, const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
 };
 #endif

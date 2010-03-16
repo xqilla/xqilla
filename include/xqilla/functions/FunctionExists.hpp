@@ -26,9 +26,9 @@
 
 #include <xqilla/framework/XQillaExport.hpp>
 
-#include <xqilla/ast/ConstantFoldingFunction.hpp>
+#include <xqilla/ast/XQFunction.hpp>
 
-class XQILLA_API FunctionExists : public ConstantFoldingFunction
+class XQILLA_API FunctionExists : public XQFunction
 {
 public:
   static const XMLCh name[];

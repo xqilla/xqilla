@@ -28,10 +28,10 @@
 
 #include <xqilla/framework/XQillaExport.hpp>
 
-#include <xqilla/ast/ConstantFoldingFunction.hpp>
+#include <xqilla/ast/XQFunction.hpp>
 
 /** normalize-unicode function. */
-class XQILLA_API FunctionNormalizeUnicode : public ConstantFoldingFunction
+class XQILLA_API FunctionNormalizeUnicode : public XQFunction
 {
 public:
   static const XMLCh name[];

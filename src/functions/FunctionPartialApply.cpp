@@ -42,13 +42,8 @@ const unsigned int FunctionPartialApply::maxArgs = 3;
  * fn:partial-apply($function as function(), $arg as item()*, $argNum as xs:integer) as function()
  */
 FunctionPartialApply::FunctionPartialApply(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
-  : XQFunction(name, minArgs, maxArgs, "function(),item()*,integer", args, memMgr)
+  : XQFunction(name, "($function as function(), $arg as item()*, $argNum as xs:integer) as function()", args, memMgr)
 {
-}
-
-ASTNode* FunctionPartialApply::staticResolution(StaticContext *context)
-{
-  return resolveArguments(context);
 }
 
 ASTNode *FunctionPartialApply::staticTypingImpl(StaticContext *context)

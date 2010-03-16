@@ -52,15 +52,14 @@ const unsigned int FunctionMatches::maxArgs = 3;
  */
   
 FunctionMatches::FunctionMatches(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
-  : RegExpFunction(name, minArgs, maxArgs, "string?, string, string", args, memMgr)
+  : RegExpFunction(name, "($input as xs:string?, $pattern as xs:string, $flags as xs:string) as xs:boolean", args, memMgr)
 {
-  _src.getStaticType() = StaticType::BOOLEAN_TYPE;
 }
 
 ASTNode *FunctionMatches::staticTypingImpl(StaticContext *context)
 {
-  ASTNode *result = calculateSRCForArguments(context);
-  if(result != this) return result;
+  _src.clearExceptType();
+  calculateSRCForArguments(context);
 
   //either there are 2 args, and regexp should be a constant,
   //or there is an options argument as well, and it should also be a constant
@@ -140,6 +139,7 @@ Sequence FunctionMatches::createSequence(DynamicContext* context, int flags) con
   }  
 
   //do not get here
+  return Sequence(memMgr);
 }
 
 void FunctionMatches::processXMLException(XMLException &e, const char* sourceMsg) const

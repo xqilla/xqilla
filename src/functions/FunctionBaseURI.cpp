@@ -38,24 +38,26 @@ const unsigned int FunctionBaseURI::maxArgs = 1;
 **/
 
 FunctionBaseURI::FunctionBaseURI(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
-  : ConstantFoldingFunction(name, minArgs, maxArgs, "node()?", args, memMgr)
+  : XQFunction(name, "($arg as node()?) as xs:anyURI?", args, memMgr)
 {
 }
 
-ASTNode* FunctionBaseURI::staticResolution(StaticContext *context) {
-  if(!_args.empty() && (*_args.begin())->getType()==ASTNode::CONTEXT_ITEM)
+ASTNode* FunctionBaseURI::staticResolution(StaticContext *context)
+{
+  if(!_args.empty() && (*_args.begin())->getType() == ASTNode::CONTEXT_ITEM)
       _args.clear();
-  return resolveArguments(context);
+  resolveArguments(context);
+  return this;
 }
 
 ASTNode *FunctionBaseURI::staticTypingImpl(StaticContext *context)
 {
-  _src.clear();
+  _src.clearExceptType();
 
   if(_args.empty())
     _src.contextItemUsed(true);
-  _src.getStaticType() = StaticType(StaticType::ANY_URI_TYPE, 0, 1);
-  return calculateSRCForArguments(context);
+  calculateSRCForArguments(context);
+  return this;
 }
 
 Sequence FunctionBaseURI::createSequence(DynamicContext* context, int flags) const

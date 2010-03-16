@@ -32,15 +32,8 @@ const unsigned int FunctionAsin::maxArgs = 1;
  * math:asin($arg as numeric?) as numeric?
  */
 FunctionAsin::FunctionAsin(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
-  : EXSLTMathFunction(name, minArgs, maxArgs, "anyAtomicType?", args, memMgr)
+  : EXSLTMathFunction(name, "($arg as xs:anyAtomicType?) as xs:anyAtomicType?", args, memMgr)
 {
-}
-
-ASTNode *FunctionAsin::staticTypingImpl(StaticContext *context)
-{
-  _src.clear();
-  _src.getStaticType() = StaticType(StaticType::NUMERIC_TYPE, 0, 1);
-  return NumericFunction::staticTypingImpl(context);
 }
 
 Result FunctionAsin::createResult(DynamicContext* context, int flags) const

@@ -46,10 +46,9 @@ const XMLCh EXSLTMathFunction::XMLChFunctionURI[] = {
   chNull
 };
 
-EXSLTMathFunction::EXSLTMathFunction(const XMLCh* name, unsigned int argsFrom, unsigned int argsTo, const char* paramDecl,
-                                     const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
-  : NumericFunction(name,argsFrom, argsTo, paramDecl, args, memMgr)
+EXSLTMathFunction::EXSLTMathFunction(const XMLCh* name, const char *signature, const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
+  : NumericFunction(name, signature, args, memMgr)
 { 
-  _fURI = XMLChFunctionURI;
+  uri_ = XMLChFunctionURI;
 }
 

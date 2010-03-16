@@ -47,7 +47,7 @@ const unsigned int FunctionNormalizeSpace::maxArgs = 1;
 **/
 
 FunctionNormalizeSpace::FunctionNormalizeSpace(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
-  : XQFunction(name, minArgs, maxArgs, "string?", args, memMgr)
+  : XQFunction(name, "($arg as xs:string?) as xs:string", args, memMgr)
 {
 }
 
@@ -62,15 +62,8 @@ ASTNode* FunctionNormalizeSpace::staticResolution(StaticContext *context)
     _args.push_back(arg);
   }
 
-  return resolveArguments(context);
-}
-
-ASTNode *FunctionNormalizeSpace::staticTypingImpl(StaticContext *context)
-{
-  _src.clear();
-
-  _src.getStaticType() = StaticType::STRING_TYPE;
-  return calculateSRCForArguments(context);
+  resolveArguments(context);
+  return this;
 }
 
 Sequence FunctionNormalizeSpace::createSequence(DynamicContext* context, int flags) const

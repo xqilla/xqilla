@@ -37,9 +37,8 @@ const unsigned int FunctionDocumentURI::maxArgs = 1;
  */
 
 FunctionDocumentURI::FunctionDocumentURI(const VectorOfASTNodes  &args, XPath2MemoryManager* memMgr)
-  : ConstantFoldingFunction(name, minArgs, maxArgs, "node()?", args, memMgr)
+  : XQFunction(name, "($arg as node()?) as xs:anyURI?", args, memMgr)
 {
-  _src.getStaticType() = StaticType(StaticType::ANY_URI_TYPE, 0, 1);
 }
 
 Sequence FunctionDocumentURI::createSequence(DynamicContext* context, int flags) const

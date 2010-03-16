@@ -48,7 +48,7 @@ const unsigned int FunctionNumber::maxArgs = 1;
 **/
 
 FunctionNumber::FunctionNumber(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
-  : XQFunction(name, minArgs, maxArgs, "anyAtomicType?", args, memMgr)
+  : XQFunction(name, "($arg as xs:anyAtomicType?) as xs:double", args, memMgr)
 {
 }
 
@@ -62,14 +62,8 @@ ASTNode* FunctionNumber::staticResolution(StaticContext *context)
     _args.push_back(ci);
   }
 
-  return resolveArguments(context);
-}
-
-ASTNode *FunctionNumber::staticTypingImpl(StaticContext *context)
-{
-  _src.clear();
-  _src.getStaticType() = StaticType::DOUBLE_TYPE;
-  return calculateSRCForArguments(context);
+  resolveArguments(context);
+  return this;
 }
 
 Sequence FunctionNumber::createSequence(DynamicContext* context, int flags) const

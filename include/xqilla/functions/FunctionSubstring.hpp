@@ -28,10 +28,10 @@
 
 #include <xqilla/framework/XQillaExport.hpp>
 
-#include <xqilla/ast/ConstantFoldingFunction.hpp>
+#include <xqilla/ast/XQFunction.hpp>
 
 /** Substring function. */
-class XQILLA_API FunctionSubstring : public ConstantFoldingFunction
+class XQILLA_API FunctionSubstring : public XQFunction
 {
 public:
   static const XMLCh name[];

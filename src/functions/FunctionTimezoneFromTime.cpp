@@ -38,13 +38,12 @@ const unsigned int FunctionTimezoneFromTime::minArgs = 1;
 const unsigned int FunctionTimezoneFromTime::maxArgs = 1;
 
 /*
- * fn:timezone-from-time($arg as xs:time?) as xdt:dayTimeDuration?
+ * fn:timezone-from-time($arg as xs:time?) as xs:dayTimeDuration?
  */
 
 FunctionTimezoneFromTime::FunctionTimezoneFromTime(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
-  : ConstantFoldingFunction(name, minArgs, maxArgs, "time?", args, memMgr)
+  : XQFunction(name, "($arg as xs:time?) as xs:dayTimeDuration?", args, memMgr)
 {
-  _src.getStaticType() = StaticType(StaticType::DAY_TIME_DURATION_TYPE, 0, 1);
 }
 
 Sequence FunctionTimezoneFromTime::createSequence(DynamicContext* context, int flags) const

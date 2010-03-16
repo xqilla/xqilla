@@ -51,16 +51,8 @@ const unsigned int FunctionSerializeJSON::maxArgs = 1;
  * xqilla:serialize-json($json-xml as element()?) as xs:string?
  */
 FunctionSerializeJSON::FunctionSerializeJSON(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
-  : XQillaFunction(name, minArgs, maxArgs, "element()?", args, memMgr)
+  : XQillaFunction(name, "($json-xml as element()?) as xs:string?", args, memMgr)
 {
-}
-
-ASTNode *FunctionSerializeJSON::staticTypingImpl(StaticContext *context)
-{
-  _src.clear();
-
-  _src.getStaticType() = StaticType(StaticType::STRING_TYPE, 0, 1);
-  return calculateSRCForArguments(context);
 }
 
 const XMLCh JSON2XML_json[] = { 'j', 's', 'o', 'n', 0 };

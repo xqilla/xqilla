@@ -44,9 +44,8 @@ const unsigned int FunctionQName::maxArgs = 2;
  * given in $paramLocal **/
 
 FunctionQName::FunctionQName(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
-  : ConstantFoldingFunction(name, minArgs, maxArgs, "string?, string", args, memMgr)
+  : XQFunction(name, "($paramURI as xs:string?, $paramLocal as xs:string) as xs:QName", args, memMgr)
 {
-  _src.getStaticType() = StaticType::QNAME_TYPE;
 }
 
 Sequence FunctionQName::createSequence(DynamicContext* context, int flags) const {

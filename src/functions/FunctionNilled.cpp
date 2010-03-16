@@ -39,20 +39,8 @@ const unsigned int FunctionNilled::maxArgs = 1;
  */
 
 FunctionNilled::FunctionNilled(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
-  : XQFunction(name, minArgs, maxArgs, "node()?", args, memMgr)
+  : XQFunction(name, "($arg as node()?) as xs:boolean?", args, memMgr)
 {
-}
-
-ASTNode* FunctionNilled::staticResolution(StaticContext *context) {
-  return resolveArguments(context);
-}
-
-ASTNode *FunctionNilled::staticTypingImpl(StaticContext *context)
-{
-  _src.clear();
-
-  _src.getStaticType() = StaticType(StaticType::BOOLEAN_TYPE, 0, 1);
-  return calculateSRCForArguments(context);
 }
 
 Sequence FunctionNilled::createSequence(DynamicContext* context, int flags) const

@@ -34,15 +34,8 @@ const unsigned int FunctionAbs::maxArgs = 1;
  * fn:abs($arg as numeric?) as numeric?
  */
 FunctionAbs::FunctionAbs(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
-  : NumericFunction(name, minArgs, maxArgs, "anyAtomicType?", args, memMgr)
+  : NumericFunction(name, "($arg as xs:anyAtomicType?) as xs:anyAtomicType?", args, memMgr)
 {
-}
-
-ASTNode *FunctionAbs::staticTypingImpl(StaticContext *context)
-{
-  _src.clear();
-  _src.getStaticType() = StaticType(StaticType::NUMERIC_TYPE, 0, 1);
-  return NumericFunction::staticTypingImpl(context);
 }
 
 Result FunctionAbs::createResult(DynamicContext* context, int flags) const

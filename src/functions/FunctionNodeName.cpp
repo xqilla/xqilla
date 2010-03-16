@@ -37,16 +37,14 @@ const unsigned int FunctionNodeName::maxArgs = 1;
  */
 
 FunctionNodeName::FunctionNodeName(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
-  : ConstantFoldingFunction(name, minArgs, maxArgs, "node()?", args, memMgr)
+  : XQFunction(name, "($arg as node()?) as xs:QName?", args, memMgr)
 {
 }
 
 ASTNode *FunctionNodeName::staticTypingImpl(StaticContext *context)
 {
-  _src.clear();
-
-  ASTNode *result = calculateSRCForArguments(context);
-  if(result != this) return result;
+  _src.clearExceptType();
+  calculateSRCForArguments(context);
 
   if(_args[0]->getStaticAnalysis().getStaticType().getMin() == 1 &&
      _args[0]->getStaticAnalysis().getStaticType().isType(StaticType::ELEMENT_TYPE | StaticType::ATTRIBUTE_TYPE |

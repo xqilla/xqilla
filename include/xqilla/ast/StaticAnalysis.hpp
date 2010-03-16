@@ -52,6 +52,7 @@ public:
 
   /// Clears all the information in this StaticAnalysis
   void clear();
+  void clearExceptType();
 
   /** Overrides all the other flags, and never allows this sub-expression
       to be constant folded. */

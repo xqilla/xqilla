@@ -42,9 +42,8 @@ const unsigned int FunctionCaseFold::maxArgs = 1;
  */
 
 FunctionCaseFold::FunctionCaseFold(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
-  : XQillaFunction(name, minArgs, maxArgs, "string?", args, memMgr)
+  : XQillaFunction(name, "($arg as xs:string?) as xs:string", args, memMgr)
 {
-  _src.getStaticType() = StaticType::STRING_TYPE;
 }
 
 Sequence FunctionCaseFold::createSequence(DynamicContext* context, int flags) const

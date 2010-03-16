@@ -30,11 +30,10 @@ XERCES_CPP_NAMESPACE_USE
 #endif
 
 
-RegExpFunction::RegExpFunction(const XMLCh* name, unsigned int argsFrom, unsigned int argsTo, const char* paramDecl, const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
-  : ConstantFoldingFunction(name, argsFrom, argsTo, "string?, string, string", args, memMgr),
+RegExpFunction::RegExpFunction(const XMLCh* name, const char *signature, const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
+  : XQFunction(name, signature, args, memMgr),
     regExp_(0), pattern_(0), options_(0)
 {
-  _src.getStaticType() = StaticType::BOOLEAN_TYPE;
 }
 
 

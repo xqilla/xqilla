@@ -50,21 +50,21 @@ const unsigned int FunctionParseJSON::maxArgs = 1;
  * xqilla:parse-json($xml as xs:string?) as element()?
  */
 FunctionParseJSON::FunctionParseJSON(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
-  : XQillaFunction(name, minArgs, maxArgs, "string?", args, memMgr),
+  : XQillaFunction(name, "($xml as xs:string?) as element()?", args, memMgr),
     queryPathTree_(0)
 {
 }
 
 ASTNode *FunctionParseJSON::staticTypingImpl(StaticContext *context)
 {
-  _src.clear();
+  _src.clearExceptType();
 
   _src.setProperties(StaticAnalysis::DOCORDER | StaticAnalysis::GROUPED |
                      StaticAnalysis::PEER | StaticAnalysis::SUBTREE | StaticAnalysis::ONENODE);
-  _src.getStaticType() = StaticType(StaticType::ELEMENT_TYPE, 0, 1);
   _src.creative(true);
 
-  return calculateSRCForArguments(context);
+  calculateSRCForArguments(context);
+  return this;
 }
 
 const XMLCh JSON2XML_json[] = { 'j', 's', 'o', 'n', 0 };

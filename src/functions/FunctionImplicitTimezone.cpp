@@ -36,25 +36,20 @@ const unsigned int FunctionImplicitTimezone::maxArgs = 0;
 
 
 /**
- * fn:implicit-timezone() as xdt:dayTimeDuration
+ * fn:implicit-timezone() as xs:dayTimeDuration
 **/
 
 FunctionImplicitTimezone::FunctionImplicitTimezone(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
-  : XQFunction(name, minArgs, maxArgs, "empty()", args, memMgr)
+  : XQFunction(name, "() as xs:dayTimeDuration", args, memMgr)
 {
-}
-
-ASTNode* FunctionImplicitTimezone::staticResolution(StaticContext *context) {
-  return resolveArguments(context);
 }
 
 ASTNode *FunctionImplicitTimezone::staticTypingImpl(StaticContext *context)
 {
-  _src.clear();
-
-  _src.getStaticType() = StaticType::DAY_TIME_DURATION_TYPE;
+  _src.clearExceptType();
   _src.implicitTimezoneUsed(true);
-  return calculateSRCForArguments(context);
+  calculateSRCForArguments(context);
+  return this;
 }
 
 Sequence FunctionImplicitTimezone::createSequence(DynamicContext* context, int flags) const

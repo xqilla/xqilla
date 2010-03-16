@@ -41,21 +41,15 @@ const unsigned int FunctionMinutesFromTime::maxArgs = 1;
  */
 
 FunctionMinutesFromTime::FunctionMinutesFromTime(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
-  : XQFunction(name, minArgs, maxArgs, "time?", args, memMgr)
+  : XQFunction(name, "($arg as xs:time?) as xs:integer?", args, memMgr)
 {
-}
-
-ASTNode* FunctionMinutesFromTime::staticResolution(StaticContext *context)
-{
-  return resolveArguments(context, /*checkTimezone*/true);
 }
 
 ASTNode *FunctionMinutesFromTime::staticTypingImpl(StaticContext *context)
 {
-  _src.clear();
-
-  _src.getStaticType() = StaticType(StaticType::DECIMAL_TYPE, 0, 1);
-  return calculateSRCForArguments(context, /*checkTimezone*/true);
+  _src.clearExceptType();
+  calculateSRCForArguments(context, /*checkTimezone*/true);
+  return this;
 }
 
 Sequence FunctionMinutesFromTime::createSequence(DynamicContext* context, int flags) const

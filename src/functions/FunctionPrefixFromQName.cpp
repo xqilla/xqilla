@@ -41,9 +41,8 @@ const unsigned int FunctionPrefixFromQName::maxArgs = 1;
 **/
 
 FunctionPrefixFromQName::FunctionPrefixFromQName(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
-  : ConstantFoldingFunction(name, minArgs, maxArgs, "QName?", args, memMgr)
+  : XQFunction(name, "($arg as xs:QName?) as xs:NCName?", args, memMgr)
 {
-  _src.getStaticType() = StaticType(StaticType::STRING_TYPE, 0, 1);
 }
 
 Sequence FunctionPrefixFromQName::createSequence(DynamicContext* context, int flags) const

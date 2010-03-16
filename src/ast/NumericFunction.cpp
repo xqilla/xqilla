@@ -21,29 +21,35 @@
 #include <xqilla/ast/NumericFunction.hpp>
 #include <xqilla/exceptions/FunctionException.hpp>
 #include <xqilla/items/AnyAtomicType.hpp>
+#include <xqilla/functions/FunctionSignature.hpp>
+#include <xqilla/schema/SequenceType.hpp>
 
 #if defined(XERCES_HAS_CPP_NAMESPACE)
 XERCES_CPP_NAMESPACE_USE
 #endif
 
-NumericFunction::NumericFunction(const XMLCh* name, unsigned int argsFrom, unsigned int argsTo, const char* paramDecl, const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
-  : ConstantFoldingFunction(name,argsFrom, argsTo, paramDecl, args, memMgr) 
+NumericFunction::NumericFunction(const XMLCh* name, const char *signature, const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
+  : XQFunction(name, signature, args, memMgr)
 { 
 }
 
-ASTNode* NumericFunction::staticResolution(StaticContext *context) {
-  return resolveArguments(context, /*checkTimezone*/false, /*numericfunction*/true);
+ASTNode* NumericFunction::staticResolution(StaticContext *context)
+{
+  resolveArguments(context, /*numericFunction*/true);
+  return this;
 }
 
 ASTNode *NumericFunction::staticTypingImpl(StaticContext *context)
 {
-  ASTNode *result = calculateSRCForArguments(context, /*checkTimezone*/false, /*numericfunction*/true);
-  if(result == this) {
-    if(!_args[0]->getStaticAnalysis().getStaticType().containsType(StaticType::NUMERIC_TYPE) &&
-       _args[0]->getStaticAnalysis().getStaticType().getMin() > 0)
-      XQThrow(FunctionException,X("NumericFunction::staticTyping"), X("Non-numeric argument in numeric function [err:XPTY0004]"));
-  }
-  return result;
+  _src.clear();
+  calculateSRCForArguments(context);
+
+  if(!_args[0]->getStaticAnalysis().getStaticType().containsType(StaticType::NUMERIC_TYPE) &&
+     _args[0]->getStaticAnalysis().getStaticType().getMin() > 0)
+    XQThrow(FunctionException,X("NumericFunction::staticTyping"), X("Non-numeric argument in numeric function [err:XPTY0004]"));
+
+  _src.getStaticType() = StaticType(StaticType::NUMERIC_TYPE, 0, 1);
+  return this;
 }
 
 Numeric::Ptr NumericFunction::getNumericParam(unsigned int number, DynamicContext *context, int flags) const

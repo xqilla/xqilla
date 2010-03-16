@@ -46,27 +46,22 @@ const unsigned int FunctionAdjustDateTimeToTimezone::maxArgs = 2;
 
 /*
  * fn:adjust-dateTime-to-timezone($arg as xs:dateTime?) as xs:dateTime?
- * fn:adjust-dateTime-to-timezone($arg as xs:dateTime?, $timezone as xdt:dayTimeDuration?) as xs:dateTime?
+ * fn:adjust-dateTime-to-timezone($arg as xs:dateTime?, $timezone as xs:dayTimeDuration?) as xs:dateTime?
  */
 
 FunctionAdjustDateTimeToTimezone::FunctionAdjustDateTimeToTimezone(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
-  : XQFunction(name, minArgs, maxArgs, "dateTime?, dayTimeDuration?", args, memMgr)
+  : XQFunction(name, "($arg as xs:dateTime?, $timezone as xs:dayTimeDuration?) as xs:dateTime?", args, memMgr)
 {
-}
-
-ASTNode* FunctionAdjustDateTimeToTimezone::staticResolution(StaticContext *context) {
-  return resolveArguments(context);
 }
 
 ASTNode *FunctionAdjustDateTimeToTimezone::staticTypingImpl(StaticContext *context)
 {
-  _src.clear();
-
-  _src.getStaticType() = StaticType(StaticType::DATE_TIME_TYPE, 0, 1);
+  _src.clearExceptType();
   if(getNumArgs() == 1) {
     _src.implicitTimezoneUsed(true);
   }
-  return calculateSRCForArguments(context);
+  calculateSRCForArguments(context);
+  return this;
 }
 
 Sequence FunctionAdjustDateTimeToTimezone::createSequence(DynamicContext* context, int flags) const

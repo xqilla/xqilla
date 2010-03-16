@@ -39,21 +39,16 @@ const unsigned int FunctionPosition::maxArgs = 0;
  */
 
 FunctionPosition::FunctionPosition(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
-  : XQFunction(name, minArgs, maxArgs, "empty()", args, memMgr)
+  : XQFunction(name, "() as xs:integer", args, memMgr)
 {
-}
-
-ASTNode* FunctionPosition::staticResolution(StaticContext *context) {
-  return resolveArguments(context);
 }
 
 ASTNode *FunctionPosition::staticTypingImpl(StaticContext *context)
 {
-  _src.clear();
-
-  _src.getStaticType() = StaticType::DECIMAL_TYPE;
+  _src.clearExceptType();
   _src.contextPositionUsed(true);
-  return calculateSRCForArguments(context);
+  calculateSRCForArguments(context);
+  return this;
 }
 
 class FunctionPositionResult : public ResultImpl

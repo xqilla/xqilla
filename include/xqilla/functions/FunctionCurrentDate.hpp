@@ -17,10 +17,6 @@
  * limitations under the License.
  */
 
-/*
-   current-date function
-*/
-
 #ifndef _FUNCTIONCURRENTDATE_HPP
 #define _FUNCTIONCURRENTDATE_HPP
 
@@ -28,7 +24,6 @@
 
 #include <xqilla/ast/XQFunction.hpp>
 
-/** Current-date function*/
 class XQILLA_API FunctionCurrentDate : public XQFunction
 {
 public:
@@ -38,13 +33,12 @@ public:
 
   FunctionCurrentDate(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
   
-  virtual ASTNode* staticResolution(StaticContext *context);
   virtual ASTNode *staticTypingImpl(StaticContext *context);
 
   Sequence createSequence(DynamicContext* context, int flags=0) const;
 };
 
-#endif // _FUNCTIONCURRENTDATE_HPP
+#endif
 
 
 

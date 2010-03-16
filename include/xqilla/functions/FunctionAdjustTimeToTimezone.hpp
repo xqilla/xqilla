@@ -24,12 +24,6 @@
 
 #include <xqilla/ast/XQFunction.hpp>
 
-/**
- * Adjusts a time to a specific timezone, or to no timezone at all
- *
- *  fn:adjust-time-to-timezone(time? $srcval) => time?
- *  fn:adjust-time-to-timezone(time? $srcval, dayTimeDuration? $timezone) => time?
- */
 class XQILLA_API FunctionAdjustTimeToTimezone : public XQFunction
 {
 public:
@@ -37,23 +31,11 @@ public:
   static const unsigned int minArgs;
   static const unsigned int maxArgs;
 
-  /**
-   * Constructor
-   */
    FunctionAdjustTimeToTimezone(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
 
-  /**
-   * Called during static analysis to determine if statically correct.
-   * Performs constant folding if the function has two arguments, and
-   * they are constant.
-   */
-  virtual ASTNode* staticResolution(StaticContext *context);
   virtual ASTNode *staticTypingImpl(StaticContext *context);
 
-  /**
-   * Adjusts a time to a specific timezone, or to no timezone at all
-   */
   Sequence createSequence(DynamicContext* context, int flags=0) const;
 };
 
-#endif // _FUNCTIONADJUSTTIMETOTIMEZONE_HPP
+#endif

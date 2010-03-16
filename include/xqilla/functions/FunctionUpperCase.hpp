@@ -22,7 +22,7 @@
 
 #include <xqilla/framework/XQillaExport.hpp>
 
-#include <xqilla/ast/ConstantFoldingFunction.hpp>
+#include <xqilla/ast/XQFunction.hpp>
 
 /**
  * Returns the given value after translating every lower-case letter to its
@@ -31,7 +31,7 @@
  * xf:upper-case(string? $srcval) =>  string?
  * 
  */
-class XQILLA_API FunctionUpperCase : public ConstantFoldingFunction
+class XQILLA_API FunctionUpperCase : public XQFunction
 {
 public:
   static const XMLCh name[];

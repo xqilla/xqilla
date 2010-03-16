@@ -40,22 +40,23 @@ const unsigned int FunctionCount::maxArgs = 1;
 **/
 
 FunctionCount::FunctionCount(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
-  : ConstantFoldingFunction(name, minArgs, maxArgs, "item()*", args, memMgr)
+  : XQFunction(name, "($arg as item()*) as xs:integer", args, memMgr)
 {
 }
 
-ASTNode* FunctionCount::staticResolution(StaticContext *context) {
+ASTNode* FunctionCount::staticResolution(StaticContext *context)
+{
   AutoNodeSetOrderingReset orderReset(context);
-  return resolveArguments(context);
+  resolveArguments(context);
+  return this;
 }
 
 ASTNode *FunctionCount::staticTypingImpl(StaticContext *context)
 {
-  _src.clear();
-  _src.getStaticType() = StaticType::DECIMAL_TYPE;
+  _src.clearExceptType();
+  calculateSRCForArguments(context);
 
-  ASTNode *result = calculateSRCForArguments(context);
-  if(context && result == this) {
+  if(context) {
     const StaticAnalysis &sa = _args[0]->getStaticAnalysis();
     const StaticType &sType = sa.getStaticType();
     if(sType.getMin() == sType.getMax() && !sa.areDocsOrCollectionsUsed() && !sa.isNoFoldingForced()) {
@@ -72,7 +73,7 @@ ASTNode *FunctionCount::staticTypingImpl(StaticContext *context)
     }
   }
 
-  return result;
+  return this;
 }
 
 Sequence FunctionCount::createSequence(DynamicContext* context, int flags) const

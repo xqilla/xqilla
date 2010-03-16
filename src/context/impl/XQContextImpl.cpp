@@ -50,6 +50,7 @@
 #include <xqilla/functions/XQillaFunction.hpp>
 #include <xqilla/dom-api/impl/XQillaNSResolverImpl.hpp>
 #include <xqilla/simple-api/XQillaConfiguration.hpp>
+#include <xqilla/schema/SequenceType.hpp>
 
 XERCES_CPP_NAMESPACE_USE;
 

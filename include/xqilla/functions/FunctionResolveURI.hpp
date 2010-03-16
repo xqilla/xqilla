@@ -24,12 +24,6 @@
 #include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/ast/XQFunction.hpp>
 
-/***
- *  Returns an absolute anyURI given a base URI and a relative URI.
- *
- *  fn:resolve-uri(anyURI $relative) => anyURI
- *  fn:resolve-uri(anyURI $relative, anyURI $base) => anyURI
- */
 class XQILLA_API FunctionResolveURI : public XQFunction
 {
 public:
@@ -40,18 +34,14 @@ public:
   FunctionResolveURI(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
   
   ASTNode* staticResolution(StaticContext *context);
-  virtual ASTNode *staticTypingImpl(StaticContext *context);
 
- /** 
-  * Returns an absolute anyURI given a base URI and a relative URI.
-  **/
   Sequence createSequence(DynamicContext* context, int flags=0) const;
 
 private:
   const XMLCh *baseURI_;
 };
 
-#endif // _FUNCTIONRESOLVEURI_HPP
+#endif
 
 
 

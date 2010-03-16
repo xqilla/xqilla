@@ -37,22 +37,8 @@ const unsigned int FunctionFunctionName::maxArgs = 1;
  * fn:function-name($function as function()) as xs:QName?
  */
 FunctionFunctionName::FunctionFunctionName(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
-  : XQFunction(name, minArgs, maxArgs, "function()", args, memMgr)
+  : XQFunction(name, "($function as function()) as xs:QName?", args, memMgr)
 {
-}
-
-ASTNode* FunctionFunctionName::staticResolution(StaticContext *context)
-{
-  return resolveArguments(context);
-}
-
-ASTNode *FunctionFunctionName::staticTypingImpl(StaticContext *context)
-{
-  _src.clear();
-
-  _src.getStaticType() = StaticType::DECIMAL_TYPE;
-
-  return calculateSRCForArguments(context);
 }
 
 Sequence FunctionFunctionName::createSequence(DynamicContext* context, int flags) const

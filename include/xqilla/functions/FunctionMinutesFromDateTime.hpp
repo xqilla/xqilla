@@ -24,11 +24,6 @@
 
 #include <xqilla/ast/XQFunction.hpp>
 
-/**
- * Getter function for the minutes component of dateTime.
- *
- *  minutes-from-dateTime(dateTime $srcval) => integer
- */
 class XQILLA_API FunctionMinutesFromDateTime : public XQFunction
 {
 public:
@@ -36,22 +31,14 @@ public:
   static const unsigned int minArgs;
   static const unsigned int maxArgs;
 
-  /**
-   * Constructor.
-   */
   FunctionMinutesFromDateTime(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
 
-  ASTNode* staticResolution(StaticContext *context);
   virtual ASTNode *staticTypingImpl(StaticContext *context);
 
-  /**
-   * Returns an integer representing the minutes component in the value
-   * of $srcval.
-   */
   Sequence createSequence(DynamicContext* context, int flags=0) const;
 };
 
-#endif // _FUNCTIONGETMINUTESFROMDATETIME_HPP
+#endif
 
 
 

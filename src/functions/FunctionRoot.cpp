@@ -44,7 +44,7 @@ const unsigned int FunctionRoot::maxArgs = 1;
 **/
 
 FunctionRoot::FunctionRoot(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
-  : XQFunction(name, minArgs, maxArgs, "node()?", args, memMgr)
+  : XQFunction(name, "($arg as node()?) as node()?", args, memMgr)
 {
 }
 
@@ -58,7 +58,8 @@ ASTNode* FunctionRoot::staticResolution(StaticContext *context)
     _args.push_back(ci);
   }
 
-  return resolveArguments(context);
+  resolveArguments(context);
+  return this;
 }
 
 ASTNode *FunctionRoot::staticTypingImpl(StaticContext *context)

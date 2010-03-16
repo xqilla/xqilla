@@ -39,13 +39,8 @@ const unsigned int FunctionTime::maxArgs = 2;
  * xqilla:time($value as item()*, $label as xs:string) as item()*
  */
 FunctionTime::FunctionTime(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
-  : XQillaFunction(name, minArgs, maxArgs, "item()*, string", args, memMgr)
+  : XQillaFunction(name, "($value as item()*, $label as xs:string) as item()*", args, memMgr)
 {
-}
-
-ASTNode *FunctionTime::staticResolution(StaticContext *context)
-{
-  return resolveArguments(context);
 }
 
 ASTNode *FunctionTime::staticTypingImpl(StaticContext *context)
@@ -53,7 +48,6 @@ ASTNode *FunctionTime::staticTypingImpl(StaticContext *context)
   _src.clear();
 
   _src.copy(_args[0]->getStaticAnalysis());
-
   _src.add(_args[1]->getStaticAnalysis());
 
   if(_args[1]->getStaticAnalysis().isUpdating()) {

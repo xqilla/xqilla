@@ -52,6 +52,12 @@ void StaticAnalysis::copy(const StaticAnalysis &o)
 
 void StaticAnalysis::clear()
 {
+  clearExceptType();
+  _staticType = StaticType();
+}
+
+void StaticAnalysis::clearExceptType()
+{
   _contextItem = false;
   _contextPosition = false;
   _contextSize = false;
@@ -65,7 +71,6 @@ void StaticAnalysis::clear()
   _possiblyUpdating = false;
 
   _properties = 0;
-  _staticType = StaticType();
 
   VarEntry *tmp;
   while(_dynamicVariables) {

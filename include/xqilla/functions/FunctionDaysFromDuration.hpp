@@ -22,14 +22,14 @@
 
 #include <xqilla/framework/XQillaExport.hpp>
 
-#include <xqilla/ast/ConstantFoldingFunction.hpp>
+#include <xqilla/ast/XQFunction.hpp>
 
 /**
  * Getter for the days component of dayTimeDuration.
  *
  *  days-from-Duration(dayTimeDuration? $srcval) => integer?
  */
-class XQILLA_API FunctionDaysFromDuration : public ConstantFoldingFunction
+class XQILLA_API FunctionDaysFromDuration : public XQFunction
 {
 public:
   static const XMLCh name[];

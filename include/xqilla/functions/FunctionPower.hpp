@@ -31,7 +31,6 @@ public:
 
   FunctionPower(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
 
-  virtual ASTNode *staticTypingImpl(StaticContext *context);
   virtual Result createResult(DynamicContext* context, int flags=0) const;
 };
 

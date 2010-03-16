@@ -37,21 +37,16 @@ const unsigned int FunctionLast::maxArgs = 0;
 **/
 
 FunctionLast::FunctionLast(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
-  : XQFunction(name, minArgs, maxArgs, "empty()", args, memMgr)
+  : XQFunction(name, "() as xs:integer", args, memMgr)
 {
-}
-
-ASTNode* FunctionLast::staticResolution(StaticContext *context) {
-  return resolveArguments(context);
 }
 
 ASTNode *FunctionLast::staticTypingImpl(StaticContext *context)
 {
-  _src.clear();
-
-  _src.getStaticType() = StaticType::DECIMAL_TYPE;
+  _src.clearExceptType();
   _src.contextSizeUsed(true);
-  return calculateSRCForArguments(context);
+  calculateSRCForArguments(context);
+  return this;
 }
 
 Sequence FunctionLast::createSequence(DynamicContext* context, int flags) const

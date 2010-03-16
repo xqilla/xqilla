@@ -37,23 +37,16 @@ const unsigned int FunctionRegexGroup::maxArgs = 1;
  * fn:regex-group($group-number as xs:integer) as xs:string  
  **/
 FunctionRegexGroup::FunctionRegexGroup(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
-  : XQFunction(name, minArgs, maxArgs, "integer", args, memMgr)
+  : XQFunction(name, "($group-number as xs:integer) as xs:string", args, memMgr)
 {
-}
-
-ASTNode* FunctionRegexGroup::staticResolution(StaticContext *context)
-{
-  return resolveArguments(context);
 }
 
 ASTNode *FunctionRegexGroup::staticTypingImpl(StaticContext *context)
 {
-  _src.clear();
-
-  _src.getStaticType() = StaticType(StaticType::STRING_TYPE, 1, 1);
+  _src.clearExceptType();
   _src.forceNoFolding(true);
-
-  return calculateSRCForArguments(context);
+  calculateSRCForArguments(context);
+  return this;
 }
 
 Sequence FunctionRegexGroup::createSequence(DynamicContext *context, int flags) const

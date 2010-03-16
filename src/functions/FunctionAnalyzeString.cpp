@@ -43,43 +43,16 @@ const unsigned int FunctionAnalyzeString::maxArgs = 4;
  *   $action as function(xs:string, xs:boolean) as item()*, $flags as xs:string) as item()*
  */
 FunctionAnalyzeString::FunctionAnalyzeString(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
-  : XQillaFunction(name, minArgs, maxArgs, "string?, string, item()*, string", args, memMgr)
+  : XQillaFunction(name, "($input as xs:string?, $pattern as xs:string, "
+                   "$action as function(xs:string, xs:boolean) as item()*, $flags as xs:string) as item()*", args, memMgr)
 {
-}
-
-ASTNode *FunctionAnalyzeString::staticResolution(StaticContext *context)
-{
-  XPath2MemoryManager *mm = context->getMemoryManager();
-
-  VectorOfSequenceTypes *args = new (mm) VectorOfSequenceTypes(XQillaAllocator<SequenceType*>(mm));
-  SequenceType *arg1Type = new (mm) SequenceType(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-                                                 SchemaSymbols::fgDT_STRING,
-                                                 SequenceType::EXACTLY_ONE, mm);
-  arg1Type->setLocationInfo(this);
-  args->push_back(arg1Type);
-  SequenceType *arg2Type = new (mm) SequenceType(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-                                                 SchemaSymbols::fgDT_BOOLEAN,
-                                                 SequenceType::EXACTLY_ONE, mm);
-  arg2Type->setLocationInfo(this);
-  args->push_back(arg2Type);
-  SequenceType *returnType = new (mm) SequenceType(new (mm) SequenceType::ItemType(SequenceType::ItemType::TEST_ANYTHING), SequenceType::STAR);
-  returnType->setLocationInfo(this);
-  SequenceType *seqType = new (mm) SequenceType(new (mm) SequenceType::ItemType(args, returnType), SequenceType::EXACTLY_ONE);
-  seqType->setLocationInfo(this);
-
-  _paramDecl[2] = seqType;
-
-  return resolveArguments(context);
 }
 
 ASTNode *FunctionAnalyzeString::staticTypingImpl(StaticContext *context)
 {
-  _src.clear();
-
+  _src.clearExceptType();
   _src.setProperties(0);
-
-  ASTNode *result = calculateSRCForArguments(context);
-  if(result != this) return result;
+  calculateSRCForArguments(context);
 
   // TBD Precompile the regex - jpcs
 

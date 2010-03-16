@@ -17,12 +17,6 @@
  * limitations under the License.
  */
 
-/*
-
-  Error function
-
-*/
-
 #ifndef _FUNCTIONError_HPP
 #define _FUNCTIONError_HPP
 
@@ -39,14 +33,13 @@ public:
 
   FunctionError(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
 
-  ASTNode* staticResolution(StaticContext *context);
   virtual ASTNode *staticTypingImpl(StaticContext *context);
 
   Sequence createSequence(DynamicContext* context, int flags=0) const;
   virtual PendingUpdateList createUpdateList(DynamicContext *context) const;
 };
 
-#endif // _FUNCTIONError_HPP
+#endif
 
 
 

@@ -45,7 +45,7 @@ const unsigned int FunctionStaticBaseURI::maxArgs = 0;
 **/
 
 FunctionStaticBaseURI::FunctionStaticBaseURI(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
-  : XQFunction(name, minArgs, maxArgs, "empty()", args, memMgr)
+  : XQFunction(name, "() as xs:anyURI?", args, memMgr)
 {
 }
 

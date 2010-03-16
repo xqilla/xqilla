@@ -30,50 +30,40 @@
 #include <vector>
 
 class SequenceType;
+class FunctionSignature;
 
 class XQILLA_API XQFunction : public ASTNodeImpl
 {
-
 public:
-  XQFunction(const XMLCh* name, size_t argsFrom, size_t argsTo, const char* paramDecl, const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
-
-  const XMLCh* getFunctionURI()const;
-  const XMLCh* getFunctionName()const;
-  const XMLCh* getFunctionSignature() const;
-  const VectorOfASTNodes &getArguments() const;
-  
   static const XMLCh XMLChFunctionURI[];
 
-  /** Wraps the arguments in the appropriate conversion functions,
-      calls static resolution on them, and constant folds if
-      this function's StaticAnalysis is not used */
-  ASTNode *resolveArguments(StaticContext *context, bool checkTimezone = false, bool numericFunction = false);
-  ASTNode *calculateSRCForArguments(StaticContext *context, bool checkTimezone = false, bool numericFunction = false);
+  XQFunction(const XMLCh *name, const char *signature, const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
+
+  const XMLCh* getFunctionURI()const { return uri_; }
+  const XMLCh* getFunctionName()const { return name_; }
+  FunctionSignature *getSignature() const { return signature_; }
+  void setSignature(FunctionSignature *s) { signature_ = s; }
+  const VectorOfASTNodes &getArguments() const { return _args; }
+  size_t getNumArgs() const;
+  
+  virtual ASTNode *staticResolution(StaticContext *context);
+  virtual ASTNode *staticTypingImpl(StaticContext *context);
 
   virtual Result createResult(DynamicContext* context, int flags=0) const;
   virtual Sequence createSequence(DynamicContext* context, int flags=0) const;
 
-  /** casts the expression given as a parameter into the appropriate type and returns the guaranteed correctly typed objects in a sequence  */
   virtual Result getParamNumber(size_t number, DynamicContext* context, int flags=0) const;
 
-  /** returns the number of parameters passed into the function */
-  size_t getNumArgs() const;
+  void parseSignature(StaticContext *context);
 
 protected:
+  void resolveArguments(StaticContext *context, bool numericFunction = false);
+  void calculateSRCForArguments(StaticContext *context, bool checkTimezone = false);
 
-  /** Helper method, produces a single ATStringOrDerived from the output of getParamNumber(). If getParamNumber() returns anything other than a single string, an exception is thrown. */
-  static const size_t UNLIMITED;
-
-  //parse the supplied string of comma separated arguments into vector of SequenceTypes
-  void parseParamDecl(const char* paramString, XPath2MemoryManager *mm);
-
-  const XMLCh *_fName, *_fURI, *_signature;
-  const size_t _nArgsFrom, _nArgsTo;
-
-  std::vector<SequenceType*, XQillaAllocator<SequenceType*> > _paramDecl;
-
-  VectorOfASTNodes _args; // The real store for arguments 
-
+  const XMLCh *name_, *uri_;
+  const char *sigString_;
+  FunctionSignature *signature_;
+  VectorOfASTNodes _args;
 };
 
 #endif

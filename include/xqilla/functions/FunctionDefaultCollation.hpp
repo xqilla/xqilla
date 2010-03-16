@@ -27,10 +27,10 @@
 #ifndef _FUNCTIONDEFAULTCOLLATION_HPP
 #define _FUNCTIONDEFAULTCOLLATION_HPP
 
-#include <xqilla/ast/ConstantFoldingFunction.hpp>
+#include <xqilla/ast/XQFunction.hpp>
 
 /** default-collation function*/
-class XQILLA_API FunctionDefaultCollation : public ConstantFoldingFunction
+class XQILLA_API FunctionDefaultCollation : public XQFunction
 {
 public:
   static const XMLCh name[];

@@ -17,12 +17,6 @@
  * limitations under the License.
  */
 
-/*
-
-   Name function
-
-*/
-
 #ifndef _FUNCTIONNAME_HPP
 #define _FUNCTIONNAME_HPP
 
@@ -31,7 +25,6 @@
 #include <xqilla/ast/XQFunction.hpp>
 #include <xqilla/runtime/Sequence.hpp>
 
-/** Name function */
 class XQILLA_API FunctionName : public XQFunction
 {
 public:
@@ -41,20 +34,11 @@ public:
 
   FunctionName(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
   
-  /**
-   * Called during static analysis to determine if statically correct.
-   * Performs constant folding if the function has an argument, and it
-   * is constant.
-   */
   virtual ASTNode* staticResolution(StaticContext *context);
-  virtual ASTNode *staticTypingImpl(StaticContext *context);
 
-  /** Returns the namespace unaware name of the node. Takes an optional nodelist,
-      and returns an empty string if the node has no name. Uses the current context
-      if a nodelist is not specified. */
   Sequence createSequence(DynamicContext* context, int flags=0) const;
 
 };
 
-#endif // _FUNCTIONNAME_HPP
+#endif
 

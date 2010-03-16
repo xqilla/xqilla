@@ -89,6 +89,7 @@ typedef struct yyltype
 #include <xqilla/schema/SequenceType.hpp>
 #include <xqilla/parser/QName.hpp>
 #include <xqilla/functions/XQUserFunction.hpp>
+#include <xqilla/functions/FunctionSignature.hpp>
 #include <xqilla/ast/XQTypeswitch.hpp>
 #include <xqilla/ast/XQPredicate.hpp>
 #include <xqilla/fulltext/FTSelection.hpp>
@@ -105,11 +106,11 @@ typedef union {
   ASTNode* astNode;
   XQSequence *parenExpr;
   XQUserFunction* functDecl;
-  XQUserFunction::ArgumentSpec* argSpec;
-  XQUserFunction::ArgumentSpecs* argSpecs;
+  ArgumentSpec* argSpec;
+  ArgumentSpecs* argSpecs;
+  FunctionSignature *signature;
   XQUserFunction::Mode* mode;
   XQUserFunction::ModeList* modeList;
-  XQUserFunction::Options *functionOptions;
   XQGlobalVariable *globalVar;
   NodeTest *nodeTest;
   XQStep::Axis axis;
@@ -191,6 +192,9 @@ public:
 
   virtual void undoLessThan() = 0;
   virtual XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathNSResolver *getNSResolver() const { return 0; }
+
+  const XMLCh *getFile() const { return m_szQueryFile; }
+  XPath2MemoryManager *getMemoryManager() const { return mm_; }
 
 protected:
   Lexer(XPath2MemoryManager *mm, XQilla::Language lang, const XMLCh *queryFile, int line, int column)
@@ -300,10 +304,22 @@ public:
   {
   }
 
+  XQParserArgs(Lexer *lexer)
+    : _lexer(lexer),
+      _context(0),
+      _query(0),
+      _function(0),
+      _moduleName(0),
+      _flags(32),
+      _namespaceDecls(13)
+  {
+  }
+
   Lexer* _lexer;
   DynamicContext* _context;
   XQQuery* _query;
   XQUserFunction *_function;
+  FunctionSignature *_signature;
   const XMLCh *_moduleName;
   XERCES_CPP_NAMESPACE_QUALIFIER BitSet _flags;
   XERCES_CPP_NAMESPACE_QUALIFIER RefHashTableOf<XMLCh> _namespaceDecls;

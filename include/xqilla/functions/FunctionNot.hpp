@@ -17,21 +17,14 @@
  * limitations under the License.
  */
 
-/*
-
-  Not function
-
-*/
-
 #ifndef _FUNCTIONNOT_HPP
 #define _FUNCTIONNOT_HPP
 
 #include <xqilla/framework/XQillaExport.hpp>
 
-#include <xqilla/ast/ConstantFoldingFunction.hpp>
+#include <xqilla/ast/XQFunction.hpp>
 
-/** Not operator function. */
-class XQILLA_API FunctionNot : public ConstantFoldingFunction
+class XQILLA_API FunctionNot : public XQFunction
 {
 public:
   static const XMLCh name[];
@@ -41,11 +34,9 @@ public:
   FunctionNot(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
   
   ASTNode* staticResolution(StaticContext *context);
-  virtual ASTNode *staticTypingImpl(StaticContext *context);
-  /** negates the argument **/
   Sequence createSequence(DynamicContext* context, int flags=0) const;
 
 };
 
-#endif // _FUNCTIONNOT_HPP
+#endif
 

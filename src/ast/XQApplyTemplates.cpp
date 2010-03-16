@@ -26,6 +26,8 @@
 #include <xqilla/utils/XPath2NSUtils.hpp>
 #include <xqilla/utils/XPath2Utils.hpp>
 #include <xqilla/runtime/ClosureResult.hpp>
+#include <xqilla/schema/SequenceType.hpp>
+#include <xqilla/functions/FunctionSignature.hpp>
 
 #include <xercesc/framework/XMLBuffer.hpp>
 
@@ -194,9 +196,9 @@ Result XQApplyTemplates::executeTemplate(const XQUserFunction *tplt, const Templ
   if(scope == 0) scope = &localscope;
 
   // Check to see if we set the correct parameters for the template
-  if(tplt->getArgumentSpecs() != 0) {
-    XQUserFunction::ArgumentSpecs::const_iterator argIt = tplt->getArgumentSpecs()->begin();
-    for(; argIt != tplt->getArgumentSpecs()->end(); ++argIt) {
+  if(tplt->getSignature()->argSpecs != 0) {
+    ArgumentSpecs::const_iterator argIt = tplt->getSignature()->argSpecs->begin();
+    for(; argIt != tplt->getSignature()->argSpecs->end(); ++argIt) {
       bool found = false;
 
       if(args != 0) {

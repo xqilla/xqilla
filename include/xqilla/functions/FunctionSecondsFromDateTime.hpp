@@ -24,11 +24,6 @@
 
 #include <xqilla/ast/XQFunction.hpp>
 
-/**
- * Getter function for seconds comoponent of dateTime.
- *
- * seconds-from-dateTime(dateTime $srcval) => decimal
- */
 class XQILLA_API FunctionSecondsFromDateTime : public XQFunction
 {
 public:
@@ -36,22 +31,14 @@ public:
   static const unsigned int minArgs;
   static const unsigned int maxArgs;
 
-  /**
-   * Constructor.
-   */
   FunctionSecondsFromDateTime(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
 
-  ASTNode* staticResolution(StaticContext *context);
   virtual ASTNode *staticTypingImpl(StaticContext *context);
 
-  /**
-   * Returns a decimal representing the seconds component in the value of 
-   * $srcval.
-   */
   Sequence createSequence(DynamicContext* context, int flags=0) const;
 };
 
-#endif // _FUNCTIONGETSECONDSFROMDATETIME_HPP
+#endif
 
 
 

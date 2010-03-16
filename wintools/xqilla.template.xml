@@ -128,7 +128,6 @@
         <file name='include/xqilla/ast/XQVariable.hpp'/>
         <file name='include/xqilla/ast/StaticAnalysis.hpp'/>
         <file name='include/xqilla/ast/StaticType.hpp'/>
-        <file name='include/xqilla/ast/ConstantFoldingFunction.hpp'/>
         <file name='include/xqilla/ast/NumericFunction.hpp'/>
         <file name='include/xqilla/ast/XQDOMConstructor.hpp'/>
         <file name='include/xqilla/ast/XQDocumentConstructor.hpp'/>
@@ -383,6 +382,7 @@
         <file name='include/xqilla/functions/FuncFactory.hpp'/>
         <file name='include/xqilla/functions/RegExpFunction.hpp'/>
         <file name='include/xqilla/functions/XQUserFunction.hpp'/>
+        <file name='include/xqilla/functions/FunctionSignature.hpp'/>
         <file name='include/xqilla/functions/XQillaFunction.hpp'/>
         <file name='include/xqilla/functions/BuiltInModules.hpp'/>
         <file name='include/xqilla/items/ATAnySimpleType.hpp'/>
@@ -520,7 +520,6 @@
       </filter>
       <filter name="ast">
         <file name="src/ast/ASTNodeImpl.cpp"/>
-        <file name="src/ast/ConstantFoldingFunction.cpp"/>
         <file name="src/ast/TupleNode.cpp"/>
         <file name="src/ast/ContextTuple.cpp"/>
         <file name="src/ast/ConvertFunctionArg.cpp"/>
@@ -817,6 +816,7 @@
         <file name="src/functions/FunctionZeroOrOne.cpp"/>
         <file name="src/functions/RegExpFunction.cpp"/>
         <file name="src/functions/XQUserFunction.cpp"/>
+        <file name="src/functions/FunctionSignature.cpp"/>
         <file name="src/functions/XQillaFunction.cpp"/>
         <file name="src/functions/BuiltInModules.cpp"/>
         <file name="src/functions/CoreModule.hpp"/>

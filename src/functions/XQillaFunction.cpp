@@ -81,9 +81,9 @@ const XMLCh XQillaFunction::XMLChFunctionURI[] = {
 	chNull
 };
 
-XQillaFunction::XQillaFunction(const XMLCh* name, unsigned int argsFrom, unsigned int argsTo, const char* paramDecl, const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
-  : ConstantFoldingFunction(name, argsFrom, argsTo, paramDecl, args, memMgr)
+XQillaFunction::XQillaFunction(const XMLCh* name, const char *signature, const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
+  : XQFunction(name, signature, args, memMgr)
 {
-	_fURI = XMLChFunctionURI;
+  uri_ = XMLChFunctionURI;
 }
 

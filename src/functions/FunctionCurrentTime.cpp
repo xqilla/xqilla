@@ -42,21 +42,16 @@ const unsigned int FunctionCurrentTime::maxArgs = 0;
 **/
 
 FunctionCurrentTime::FunctionCurrentTime(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
-  : XQFunction(name, minArgs, maxArgs, "empty()", args, memMgr)
+  : XQFunction(name, "() as xs:time", args, memMgr)
 {
-}
-
-ASTNode* FunctionCurrentTime::staticResolution(StaticContext *context) {
-  return resolveArguments(context);
 }
 
 ASTNode *FunctionCurrentTime::staticTypingImpl(StaticContext *context)
 {
-  _src.clear();
-
-  _src.getStaticType() = StaticType::TIME_TYPE;
+  _src.clearExceptType();
   _src.currentTimeUsed(true);
-  return calculateSRCForArguments(context);
+  calculateSRCForArguments(context);
+  return this;
 }
 
 Sequence FunctionCurrentTime::createSequence(DynamicContext* context, int flags) const

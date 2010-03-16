@@ -24,11 +24,6 @@
 
 #include <xqilla/ast/XQFunction.hpp>
 
-/**
- * Getter function for hours component of time.
- *
- * xf:hours-from-time(time? $srcval) => integer?
- */
 class XQILLA_API FunctionHoursFromTime : public XQFunction
 {
 public:
@@ -36,21 +31,14 @@ public:
   static const unsigned int minArgs;
   static const unsigned int maxArgs;
 
-  /**
-   * Constructor
-   */
   FunctionHoursFromTime(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
 
-  ASTNode* staticResolution(StaticContext *context);
   virtual ASTNode *staticTypingImpl(StaticContext *context);
 
-  /**
-   * Returns the integer representing the hours in the value of $srcval
-   */
   Sequence createSequence(DynamicContext* context, int flags=0) const;
 };
 
-#endif // _FUNCTIONGETHOURSFROMTIME_HPP
+#endif
 
 
 

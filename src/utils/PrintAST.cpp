@@ -80,6 +80,7 @@
 #include <xqilla/ast/XQMap.hpp>
 #include <xqilla/debug/ASTDebugHook.hpp>
 #include <xqilla/functions/XQUserFunction.hpp>
+#include <xqilla/functions/FunctionSignature.hpp>
 
 #include <xqilla/fulltext/FTContains.hpp>
 #include <xqilla/fulltext/FTSelection.hpp>
@@ -218,7 +219,7 @@ string PrintAST::printXQUserFunction(const XQUserFunction *f, const DynamicConte
   if(name != "") {
     s << " name=\"" << name << "\"";
   }
-  if(f->getArgumentSpecs() == NULL && f->getPattern() == NULL && f->getFunctionBody() == NULL && f->getReturnType() == NULL) {
+  if(f->getSignature()->argSpecs == NULL && f->getSignature()->returnType == NULL && f->getPattern() == NULL && f->getFunctionBody() == NULL) {
     s << "/>" << endl;
   } else {
     s <<">" << endl;
@@ -232,9 +233,9 @@ string PrintAST::printXQUserFunction(const XQUserFunction *f, const DynamicConte
       s << in << "  </Pattern>" << endl;
     }
 
-    if(f->getArgumentSpecs() != NULL) {
-      XQUserFunction::ArgumentSpecs::const_iterator argIt;
-      for(argIt = f->getArgumentSpecs()->begin(); argIt != f->getArgumentSpecs()->end(); ++argIt) {
+    if(f->getSignature()->argSpecs != NULL) {
+      ArgumentSpecs::const_iterator argIt;
+      for(argIt = f->getSignature()->argSpecs->begin(); argIt != f->getSignature()->argSpecs->end(); ++argIt) {
         if((*argIt)->isUsed()) {
           s << in << "  <Parameter name=\"";
           if((*argIt)->getQName() != 0) {
@@ -878,10 +879,10 @@ string PrintAST::printUserFunction(const XQUserFunctionInstance *item, const Dyn
     s << in << "<Template name=\"" << name << "\"";
   else s << in << "<UserFunction name=\"" << name << "\"";
 
-  if(item->getFunctionDefinition()->getArgumentSpecs() && !item->getFunctionDefinition()->getArgumentSpecs()->empty()) {
+  if(item->getFunctionDefinition()->getSignature()->argSpecs && !item->getFunctionDefinition()->getSignature()->argSpecs->empty()) {
     s << ">" << endl;
-    XQUserFunction::ArgumentSpecs::const_iterator binding = item->getFunctionDefinition()->getArgumentSpecs()->begin();
-    for(VectorOfASTNodes::const_iterator arg = args.begin(); arg != args.end() && binding != item->getFunctionDefinition()->getArgumentSpecs()->end(); ++arg, ++binding) {
+    ArgumentSpecs::const_iterator binding = item->getFunctionDefinition()->getSignature()->argSpecs->begin();
+    for(VectorOfASTNodes::const_iterator arg = args.begin(); arg != args.end() && binding != item->getFunctionDefinition()->getSignature()->argSpecs->end(); ++arg, ++binding) {
       if((*binding)->isUsed()) {
         s << in << "  <Binding name=\"";
         if((*binding)->getQName() != 0) {

@@ -63,6 +63,7 @@
 #include <xqilla/functions/FunctionUnordered.hpp>
 #include <xqilla/functions/FunctionHead.hpp>
 #include <xqilla/functions/FunctionTail.hpp>
+#include <xqilla/functions/FunctionSignature.hpp>
 
 #include <xqilla/update/FunctionPut.hpp>
 
@@ -153,11 +154,11 @@ void QueryPathTreeGenerator::optimize(XQQuery *query)
 XQUserFunction *QueryPathTreeGenerator::optimizeFunctionDef(XQUserFunction *item)
 {
   if(item->getFunctionBody() != 0) {
-    const XQUserFunction::ArgumentSpecs *params = item->getArgumentSpecs();
+    const ArgumentSpecs *params = item->getSignature()->argSpecs;
     if(params) {
       varStore_.addScope(VarStore::MyScope::LOCAL_SCOPE);
 
-      for(XQUserFunction::ArgumentSpecs::const_iterator it = params->begin();
+      for(ArgumentSpecs::const_iterator it = params->begin();
           it != params->end(); ++it) {
           PathResult paramRes;
           if((*it)->getStaticAnalysis().getStaticType().containsType(StaticType::NODE_TYPE))
@@ -797,9 +798,9 @@ ASTNode *QueryPathTreeGenerator::optimizeUserFunction(XQUserFunctionInstance *it
 
   // Evaluate the arguments in the current scope, declare them in the function's scope
   vector<ArgHolder> evaluatedArgs;
-  if(functionDef->getArgumentSpecs()) {
-    XQUserFunction::ArgumentSpecs::const_iterator binding = functionDef->getArgumentSpecs()->begin();
-    for(VectorOfASTNodes::iterator arg = args.begin(); arg != args.end() && binding != functionDef->getArgumentSpecs()->end(); ++arg, ++binding) {
+  if(functionDef->getSignature()->argSpecs) {
+    ArgumentSpecs::const_iterator binding = functionDef->getSignature()->argSpecs->begin();
+    for(VectorOfASTNodes::iterator arg = args.begin(); arg != args.end() && binding != functionDef->getSignature()->argSpecs->end(); ++arg, ++binding) {
 
       PathResult r = generate(*arg);
 

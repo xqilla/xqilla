@@ -26,6 +26,7 @@
 #include <xqilla/ast/XQSequence.hpp>
 #include <xqilla/exceptions/XQException.hpp>
 #include <xqilla/utils/PrintAST.hpp>
+#include <xqilla/functions/FunctionSignature.hpp>
 
 #include <xqilla/operators/Plus.hpp>
 #include <xqilla/operators/Minus.hpp>
@@ -622,9 +623,9 @@ protected:
       AutoReset<bool> reset(active_);
       AutoReset<bool> reset2(inScope_);
 
-      const XQUserFunction::ArgumentSpecs *params = item->getArgumentSpecs();
+      const ArgumentSpecs *params = item->getSignature()->argSpecs;
       if(params) {
-        for(XQUserFunction::ArgumentSpecs::const_iterator it = params->begin();
+        for(ArgumentSpecs::const_iterator it = params->begin();
             it != params->end(); ++it) {
 
           if(required_ && required_->isVariableUsed((*it)->getURI(), (*it)->getName()))
@@ -779,9 +780,9 @@ ASTNode *PartialEvaluator::inlineFunction(const XQUserFunctionInstance *item, Dy
   InlineVar inliner;
 
   if(!item->getArguments().empty()) {
-    XQUserFunction::ArgumentSpecs::const_iterator defIt = funcDef->getArgumentSpecs()->begin();
+    ArgumentSpecs::const_iterator defIt = funcDef->getSignature()->argSpecs->begin();
     VectorOfASTNodes::const_iterator argIt = item->getArguments().begin();
-    for(; defIt != funcDef->getArgumentSpecs()->end() && argIt != item->getArguments().end(); ++defIt, ++argIt) {
+    for(; defIt != funcDef->getSignature()->argSpecs->end() && argIt != item->getArguments().end(); ++defIt, ++argIt) {
       // Rename the variable to avoid naming conflicts
       const XMLCh *newName = context->allocateTempVarName((*defIt)->getName());
 

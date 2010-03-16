@@ -37,22 +37,8 @@ const unsigned int FunctionFunctionArity::maxArgs = 1;
  * fn:function-arity($function as function()) as xs:integer
  */
 FunctionFunctionArity::FunctionFunctionArity(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
-  : XQFunction(name, minArgs, maxArgs, "function()", args, memMgr)
+  : XQFunction(name, "($function as function()) as xs:integer", args, memMgr)
 {
-}
-
-ASTNode* FunctionFunctionArity::staticResolution(StaticContext *context)
-{
-  return resolveArguments(context);
-}
-
-ASTNode *FunctionFunctionArity::staticTypingImpl(StaticContext *context)
-{
-  _src.clear();
-
-  _src.getStaticType() = StaticType::DECIMAL_TYPE;
-
-  return calculateSRCForArguments(context);
 }
 
 Sequence FunctionFunctionArity::createSequence(DynamicContext* context, int flags) const

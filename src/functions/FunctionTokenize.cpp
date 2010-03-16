@@ -47,16 +47,15 @@ const unsigned int FunctionTokenize::maxArgs = 3;
  */
   
 FunctionTokenize::FunctionTokenize(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
-  : RegExpFunction(name, minArgs, maxArgs, "string?, string, string", args, memMgr)
+  : RegExpFunction(name, "($input as xs:string?, $pattern as xs:string, $flags as xs:string) as xs:string*", args, memMgr)
     
 {
-  _src.getStaticType() = StaticType(StaticType::STRING_TYPE, 0, StaticType::UNLIMITED);
 }
 
 ASTNode *FunctionTokenize::staticTypingImpl(StaticContext *context)
 {
-  ASTNode *result = calculateSRCForArguments(context);
-  if(result != this) return result;
+  _src.clearExceptType();
+  calculateSRCForArguments(context);
 
   //either there are 2 args, and regexp should be a constant,
   //or there is a flags argument as well, and it should also be a constant

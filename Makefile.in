@@ -99,14 +99,14 @@ am_libxqilla_la_OBJECTS = ReferenceCounted.lo BaseMemoryManager.lo \
 	ASTNodeImpl.lo XQInstanceOf.lo XQInlineFunction.lo \
 	XQLiteral.lo XQNav.lo XQOperator.lo XQSequence.lo XQStep.lo \
 	XQTreatAs.lo XQVariable.lo StaticAnalysis.lo StaticType.lo \
-	ConstantFoldingFunction.lo NumericFunction.lo \
-	XQDOMConstructor.lo XQDocumentConstructor.lo \
-	XQElementConstructor.lo XQAttributeConstructor.lo \
-	XQNamespaceConstructor.lo XQPIConstructor.lo \
-	XQCommentConstructor.lo XQTextConstructor.lo XQFunctionCall.lo \
-	XQFunctionConversion.lo XQFunctionDeref.lo XQPartialApply.lo \
-	XQFunctionRef.lo XQGlobalVariable.lo XQOrderingChange.lo \
-	XQQuantified.lo XQValidate.lo XQTypeswitch.lo XPath1Compat.lo \
+	NumericFunction.lo XQDOMConstructor.lo \
+	XQDocumentConstructor.lo XQElementConstructor.lo \
+	XQAttributeConstructor.lo XQNamespaceConstructor.lo \
+	XQPIConstructor.lo XQCommentConstructor.lo \
+	XQTextConstructor.lo XQFunctionCall.lo XQFunctionConversion.lo \
+	XQFunctionDeref.lo XQPartialApply.lo XQFunctionRef.lo \
+	XQGlobalVariable.lo XQOrderingChange.lo XQQuantified.lo \
+	XQValidate.lo XQTypeswitch.lo XPath1Compat.lo \
 	ConvertFunctionArg.lo XQDocumentOrder.lo XQPredicate.lo \
 	XQReturn.lo TupleNode.lo ContextTuple.lo ForTuple.lo \
 	LetTuple.lo WhereTuple.lo CountTuple.lo OrderByTuple.lo \
@@ -177,7 +177,7 @@ am_libxqilla_la_OBJECTS = ReferenceCounted.lo BaseMemoryManager.lo \
 	FunctionParseJSON.lo FunctionSerializeJSON.lo \
 	FunctionParseHTML.lo FunctionPartialApply.lo \
 	FunctionAnalyzeString.lo RegExpFunction.lo XQUserFunction.lo \
-	BuiltInModules.lo ATAnySimpleTypeImpl.lo \
+	FunctionSignature.lo BuiltInModules.lo ATAnySimpleTypeImpl.lo \
 	ATAnyURIOrDerivedImpl.lo ATBase64BinaryOrDerivedImpl.lo \
 	ATBooleanOrDerivedImpl.lo ATDateOrDerivedImpl.lo \
 	ATDateTimeOrDerivedImpl.lo ATDecimalOrDerivedImpl.lo \
@@ -555,7 +555,6 @@ src/ast/XQTreatAs.cpp \
 src/ast/XQVariable.cpp \
 src/ast/StaticAnalysis.cpp \
 src/ast/StaticType.cpp \
-src/ast/ConstantFoldingFunction.cpp \
 src/ast/NumericFunction.cpp \
 src/ast/XQDOMConstructor.cpp \
 src/ast/XQDocumentConstructor.cpp \
@@ -776,6 +775,7 @@ src/functions/FunctionPartialApply.cpp \
 src/functions/FunctionAnalyzeString.cpp \
 src/functions/RegExpFunction.cpp \
 src/functions/XQUserFunction.cpp \
+src/functions/FunctionSignature.cpp \
 src/functions/BuiltInModules.cpp \
 src/functions/CoreModule.hpp \
 src/functions/FnModule.hpp \
@@ -1341,7 +1341,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/CodepointCollation.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/CollationImpl.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ComparisonOperator.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ConstantFoldingFunction.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ContentSequenceFilter.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ContextTuple.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ContextUtils.Plo@am__quote@
@@ -1479,6 +1478,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionSecondsFromTime.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionSentences.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionSerializeJSON.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionSignature.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionSin.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionSqrt.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionStartsWith.Plo@am__quote@
@@ -2357,13 +2357,6 @@ StaticType.lo: src/ast/StaticType.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/ast/StaticType.cpp' object='StaticType.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o StaticType.lo `test -f 'src/ast/StaticType.cpp' || echo '$(srcdir)/'`src/ast/StaticType.cpp
-
-ConstantFoldingFunction.lo: src/ast/ConstantFoldingFunction.cpp
-@am__fastdepCXX_TRUE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ConstantFoldingFunction.lo -MD -MP -MF $(DEPDIR)/ConstantFoldingFunction.Tpo -c -o ConstantFoldingFunction.lo `test -f 'src/ast/ConstantFoldingFunction.cpp' || echo '$(srcdir)/'`src/ast/ConstantFoldingFunction.cpp
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/ConstantFoldingFunction.Tpo $(DEPDIR)/ConstantFoldingFunction.Plo
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/ast/ConstantFoldingFunction.cpp' object='ConstantFoldingFunction.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ConstantFoldingFunction.lo `test -f 'src/ast/ConstantFoldingFunction.cpp' || echo '$(srcdir)/'`src/ast/ConstantFoldingFunction.cpp
 
 NumericFunction.lo: src/ast/NumericFunction.cpp
 @am__fastdepCXX_TRUE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT NumericFunction.lo -MD -MP -MF $(DEPDIR)/NumericFunction.Tpo -c -o NumericFunction.lo `test -f 'src/ast/NumericFunction.cpp' || echo '$(srcdir)/'`src/ast/NumericFunction.cpp
@@ -3792,6 +3785,13 @@ XQUserFunction.lo: src/functions/XQUserFunction.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/functions/XQUserFunction.cpp' object='XQUserFunction.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQUserFunction.lo `test -f 'src/functions/XQUserFunction.cpp' || echo '$(srcdir)/'`src/functions/XQUserFunction.cpp
+
+FunctionSignature.lo: src/functions/FunctionSignature.cpp
+@am__fastdepCXX_TRUE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT FunctionSignature.lo -MD -MP -MF $(DEPDIR)/FunctionSignature.Tpo -c -o FunctionSignature.lo `test -f 'src/functions/FunctionSignature.cpp' || echo '$(srcdir)/'`src/functions/FunctionSignature.cpp
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/FunctionSignature.Tpo $(DEPDIR)/FunctionSignature.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/functions/FunctionSignature.cpp' object='FunctionSignature.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o FunctionSignature.lo `test -f 'src/functions/FunctionSignature.cpp' || echo '$(srcdir)/'`src/functions/FunctionSignature.cpp
 
 BuiltInModules.lo: src/functions/BuiltInModules.cpp
 @am__fastdepCXX_TRUE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT BuiltInModules.lo -MD -MP -MF $(DEPDIR)/BuiltInModules.Tpo -c -o BuiltInModules.lo `test -f 'src/functions/BuiltInModules.cpp' || echo '$(srcdir)/'`src/functions/BuiltInModules.cpp

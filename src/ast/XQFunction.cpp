@@ -28,6 +28,8 @@
 #include <xqilla/utils/XPath2Utils.hpp>
 #include <xqilla/exceptions/StaticErrorException.hpp>
 
+#include "../lexer/XQLexer.hpp"
+
 #include <xercesc/util/XMLString.hpp>
 #include <xercesc/util/XMLUniDefs.hpp>
 #include <xercesc/util/XMLUni.hpp>
@@ -61,64 +63,14 @@ const XMLCh XQFunction::XMLChFunctionURI[] =
     chLatin_n,       chLatin_s,       chNull
 };
 
-const size_t XQFunction::UNLIMITED = 10000; // A reasonably large number
-
-XQFunction::XQFunction(const XMLCh* name, size_t argsFrom, size_t argsTo, const char* paramDecl,
-                       const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
+XQFunction::XQFunction(const XMLCh *name, const char *signature, const VectorOfASTNodes &args,
+                       XPath2MemoryManager* memMgr)
   : ASTNodeImpl(FUNCTION, memMgr),
-    _fName(name), _fURI(XMLChFunctionURI), 
-    _nArgsFrom(argsFrom), _nArgsTo(argsTo),
-    _paramDecl(XQillaAllocator<SequenceType*>(memMgr)),
+    name_(name), uri_(XMLChFunctionURI),
+    sigString_(signature),
+    signature_(0),
     _args(args)
 {
-  parseParamDecl(paramDecl, memMgr);
-
-  if((argsFrom != UNLIMITED && argsFrom > args.size()) ||
-     (argsTo != UNLIMITED && args.size() > argsTo)) {
-
-    //cerr << "argsFrom: " << argsFrom << endl;
-    //cerr << "argsTo: " << argsTo << endl;
-    //cerr << "number of args: " << args.size() << endl;
-
-    XQThrow(FunctionException,X("XQFunction::XQFunction"), X("Wrong number of arguments"));
-  }
-  const XMLCh* paramString=memMgr->getPooledString(paramDecl);
-  if(argsFrom==argsTo)
-    _signature=paramString;
-  else
-  {
-    // place the optional arguments between [ and ]
-    static const XMLCh comma[]={ chComma, chNull };
-    static const XMLCh openSquare[]={ chSpace, chOpenSquare, chNull };
-    static const XMLCh closSquare[]={ chCloseSquare, chNull };
-    XMLStringTokenizer tokenizer(paramString,comma);
-    unsigned int i;
-    unsigned int nTokens=tokenizer.countTokens();
-    _signature=XMLUni::fgZeroLenString;
-
-    for(i=0;i<argsFrom;i++)
-    {
-      if(i==0)
-        _signature=XPath2Utils::concatStrings(_signature,tokenizer.nextToken(),memMgr);
-      else
-        _signature=XPath2Utils::concatStrings(_signature,comma,tokenizer.nextToken(),memMgr);
-    }
-    if(i<nTokens)
-    {
-      _signature=XPath2Utils::concatStrings(_signature,openSquare,memMgr);
-      for(;i<nTokens;i++)
-        if(i==0)
-          _signature=XPath2Utils::concatStrings(_signature,tokenizer.nextToken(),memMgr);
-        else
-          _signature=XPath2Utils::concatStrings(_signature,comma,tokenizer.nextToken(),memMgr);
-      _signature=XPath2Utils::concatStrings(_signature,closSquare,memMgr);
-    }
-    if(argsTo==UNLIMITED)
-    {
-      static const XMLCh ellipsis[]={ chComma, chPeriod, chPeriod, chPeriod, chNull };
-      _signature=XPath2Utils::concatStrings(_signature,ellipsis,memMgr);
-    }
-  }
 }
 
 
@@ -143,36 +95,48 @@ XQFunction::XQFunction(const XMLCh* name, size_t argsFrom, size_t argsTo, const 
 //   return true;
 // }
 
-const XMLCh* XQFunction::getFunctionURI()const {
-  return _fURI;
-}
-
-const XMLCh* XQFunction::getFunctionName() const {
-  return _fName;
-}
-
-const XMLCh* XQFunction::getFunctionSignature() const
+ASTNode *XQFunction::staticResolution(StaticContext *context)
 {
-  return _signature;
-}
-
-ASTNode *XQFunction::resolveArguments(StaticContext *context, bool checkTimezone, bool numericFunction)
-{
-  size_t paramNumber = 0;
-  for(VectorOfASTNodes::iterator i = _args.begin(); i != _args.end(); ++i) {
-    *i = _paramDecl[paramNumber]->convertFunctionArg(*i, context, numericFunction, this);
-    *i = (*i)->staticResolution(context);
-
-    ++paramNumber;
-    if(paramNumber >= _paramDecl.size()) {
-      paramNumber = _paramDecl.size() - 1;
-    }
-  }
-
+  resolveArguments(context);
   return this;
 }
 
-ASTNode *XQFunction::calculateSRCForArguments(StaticContext *context, bool checkTimezone, bool numericFunction)
+ASTNode *XQFunction::staticTypingImpl(StaticContext *context)
+{
+  _src.clearExceptType();
+  calculateSRCForArguments(context);
+  return this;
+}
+
+void XQFunction::parseSignature(StaticContext *context)
+{
+  if(sigString_ && !signature_) {
+    XPath2MemoryManager *mm = context->getMemoryManager();
+    XQLexer lexer(mm, _LANG_FUNCTION_SIGNATURE_, 0, 1, 1, mm->getPooledString(sigString_));
+    XQParserArgs args(&lexer);
+    XQParser::yyparse(&args);
+    signature_ = args._signature;
+    signature_->staticResolution(context);
+  }
+}
+
+void XQFunction::resolveArguments(StaticContext *context, bool numericFunction)
+{
+  parseSignature(context);
+
+  size_t paramNumber = 0;
+  for(VectorOfASTNodes::iterator i = _args.begin(); i != _args.end(); ++i) {
+    *i = (*signature_->argSpecs)[paramNumber]->getType()->convertFunctionArg(*i, context, numericFunction, this);
+    *i = (*i)->staticResolution(context);
+
+    ++paramNumber;
+    if(paramNumber >= signature_->argSpecs->size()) {
+      paramNumber = signature_->argSpecs->size() - 1;
+    }
+  }
+}
+
+void XQFunction::calculateSRCForArguments(StaticContext *context, bool checkTimezone)
 {
   for(VectorOfASTNodes::iterator i = _args.begin(); i != _args.end(); ++i) {
     _src.add((*i)->getStaticAnalysis());
@@ -187,7 +151,16 @@ ASTNode *XQFunction::calculateSRCForArguments(StaticContext *context, bool check
       _src.implicitTimezoneUsed(true);
   }
 
-  return this;
+  if(context) {
+    if(signature_ && signature_->returnType) {
+      bool isPrimitive;
+      signature_->returnType->getStaticType(_src.getStaticType(), context, isPrimitive, this);
+    }
+    else {
+      // Default type is item()*
+      _src.getStaticType() = StaticType(StaticType::ITEM_TYPE, 0, StaticType::UNLIMITED);
+    }
+  }
 }
 
 Result XQFunction::getParamNumber(size_t number, DynamicContext* context, int flags) const
@@ -236,60 +209,3 @@ Sequence XQFunction::createSequence(DynamicContext* context, int flags) const
 {
   return Sequence(context->getMemoryManager());
 }
-
-void XQFunction::parseParamDecl(const char* paramString, XPath2MemoryManager *mm)
-{
-  // Tokenise param string
-  XMLCh* string = XMLString::transcode(paramString);
-  static XMLCh delimiters[]={ chComma, chNull };
-  XMLStringTokenizer tokenizer(string, delimiters);
-  while(tokenizer.hasMoreTokens())
-  {
-    XMLCh* toParse=tokenizer.nextToken();
-    //create SequenceType from curParam and append to vector
-
-    SequenceType *sequenceType=NULL;
-    XMLCh* tmpCurParam = XMLString::replicate(toParse);
-    XMLString::collapseWS(tmpCurParam);
-
-    // get the OccurrenceIndicator
-    SequenceType::OccurrenceIndicator occurrence=SequenceType::EXACTLY_ONE;
-    unsigned int len = XPath2Utils::uintStrlen(tmpCurParam);
-    if(len>0)
-      switch(tmpCurParam[len-1])
-      {
-        case chQuestion: occurrence=SequenceType::QUESTION_MARK; tmpCurParam[len-1]=0; break;
-        case chAsterisk: occurrence=SequenceType::STAR; tmpCurParam[len-1]=0; break;
-        case chPlus:     occurrence=SequenceType::PLUS; tmpCurParam[len-1]=0; break;
-      }
-
-    // check if it's a node(), element(), item() or empty()
-    static XMLCh szNode[]={ chLatin_n, chLatin_o, chLatin_d, chLatin_e, chOpenParen, chCloseParen, chNull };
-    static XMLCh szElement[]={ chLatin_e, chLatin_l, chLatin_e, chLatin_m, chLatin_e, chLatin_n, chLatin_t,
-                               chOpenParen, chCloseParen, chNull };
-    static XMLCh szItem[]={ chLatin_i, chLatin_t, chLatin_e, chLatin_m, chOpenParen, chCloseParen, chNull };
-    static XMLCh szEmpty[]={ chLatin_e, chLatin_m, chLatin_p, chLatin_t, chLatin_y, chOpenParen, chCloseParen, chNull };
-    static XMLCh szFunction[]={ chLatin_f, chLatin_u, chLatin_n, chLatin_c, chLatin_t, chLatin_i, chLatin_o, chLatin_n, chOpenParen, chCloseParen, chNull };
-
-    if(XPath2Utils::equals(tmpCurParam, szNode))
-      sequenceType = new (mm) SequenceType(new (mm) SequenceType::ItemType(SequenceType::ItemType::TEST_NODE), occurrence);
-    else if(XPath2Utils::equals(tmpCurParam, szElement))
-      sequenceType = new (mm) SequenceType(new (mm) SequenceType::ItemType(SequenceType::ItemType::TEST_ELEMENT), occurrence);
-    else if(XPath2Utils::equals(tmpCurParam, szItem))
-      sequenceType = new (mm) SequenceType(new (mm) SequenceType::ItemType(SequenceType::ItemType::TEST_ANYTHING), occurrence);
-    else if(XPath2Utils::equals(tmpCurParam, szFunction))
-      sequenceType = new (mm) SequenceType(new (mm) SequenceType::ItemType(SequenceType::ItemType::TEST_FUNCTION), occurrence);
-    else if(XPath2Utils::equals(tmpCurParam, szEmpty))
-      sequenceType = new (mm) SequenceType();
-    else
-      sequenceType = new (mm) SequenceType(SchemaSymbols::fgURI_SCHEMAFORSCHEMA, tmpCurParam, occurrence, mm);
-    XMLString::release(&tmpCurParam);
-    _paramDecl.push_back(sequenceType);
-  }
-  XMLString::release(&string);
-}
-
-const VectorOfASTNodes &XQFunction::getArguments() const {
-  return _args;
-}
-

@@ -47,26 +47,26 @@ const unsigned int FunctionMax::minArgs = 1;
 const unsigned int FunctionMax::maxArgs = 2;
 
 /**
- * fn:max($arg as xdt:anyAtomicType*) as xdt:anyAtomicType?
- * fn:max($arg as xdt:anyAtomicType*, $collation as string) as xdt:anyAtomicType?
+ * fn:max($arg as xs:anyAtomicType*) as xs:anyAtomicType?
+ * fn:max($arg as xs:anyAtomicType*, $collation as string) as xs:anyAtomicType?
 **/
 
 FunctionMax::FunctionMax(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
-  : ConstantFoldingFunction(name, minArgs, maxArgs, "anyAtomicType*, string", args, memMgr)
+  : XQFunction(name, "($arg as xs:anyAtomicType*, $collation as xs:string) as xs:anyAtomicType?", args, memMgr)
 {
 }
 
-ASTNode* FunctionMax::staticResolution(StaticContext *context) {
+ASTNode* FunctionMax::staticResolution(StaticContext *context)
+{
   AutoNodeSetOrderingReset orderReset(context);
-  return resolveArguments(context);
+  resolveArguments(context);
+  return this;
 }
 
 ASTNode *FunctionMax::staticTypingImpl(StaticContext *context)
 {
-  _src.clear();
-
-  ASTNode *result = calculateSRCForArguments(context);
-  if(result != this) return result;
+  _src.clearExceptType();
+  calculateSRCForArguments(context);
 
   _src.getStaticType() = _args[0]->getStaticAnalysis().getStaticType();
   _src.getStaticType().setCardinality(_src.getStaticType().getMin() == 0 ? 0 : 1, 1);

@@ -40,21 +40,15 @@ const unsigned int FunctionYearFromDate::maxArgs = 1;
  */
 
 FunctionYearFromDate::FunctionYearFromDate(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
-  : XQFunction(name, minArgs, maxArgs, "date?", args, memMgr)
+  : XQFunction(name, "($arg as xs:date?) as xs:integer?", args, memMgr)
 {
-}
-
-ASTNode* FunctionYearFromDate::staticResolution(StaticContext *context)
-{
-  return resolveArguments(context, /*checkTimezone*/true);
 }
 
 ASTNode *FunctionYearFromDate::staticTypingImpl(StaticContext *context)
 {
-  _src.clear();
-
-  _src.getStaticType() = StaticType(StaticType::DECIMAL_TYPE, 0, 1);
-  return calculateSRCForArguments(context, /*checkTimezone*/true);
+  _src.clearExceptType();
+  calculateSRCForArguments(context, /*checkTimezone*/true);
+  return this;
 }
 
 Sequence FunctionYearFromDate::createSequence(DynamicContext* context, int flags) const

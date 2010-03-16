@@ -42,9 +42,8 @@ const unsigned int FunctionYearsFromDuration::maxArgs = 1;
  */
 
 FunctionYearsFromDuration::FunctionYearsFromDuration(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
-  : ConstantFoldingFunction(name, minArgs, maxArgs, "duration?", args, memMgr)
+  : XQFunction(name, "($arg as xs:duration?) as xs:integer?", args, memMgr)
 {
-  _src.getStaticType() = StaticType(StaticType::DECIMAL_TYPE, 0, 1);
 }
 
 Sequence FunctionYearsFromDuration::createSequence(DynamicContext* context, int flags) const

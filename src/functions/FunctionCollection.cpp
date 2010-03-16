@@ -42,25 +42,22 @@ const unsigned int FunctionCollection::maxArgs = 1;
 **/
 
 FunctionCollection::FunctionCollection(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
-  : XQFunction(name, minArgs, maxArgs, "string?", args, memMgr),
+  : XQFunction(name, "($arg as xs:string?) as node()*", args, memMgr),
     queryPathTree_(0)
 {
 }
 
-ASTNode* FunctionCollection::staticResolution(StaticContext *context)
-{
-  return resolveArguments(context);
-}
-
 ASTNode *FunctionCollection::staticTypingImpl(StaticContext *context)
 {
-  _src.clear();
+  _src.clearExceptType();
 
   _src.setProperties(StaticAnalysis::DOCORDER | StaticAnalysis::GROUPED |
                      StaticAnalysis::SUBTREE);
   _src.getStaticType() = StaticType(StaticType::NODE_TYPE, 0, StaticType::UNLIMITED);
   _src.availableCollectionsUsed(true);
-  return calculateSRCForArguments(context);
+  calculateSRCForArguments(context);
+
+  return this;
 }
 
 Sequence FunctionCollection::createSequence(DynamicContext* context, int flags) const

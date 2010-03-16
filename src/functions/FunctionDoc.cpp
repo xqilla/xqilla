@@ -39,19 +39,15 @@ const unsigned int FunctionDoc::maxArgs = 1;
  * fn:doc($uri as xs:string?) as document?
  **/
 FunctionDoc::FunctionDoc(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
-  : XQFunction(name, minArgs, maxArgs, "string?", args, memMgr),
+  : XQFunction(name, "($uri as xs:string?) as document-node()?", args, memMgr),
     queryPathTree_(0)
 {
 }
 
-ASTNode* FunctionDoc::staticResolution(StaticContext *context)
-{
-  return resolveArguments(context);
-}
-
 ASTNode *FunctionDoc::staticTypingImpl(StaticContext *context)
 {
-  _src.clear();
+  _src.clearExceptType();
+  calculateSRCForArguments(context);
 
   if(_args[0]->getStaticAnalysis().getStaticType().getMin() == 0)
 	  _src.getStaticType() = StaticType(StaticType::DOCUMENT_TYPE, 0, 1);
@@ -61,7 +57,7 @@ ASTNode *FunctionDoc::staticTypingImpl(StaticContext *context)
                      StaticAnalysis::PEER | StaticAnalysis::SUBTREE | StaticAnalysis::ONENODE);
   _src.availableDocumentsUsed(true);
 
-  return calculateSRCForArguments(context);
+  return this;
 }
 
 Sequence FunctionDoc::createSequence(DynamicContext* context, int flags) const

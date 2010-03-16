@@ -47,7 +47,7 @@ const unsigned int FunctionString::maxArgs = 1;
 **/
 
 FunctionString::FunctionString(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
-  : XQFunction(name, minArgs, maxArgs, "item()?", args, memMgr)
+  : XQFunction(name, "($arg as item()?) as xs:string", args, memMgr)
 {
 }
 
@@ -61,14 +61,8 @@ ASTNode* FunctionString::staticResolution(StaticContext *context)
     _args.push_back(ci);
   }
 
-  return resolveArguments(context);
-}
-
-ASTNode *FunctionString::staticTypingImpl(StaticContext *context)
-{
-  _src.clear();
-  _src.getStaticType() = StaticType::STRING_TYPE;
-  return calculateSRCForArguments(context);
+  resolveArguments(context);
+  return this;
 }
 
 Sequence FunctionString::createSequence(DynamicContext* context, int flags) const

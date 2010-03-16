@@ -28,10 +28,10 @@
 
 #include <xqilla/framework/XQillaExport.hpp>
 
-#include <xqilla/ast/ConstantFoldingFunction.hpp>
+#include <xqilla/ast/XQFunction.hpp>
 
 /** QName constructor function. */
-class XQILLA_API FunctionQName : public ConstantFoldingFunction
+class XQILLA_API FunctionQName : public XQFunction
 {
 public:
   static const XMLCh name[];

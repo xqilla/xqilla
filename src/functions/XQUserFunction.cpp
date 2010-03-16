@@ -72,21 +72,18 @@ const XMLCh XQUserFunction::XMLChXQueryLocalFunctionsURI[] =
     chNull
 };
 
-XQUserFunction::XQUserFunction(const XMLCh *qname, ArgumentSpecs *argSpecs, ASTNode *body,
-                               SequenceType *returnType, Options *options, bool isGlobal,
-                               XPath2MemoryManager *mm)
-  : FuncFactory(argSpecs == 0 ? 0 : argSpecs->size(), mm),
+XQUserFunction::XQUserFunction(const XMLCh *qname, FunctionSignature *signature,
+                               ASTNode *body, bool isGlobal, XPath2MemoryManager *mm)
+  : FuncFactory(signature->argSpecs == 0 ? 0 : signature->argSpecs->size(), mm),
     body_(body),
     exFunc_(NULL),
     qname_(qname),
     pattern_(0),
     templateInstance_(0),
     modes_(0),
-    returnType_(returnType),
-    argSpecs_(argSpecs),
+    signature_(signature),
     isGlobal_(isGlobal),
     isTemplate_(false),
-    options_(options ? options : new (mm) Options()),
     memMgr_(mm),
     src_(mm),
     staticTyped_(false),
@@ -96,20 +93,18 @@ XQUserFunction::XQUserFunction(const XMLCh *qname, ArgumentSpecs *argSpecs, ASTN
 {
 }
 
-XQUserFunction::XQUserFunction(const XMLCh *qname, VectorOfASTNodes *pattern, ArgumentSpecs *argSpecs,
-                               ASTNode *body, SequenceType *returnType, XPath2MemoryManager *mm)
-  : FuncFactory(argSpecs == 0 ? 0 : argSpecs->size(), mm),
+XQUserFunction::XQUserFunction(const XMLCh *qname, VectorOfASTNodes *pattern, FunctionSignature *signature,
+                               ASTNode *body, XPath2MemoryManager *mm)
+  : FuncFactory(signature->argSpecs == 0 ? 0 : signature->argSpecs->size(), mm),
     body_(body),
     exFunc_(NULL),
     qname_(qname),
     pattern_(pattern),
     templateInstance_(0),
     modes_(0),
-    returnType_(returnType),
-    argSpecs_(argSpecs),
+    signature_(signature),
     isGlobal_(true),
     isTemplate_(true),
-    options_(new (mm) Options()),
     memMgr_(mm),
     src_(mm),
     staticTyped_(false),
@@ -127,11 +122,9 @@ XQUserFunction::XQUserFunction(const XQUserFunction *o, XPath2MemoryManager *mm)
     pattern_(0),
     templateInstance_(o->templateInstance_),
     modes_(0),
-    returnType_(o->returnType_),
-    argSpecs_(0),
+    signature_(new (mm) FunctionSignature(o->signature_, mm)),
     isGlobal_(o->isGlobal_),
     isTemplate_(o->isTemplate_),
-    options_(new (mm) Options(*o->options_)),
     memMgr_(mm),
     src_(mm),
     staticTyped_(o->staticTyped_),
@@ -149,14 +142,6 @@ XQUserFunction::XQUserFunction(const XQUserFunction *o, XPath2MemoryManager *mm)
     XQUserFunction::ModeList::const_iterator modeIt = o->getModeList()->begin();
     for(; modeIt != o->getModeList()->end(); ++modeIt) {
       modes_->push_back(new (mm) Mode(*modeIt));
-    }
-  }
-  if(o->argSpecs_) {
-    argSpecs_ = new (mm) ArgumentSpecs(XQillaAllocator<ArgumentSpec*>(mm));
-
-    XQUserFunction::ArgumentSpecs::const_iterator argIt = o->getArgumentSpecs()->begin();
-    for(; argIt != o->getArgumentSpecs()->end(); ++argIt) {
-      argSpecs_->push_back(new (mm) ArgumentSpec(*argIt, mm));
     }
   }
   setLocationInfo(o);
@@ -184,19 +169,7 @@ void XQUserFunction::releaseImpl()
     memMgr_->deallocate(modes_);
   }
 
-  if(argSpecs_) {
-    XQUserFunction::ArgumentSpecs::iterator argIt = argSpecs_->begin();
-    for(; argIt != argSpecs_->end(); ++argIt) {
-      const_cast<StaticAnalysis&>((*argIt)->getStaticAnalysis()).clear();
-      memMgr_->deallocate(*argIt);
-    }
-#if defined(_MSC_VER) && (_MSC_VER < 1300)
-    argSpecs_->~vector<ArgumentSpec*,XQillaAllocator<ArgumentSpec*> >();
-#else
-    argSpecs_->~ArgumentSpecs();
-#endif
-    memMgr_->deallocate(argSpecs_);
-  }
+  signature_->release();
 
   src_.clear();
   memMgr_->deallocate(this);
@@ -205,26 +178,6 @@ void XQUserFunction::releaseImpl()
 ASTNode* XQUserFunction::createInstance(const VectorOfASTNodes &args, XPath2MemoryManager *mm) const
 {
   return new (mm) XQUserFunctionInstance(this, args, mm);
-}
-
-void XQUserFunction::ArgumentSpec::staticResolution(StaticContext* context)
-{
-  if(qname_ != 0) {
-    uri_ = context->getUriBoundToPrefix(XPath2NSUtils::getPrefix(qname_, context->getMemoryManager()), this);
-    name_ = XPath2NSUtils::getLocalName(qname_);
-  }
-
-  seqType_->staticResolution(context);
-
-  bool isPrimitive;
-  seqType_->getStaticType(src_.getStaticType(), context, isPrimitive, seqType_);
-
-  if(seqType_->getOccurrenceIndicator() == SequenceType::EXACTLY_ONE ||
-     seqType_->getOccurrenceIndicator() == SequenceType::QUESTION_MARK) {
-    src_.setProperties(StaticAnalysis::DOCORDER | StaticAnalysis::GROUPED |
-                       StaticAnalysis::PEER | StaticAnalysis::SUBTREE | StaticAnalysis::SAMEDOC |
-                       StaticAnalysis::ONENODE | StaticAnalysis::SELF);
-  }
 }
 
 void XQUserFunction::Mode::staticResolution(StaticContext* context)
@@ -287,8 +240,7 @@ void XQUserFunction::staticResolutionStage1(StaticContext *context)
 
   // Check for the implementation of an external function
   if(body_ == NULL) {
-    size_t nArgs = argSpecs_ ? argSpecs_->size() : 0;
-    exFunc_ = context->lookUpExternalFunction(uri_, name_, nArgs);
+    exFunc_ = context->lookUpExternalFunction(uri_, name_, minArgs_);
 
     if(exFunc_ == NULL) {
       XMLBuffer buf;
@@ -298,48 +250,14 @@ void XQUserFunction::staticResolutionStage1(StaticContext *context)
       buf.append(name_);
       buf.append(X("' with "));
       XMLCh szNumBuff[20];
-      XMLString::binToText((unsigned int)nArgs, szNumBuff, 19, 10);
+      XMLString::binToText((unsigned int)minArgs_, szNumBuff, 19, 10);
       buf.append(szNumBuff);
       buf.append(X(" argument(s) has not been bound to an implementation"));
       XQThrow(FunctionException, X("XQUserFunction::staticResolutionStage1"), buf.getRawBuffer());
     }
   }
 
-  // Resolve the parameter names
-  if(argSpecs_) {
-    ArgumentSpecs::iterator it;
-    for(it = argSpecs_->begin(); it != argSpecs_->end (); ++it) {
-      (*it)->staticResolution(context);
-    }
-    // check for duplicate parameters
-    for(it = argSpecs_->begin(); argSpecs_->size() > 1 && it != argSpecs_->end()-1; ++it) {
-      for(ArgumentSpecs::iterator it2 = it+1; it2 != argSpecs_->end (); ++it2) {
-        if(XPath2Utils::equals((*it)->getURI(),(*it2)->getURI()) && 
-           XPath2Utils::equals((*it)->getName(),(*it2)->getName())) {
-          XMLBuffer buf;
-          if(isTemplate_) {
-            buf.set(X("Template "));
-          } else {
-            buf.set(X("User-defined function "));
-          }
-          if(name_ != 0) {
-            buf.append(X("'{"));
-            buf.append(uri_);
-            buf.append(X("}"));
-            buf.append(name_);
-            buf.append(X("' "));
-          }
-          buf.append(X("has two parameters with the expanded QName '"));
-          buf.append(X("{"));
-          buf.append((*it)->getURI());
-          buf.append(X("}"));
-          buf.append((*it)->getName());
-          buf.append(X("' [err:XQST0039]"));
-          XQThrow(StaticErrorException, X("XQUserFunction::staticResolution"), buf.getRawBuffer());
-        }
-      }
-    }
-  }
+  signature_->staticResolution(context);
 
   // Resolve the mode names
   if(modes_) {
@@ -377,22 +295,20 @@ void XQUserFunction::staticResolutionStage1(StaticContext *context)
   }
 
   // Set up a default StaticType and StaticAnalysis
-  if(returnType_ != NULL) {
-    returnType_->staticResolution(context);
-
+  if(signature_->returnType) {
     if(body_ != NULL) {
-      body_ = returnType_->convertFunctionArg(body_, context, /*numericfunction*/false, returnType_);
+      body_ = signature_->returnType->convertFunctionArg(body_, context, /*numericfunction*/false, signature_->returnType);
     }
 
     bool isPrimitive;
-    returnType_->getStaticType(src_.getStaticType(), context, isPrimitive, returnType_);
+    signature_->returnType->getStaticType(src_.getStaticType(), context, isPrimitive, signature_->returnType);
   }
   else {
     // Default type is item()*
     src_.getStaticType() = StaticType(StaticType::ITEM_TYPE, 0, StaticType::UNLIMITED);
   }
 
-  if(options_->updating == Options::OP_TRUE) {
+  if(signature_->updating == FunctionSignature::OP_TRUE) {
     src_.updating(true);
   }
 
@@ -411,9 +327,9 @@ void XQUserFunction::staticResolutionStage1(StaticContext *context)
     // Build an instance of the template for us to call
     VectorOfASTNodes newArgs = VectorOfASTNodes(XQillaAllocator<ASTNode*>(mm));
 
-    if(argSpecs_ != 0) {
-      XQUserFunction::ArgumentSpecs::const_iterator argIt;
-      for(argIt = argSpecs_->begin(); argIt != argSpecs_->end(); ++argIt) {
+    if(signature_->argSpecs != 0) {
+      ArgumentSpecs::const_iterator argIt;
+      for(argIt = signature_->argSpecs->begin(); argIt != signature_->argSpecs->end(); ++argIt) {
         XQVariable *argVar = new (mm) XQVariable((*argIt)->getURI(), (*argIt)->getName(), mm);
         argVar->setLocationInfo(*argIt);
         newArgs.push_back(argVar);
@@ -581,7 +497,7 @@ void XQUserFunction::staticTyping(StaticContext *context, StaticTyper *styper)
   // Nothing more to do for external functions
   if(body_ == NULL) return;
 
-  if(options_->updating == Options::OP_TRUE && returnType_ != NULL) {
+  if(signature_->updating == FunctionSignature::OP_TRUE && signature_->returnType != NULL) {
     XQThrow(StaticErrorException, X("XQUserFunction::staticTyping"),
             X("It is a static error for an updating function to declare a return type [err:XUST0028]"));
   }
@@ -620,9 +536,9 @@ void XQUserFunction::staticTyping(StaticContext *context, StaticTyper *styper)
     else varStore->addLogicalBlockScope();
 
     // Declare the parameters
-    if(argSpecs_) {
+    if(signature_->argSpecs) {
       ArgumentSpecs::iterator it;
-      for(it = argSpecs_->begin(); it != argSpecs_->end (); ++it) {
+      for(it = signature_->argSpecs->begin(); it != signature_->argSpecs->end (); ++it) {
         varStore->declareVar((*it)->getURI(), (*it)->getName(), (*it)->getStaticAnalysis());
       }
     }
@@ -637,7 +553,7 @@ void XQUserFunction::staticTyping(StaticContext *context, StaticTyper *styper)
   if(context)
     context->getVariableTypeStore()->removeScope();
 
-  if(options_->updating == Options::OP_TRUE) {
+  if(signature_->updating == FunctionSignature::OP_TRUE) {
     if(!body_->getStaticAnalysis().isUpdating() && !body_->getStaticAnalysis().isPossiblyUpdating())
       XQThrow(StaticErrorException, X("XQUserFunction::staticTyping"),
               X("It is a static error for the body expression of a user defined updating function "
@@ -660,8 +576,8 @@ void XQUserFunction::staticTyping(StaticContext *context, StaticTyper *styper)
   // Remove the parameter variables from the stored StaticAnalysis
   src_.clear();
   src_.copy(body_->getStaticAnalysis());
-  if(argSpecs_) {
-    for(ArgumentSpecs::iterator it = argSpecs_->begin(); it != argSpecs_->end (); ++it) {
+  if(signature_->argSpecs) {
+    for(ArgumentSpecs::iterator it = signature_->argSpecs->begin(); it != signature_->argSpecs->end (); ++it) {
       if(!src_.removeVariable((*it)->getURI(), (*it)->getName())) {
         // The parameter isn't used, so set it to null, so that we don't bother to evaluate it
         (*it)->setNotUsed();
@@ -677,9 +593,9 @@ void XQUserFunction::staticTyping(StaticContext *context, StaticTyper *styper)
     VariableTypeStore *varStore = context->getVariableTypeStore();
     varStore->addLogicalBlockScope();
 
-    if(argSpecs_ != 0) {
-      XQUserFunction::ArgumentSpecs::const_iterator argIt;
-      for(argIt = argSpecs_->begin(); argIt != argSpecs_->end(); ++argIt) {
+    if(signature_->argSpecs != 0) {
+      ArgumentSpecs::const_iterator argIt;
+      for(argIt = signature_->argSpecs->begin(); argIt != signature_->argSpecs->end(); ++argIt) {
         varStore->declareVar((*argIt)->getURI(), (*argIt)->getName(), templateVarSrc);
       }
     }
@@ -696,21 +612,21 @@ void XQUserFunction::staticTyping(StaticContext *context, StaticTyper *styper)
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 XQUserFunctionInstance::XQUserFunctionInstance(const XQUserFunction* funcDef, const VectorOfASTNodes& args, XPath2MemoryManager* expr) 
-  : XQFunction(funcDef->getName(), 0, UNLIMITED,"",args, expr),
-    addReturnCheck_(funcDef->body_ == NULL && funcDef->returnType_ != NULL),
+  : XQFunction(funcDef->getName(), 0, args, expr),
+    addReturnCheck_(funcDef->body_ == NULL && funcDef->signature_->returnType != NULL),
     funcDef_(funcDef)
 {
   _type = ASTNode::USER_FUNCTION;
-  _fURI = funcDef->getURI();
+  uri_ = funcDef->getURI();
 }
 
 XQUserFunctionInstance::XQUserFunctionInstance(const XQUserFunction *funcDef, const VectorOfASTNodes& args, bool addReturnCheck, XPath2MemoryManager *mm)
-  : XQFunction(funcDef->getName(), 0, UNLIMITED,"",args, mm),
+  : XQFunction(funcDef->getName(), 0, args, mm),
     addReturnCheck_(addReturnCheck),
     funcDef_(funcDef)
 {
   _type = ASTNode::USER_FUNCTION;
-  _fURI = funcDef->getURI();
+  uri_ = funcDef->getURI();
 }
 
 Result XQUserFunctionInstance::getArgument(size_t index, DynamicContext *context) const
@@ -736,15 +652,15 @@ ASTNode* XQUserFunctionInstance::staticResolution(StaticContext* context)
   // We don't trust external functions, so check their return type
   if(addReturnCheck_) {
     addReturnCheck_ = false;
-    XQTreatAs *treatAs = new (mm) XQTreatAs(this, funcDef_->returnType_, mm);
-    treatAs->setLocationInfo(funcDef_->returnType_);
+    XQTreatAs *treatAs = new (mm) XQTreatAs(this, funcDef_->signature_->returnType, mm);
+    treatAs->setLocationInfo(funcDef_->signature_->returnType);
     return treatAs->staticResolution(context);
   }
 
-  if(funcDef_->argSpecs_ != 0) {
+  if(funcDef_->signature_->argSpecs != 0) {
     VectorOfASTNodes::iterator argIt = _args.begin();
-    for(XQUserFunction::ArgumentSpecs::iterator defIt = funcDef_->argSpecs_->begin();
-        defIt != funcDef_->argSpecs_->end() && argIt != _args.end(); ++defIt, ++argIt) {
+    for(ArgumentSpecs::iterator defIt = funcDef_->signature_->argSpecs->begin();
+        defIt != funcDef_->signature_->argSpecs->end() && argIt != _args.end(); ++defIt, ++argIt) {
       // The spec doesn't allow us to skip static errors, so we have to check even if
       // the parameter isn't used
       *argIt = (*defIt)->getType()->convertFunctionArg(*argIt, context, /*numericfunction*/false, *argIt);
@@ -793,12 +709,12 @@ ASTNode *XQUserFunctionInstance::staticTypingImpl(StaticContext *context)
 
 void XQUserFunctionInstance::evaluateArguments(VarStoreImpl &scope, DynamicContext *context) const
 {
-  if(funcDef_->getArgumentSpecs() != 0) {
+  if(funcDef_->getSignature()->argSpecs != 0) {
     // the variables should be evaluated in the calling context
     // (before the VariableStore::addLocalScope call: after this call, the variables that can be seen are only the local ones)
     VectorOfASTNodes::const_iterator argIt = _args.begin();
-    for(XQUserFunction::ArgumentSpecs::const_iterator defIt = funcDef_->argSpecs_->begin();
-        defIt != funcDef_->argSpecs_->end() && argIt != _args.end(); ++defIt, ++argIt) {
+    for(ArgumentSpecs::const_iterator defIt = funcDef_->signature_->argSpecs->begin();
+        defIt != funcDef_->signature_->argSpecs->end() && argIt != _args.end(); ++defIt, ++argIt) {
       if((*defIt)->isUsed()) {
         // TBD ClosureResult doesn't save RegexGroupStore - jpcs
         // TBD variable use count - jpcs

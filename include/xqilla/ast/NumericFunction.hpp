@@ -20,15 +20,15 @@
 #ifndef _NUMERICFUNCTION_HPP
 #define _NUMERICFUNCTION_HPP
 
-#include <xqilla/ast/ConstantFoldingFunction.hpp>
+#include <xqilla/ast/XQFunction.hpp>
 
 /** Virtual interface class for functions */
-class XQILLA_API NumericFunction : public ConstantFoldingFunction
+class XQILLA_API NumericFunction : public XQFunction
 {
 public:
 
   /// constructor, checks for the correct number of arguments.
-  NumericFunction(const XMLCh* name, unsigned int argsFrom, unsigned int argsTo, const char* paramDecl, const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
+  NumericFunction(const XMLCh* name, const char *signature, const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
 
   virtual ASTNode* staticResolution(StaticContext *context);
   virtual ASTNode *staticTypingImpl(StaticContext *context);

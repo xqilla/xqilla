@@ -26,6 +26,7 @@
 #include <xqilla/context/ContextHelpers.hpp>
 #include <xqilla/functions/FunctionLookup.hpp>
 #include <xqilla/functions/XQUserFunction.hpp>
+#include <xqilla/functions/FunctionSignature.hpp>
 #include <xqilla/exceptions/XQException.hpp>
 #include <xqilla/exceptions/XPath2ErrorException.hpp>
 #include <xqilla/exceptions/StaticErrorException.hpp>
@@ -325,7 +326,7 @@ void XQQuery::staticResolution()
         if((*itFn)->isTemplate()) {
           m_context->addTemplate(*itFn);
         }
-        else if((*itFn)->getName() && (*itFn)->getOptions()->privateOption != XQUserFunction::Options::OP_TRUE) {
+        else if((*itFn)->getName() && (*itFn)->getSignature()->privateOption != FunctionSignature::OP_TRUE) {
           m_context->addCustomFunction(*itFn);
         }
       }

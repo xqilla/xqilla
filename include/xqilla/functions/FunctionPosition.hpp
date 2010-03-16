@@ -22,7 +22,6 @@
 
 #include <xqilla/ast/XQFunction.hpp>
 
-/** Position function*/
 class XQILLA_API FunctionPosition : public XQFunction
 {
 public:
@@ -32,7 +31,6 @@ public:
 
   FunctionPosition(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
   
-  virtual ASTNode* staticResolution(StaticContext *context);
   virtual ASTNode *staticTypingImpl(StaticContext *context);
   virtual Result createResult(DynamicContext* context, int flags=0) const;
 };

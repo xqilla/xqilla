@@ -35,21 +35,14 @@ const unsigned int FunctionTail::maxArgs = 1;
  */
 
 FunctionTail::FunctionTail(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
-  : ConstantFoldingFunction(name, minArgs, maxArgs, "item()*", args, memMgr)
+  : XQFunction(name, "($target as item()*) as item()*", args, memMgr)
 {
-}
-
-ASTNode* FunctionTail::staticResolution(StaticContext *context)
-{
-  return resolveArguments(context);
 }
 
 ASTNode *FunctionTail::staticTypingImpl(StaticContext *context)
 {
-  _src.clear();
-
-  ASTNode *result = calculateSRCForArguments(context);
-  if(result != this) return result;
+  _src.clearExceptType();
+  calculateSRCForArguments(context);
 
   _src.getStaticType() = _args[0]->getStaticAnalysis().getStaticType();
 

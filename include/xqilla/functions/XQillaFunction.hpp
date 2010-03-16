@@ -20,17 +20,16 @@
 #ifndef XQILLAFUNCTION_HPP
 #define XQILLAFUNCTION_HPP
 
-#include <xqilla/ast/ConstantFoldingFunction.hpp>
+#include <xqilla/ast/XQFunction.hpp>
 
-class XQILLA_API XQillaFunction : public ConstantFoldingFunction
+class XQILLA_API XQillaFunction : public XQFunction
 {
 public:
   static const XMLCh XQillaPrefix[];
   static const XMLCh XMLChFunctionURI[];
 
 protected:
-  XQillaFunction(const XMLCh *name, unsigned int argsFrom, unsigned int argsTo,
-    const char *paramDecl, const VectorOfASTNodes &args, XPath2MemoryManager *memMgr);
+  XQillaFunction(const XMLCh *name, const char *signature, const VectorOfASTNodes &args, XPath2MemoryManager *memMgr);
 };
 
 #endif

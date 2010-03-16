@@ -24,6 +24,7 @@
 #include <xercesc/util/regx/RegularExpression.hpp>
 #include <xqilla/functions/FunctionReplace.hpp>
 #include <xqilla/functions/FunctionTokenize.hpp>
+#include <xqilla/functions/FunctionSignature.hpp>
 
 ASTReleaser::ASTReleaser()
 {
@@ -180,6 +181,8 @@ ASTNode *ASTReleaser::optimizeFunction(XQFunction *item)
 
   // Release the argument vector
   const_cast<VectorOfASTNodes&>(item->getArguments()).~VectorOfASTNodes();
+  if(item->getSignature())
+    item->getSignature()->release();
   RELEASE_IMPL();
 }
 

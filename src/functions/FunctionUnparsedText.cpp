@@ -47,23 +47,16 @@ const unsigned int FunctionUnparsedText::maxArgs = 2;
  * fn:unparsed-text($href as xs:string?, $encoding as xs:string) as xs:string? 
  **/
 FunctionUnparsedText::FunctionUnparsedText(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
-  : XQFunction(name, minArgs, maxArgs, "string?,string", args, memMgr)
+  : XQFunction(name, "($href as xs:string?, $encoding as xs:string) as xs:string?", args, memMgr)
 {
-}
-
-ASTNode* FunctionUnparsedText::staticResolution(StaticContext *context)
-{
-  return resolveArguments(context);
 }
 
 ASTNode *FunctionUnparsedText::staticTypingImpl(StaticContext *context)
 {
-  _src.clear();
-
-  _src.getStaticType() = StaticType(StaticType::STRING_TYPE, 0, 1);
+  _src.clearExceptType();
   _src.availableDocumentsUsed(true);
-
-  return calculateSRCForArguments(context);
+  calculateSRCForArguments(context);
+  return this;
 }
 
 class FindXMLEncoding : private EventHandler

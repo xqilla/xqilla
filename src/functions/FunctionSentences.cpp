@@ -43,9 +43,8 @@ const unsigned int FunctionSentences::maxArgs = 1;
  */
 
 FunctionSentences::FunctionSentences(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
-  : XQillaFunction(name, minArgs, maxArgs, "string?", args, memMgr)
+  : XQillaFunction(name, "($input as xs:string?) as xs:string*", args, memMgr)
 {
-  _src.getStaticType() = StaticType(StaticType::STRING_TYPE, 0, StaticType::UNLIMITED);
 }
 
 Sequence FunctionSentences::createSequence(DynamicContext* context, int flags) const

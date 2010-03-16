@@ -56,32 +56,22 @@ const unsigned int FunctionDistinctValues::minArgs = 1;
 const unsigned int FunctionDistinctValues::maxArgs = 2;
 
 /**
- * fn:distinct-values($arg as xdt:anyAtomicType*) as xdt:anyAtomicType*
- * fn:distinct-values($arg as xdt:anyAtomicType*, $collation as xs:string) as xdt:anyAtomicType*
+ * fn:distinct-values($arg as xs:anyAtomicType*) as xs:anyAtomicType*
+ * fn:distinct-values($arg as xs:anyAtomicType*, $collation as xs:string) as xs:anyAtomicType*
 **/
 
 FunctionDistinctValues::FunctionDistinctValues(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
-  : XQFunction(name, minArgs, maxArgs, "anyAtomicType*, string", args, memMgr)
+  : XQFunction(name, "($arg as xs:anyAtomicType*, $collation as xs:string) as xs:anyAtomicType*", args, memMgr)
 {
-}
-
-ASTNode* FunctionDistinctValues::staticResolution(StaticContext *context)
-{
-  // Could set ordering to unordered here - jpcs
-//   AutoNodeSetOrderingReset orderReset(context);
-  return resolveArguments(context);
 }
 
 ASTNode *FunctionDistinctValues::staticTypingImpl(StaticContext *context)
 {
-  _src.clear();
-
-  ASTNode *result = calculateSRCForArguments(context);
-  if(result == this) {
-    _src.getStaticType() = _args.front()->getStaticAnalysis().getStaticType();
-    _src.getStaticType().setCardinality(_src.getStaticType().getMin() == 0 ? 0 : 1, _src.getStaticType().getMax());
-  }
-  return result;
+  _src.clearExceptType();
+  calculateSRCForArguments(context);
+  _src.getStaticType() = _args.front()->getStaticAnalysis().getStaticType();
+  _src.getStaticType().setCardinality(_src.getStaticType().getMin() == 0 ? 0 : 1, _src.getStaticType().getMax());
+  return this;
 }
 
 static inline AnyAtomicType::AtomicObjectType getSortType(const AnyAtomicType::Ptr &a)

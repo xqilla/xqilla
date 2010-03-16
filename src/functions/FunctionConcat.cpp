@@ -33,17 +33,15 @@ const XMLCh FunctionConcat::name[] = {
   chNull 
 };
 const unsigned int FunctionConcat::minArgs = 2;
-const unsigned int FunctionConcat::maxArgs = (unsigned int) UNLIMITED;
+const unsigned int FunctionConcat::maxArgs = 10000; // A reasonably large number
 
 /**
- * fn:concat($arg1 as xdt:anyAtomicType?, $arg2 as xdt:anyAtomicType?, ...) as xs:string
+ * fn:concat($arg1 as xs:anyAtomicType?, $arg2 as xs:anyAtomicType?, ...) as xs:string
 **/
 
-
 FunctionConcat::FunctionConcat(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
-  : ConstantFoldingFunction(name, minArgs, maxArgs, "anyAtomicType?", args, memMgr) // Between 2 and UNLIMITED arguments
+  : XQFunction(name, "($arg1 as xs:anyAtomicType?) as xs:string", args, memMgr)
 {
-  _src.getStaticType() = StaticType::STRING_TYPE;
 }
 
 Sequence FunctionConcat::createSequence(DynamicContext* context, int flags) const

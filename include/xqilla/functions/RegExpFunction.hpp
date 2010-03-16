@@ -20,7 +20,7 @@
 #ifndef _REGEXPFUNCTION_HPP
 #define _REGEXPFUNCTION_HPP
 
-#include <xqilla/ast/ConstantFoldingFunction.hpp>
+#include <xqilla/ast/XQFunction.hpp>
 
 XERCES_CPP_NAMESPACE_BEGIN
 class RegularExpression;
@@ -28,11 +28,11 @@ class ParseException;
 XERCES_CPP_NAMESPACE_END
 
 
-class XQILLA_API RegExpFunction: public ConstantFoldingFunction
+class XQILLA_API RegExpFunction: public XQFunction
 {
 
 public:
-  RegExpFunction(const XMLCh* name, unsigned int argsFrom, unsigned int argsTo, const char* paramDecl, const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
+  RegExpFunction(const XMLCh* name, const char *signature, const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
 
   //getting a pre-compiled regular expression
   const XERCES_CPP_NAMESPACE_QUALIFIER RegularExpression* getRegExp() const {

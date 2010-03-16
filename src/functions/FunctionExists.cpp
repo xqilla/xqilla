@@ -40,22 +40,23 @@ const unsigned int FunctionExists::maxArgs = 1;
  */
 
 FunctionExists::FunctionExists(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
-  : ConstantFoldingFunction(name, minArgs, maxArgs, "item()*", args, memMgr)
+  : XQFunction(name, "($arg as item()*) as xs:boolean", args, memMgr)
 {
 }
 
-ASTNode* FunctionExists::staticResolution(StaticContext *context) {
+ASTNode* FunctionExists::staticResolution(StaticContext *context)
+{
   AutoNodeSetOrderingReset orderReset(context);
-  return resolveArguments(context);
+  resolveArguments(context);
+  return this;
 }
 
 ASTNode *FunctionExists::staticTypingImpl(StaticContext *context)
 {
-  _src.clear();
-  _src.getStaticType() = StaticType::BOOLEAN_TYPE;
+  _src.clearExceptType();
+  calculateSRCForArguments(context);
 
-  ASTNode *result = calculateSRCForArguments(context);
-  if(context && result == this) {
+  if(context) {
     const StaticAnalysis &sa = _args[0]->getStaticAnalysis();
     const StaticType &sType = sa.getStaticType();
     if((sType.getMin() > 0 || sType.getMax() == 0) && !sa.areDocsOrCollectionsUsed() && !sa.isNoFoldingForced()) {
@@ -64,7 +65,7 @@ ASTNode *FunctionExists::staticTypingImpl(StaticContext *context)
     }
   }
 
-  return result;
+  return this;
 }
 
 Sequence FunctionExists::createSequence(DynamicContext* context, int flags) const

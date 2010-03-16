@@ -17,12 +17,6 @@
  * limitations under the License.
  */
 
-/*
-
-   Last function
-
-*/
-
 #ifndef _FUNCTIONLAST_HPP
 #define _FUNCTIONLAST_HPP
 
@@ -30,7 +24,6 @@
 
 #include <xqilla/ast/XQFunction.hpp>
 
-/** Last function*/
 class XQILLA_API FunctionLast : public XQFunction
 {
 public:
@@ -40,15 +33,12 @@ public:
 
   FunctionLast(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
   
-  virtual ASTNode* staticResolution(StaticContext *context);
   virtual ASTNode *staticTypingImpl(StaticContext *context);
 
-  /** returns the context size */
   Sequence createSequence(DynamicContext* context, int flags=0) const;
 };
 
-#endif // _FUNCTIONLAST_HPP
-
+#endif
 
 
 

@@ -58,7 +58,6 @@ src/ast/XQTreatAs.cpp \
 src/ast/XQVariable.cpp \
 src/ast/StaticAnalysis.cpp \
 src/ast/StaticType.cpp \
-src/ast/ConstantFoldingFunction.cpp \
 src/ast/NumericFunction.cpp \
 src/ast/XQDOMConstructor.cpp \
 src/ast/XQDocumentConstructor.cpp \
@@ -279,6 +278,7 @@ src/functions/FunctionPartialApply.cpp \
 src/functions/FunctionAnalyzeString.cpp \
 src/functions/RegExpFunction.cpp \
 src/functions/XQUserFunction.cpp \
+src/functions/FunctionSignature.cpp \
 src/functions/BuiltInModules.cpp \
 src/functions/CoreModule.hpp \
 src/functions/FnModule.hpp \

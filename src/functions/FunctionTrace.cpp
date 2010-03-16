@@ -37,26 +37,20 @@ const unsigned int FunctionTrace::maxArgs = 2;
  */
 
 FunctionTrace::FunctionTrace(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
-  : XQFunction(name, minArgs, maxArgs, "item()*, string", args, memMgr)
+  : XQFunction(name, "($value as item()*, $label as xs:string) as item()*", args, memMgr)
 {
-}
-
-ASTNode* FunctionTrace::staticResolution(StaticContext *context) {
-  return resolveArguments(context);
 }
 
 ASTNode *FunctionTrace::staticTypingImpl(StaticContext *context)
 {
-  _src.clear();
+  _src.clearExceptType();
+  calculateSRCForArguments(context);
 
-  ASTNode *result = calculateSRCForArguments(context);
-  if(result == this) {
-    _src.getStaticType() = _args.front()->getStaticAnalysis().getStaticType();
-    _src.setProperties(_args.front()->getStaticAnalysis().getProperties());
-  }
+  _src.getStaticType() = _args.front()->getStaticAnalysis().getStaticType();
+  _src.setProperties(_args.front()->getStaticAnalysis().getProperties());
   _src.forceNoFolding(true);
 
-  return result;
+  return this;
 }
 
 Sequence FunctionTrace::createSequence(DynamicContext* context, int flags) const

@@ -25,7 +25,6 @@ xqilla/ast/XQTreatAs.hpp \
 xqilla/ast/XQVariable.hpp \
 xqilla/ast/StaticAnalysis.hpp \
 xqilla/ast/StaticType.hpp \
-xqilla/ast/ConstantFoldingFunction.hpp \
 xqilla/ast/NumericFunction.hpp \
 xqilla/ast/XQDOMConstructor.hpp \
 xqilla/ast/XQDocumentConstructor.hpp \
@@ -264,6 +263,7 @@ xqilla/functions/FunctionYearsFromDuration.hpp \
 xqilla/functions/FuncFactory.hpp \
 xqilla/functions/RegExpFunction.hpp \
 xqilla/functions/XQUserFunction.hpp \
+xqilla/functions/FunctionSignature.hpp \
 xqilla/functions/XQillaFunction.hpp \
 xqilla/functions/BuiltInModules.hpp \
 xqilla/items/ATAnySimpleType.hpp \

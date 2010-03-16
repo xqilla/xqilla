@@ -26,10 +26,10 @@
 
 #include <xqilla/framework/XQillaExport.hpp>
 
-#include <xqilla/ast/ConstantFoldingFunction.hpp>
+#include <xqilla/ast/XQFunction.hpp>
 
 /** codepoints-to-string function */
-class XQILLA_API FunctionCodepointsToString : public ConstantFoldingFunction
+class XQILLA_API FunctionCodepointsToString : public XQFunction
 {
 public:
   static const XMLCh name[];

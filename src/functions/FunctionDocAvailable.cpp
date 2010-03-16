@@ -40,21 +40,16 @@ const unsigned int FunctionDocAvailable::maxArgs = 1;
  * fn:doc-available($uri as xs:string?) as xs:boolean
  **/
 FunctionDocAvailable::FunctionDocAvailable(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
-  : XQFunction(name, minArgs, maxArgs, "string?", args, memMgr)
+  : XQFunction(name, "($uri as xs:string?) as xs:boolean", args, memMgr)
 {
-}
-
-ASTNode* FunctionDocAvailable::staticResolution(StaticContext *context) {
-  return resolveArguments(context);
 }
 
 ASTNode *FunctionDocAvailable::staticTypingImpl(StaticContext *context)
 {
-  _src.clear();
-
-  _src.getStaticType() = StaticType::BOOLEAN_TYPE;
+  _src.clearExceptType();
   _src.availableDocumentsUsed(true);
-  return calculateSRCForArguments(context);
+  calculateSRCForArguments(context);
+  return this;
 }
 
 Sequence FunctionDocAvailable::createSequence(DynamicContext* context, int flags) const {
