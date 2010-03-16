@@ -35,6 +35,7 @@ struct XQILLA_API DelayedModule
   {
     const char *name;
     unsigned int args;
+    bool isPrivate;
     int line, column;
     const char *body;
   };
@@ -44,10 +45,6 @@ struct XQILLA_API DelayedModule
   const XMLCh *uri;
   const FuncDef *functions;
 
-  XQQuery *createModule(DynamicContext* context = 0,
-                        XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *memMgr =
-                        XERCES_CPP_NAMESPACE_QUALIFIER XMLPlatformUtils::fgMemoryManager,
-                        ModuleCache *moduleCache = 0) const;
   void importModuleInto(XQQuery *importer) const;
 };
 

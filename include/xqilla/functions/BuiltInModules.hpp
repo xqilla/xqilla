@@ -26,6 +26,7 @@ class XQILLA_API BuiltInModules
 {
 public:
   static const DelayedModule &core;
+  static const DelayedModule &fn;
 };
 
 #endif

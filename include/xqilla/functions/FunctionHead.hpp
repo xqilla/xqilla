@@ -1,6 +1,4 @@
 /*
- * Copyright (c) 2001, 2008,
- *     DecisionSoft Limited. All rights reserved.
  * Copyright (c) 2004, 2010,
  *     Oracle and/or its affiliates. All rights reserved.
  *
@@ -17,30 +15,25 @@
  * limitations under the License.
  */
 
-/*
-  xf:reverse
-*/
-
-#ifndef _FUNCTIONREVERSE_HPP
-#define _FUNCTIONREVERSE_HPP
+#ifndef _FUNCTIONHEAD_HPP
+#define _FUNCTIONHEAD_HPP
 
 #include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/ast/ConstantFoldingFunction.hpp>
 
-class XQILLA_API FunctionReverse : public ConstantFoldingFunction
+class XQILLA_API FunctionHead : public ConstantFoldingFunction
 {
 public:
   static const XMLCh name[];
   static const unsigned int minArgs;
   static const unsigned int maxArgs;
 
-  FunctionReverse(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
+  FunctionHead(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
   
   ASTNode* staticResolution(StaticContext *context);
   ASTNode *staticTypingImpl(StaticContext *context);
-  Sequence createSequence(DynamicContext* context, int flags=0) const;
-
+  Result createResult(DynamicContext* context, int flags=0) const;
 };
 
-#endif // _FUNCTIONREVERSE_HPP
+#endif

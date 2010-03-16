@@ -249,14 +249,16 @@ void XQTypeswitch::Case::staticTyping(const StaticAnalysis &var_src, StaticConte
 const XQTypeswitch::Case *XQTypeswitch::chooseCase(DynamicContext *context, Sequence &resultSeq) const
 {
   // retrieve the value of the operand expression
-  ResultBuffer value(expr_->createResult(context));
+//   ResultBuffer value(expr_->createResult(context));
+  Sequence value = expr_->createResult(context)->toSequence(context);
 
   const Case *cse = 0;
 
   // find the effective case
   for(Cases::const_iterator it = cases_->begin(); it != cases_->end(); ++it) {
     try {
-      (*it)->getSequenceType()->matches(value.createResult(), (*it)->getSequenceType(), no_err)->toSequence(context);
+//       (*it)->getSequenceType()->matches(value.createResult(), (*it)->getSequenceType(), no_err)->toSequence(context);
+      (*it)->getSequenceType()->matches(value, (*it)->getSequenceType(), no_err)->toSequence(context);
       cse = *it;
       break;
     }
@@ -272,7 +274,8 @@ const XQTypeswitch::Case *XQTypeswitch::chooseCase(DynamicContext *context, Sequ
 
   // Bind the variable
   if(cse->isVariableUsed()) {
-    resultSeq = value.createResult()->toSequence(context);
+//     resultSeq = value.createResult()->toSequence(context);
+    resultSeq = value;
 
 //     varStore->declareVar(cse->getURI(), cse->getName(), value.createResult()->toSequence(context), context);
   }

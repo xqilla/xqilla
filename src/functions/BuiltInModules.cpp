@@ -21,7 +21,9 @@
 #include <xqilla/functions/BuiltInModules.hpp>
 
 #include "CoreModule.hpp"
+#include "FnModule.hpp"
 
 XERCES_CPP_NAMESPACE_USE;
 
 const DelayedModule &BuiltInModules::core = core_module;
+const DelayedModule &BuiltInModules::fn = fn_module;

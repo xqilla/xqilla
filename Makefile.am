@@ -170,12 +170,9 @@ src/functions/FunctionAbs.cpp \
 src/functions/FunctionAcos.cpp \
 src/functions/FunctionAsin.cpp \
 src/functions/FunctionAtan.cpp \
-src/functions/FunctionAvg.cpp \
 src/functions/FunctionBaseURI.cpp \
-src/functions/FunctionBoolean.cpp \
 src/functions/FunctionCaseFold.cpp \
 src/functions/FunctionCeiling.cpp \
-src/functions/FunctionCodepointEqual.cpp \
 src/functions/FunctionCodepointsToString.cpp \
 src/functions/FunctionCollection.cpp \
 src/functions/FunctionCompare.cpp \
@@ -187,9 +184,7 @@ src/functions/FunctionCos.cpp \
 src/functions/FunctionCurrentDate.cpp \
 src/functions/FunctionCurrentDateTime.cpp \
 src/functions/FunctionCurrentTime.cpp \
-src/functions/FunctionData.cpp \
 src/functions/FunctionDateTime.cpp \
-src/functions/FunctionDeepEqual.cpp \
 src/functions/FunctionDefaultCollation.cpp \
 src/functions/FunctionDistinctValues.cpp \
 src/functions/FunctionDocAvailable.cpp \
@@ -197,24 +192,16 @@ src/functions/FunctionDoc.cpp \
 src/functions/FunctionDocument.cpp \
 src/functions/FunctionDocumentURI.cpp \
 src/functions/FunctionEmpty.cpp \
-src/functions/FunctionEncodeForUri.cpp \
 src/functions/FunctionEndsWith.cpp \
 src/functions/FunctionError.cpp \
-src/functions/FunctionEscapeHtmlUri.cpp \
-src/functions/FunctionExactlyOne.cpp \
 src/functions/FunctionExists.cpp \
 src/functions/FunctionExp.cpp \
-src/functions/FunctionFalse.cpp \
 src/functions/FunctionFloor.cpp \
 src/functions/FunctionFunctionArity.cpp \
 src/functions/FunctionFunctionName.cpp \
 src/functions/FunctionId.cpp \
 src/functions/FunctionIdref.cpp \
 src/functions/FunctionImplicitTimezone.cpp \
-src/functions/FunctionIndexOf.cpp \
-src/functions/FunctionInScopePrefixes.cpp \
-src/functions/FunctionInsertBefore.cpp \
-src/functions/FunctionIriToUri.cpp \
 src/functions/FunctionLang.cpp \
 src/functions/FunctionLast.cpp \
 src/functions/FunctionLocalname.cpp \
@@ -226,7 +213,6 @@ src/functions/FunctionMax.cpp \
 src/functions/FunctionMin.cpp \
 src/functions/FunctionName.cpp \
 src/functions/FunctionNamespaceUri.cpp \
-src/functions/FunctionNamespaceURIForPrefix.cpp \
 src/functions/FunctionNamespaceURIFromQName.cpp \
 src/functions/FunctionNilled.cpp \
 src/functions/FunctionNodeName.cpp \
@@ -234,17 +220,13 @@ src/functions/FunctionNormalizeSpace.cpp \
 src/functions/FunctionNormalizeUnicode.cpp \
 src/functions/FunctionNot.cpp \
 src/functions/FunctionNumber.cpp \
-src/functions/FunctionOneOrMore.cpp \
 src/functions/FunctionPosition.cpp \
 src/functions/FunctionPower.cpp \
 src/functions/FunctionPrefixFromQName.cpp \
 src/functions/FunctionQName.cpp \
 src/functions/FunctionRegexGroup.cpp \
-src/functions/FunctionRemove.cpp \
 src/functions/FunctionReplace.cpp \
-src/functions/FunctionResolveQName.cpp \
 src/functions/FunctionResolveURI.cpp \
-src/functions/FunctionReverse.cpp \
 src/functions/FunctionRoot.cpp \
 src/functions/FunctionRound.cpp \
 src/functions/FunctionRoundHalfToEven.cpp \
@@ -255,24 +237,18 @@ src/functions/FunctionSentences.cpp \
 src/functions/FunctionStartsWith.cpp \
 src/functions/FunctionStaticBaseURI.cpp \
 src/functions/FunctionString.cpp \
-src/functions/FunctionStringJoin.cpp \
 src/functions/FunctionStringLength.cpp \
 src/functions/FunctionStringToCodepoints.cpp \
-src/functions/FunctionSubsequence.cpp \
-src/functions/FunctionSubstringAfter.cpp \
-src/functions/FunctionSubstringBefore.cpp \
 src/functions/FunctionSubstring.cpp \
-src/functions/FunctionSum.cpp \
 src/functions/FunctionTime.cpp \
 src/functions/FunctionTokenize.cpp \
 src/functions/FunctionTrace.cpp \
-src/functions/FunctionTranslate.cpp \
-src/functions/FunctionTrue.cpp \
+src/functions/FunctionHead.cpp \
+src/functions/FunctionTail.cpp \
 src/functions/FunctionUnordered.cpp \
 src/functions/FunctionUnparsedText.cpp \
 src/functions/FunctionUpperCase.cpp \
 src/functions/FunctionWords.cpp \
-src/functions/FunctionZeroOrOne.cpp \
 src/functions/FunctionAdjustDateTimeToTimezone.cpp \
 src/functions/FunctionAdjustDateToTimezone.cpp \
 src/functions/FunctionAdjustTimeToTimezone.cpp \
@@ -306,6 +282,7 @@ src/functions/RegExpFunction.cpp \
 src/functions/XQUserFunction.cpp \
 src/functions/BuiltInModules.cpp \
 src/functions/CoreModule.hpp \
+src/functions/FnModule.hpp \
 src/items/impl/ATAnySimpleTypeImpl.cpp \
 src/items/impl/ATAnySimpleTypeImpl.hpp \
 src/items/impl/ATAnyURIOrDerivedImpl.cpp \
@@ -541,6 +518,7 @@ src/samples/dom-api/data.xsd \
 src/samples/dom-api/foo.xml \
 src/samples/simple-api/foo.xml \
 src/functions/CoreModule.xq \
+src/functions/FnModule.xq \
 LICENSE \
 TODO \
 README \
@@ -639,6 +617,9 @@ src/tools/compile-delayed-module.cpp
 
 $(top_srcdir)/src/functions/CoreModule.hpp: $(top_srcdir)/src/functions/CoreModule.xq
 	./compile-delayed-module $(top_srcdir)/src/functions/CoreModule.xq >$(top_srcdir)/src/functions/CoreModule.hpp
+
+$(top_srcdir)/src/functions/FnModule.hpp: $(top_srcdir)/src/functions/FnModule.xq
+	./compile-delayed-module $(top_srcdir)/src/functions/FnModule.xq >$(top_srcdir)/src/functions/FnModule.hpp
 
 LEXERFILE   = $(top_srcdir)/src/lexer/XQLexer.cpp
 LEXTEMPLATE = $(top_srcdir)/src/lexer/XQLexer.l

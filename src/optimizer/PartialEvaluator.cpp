@@ -825,7 +825,8 @@ ASTNode *PartialEvaluator::optimizeUserFunction(XQUserFunctionInstance *item)
   const XQUserFunction *funcDef = item->getFunctionDefinition();
 
   // TBD Maybe make this dependant on the number of times the function is called in the query as well? - jpcs
-  if(funcDef->getFunctionBody() && functionInlineLimit_ > 0 && (!funcDef->isRecursive() || constantArg)) {
+//   if(funcDef->getFunctionBody() && functionInlineLimit_ > 0 && (!funcDef->isRecursive() || constantArg)) {
+  if(funcDef->getFunctionBody() && functionInlineLimit_ > 0 && !funcDef->isRecursive()) {
     AutoReset<size_t> reset(functionInlineLimit_);
     --functionInlineLimit_;
 

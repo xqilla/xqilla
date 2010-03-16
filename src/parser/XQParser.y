@@ -60,7 +60,6 @@
 #include <xqilla/ast/XQStep.hpp>
 #include <xqilla/ast/XQLiteral.hpp>
 #include <xqilla/ast/XQVariable.hpp>
-#include <xqilla/ast/XQInstanceOf.hpp>
 #include <xqilla/ast/XQCastAs.hpp>
 #include <xqilla/ast/XQCastableAs.hpp>
 #include <xqilla/ast/XQTreatAs.hpp>
@@ -841,13 +840,20 @@ DM_FunctionDecl:
 
     const XMLCh *localname = XPath2NSUtils::getLocalName($4);
 
-    printf("  {\n    \"%s\", %d, %d, %d,\n", UTF8(localname), ($5 ? $5->size() : 0), @1.first_line, @1.first_column);
+    printf("  {\n    \"%s\", %d, %s, %d, %d,\n", UTF8(localname), ($5 ? $5->size() : 0),
+           $2->privateOption == XQUserFunction::Options::OP_TRUE ? "true" : "false", @1.first_line, @1.first_column);
     printf("    \"");
     const XMLCh *ptr = ((XQLexer*)QP->_lexer)->getQueryString() + @1.first_offset;
     const XMLCh *start = ptr;
     const XMLCh *end = ((XQLexer*)QP->_lexer)->getQueryString() + @8.last_offset;
     for(;ptr < end; ++ptr) {
-      if(*ptr == '\n') {
+      if(*ptr == '"') {
+        if((ptr - start) == 0) buf.reset();
+        else buf.set(start, ptr - start);
+        printf("%s\\\"", UTF8(buf.getRawBuffer()));
+        start = ptr + 1;
+      }
+      else if(*ptr == '\n') {
         if((ptr - start) == 0) buf.reset();
         else buf.set(start, ptr - start);
         printf("%s\\n\"\n    \"", UTF8(buf.getRawBuffer()));
@@ -3576,7 +3582,7 @@ QuantifyBinding:
 TypeswitchExpr:
   _TYPESWITCH_ _LPAR_ Expr _RPAR_ CaseClauseList DefaultCase
   {
-    $$ = new (MEMMGR) XQTypeswitch( WRAP(@1, $3), $5, $6, MEMMGR);
+    $$ = WRAP(@1, new (MEMMGR) XQTypeswitch( WRAP(@1, $3), $5, $6, MEMMGR));
   }
 ;
 
@@ -3811,7 +3817,20 @@ IntersectExceptExpr:
 InstanceofExpr:
   TreatExpr _INSTANCE_ _OF_ SequenceType
   {
-    $$ = WRAP(@2, new (MEMMGR) XQInstanceOf($1,$4,MEMMGR));
+    ASTNode *falseExpr =
+      WRAP(@2, new (MEMMGR) XQFunctionCall(0, XQFunction::XMLChFunctionURI,
+                                           MEMMGR->getPooledString("false"), 0, MEMMGR));
+    XQTypeswitch::Case *defcase =
+      WRAP(@1, new (MEMMGR) XQTypeswitch::Case(NULL, NULL, falseExpr));
+
+    ASTNode *trueExpr =
+      WRAP(@2, new (MEMMGR) XQFunctionCall(0, XQFunction::XMLChFunctionURI,
+                                           MEMMGR->getPooledString("true"), 0, MEMMGR));
+    XQTypeswitch::Cases *cases = new (MEMMGR)
+      XQTypeswitch::Cases(XQillaAllocator<XQTypeswitch::Case*>(MEMMGR));
+    cases->push_back(WRAP(@2, new (MEMMGR) XQTypeswitch::Case(NULL, $4, trueExpr)));
+
+    $$ = WRAP(@2, new (MEMMGR) XQTypeswitch($1, cases, defcase, MEMMGR));
   }
   | TreatExpr
   ;

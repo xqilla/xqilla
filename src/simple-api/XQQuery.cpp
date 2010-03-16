@@ -503,11 +503,22 @@ void XQQuery::addFunction(XQUserFunction* fnDef)
 }
 
 void XQQuery::addDelayedFunction(const XMLCh *uri, const XMLCh *name, size_t numArgs,
-                                 const XMLCh *functionDeclaration, int line, int column)
+                                 const XMLCh *functionDeclaration, bool isPrivate, int line, int column)
 {
   DelayedFuncFactory *f = new (m_context->getMemoryManager())
 	  DelayedFuncFactory(uri, name, numArgs, functionDeclaration, line, column, this);
-  m_delayedFunctions.push_back(f);
+  if(!isPrivate)
+    m_delayedFunctions.push_back(f);
+  m_context->addCustomFunction(f);
+}
+
+void XQQuery::addDelayedFunction(const XMLCh *uri, const XMLCh *name, size_t numArgs,
+                                 const char *functionDeclaration, bool isPrivate, int line, int column)
+{
+  DelayedFuncFactory *f = new (m_context->getMemoryManager())
+	  DelayedFuncFactory(uri, name, numArgs, functionDeclaration, line, column, this);
+  if(!isPrivate)
+    m_delayedFunctions.push_back(f);
   m_context->addCustomFunction(f);
 }
 

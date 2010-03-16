@@ -104,7 +104,10 @@ XQQuery* XQilla::parse(const XMLCh* inputQuery, DynamicContext* context,
   result->setQueryText(inputQuery);
   if(queryFile)
     result->setFile(queryFile);
-  BuiltInModules::core.importModuleInto(result);
+  if((flags & XQilla::NO_DEFAULT_MODULES) == 0) {
+    BuiltInModules::core.importModuleInto(result);
+    BuiltInModules::fn.importModuleInto(result);
+  }
 
   XQLexer lexer(context->getMemoryManager(), queryFile, inputQuery, context->getLanguage());
 
@@ -161,7 +164,10 @@ XQQuery* XQilla::parse(const InputSource& querySrc, DynamicContext* context,
   }
   if(querySrc.getSystemId())
     result->setFile(querySrc.getSystemId());
-  BuiltInModules::core.importModuleInto(result);
+  if((flags & XQilla::NO_DEFAULT_MODULES) == 0) {
+    BuiltInModules::core.importModuleInto(result);
+    BuiltInModules::fn.importModuleInto(result);
+  }
 
 #ifdef HAVE_FAXPP
   FAXPPXSLT2Lexer lexer(context, querySrc, context->getLanguage());
@@ -249,7 +255,8 @@ void XQilla::compileDelayedModule(const XMLCh* queryFile, MemoryManager* memMgr)
 
   Janitor<InputSource> srcToFill(new (memMgr) LocalFileInputSource(queryFile));
 
-  DynamicContext *context = XQilla::createContext(XQilla::XQUERY, 0, memMgr);
+  DynamicContext *context = XQilla::createContext((XQilla::Language)(XQilla::XQUERY11_FULLTEXT_UPDATE
+                                                                     | XQilla::EXTENSIONS), 0, memMgr);
   AutoDelete<XQQuery> query(new (memMgr) XQQuery(context, true, 0, memMgr));
 
   XPath2MemoryManager *mm = context->getMemoryManager();

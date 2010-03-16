@@ -52,6 +52,7 @@ void StackFrame::query(const XMLCh *queryString, EventHandler *events) const
   AutoDelete<DynamicContext> context(context_->createDebugQueryContext(contextItem_, contextPosition_,
                                                                        contextSize_, variables_,
                                                                        nsResolver_, defaultElementNS_));
-  AutoDelete<XQQuery> query(XQilla::parse(queryString, context.get(), 0, XQilla::NO_ADOPT_CONTEXT));
+  AutoDelete<XQQuery> query(XQilla::parse(queryString, context.get(), 0,
+                                          XQilla::NO_ADOPT_CONTEXT | XQilla::NO_DEFAULT_MODULES));
   query->execute(events, context);
 }

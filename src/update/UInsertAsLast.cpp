@@ -30,7 +30,6 @@
 #include <xqilla/update/PendingUpdateList.hpp>
 #include <xqilla/ast/XQDOMConstructor.hpp>
 #include <xqilla/utils/XPath2Utils.hpp>
-#include <xqilla/functions/FunctionNamespaceURIForPrefix.hpp>
 #include <xqilla/exceptions/DynamicErrorException.hpp>
 
 XERCES_CPP_NAMESPACE_USE;
@@ -101,6 +100,24 @@ Result UInsertAsLast::createResult(DynamicContext* context, int flags) const
   return 0;
 }
 
+// static
+bool UInsertAsLast::checkNamespaceBinding(const ATQNameOrDerived::Ptr &qname, const Node::Ptr &node,
+                                          DynamicContext *context, const LocationInfo *location)
+{
+  if(qname->getURI() != 0 && *(qname->getURI()) != 0) {
+    Result namespaces = node->dmNamespaceNodes(context, location);
+    Node::Ptr ns;
+    while((ns = (Node*)namespaces->next(context).get()).notNull()) {
+      ATQNameOrDerived::Ptr name = ns->dmNodeName(context);
+      if(((name.notNull() && XPath2Utils::equals(((const ATQNameOrDerived*)name.get())->getName(), qname->getPrefix())) ||
+          (name.isNull() && qname->getPrefix() == 0)) && !XPath2Utils::equals(ns->dmStringValue(context), qname->getURI())) {
+        return false;
+      }
+    }
+  }
+  return true;
+}
+
 PendingUpdateList UInsertAsLast::createUpdateList(DynamicContext *context) const
 {
   Node::Ptr node = (Node*)target_->createResult(context)->next(context).get();
@@ -125,18 +142,33 @@ PendingUpdateList UInsertAsLast::createUpdateList(DynamicContext *context) const
       //    b. No attribute node in $alist may have a QName whose implied namespace binding conflicts with a namespace
       //       binding in the "namespaces" property of $target [err:XUDY0023].  
       ATQNameOrDerived::Ptr qname = ((Node*)item.get())->dmNodeName(context);
-      if(qname->getURI() != 0 && *(qname->getURI()) != 0) {
-        ATAnyURIOrDerived::Ptr uri = FunctionNamespaceURIForPrefix::uriForPrefix(qname->getPrefix(), node, context, this);
-        if(uri.notNull() && !XPath2Utils::equals(uri->asString(context), qname->getURI())) {
-          XMLBuffer buf;
-          buf.append(X("Implied namespace binding for the insert as last expression (\""));
-          buf.append(qname->getPrefix());
-          buf.append(X("\" -> \""));
-          buf.append(qname->getURI());
-          buf.append(X("\") conflicts with those already existing on the parent element of the target attribute [err:XUDY0023]"));
-          XQThrow3(DynamicErrorException, X("UInsertInto::createUpdateList"), buf.getRawBuffer(), this);
-        }
+      if(!checkNamespaceBinding(qname, node, context, this)) {
+        XMLBuffer buf;
+        buf.append(X("Implied namespace binding for the insert as last expression (\""));
+        buf.append(qname->getPrefix());
+        buf.append(X("\" -> \""));
+        buf.append(qname->getURI());
+        buf.append(X("\") conflicts with those already existing on the parent element of the target attribute [err:XUDY0023]"));
+        XQThrow(DynamicErrorException, X("UInsertInto::createUpdateList"), buf.getRawBuffer());
       }
+
+//       if(qname->getURI() != 0 && *(qname->getURI()) != 0) {
+//         Result namespaces = node->dmNamespaceNodes(context, this);
+//         Node::Ptr ns;
+//         while((ns = (Node*)namespaces->next(context).get()).notNull()) {
+//           ATQNameOrDerived::Ptr name = ns->dmNodeName(context);
+//           if(((name.notNull() && XPath2Utils::equals(((const ATQNameOrDerived*)name.get())->getName(), qname->getPrefix())) ||
+//               (name.isNull() && qname->getPrefix() == 0)) && !XPath2Utils::equals(ns->dmStringValue(context), qname->getURI())) {
+//             XMLBuffer buf;
+//             buf.append(X("Implied namespace binding for the insert as last expression (\""));
+//             buf.append(qname->getPrefix());
+//             buf.append(X("\" -> \""));
+//             buf.append(qname->getURI());
+//             buf.append(X("\") conflicts with those already existing on the parent element of the target attribute [err:XUDY0023]"));
+//             XQThrow3(DynamicErrorException, X("UInsertInto::createUpdateList"), buf.getRawBuffer(), this);
+//           }
+//         }
+//       }
 
       alist.addItem(item);
     }

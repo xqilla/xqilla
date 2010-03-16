@@ -21,32 +21,9 @@
 #include <xqilla/simple-api/XQilla.hpp>
 #include <xqilla/simple-api/XQQuery.hpp>
 #include <xqilla/context/DynamicContext.hpp>
+#include <xqilla/functions/BuiltInModules.hpp>
 
 XERCES_CPP_NAMESPACE_USE;
-
-XQQuery *DelayedModule::createModule(DynamicContext* context, MemoryManager *memMgr,
-                                     ModuleCache *moduleCache) const
-{
-  if(context == 0) {
-    context = XQilla::createContext(XQilla::XQUERY, 0, memMgr);
-  }
-
-  context->setNamespaceBinding(prefix, uri);
-
-  AutoDelete<XQQuery> query(new (memMgr) XQQuery(context, true, moduleCache, memMgr));
-  query->setIsLibraryModule(true);
-  query->setModuleTargetNamespace(uri);
-  query->setFile(file);
-
-  XPath2MemoryManager *mm = context->getMemoryManager();
-
-  for(const FuncDef *ptr = functions; ptr->name != 0; ++ptr) {
-    query->addDelayedFunction(uri, mm->getPooledString(ptr->name), ptr->args,
-                              mm->getPooledString(ptr->body), ptr->line, ptr->column);
-  }
-
-  return query.adopt();
-}
 
 void DelayedModule::importModuleInto(XQQuery *importer) const
 {
@@ -54,10 +31,31 @@ void DelayedModule::importModuleInto(XQQuery *importer) const
 
   if(module == 0) {
     // Create the module
-    const StaticContext *context = importer->getStaticContext();
-    module = createModule(context->createModuleContext(), context->getMemoryManager(),
-                          importer->getModuleCache());
-    importer->getModuleCache()->put(module);
+    const StaticContext *scontext = importer->getStaticContext();
+
+    DynamicContext *context = scontext->createModuleContext();
+    context->setNamespaceBinding(prefix, uri);
+
+    module = new (scontext->getMemoryManager())
+      XQQuery(context, true, importer->getModuleCache(), scontext->getMemoryManager());
+    AutoDelete<XQQuery> guard(module);
+
+    module->setIsLibraryModule(true);
+    module->setModuleTargetNamespace(uri);
+    module->setFile(file);
+
+    XPath2MemoryManager *mm = context->getMemoryManager();
+
+    for(const FuncDef *ptr = functions; ptr->name != 0; ++ptr) {
+      module->addDelayedFunction(uri, mm->getPooledString(ptr->name), ptr->args,
+                                 ptr->body, ptr->isPrivate,
+                                 ptr->line, ptr->column);
+    }
+
+    importer->getModuleCache()->put(guard.adopt());
+
+    BuiltInModules::core.importModuleInto(module);
+    BuiltInModules::fn.importModuleInto(module);
   }
 
   importer->importModule(module);

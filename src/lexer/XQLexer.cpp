@@ -15040,7 +15040,7 @@ case 168:
 YY_RULE_SETUP
 #line 421 "../src/lexer/XQLexer.l"
 {
-  if(!isXPath() && lookAhead() == _COLON_COLON_) {
+  if(!isXPath() && !isExtensions() && lookAhead() == _COLON_COLON_) {
     RECOGNIZE_VALUE(_QNAME_, yytext);
   } else {
     RECOGNIZE_VALUE(_NAMESPACE_, yytext);

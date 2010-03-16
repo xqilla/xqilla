@@ -219,13 +219,10 @@ const ExternalFunction *FunctionLookup::lookUpGlobalExternalFunction(
 
 #include "FuncFactoryTemplate.hpp"
 #include <xqilla/functions/FunctionAbs.hpp>
-#include <xqilla/functions/FunctionAvg.hpp>
 #include <xqilla/functions/FunctionBaseURI.hpp>
-#include <xqilla/functions/FunctionBoolean.hpp>
 #include <xqilla/functions/FunctionCeiling.hpp>
 #include <xqilla/functions/FunctionCollection.hpp>
 #include <xqilla/functions/FunctionCompare.hpp>
-#include <xqilla/functions/FunctionCodepointEqual.hpp>
 #include <xqilla/functions/FunctionConcat.hpp>
 #include <xqilla/functions/FunctionConstructor.hpp>
 #include <xqilla/functions/FunctionContains.hpp>
@@ -233,9 +230,7 @@ const ExternalFunction *FunctionLookup::lookUpGlobalExternalFunction(
 #include <xqilla/functions/FunctionCurrentDate.hpp>
 #include <xqilla/functions/FunctionCurrentDateTime.hpp>
 #include <xqilla/functions/FunctionCurrentTime.hpp>
-#include <xqilla/functions/FunctionData.hpp>
 #include <xqilla/functions/FunctionDateTime.hpp>
-#include <xqilla/functions/FunctionDeepEqual.hpp>
 #include <xqilla/functions/FunctionDefaultCollation.hpp>
 #include <xqilla/functions/FunctionDistinctValues.hpp>
 #include <xqilla/functions/FunctionDoc.hpp>
@@ -243,26 +238,17 @@ const ExternalFunction *FunctionLookup::lookUpGlobalExternalFunction(
 #include <xqilla/functions/FunctionDocAvailable.hpp>
 #include <xqilla/functions/FunctionDocumentURI.hpp>
 #include <xqilla/functions/FunctionEmpty.hpp>
-#include <xqilla/functions/FunctionEncodeForUri.hpp>
 #include <xqilla/functions/FunctionEndsWith.hpp>
 #include <xqilla/functions/FunctionError.hpp>
-#include <xqilla/functions/FunctionEscapeHtmlUri.hpp>
-#include <xqilla/functions/FunctionExactlyOne.hpp>
 #include <xqilla/functions/FunctionExists.hpp>
 #include <xqilla/functions/FunctionQName.hpp>
-#include <xqilla/functions/FunctionFalse.hpp>
 #include <xqilla/functions/FunctionFloor.hpp>
-#include <xqilla/functions/FunctionInScopePrefixes.hpp>
 #include <xqilla/functions/FunctionPrefixFromQName.hpp>
 #include <xqilla/functions/FunctionLocalNameFromQName.hpp>
 #include <xqilla/functions/FunctionNamespaceURIFromQName.hpp>
-#include <xqilla/functions/FunctionNamespaceURIForPrefix.hpp>
 #include <xqilla/functions/FunctionId.hpp>
 #include <xqilla/functions/FunctionIdref.hpp>
 #include <xqilla/functions/FunctionImplicitTimezone.hpp>
-#include <xqilla/functions/FunctionIndexOf.hpp>
-#include <xqilla/functions/FunctionInsertBefore.hpp>
-#include <xqilla/functions/FunctionIriToUri.hpp>
 #include <xqilla/functions/FunctionLang.hpp>
 #include <xqilla/functions/FunctionLast.hpp>
 #include <xqilla/functions/FunctionLocalname.hpp>
@@ -278,35 +264,23 @@ const ExternalFunction *FunctionLookup::lookUpGlobalExternalFunction(
 #include <xqilla/functions/FunctionNormalizeUnicode.hpp>
 #include <xqilla/functions/FunctionNot.hpp>
 #include <xqilla/functions/FunctionNumber.hpp>
-#include <xqilla/functions/FunctionOneOrMore.hpp>
 #include <xqilla/functions/FunctionPosition.hpp>
-#include <xqilla/functions/FunctionRemove.hpp>
 #include <xqilla/functions/FunctionReplace.hpp>
-#include <xqilla/functions/FunctionResolveQName.hpp>
 #include <xqilla/functions/FunctionResolveURI.hpp>
-#include <xqilla/functions/FunctionReverse.hpp>
 #include <xqilla/functions/FunctionRoot.hpp>
 #include <xqilla/functions/FunctionRound.hpp>
 #include <xqilla/functions/FunctionRoundHalfToEven.hpp>
 #include <xqilla/functions/FunctionStartsWith.hpp>
 #include <xqilla/functions/FunctionStaticBaseURI.hpp>
 #include <xqilla/functions/FunctionString.hpp>
-#include <xqilla/functions/FunctionStringJoin.hpp>
 #include <xqilla/functions/FunctionStringLength.hpp>
 #include <xqilla/functions/FunctionStringToCodepoints.hpp>
 #include <xqilla/functions/FunctionCodepointsToString.hpp>
-#include <xqilla/functions/FunctionSubsequence.hpp>
 #include <xqilla/functions/FunctionSubstring.hpp>
-#include <xqilla/functions/FunctionSubstringAfter.hpp>
-#include <xqilla/functions/FunctionSubstringBefore.hpp>
-#include <xqilla/functions/FunctionSum.hpp>
 #include <xqilla/functions/FunctionTokenize.hpp>
 #include <xqilla/functions/FunctionTrace.hpp>
-#include <xqilla/functions/FunctionTranslate.hpp>
-#include <xqilla/functions/FunctionTrue.hpp>
 #include <xqilla/functions/FunctionUnordered.hpp>
 #include <xqilla/functions/FunctionUpperCase.hpp>
-#include <xqilla/functions/FunctionZeroOrOne.hpp>
 #include <xqilla/functions/FunctionYearsFromDuration.hpp>
 #include <xqilla/functions/FunctionMonthsFromDuration.hpp>
 #include <xqilla/functions/FunctionDaysFromDuration.hpp>
@@ -331,6 +305,8 @@ const ExternalFunction *FunctionLookup::lookUpGlobalExternalFunction(
 #include <xqilla/functions/FunctionAdjustDateTimeToTimezone.hpp>
 #include <xqilla/functions/FunctionAdjustDateToTimezone.hpp>
 #include <xqilla/functions/FunctionAdjustTimeToTimezone.hpp>
+#include <xqilla/functions/FunctionHead.hpp>
+#include <xqilla/functions/FunctionTail.hpp>
 // Updates
 #include <xqilla/update/FunctionPut.hpp>
 // XSLT 2.0 functions
@@ -380,8 +356,6 @@ static void initGlobalTable(FunctionLookup *t, MemoryManager *memMgr)
   t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionNilled>(memMgr));
   //   fn:string
   t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionString>(memMgr));
-  //   fn:data
-  t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionData>(memMgr));
   //   fn:base-uri
   t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionBaseURI>(memMgr));
   //   fn:document-uri
@@ -417,12 +391,8 @@ static void initGlobalTable(FunctionLookup *t, MemoryManager *memMgr)
   t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionStringToCodepoints>(memMgr));
   //   fn:compare
   t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionCompare>(memMgr));
-  //   fn:codepoint-equal
-  t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionCodepointEqual>(memMgr));
   //   fn:concat
   t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionConcat>(memMgr));
-  //   fn:string-join
-  t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionStringJoin>(memMgr));
   //   fn:substring
   t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionSubstring>(memMgr));
   //   fn:string-length
@@ -435,24 +405,12 @@ static void initGlobalTable(FunctionLookup *t, MemoryManager *memMgr)
   t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionUpperCase>(memMgr));
   //   fn:lower-case
   t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionLowerCase>(memMgr));
-  //   fn:translate
-  t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionTranslate>(memMgr));
-  //   fn:encode-for-uri
-  t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionEncodeForUri>(memMgr));
-  //   fn:iri-to-uri
-  t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionIriToUri>(memMgr));
-  //   fn:escape-html-uri
-  t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionEscapeHtmlUri>(memMgr));
   //   fn:contains
   t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionContains>(memMgr));
   //   fn:starts-with
   t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionStartsWith>(memMgr));
   //   fn:ends-with
   t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionEndsWith>(memMgr));
-  //   fn:substring-before
-  t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionSubstringBefore>(memMgr));
-  //   fn:substring-after
-  t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionSubstringAfter>(memMgr));
 
   //   fn:matches
   t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionMatches>(memMgr));
@@ -462,10 +420,6 @@ static void initGlobalTable(FunctionLookup *t, MemoryManager *memMgr)
   t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionTokenize>(memMgr));
 
   // Functions on boolean values
-  //   fn:true
-  t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionTrue>(memMgr));
-  //   fn:false
-  t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionFalse>(memMgr));
   //   fn:not
   t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionNot>(memMgr));
 
@@ -520,8 +474,6 @@ static void initGlobalTable(FunctionLookup *t, MemoryManager *memMgr)
   t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionAdjustTimeToTimezone>(memMgr));
 
   // Functions on QName values
-  //   fn:resolve-QName
-  t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionResolveQName>(memMgr));
   //   fn:QName
   t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionQName>(memMgr));
   //   fn:prefix-from-QName
@@ -531,9 +483,9 @@ static void initGlobalTable(FunctionLookup *t, MemoryManager *memMgr)
   //   fn:namespace-uri-from-QName
   t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionNamespaceURIFromQName>(memMgr));
   //   fn:namespace-uri-for-prefix
-  t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionNamespaceURIForPrefix>(memMgr));
+//   t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionNamespaceURIForPrefix>(memMgr));
   //   fn:in-scope-prefixes
-  t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionInScopePrefixes>(memMgr));
+//   t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionInScopePrefixes>(memMgr));
 
   // Functions on anyURI values
   //   fn:resolve-URI
@@ -554,46 +506,25 @@ static void initGlobalTable(FunctionLookup *t, MemoryManager *memMgr)
   t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionRoot>(memMgr));
 
   // Functions on sequences
-  //   fn::zero-or-one
-  t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionZeroOrOne>(memMgr));
-  //   fn::one-or-more
-  t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionOneOrMore>(memMgr));
-  //   fn::exactly-one
-  t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionExactlyOne>(memMgr));
-  //   fn:boolean
-  t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionBoolean>(memMgr));
-  //   fn:index-of
-  t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionIndexOf>(memMgr));
   //   fn:empty
   t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionEmpty>(memMgr));
   //   fn:exists
   t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionExists>(memMgr));
   //   fn:distinct-values
   t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionDistinctValues>(memMgr));
-  //   fn:insert-before
-  t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionInsertBefore>(memMgr));
-  //   fn:remove
-  t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionRemove>(memMgr));
-  //   fn:reverse
-  t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionReverse>(memMgr));
-  //   fn:subsequence
-  t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionSubsequence>(memMgr));
   //   fn:unordered
   t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionUnordered>(memMgr));
+  //   fn:head
+  t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionHead>(memMgr));
+  //   fn:tail
+  t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionTail>(memMgr));
   
-  //   fn:deep-equal
-  t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionDeepEqual>(memMgr));
-
   //   fn:count
   t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionCount>(memMgr));
-  //   fn:avg
-  t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionAvg>(memMgr));
   //   fn:max
   t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionMax>(memMgr));
   //   fn:min
   t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionMin>(memMgr));
-  //   fn:sum
-  t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionSum>(memMgr));
 
   //   fn:id
   t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionId>(memMgr));

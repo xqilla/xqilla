@@ -22,6 +22,8 @@
 
 #include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/ast/ASTNodeImpl.hpp>
+#include <xqilla/items/ATQNameOrDerived.hpp>
+#include <xqilla/items/Node.hpp>
 
 class XQILLA_API UInsertAsLast : public ASTNodeImpl
 {
@@ -38,6 +40,9 @@ public:
 
   ASTNode *getTarget() const { return target_; }
   void setTarget(ASTNode *target) { target_ = target; }
+
+  static bool checkNamespaceBinding(const ATQNameOrDerived::Ptr &qname, const Node::Ptr &node,
+                                    DynamicContext *context, const LocationInfo *location);
 
 protected:
   ASTNode *source_;

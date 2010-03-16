@@ -51,7 +51,6 @@
 #include <xqilla/operators/UnaryMinus.hpp>
 #include <xqilla/operators/Union.hpp>
 
-#include <xqilla/functions/FunctionCodepointEqual.hpp>
 #include <xqilla/update/FunctionPut.hpp>
 
 #include "xqilla/functions/FunctionMatches.hpp"
@@ -333,8 +332,6 @@ ASTNode *ASTCopier::optimizeFunction(XQFunction *item)
       RegExpFunction* newFunc = (RegExpFunction*)context_->lookUpFunction(item->getFunctionURI(), item->getFunctionName(), item->getArguments());
       newFunc->copyRegExp((RegExpFunction*) item, mm_);
       result = newFunc;
-    } else if(name == FunctionCodepointEqual::name) {
-      result = new (mm_) FunctionCodepointEqual(((FunctionCodepointEqual*)item)->getCollation(), item->getArguments(), mm_);
     }
   }
 

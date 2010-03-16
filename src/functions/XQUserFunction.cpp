@@ -272,20 +272,18 @@ void XQUserFunction::staticResolutionStage1(StaticContext *context)
 
   resolveName(context);
 
-  if(name_ != 0) {
-    if(!isTemplate_) {
-      if(XPath2Utils::equals(uri_, XMLUni::fgXMLURIName) ||
-         XPath2Utils::equals(uri_, SchemaSymbols::fgURI_SCHEMAFORSCHEMA) ||
-         XPath2Utils::equals(uri_, SchemaSymbols::fgURI_XSI) ||
-         XPath2Utils::equals(uri_, XQFunction::XMLChFunctionURI) ||
-         XPath2Utils::equals(uri_, FunctionConstructor::XMLChXPath2DatatypesURI)) {
-        XQThrow(FunctionException, X("XQUserFunction::staticResolutionStage1"),
-                X("A user defined function must not be in the namespaces xml, xsd, xsi, fn or xdt [err:XQST0045]"));
-      }
-      else if(uri_ == 0 || *uri_ == 0)
-        XQThrow(FunctionException, X("XQUserFunction::staticResolutionStage1"),
-                X("A user defined function must be defined in a namespace [err:XQST0060]"));
+  if(name_ != 0 && !isTemplate_ && !delayed_) {
+    if(XPath2Utils::equals(uri_, XMLUni::fgXMLURIName) ||
+       XPath2Utils::equals(uri_, SchemaSymbols::fgURI_SCHEMAFORSCHEMA) ||
+       XPath2Utils::equals(uri_, SchemaSymbols::fgURI_XSI) ||
+       XPath2Utils::equals(uri_, XQFunction::XMLChFunctionURI) ||
+       XPath2Utils::equals(uri_, FunctionConstructor::XMLChXPath2DatatypesURI)) {
+      XQThrow(FunctionException, X("XQUserFunction::staticResolutionStage1"),
+              X("A user defined function must not be in the namespaces xml, xsd, xsi, fn or xdt [err:XQST0045]"));
     }
+    else if(uri_ == 0 || *uri_ == 0)
+      XQThrow(FunctionException, X("XQUserFunction::staticResolutionStage1"),
+              X("A user defined function must be defined in a namespace [err:XQST0060]"));
   }
 
   // Check for the implementation of an external function
@@ -430,6 +428,11 @@ void XQUserFunction::staticResolutionStage1(StaticContext *context)
 
 void XQUserFunction::staticResolutionStage2(StaticContext *context)
 {
+  // Prevent static typing being run on this function by a
+  // loop of delayed functions
+  AutoReset<bool> reset(staticTyped_);
+  staticTyped_ = true;
+
   if(pattern_ != 0 && !pattern_->empty()) {
     VectorOfASTNodes::iterator patIt = pattern_->begin();
     for(; patIt != pattern_->end(); ++patIt) {
@@ -934,6 +937,19 @@ DelayedFuncFactory::DelayedFuncFactory(const XMLCh *uri, const XMLCh *name, size
                                        const XMLCh *body, int line, int column, XQQuery *query)
   : FuncFactory(uri, name, numArgs, numArgs, query->getStaticContext()->getMemoryManager()),
     body_(body),
+    body8_(0),
+    line_(line),
+    column_(column),
+    query_(query),
+    function_(0)
+{
+}
+
+DelayedFuncFactory::DelayedFuncFactory(const XMLCh *uri, const XMLCh *name, size_t numArgs,
+                                       const char *body, int line, int column, XQQuery *query)
+  : FuncFactory(uri, name, numArgs, numArgs, query->getStaticContext()->getMemoryManager()),
+    body_(0),
+    body8_(body),
     line_(line),
     column_(column),
     query_(query),
@@ -946,20 +962,19 @@ ASTNode *DelayedFuncFactory::createInstance(const VectorOfASTNodes &args, XPath2
   if(function_ == 0) {
     DynamicContext *context = (DynamicContext*)query_->getStaticContext();
 
+    if(body_ == 0) {
+      const_cast<const XMLCh *&>(body_) = context->getMemoryManager()->getPooledString(body8_);
+    }
+
     XQLexer lexer(memMgr, _LANG_FUNCDECL_, query_->getFile(), line_, column_, body_);
     XQParserArgs args(&lexer, query_);
     XQParser::yyparse(&args);
 
-    query_->addFunction(args._function);
-
-    args._function->staticResolutionStage1(context);
     const_cast<XQUserFunction*&>(function_) = args._function;
     function_->setDelayed(true);
 
-    UserFunctions &fns = const_cast<UserFunctions&>(query_->getFunctions());
-    for(UserFunctions::iterator j = fns.begin(); j != fns.end(); ++j) {
-      (*j)->resetStaticTypingOnce();
-    }
+    query_->addFunction(function_);
+    function_->staticResolutionStage1(context);
 
     AutoDelete<Optimizer> optimizer(XQilla::createOptimizer(context, XQilla::NO_OPTIMIZATION));
     optimizer->startOptimize(function_);

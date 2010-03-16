@@ -419,7 +419,7 @@ void XQLexer::undoLessThan()
 <INITIAL>"with"                   RECOGNIZE_VALUE(_WITH_, yytext);
 
 <INITIAL>"namespace" {
-  if(!isXPath() && lookAhead() == _COLON_COLON_) {
+  if(!isXPath() && !isExtensions() && lookAhead() == _COLON_COLON_) {
     RECOGNIZE_VALUE(_QNAME_, yytext);
   } else {
     RECOGNIZE_VALUE(_NAMESPACE_, yytext);

@@ -21,13 +21,13 @@
 
 #include <xqilla/update/UReplace.hpp>
 #include <xqilla/update/PendingUpdateList.hpp>
+#include <xqilla/update/UInsertAsLast.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/items/Node.hpp>
 #include <xqilla/ast/XQTreatAs.hpp>
 #include <xqilla/ast/XQDOMConstructor.hpp>
 #include <xqilla/schema/SequenceType.hpp>
 #include <xqilla/utils/XPath2Utils.hpp>
-#include <xqilla/functions/FunctionNamespaceURIForPrefix.hpp>
 #include <xqilla/exceptions/StaticErrorException.hpp>
 #include <xqilla/exceptions/XPath2TypeMatchException.hpp>
 #include <xqilla/exceptions/DynamicErrorException.hpp>
@@ -142,17 +142,14 @@ PendingUpdateList UReplace::createUpdateList(DynamicContext *context) const
       //    b. No attribute node in $rlist may have a QName whose implied namespace binding conflicts with a namespace binding in the
       //       "namespaces" property of $parent [err:XUDY0023].
       ATQNameOrDerived::Ptr qname = ((Node*)tmp.get())->dmNodeName(context);
-      if(qname->getURI() != 0 && *(qname->getURI()) != 0) {
-        ATAnyURIOrDerived::Ptr uri = FunctionNamespaceURIForPrefix::uriForPrefix(qname->getPrefix(), parentNode, context, this);
-        if(uri.notNull() && !XPath2Utils::equals(uri->asString(context), qname->getURI())) {
-          XMLBuffer buf;
-          buf.append(X("Implied namespace binding for the replace expression (\""));
-          buf.append(qname->getPrefix());
-          buf.append(X("\" -> \""));
-          buf.append(qname->getURI());
-          buf.append(X("\") conflicts with those already existing on the parent element of the target attribute [err:XUDY0023]"));
-          XQThrow3(DynamicErrorException, X("URename::createUpdateList"), buf.getRawBuffer(), this);
-        }
+      if(!UInsertAsLast::checkNamespaceBinding(qname, parentNode, context, this)) {
+        XMLBuffer buf;
+        buf.append(X("Implied namespace binding for the replace expression (\""));
+        buf.append(qname->getPrefix());
+        buf.append(X("\" -> \""));
+        buf.append(qname->getURI());
+        buf.append(X("\") conflicts with those already existing on the parent element of the target attribute [err:XUDY0023]"));
+        XQThrow(DynamicErrorException, X("URename::createUpdateList"), buf.getRawBuffer());
       }
 
       value.addItem(tmp);

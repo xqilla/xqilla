@@ -130,47 +130,37 @@ am_libxqilla_la_OBJECTS = ReferenceCounted.lo BaseMemoryManager.lo \
 	EXSLTMathFunction.lo ExternalFunction.lo XQillaFunction.lo \
 	FunctionParseXML.lo FuncFactory.lo FunctionLookup.lo \
 	FunctionAbs.lo FunctionAcos.lo FunctionAsin.lo FunctionAtan.lo \
-	FunctionAvg.lo FunctionBaseURI.lo FunctionBoolean.lo \
-	FunctionCaseFold.lo FunctionCeiling.lo \
-	FunctionCodepointEqual.lo FunctionCodepointsToString.lo \
-	FunctionCollection.lo FunctionCompare.lo FunctionConcat.lo \
-	FunctionConstructor.lo FunctionContains.lo FunctionCount.lo \
-	FunctionCos.lo FunctionCurrentDate.lo \
-	FunctionCurrentDateTime.lo FunctionCurrentTime.lo \
-	FunctionData.lo FunctionDateTime.lo FunctionDeepEqual.lo \
+	FunctionBaseURI.lo FunctionCaseFold.lo FunctionCeiling.lo \
+	FunctionCodepointsToString.lo FunctionCollection.lo \
+	FunctionCompare.lo FunctionConcat.lo FunctionConstructor.lo \
+	FunctionContains.lo FunctionCount.lo FunctionCos.lo \
+	FunctionCurrentDate.lo FunctionCurrentDateTime.lo \
+	FunctionCurrentTime.lo FunctionDateTime.lo \
 	FunctionDefaultCollation.lo FunctionDistinctValues.lo \
 	FunctionDocAvailable.lo FunctionDoc.lo FunctionDocument.lo \
-	FunctionDocumentURI.lo FunctionEmpty.lo \
-	FunctionEncodeForUri.lo FunctionEndsWith.lo FunctionError.lo \
-	FunctionEscapeHtmlUri.lo FunctionExactlyOne.lo \
-	FunctionExists.lo FunctionExp.lo FunctionFalse.lo \
+	FunctionDocumentURI.lo FunctionEmpty.lo FunctionEndsWith.lo \
+	FunctionError.lo FunctionExists.lo FunctionExp.lo \
 	FunctionFloor.lo FunctionFunctionArity.lo \
 	FunctionFunctionName.lo FunctionId.lo FunctionIdref.lo \
-	FunctionImplicitTimezone.lo FunctionIndexOf.lo \
-	FunctionInScopePrefixes.lo FunctionInsertBefore.lo \
-	FunctionIriToUri.lo FunctionLang.lo FunctionLast.lo \
+	FunctionImplicitTimezone.lo FunctionLang.lo FunctionLast.lo \
 	FunctionLocalname.lo FunctionLocalNameFromQName.lo \
 	FunctionLog.lo FunctionLowerCase.lo FunctionMatches.lo \
 	FunctionMax.lo FunctionMin.lo FunctionName.lo \
-	FunctionNamespaceUri.lo FunctionNamespaceURIForPrefix.lo \
-	FunctionNamespaceURIFromQName.lo FunctionNilled.lo \
-	FunctionNodeName.lo FunctionNormalizeSpace.lo \
-	FunctionNormalizeUnicode.lo FunctionNot.lo FunctionNumber.lo \
-	FunctionOneOrMore.lo FunctionPosition.lo FunctionPower.lo \
-	FunctionPrefixFromQName.lo FunctionQName.lo \
-	FunctionRegexGroup.lo FunctionRemove.lo FunctionReplace.lo \
-	FunctionResolveQName.lo FunctionResolveURI.lo \
-	FunctionReverse.lo FunctionRoot.lo FunctionRound.lo \
-	FunctionRoundHalfToEven.lo FunctionSin.lo FunctionSqrt.lo \
-	FunctionTan.lo FunctionSentences.lo FunctionStartsWith.lo \
+	FunctionNamespaceUri.lo FunctionNamespaceURIFromQName.lo \
+	FunctionNilled.lo FunctionNodeName.lo \
+	FunctionNormalizeSpace.lo FunctionNormalizeUnicode.lo \
+	FunctionNot.lo FunctionNumber.lo FunctionPosition.lo \
+	FunctionPower.lo FunctionPrefixFromQName.lo FunctionQName.lo \
+	FunctionRegexGroup.lo FunctionReplace.lo FunctionResolveURI.lo \
+	FunctionRoot.lo FunctionRound.lo FunctionRoundHalfToEven.lo \
+	FunctionSin.lo FunctionSqrt.lo FunctionTan.lo \
+	FunctionSentences.lo FunctionStartsWith.lo \
 	FunctionStaticBaseURI.lo FunctionString.lo \
-	FunctionStringJoin.lo FunctionStringLength.lo \
-	FunctionStringToCodepoints.lo FunctionSubsequence.lo \
-	FunctionSubstringAfter.lo FunctionSubstringBefore.lo \
-	FunctionSubstring.lo FunctionSum.lo FunctionTime.lo \
-	FunctionTokenize.lo FunctionTrace.lo FunctionTranslate.lo \
-	FunctionTrue.lo FunctionUnordered.lo FunctionUnparsedText.lo \
-	FunctionUpperCase.lo FunctionWords.lo FunctionZeroOrOne.lo \
+	FunctionStringLength.lo FunctionStringToCodepoints.lo \
+	FunctionSubstring.lo FunctionTime.lo FunctionTokenize.lo \
+	FunctionTrace.lo FunctionHead.lo FunctionTail.lo \
+	FunctionUnordered.lo FunctionUnparsedText.lo \
+	FunctionUpperCase.lo FunctionWords.lo \
 	FunctionAdjustDateTimeToTimezone.lo \
 	FunctionAdjustDateToTimezone.lo \
 	FunctionAdjustTimeToTimezone.lo FunctionDayFromDate.lo \
@@ -677,12 +667,9 @@ src/functions/FunctionAbs.cpp \
 src/functions/FunctionAcos.cpp \
 src/functions/FunctionAsin.cpp \
 src/functions/FunctionAtan.cpp \
-src/functions/FunctionAvg.cpp \
 src/functions/FunctionBaseURI.cpp \
-src/functions/FunctionBoolean.cpp \
 src/functions/FunctionCaseFold.cpp \
 src/functions/FunctionCeiling.cpp \
-src/functions/FunctionCodepointEqual.cpp \
 src/functions/FunctionCodepointsToString.cpp \
 src/functions/FunctionCollection.cpp \
 src/functions/FunctionCompare.cpp \
@@ -694,9 +681,7 @@ src/functions/FunctionCos.cpp \
 src/functions/FunctionCurrentDate.cpp \
 src/functions/FunctionCurrentDateTime.cpp \
 src/functions/FunctionCurrentTime.cpp \
-src/functions/FunctionData.cpp \
 src/functions/FunctionDateTime.cpp \
-src/functions/FunctionDeepEqual.cpp \
 src/functions/FunctionDefaultCollation.cpp \
 src/functions/FunctionDistinctValues.cpp \
 src/functions/FunctionDocAvailable.cpp \
@@ -704,24 +689,16 @@ src/functions/FunctionDoc.cpp \
 src/functions/FunctionDocument.cpp \
 src/functions/FunctionDocumentURI.cpp \
 src/functions/FunctionEmpty.cpp \
-src/functions/FunctionEncodeForUri.cpp \
 src/functions/FunctionEndsWith.cpp \
 src/functions/FunctionError.cpp \
-src/functions/FunctionEscapeHtmlUri.cpp \
-src/functions/FunctionExactlyOne.cpp \
 src/functions/FunctionExists.cpp \
 src/functions/FunctionExp.cpp \
-src/functions/FunctionFalse.cpp \
 src/functions/FunctionFloor.cpp \
 src/functions/FunctionFunctionArity.cpp \
 src/functions/FunctionFunctionName.cpp \
 src/functions/FunctionId.cpp \
 src/functions/FunctionIdref.cpp \
 src/functions/FunctionImplicitTimezone.cpp \
-src/functions/FunctionIndexOf.cpp \
-src/functions/FunctionInScopePrefixes.cpp \
-src/functions/FunctionInsertBefore.cpp \
-src/functions/FunctionIriToUri.cpp \
 src/functions/FunctionLang.cpp \
 src/functions/FunctionLast.cpp \
 src/functions/FunctionLocalname.cpp \
@@ -733,7 +710,6 @@ src/functions/FunctionMax.cpp \
 src/functions/FunctionMin.cpp \
 src/functions/FunctionName.cpp \
 src/functions/FunctionNamespaceUri.cpp \
-src/functions/FunctionNamespaceURIForPrefix.cpp \
 src/functions/FunctionNamespaceURIFromQName.cpp \
 src/functions/FunctionNilled.cpp \
 src/functions/FunctionNodeName.cpp \
@@ -741,17 +717,13 @@ src/functions/FunctionNormalizeSpace.cpp \
 src/functions/FunctionNormalizeUnicode.cpp \
 src/functions/FunctionNot.cpp \
 src/functions/FunctionNumber.cpp \
-src/functions/FunctionOneOrMore.cpp \
 src/functions/FunctionPosition.cpp \
 src/functions/FunctionPower.cpp \
 src/functions/FunctionPrefixFromQName.cpp \
 src/functions/FunctionQName.cpp \
 src/functions/FunctionRegexGroup.cpp \
-src/functions/FunctionRemove.cpp \
 src/functions/FunctionReplace.cpp \
-src/functions/FunctionResolveQName.cpp \
 src/functions/FunctionResolveURI.cpp \
-src/functions/FunctionReverse.cpp \
 src/functions/FunctionRoot.cpp \
 src/functions/FunctionRound.cpp \
 src/functions/FunctionRoundHalfToEven.cpp \
@@ -762,24 +734,18 @@ src/functions/FunctionSentences.cpp \
 src/functions/FunctionStartsWith.cpp \
 src/functions/FunctionStaticBaseURI.cpp \
 src/functions/FunctionString.cpp \
-src/functions/FunctionStringJoin.cpp \
 src/functions/FunctionStringLength.cpp \
 src/functions/FunctionStringToCodepoints.cpp \
-src/functions/FunctionSubsequence.cpp \
-src/functions/FunctionSubstringAfter.cpp \
-src/functions/FunctionSubstringBefore.cpp \
 src/functions/FunctionSubstring.cpp \
-src/functions/FunctionSum.cpp \
 src/functions/FunctionTime.cpp \
 src/functions/FunctionTokenize.cpp \
 src/functions/FunctionTrace.cpp \
-src/functions/FunctionTranslate.cpp \
-src/functions/FunctionTrue.cpp \
+src/functions/FunctionHead.cpp \
+src/functions/FunctionTail.cpp \
 src/functions/FunctionUnordered.cpp \
 src/functions/FunctionUnparsedText.cpp \
 src/functions/FunctionUpperCase.cpp \
 src/functions/FunctionWords.cpp \
-src/functions/FunctionZeroOrOne.cpp \
 src/functions/FunctionAdjustDateTimeToTimezone.cpp \
 src/functions/FunctionAdjustDateToTimezone.cpp \
 src/functions/FunctionAdjustTimeToTimezone.cpp \
@@ -813,6 +779,7 @@ src/functions/RegExpFunction.cpp \
 src/functions/XQUserFunction.cpp \
 src/functions/BuiltInModules.cpp \
 src/functions/CoreModule.hpp \
+src/functions/FnModule.hpp \
 src/items/impl/ATAnySimpleTypeImpl.cpp \
 src/items/impl/ATAnySimpleTypeImpl.hpp \
 src/items/impl/ATAnyURIOrDerivedImpl.cpp \
@@ -1048,6 +1015,7 @@ src/samples/dom-api/data.xsd \
 src/samples/dom-api/foo.xml \
 src/samples/simple-api/foo.xml \
 src/functions/CoreModule.xq \
+src/functions/FnModule.xq \
 LICENSE \
 TODO \
 README \
@@ -1428,12 +1396,9 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionAnalyzeString.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionAsin.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionAtan.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionAvg.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionBaseURI.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionBoolean.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionCaseFold.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionCeiling.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionCodepointEqual.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionCodepointsToString.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionCollection.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionCompare.Plo@am__quote@
@@ -1445,12 +1410,10 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionCurrentDate.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionCurrentDateTime.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionCurrentTime.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionData.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionDateTime.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionDayFromDate.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionDayFromDateTime.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionDaysFromDuration.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionDeepEqual.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionDefaultCollation.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionDistinctValues.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionDoc.Plo@am__quote@
@@ -1458,27 +1421,20 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionDocument.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionDocumentURI.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionEmpty.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionEncodeForUri.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionEndsWith.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionError.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionEscapeHtmlUri.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionExactlyOne.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionExists.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionExp.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionFalse.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionFloor.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionFunctionArity.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionFunctionName.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionHead.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionHoursFromDateTime.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionHoursFromDuration.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionHoursFromTime.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionId.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionIdref.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionImplicitTimezone.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionInScopePrefixes.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionIndexOf.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionInsertBefore.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionIriToUri.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionLang.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionLast.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionLocalNameFromQName.Plo@am__quote@
@@ -1496,7 +1452,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionMonthFromDateTime.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionMonthsFromDuration.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionName.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionNamespaceURIForPrefix.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionNamespaceURIFromQName.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionNamespaceUri.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionNilled.Plo@am__quote@
@@ -1505,7 +1460,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionNormalizeUnicode.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionNot.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionNumber.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionOneOrMore.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionParseHTML.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionParseJSON.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionParseXML.Plo@am__quote@
@@ -1517,11 +1471,8 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionQName.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionRefImpl.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionRegexGroup.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionRemove.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionReplace.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionResolveQName.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionResolveURI.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionReverse.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionRoot.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionRound.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionRoundHalfToEven.Plo@am__quote@
@@ -1535,14 +1486,10 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionStartsWith.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionStaticBaseURI.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionString.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionStringJoin.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionStringLength.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionStringToCodepoints.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionSubsequence.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionSubstring.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionSubstringAfter.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionSubstringBefore.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionSum.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionTail.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionTan.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionTime.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionTimezoneFromDate.Plo@am__quote@
@@ -1550,8 +1497,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionTimezoneFromTime.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionTokenize.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionTrace.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionTranslate.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionTrue.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionUnordered.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionUnparsedText.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionUpperCase.Plo@am__quote@
@@ -1559,7 +1504,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionYearFromDate.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionYearFromDateTime.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionYearsFromDuration.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionZeroOrOne.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GeneralComp.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GreaterThan.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GreaterThanEqual.Plo@am__quote@
@@ -3088,26 +3032,12 @@ FunctionAtan.lo: src/functions/FunctionAtan.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o FunctionAtan.lo `test -f 'src/functions/FunctionAtan.cpp' || echo '$(srcdir)/'`src/functions/FunctionAtan.cpp
 
-FunctionAvg.lo: src/functions/FunctionAvg.cpp
-@am__fastdepCXX_TRUE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT FunctionAvg.lo -MD -MP -MF $(DEPDIR)/FunctionAvg.Tpo -c -o FunctionAvg.lo `test -f 'src/functions/FunctionAvg.cpp' || echo '$(srcdir)/'`src/functions/FunctionAvg.cpp
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/FunctionAvg.Tpo $(DEPDIR)/FunctionAvg.Plo
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/functions/FunctionAvg.cpp' object='FunctionAvg.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o FunctionAvg.lo `test -f 'src/functions/FunctionAvg.cpp' || echo '$(srcdir)/'`src/functions/FunctionAvg.cpp
-
 FunctionBaseURI.lo: src/functions/FunctionBaseURI.cpp
 @am__fastdepCXX_TRUE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT FunctionBaseURI.lo -MD -MP -MF $(DEPDIR)/FunctionBaseURI.Tpo -c -o FunctionBaseURI.lo `test -f 'src/functions/FunctionBaseURI.cpp' || echo '$(srcdir)/'`src/functions/FunctionBaseURI.cpp
 @am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/FunctionBaseURI.Tpo $(DEPDIR)/FunctionBaseURI.Plo
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/functions/FunctionBaseURI.cpp' object='FunctionBaseURI.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o FunctionBaseURI.lo `test -f 'src/functions/FunctionBaseURI.cpp' || echo '$(srcdir)/'`src/functions/FunctionBaseURI.cpp
-
-FunctionBoolean.lo: src/functions/FunctionBoolean.cpp
-@am__fastdepCXX_TRUE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT FunctionBoolean.lo -MD -MP -MF $(DEPDIR)/FunctionBoolean.Tpo -c -o FunctionBoolean.lo `test -f 'src/functions/FunctionBoolean.cpp' || echo '$(srcdir)/'`src/functions/FunctionBoolean.cpp
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/FunctionBoolean.Tpo $(DEPDIR)/FunctionBoolean.Plo
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/functions/FunctionBoolean.cpp' object='FunctionBoolean.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o FunctionBoolean.lo `test -f 'src/functions/FunctionBoolean.cpp' || echo '$(srcdir)/'`src/functions/FunctionBoolean.cpp
 
 FunctionCaseFold.lo: src/functions/FunctionCaseFold.cpp
 @am__fastdepCXX_TRUE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT FunctionCaseFold.lo -MD -MP -MF $(DEPDIR)/FunctionCaseFold.Tpo -c -o FunctionCaseFold.lo `test -f 'src/functions/FunctionCaseFold.cpp' || echo '$(srcdir)/'`src/functions/FunctionCaseFold.cpp
@@ -3122,13 +3052,6 @@ FunctionCeiling.lo: src/functions/FunctionCeiling.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/functions/FunctionCeiling.cpp' object='FunctionCeiling.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o FunctionCeiling.lo `test -f 'src/functions/FunctionCeiling.cpp' || echo '$(srcdir)/'`src/functions/FunctionCeiling.cpp
-
-FunctionCodepointEqual.lo: src/functions/FunctionCodepointEqual.cpp
-@am__fastdepCXX_TRUE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT FunctionCodepointEqual.lo -MD -MP -MF $(DEPDIR)/FunctionCodepointEqual.Tpo -c -o FunctionCodepointEqual.lo `test -f 'src/functions/FunctionCodepointEqual.cpp' || echo '$(srcdir)/'`src/functions/FunctionCodepointEqual.cpp
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/FunctionCodepointEqual.Tpo $(DEPDIR)/FunctionCodepointEqual.Plo
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/functions/FunctionCodepointEqual.cpp' object='FunctionCodepointEqual.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o FunctionCodepointEqual.lo `test -f 'src/functions/FunctionCodepointEqual.cpp' || echo '$(srcdir)/'`src/functions/FunctionCodepointEqual.cpp
 
 FunctionCodepointsToString.lo: src/functions/FunctionCodepointsToString.cpp
 @am__fastdepCXX_TRUE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT FunctionCodepointsToString.lo -MD -MP -MF $(DEPDIR)/FunctionCodepointsToString.Tpo -c -o FunctionCodepointsToString.lo `test -f 'src/functions/FunctionCodepointsToString.cpp' || echo '$(srcdir)/'`src/functions/FunctionCodepointsToString.cpp
@@ -3207,26 +3130,12 @@ FunctionCurrentTime.lo: src/functions/FunctionCurrentTime.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o FunctionCurrentTime.lo `test -f 'src/functions/FunctionCurrentTime.cpp' || echo '$(srcdir)/'`src/functions/FunctionCurrentTime.cpp
 
-FunctionData.lo: src/functions/FunctionData.cpp
-@am__fastdepCXX_TRUE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT FunctionData.lo -MD -MP -MF $(DEPDIR)/FunctionData.Tpo -c -o FunctionData.lo `test -f 'src/functions/FunctionData.cpp' || echo '$(srcdir)/'`src/functions/FunctionData.cpp
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/FunctionData.Tpo $(DEPDIR)/FunctionData.Plo
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/functions/FunctionData.cpp' object='FunctionData.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o FunctionData.lo `test -f 'src/functions/FunctionData.cpp' || echo '$(srcdir)/'`src/functions/FunctionData.cpp
-
 FunctionDateTime.lo: src/functions/FunctionDateTime.cpp
 @am__fastdepCXX_TRUE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT FunctionDateTime.lo -MD -MP -MF $(DEPDIR)/FunctionDateTime.Tpo -c -o FunctionDateTime.lo `test -f 'src/functions/FunctionDateTime.cpp' || echo '$(srcdir)/'`src/functions/FunctionDateTime.cpp
 @am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/FunctionDateTime.Tpo $(DEPDIR)/FunctionDateTime.Plo
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/functions/FunctionDateTime.cpp' object='FunctionDateTime.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o FunctionDateTime.lo `test -f 'src/functions/FunctionDateTime.cpp' || echo '$(srcdir)/'`src/functions/FunctionDateTime.cpp
-
-FunctionDeepEqual.lo: src/functions/FunctionDeepEqual.cpp
-@am__fastdepCXX_TRUE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT FunctionDeepEqual.lo -MD -MP -MF $(DEPDIR)/FunctionDeepEqual.Tpo -c -o FunctionDeepEqual.lo `test -f 'src/functions/FunctionDeepEqual.cpp' || echo '$(srcdir)/'`src/functions/FunctionDeepEqual.cpp
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/FunctionDeepEqual.Tpo $(DEPDIR)/FunctionDeepEqual.Plo
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/functions/FunctionDeepEqual.cpp' object='FunctionDeepEqual.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o FunctionDeepEqual.lo `test -f 'src/functions/FunctionDeepEqual.cpp' || echo '$(srcdir)/'`src/functions/FunctionDeepEqual.cpp
 
 FunctionDefaultCollation.lo: src/functions/FunctionDefaultCollation.cpp
 @am__fastdepCXX_TRUE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT FunctionDefaultCollation.lo -MD -MP -MF $(DEPDIR)/FunctionDefaultCollation.Tpo -c -o FunctionDefaultCollation.lo `test -f 'src/functions/FunctionDefaultCollation.cpp' || echo '$(srcdir)/'`src/functions/FunctionDefaultCollation.cpp
@@ -3277,13 +3186,6 @@ FunctionEmpty.lo: src/functions/FunctionEmpty.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o FunctionEmpty.lo `test -f 'src/functions/FunctionEmpty.cpp' || echo '$(srcdir)/'`src/functions/FunctionEmpty.cpp
 
-FunctionEncodeForUri.lo: src/functions/FunctionEncodeForUri.cpp
-@am__fastdepCXX_TRUE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT FunctionEncodeForUri.lo -MD -MP -MF $(DEPDIR)/FunctionEncodeForUri.Tpo -c -o FunctionEncodeForUri.lo `test -f 'src/functions/FunctionEncodeForUri.cpp' || echo '$(srcdir)/'`src/functions/FunctionEncodeForUri.cpp
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/FunctionEncodeForUri.Tpo $(DEPDIR)/FunctionEncodeForUri.Plo
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/functions/FunctionEncodeForUri.cpp' object='FunctionEncodeForUri.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o FunctionEncodeForUri.lo `test -f 'src/functions/FunctionEncodeForUri.cpp' || echo '$(srcdir)/'`src/functions/FunctionEncodeForUri.cpp
-
 FunctionEndsWith.lo: src/functions/FunctionEndsWith.cpp
 @am__fastdepCXX_TRUE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT FunctionEndsWith.lo -MD -MP -MF $(DEPDIR)/FunctionEndsWith.Tpo -c -o FunctionEndsWith.lo `test -f 'src/functions/FunctionEndsWith.cpp' || echo '$(srcdir)/'`src/functions/FunctionEndsWith.cpp
 @am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/FunctionEndsWith.Tpo $(DEPDIR)/FunctionEndsWith.Plo
@@ -3298,20 +3200,6 @@ FunctionError.lo: src/functions/FunctionError.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o FunctionError.lo `test -f 'src/functions/FunctionError.cpp' || echo '$(srcdir)/'`src/functions/FunctionError.cpp
 
-FunctionEscapeHtmlUri.lo: src/functions/FunctionEscapeHtmlUri.cpp
-@am__fastdepCXX_TRUE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT FunctionEscapeHtmlUri.lo -MD -MP -MF $(DEPDIR)/FunctionEscapeHtmlUri.Tpo -c -o FunctionEscapeHtmlUri.lo `test -f 'src/functions/FunctionEscapeHtmlUri.cpp' || echo '$(srcdir)/'`src/functions/FunctionEscapeHtmlUri.cpp
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/FunctionEscapeHtmlUri.Tpo $(DEPDIR)/FunctionEscapeHtmlUri.Plo
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/functions/FunctionEscapeHtmlUri.cpp' object='FunctionEscapeHtmlUri.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o FunctionEscapeHtmlUri.lo `test -f 'src/functions/FunctionEscapeHtmlUri.cpp' || echo '$(srcdir)/'`src/functions/FunctionEscapeHtmlUri.cpp
-
-FunctionExactlyOne.lo: src/functions/FunctionExactlyOne.cpp
-@am__fastdepCXX_TRUE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT FunctionExactlyOne.lo -MD -MP -MF $(DEPDIR)/FunctionExactlyOne.Tpo -c -o FunctionExactlyOne.lo `test -f 'src/functions/FunctionExactlyOne.cpp' || echo '$(srcdir)/'`src/functions/FunctionExactlyOne.cpp
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/FunctionExactlyOne.Tpo $(DEPDIR)/FunctionExactlyOne.Plo
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/functions/FunctionExactlyOne.cpp' object='FunctionExactlyOne.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o FunctionExactlyOne.lo `test -f 'src/functions/FunctionExactlyOne.cpp' || echo '$(srcdir)/'`src/functions/FunctionExactlyOne.cpp
-
 FunctionExists.lo: src/functions/FunctionExists.cpp
 @am__fastdepCXX_TRUE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT FunctionExists.lo -MD -MP -MF $(DEPDIR)/FunctionExists.Tpo -c -o FunctionExists.lo `test -f 'src/functions/FunctionExists.cpp' || echo '$(srcdir)/'`src/functions/FunctionExists.cpp
 @am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/FunctionExists.Tpo $(DEPDIR)/FunctionExists.Plo
@@ -3325,13 +3213,6 @@ FunctionExp.lo: src/functions/FunctionExp.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/functions/FunctionExp.cpp' object='FunctionExp.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o FunctionExp.lo `test -f 'src/functions/FunctionExp.cpp' || echo '$(srcdir)/'`src/functions/FunctionExp.cpp
-
-FunctionFalse.lo: src/functions/FunctionFalse.cpp
-@am__fastdepCXX_TRUE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT FunctionFalse.lo -MD -MP -MF $(DEPDIR)/FunctionFalse.Tpo -c -o FunctionFalse.lo `test -f 'src/functions/FunctionFalse.cpp' || echo '$(srcdir)/'`src/functions/FunctionFalse.cpp
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/FunctionFalse.Tpo $(DEPDIR)/FunctionFalse.Plo
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/functions/FunctionFalse.cpp' object='FunctionFalse.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o FunctionFalse.lo `test -f 'src/functions/FunctionFalse.cpp' || echo '$(srcdir)/'`src/functions/FunctionFalse.cpp
 
 FunctionFloor.lo: src/functions/FunctionFloor.cpp
 @am__fastdepCXX_TRUE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT FunctionFloor.lo -MD -MP -MF $(DEPDIR)/FunctionFloor.Tpo -c -o FunctionFloor.lo `test -f 'src/functions/FunctionFloor.cpp' || echo '$(srcdir)/'`src/functions/FunctionFloor.cpp
@@ -3374,34 +3255,6 @@ FunctionImplicitTimezone.lo: src/functions/FunctionImplicitTimezone.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/functions/FunctionImplicitTimezone.cpp' object='FunctionImplicitTimezone.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o FunctionImplicitTimezone.lo `test -f 'src/functions/FunctionImplicitTimezone.cpp' || echo '$(srcdir)/'`src/functions/FunctionImplicitTimezone.cpp
-
-FunctionIndexOf.lo: src/functions/FunctionIndexOf.cpp
-@am__fastdepCXX_TRUE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT FunctionIndexOf.lo -MD -MP -MF $(DEPDIR)/FunctionIndexOf.Tpo -c -o FunctionIndexOf.lo `test -f 'src/functions/FunctionIndexOf.cpp' || echo '$(srcdir)/'`src/functions/FunctionIndexOf.cpp
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/FunctionIndexOf.Tpo $(DEPDIR)/FunctionIndexOf.Plo
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/functions/FunctionIndexOf.cpp' object='FunctionIndexOf.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o FunctionIndexOf.lo `test -f 'src/functions/FunctionIndexOf.cpp' || echo '$(srcdir)/'`src/functions/FunctionIndexOf.cpp
-
-FunctionInScopePrefixes.lo: src/functions/FunctionInScopePrefixes.cpp
-@am__fastdepCXX_TRUE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT FunctionInScopePrefixes.lo -MD -MP -MF $(DEPDIR)/FunctionInScopePrefixes.Tpo -c -o FunctionInScopePrefixes.lo `test -f 'src/functions/FunctionInScopePrefixes.cpp' || echo '$(srcdir)/'`src/functions/FunctionInScopePrefixes.cpp
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/FunctionInScopePrefixes.Tpo $(DEPDIR)/FunctionInScopePrefixes.Plo
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/functions/FunctionInScopePrefixes.cpp' object='FunctionInScopePrefixes.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o FunctionInScopePrefixes.lo `test -f 'src/functions/FunctionInScopePrefixes.cpp' || echo '$(srcdir)/'`src/functions/FunctionInScopePrefixes.cpp
-
-FunctionInsertBefore.lo: src/functions/FunctionInsertBefore.cpp
-@am__fastdepCXX_TRUE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT FunctionInsertBefore.lo -MD -MP -MF $(DEPDIR)/FunctionInsertBefore.Tpo -c -o FunctionInsertBefore.lo `test -f 'src/functions/FunctionInsertBefore.cpp' || echo '$(srcdir)/'`src/functions/FunctionInsertBefore.cpp
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/FunctionInsertBefore.Tpo $(DEPDIR)/FunctionInsertBefore.Plo
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/functions/FunctionInsertBefore.cpp' object='FunctionInsertBefore.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o FunctionInsertBefore.lo `test -f 'src/functions/FunctionInsertBefore.cpp' || echo '$(srcdir)/'`src/functions/FunctionInsertBefore.cpp
-
-FunctionIriToUri.lo: src/functions/FunctionIriToUri.cpp
-@am__fastdepCXX_TRUE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT FunctionIriToUri.lo -MD -MP -MF $(DEPDIR)/FunctionIriToUri.Tpo -c -o FunctionIriToUri.lo `test -f 'src/functions/FunctionIriToUri.cpp' || echo '$(srcdir)/'`src/functions/FunctionIriToUri.cpp
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/FunctionIriToUri.Tpo $(DEPDIR)/FunctionIriToUri.Plo
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/functions/FunctionIriToUri.cpp' object='FunctionIriToUri.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o FunctionIriToUri.lo `test -f 'src/functions/FunctionIriToUri.cpp' || echo '$(srcdir)/'`src/functions/FunctionIriToUri.cpp
 
 FunctionLang.lo: src/functions/FunctionLang.cpp
 @am__fastdepCXX_TRUE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT FunctionLang.lo -MD -MP -MF $(DEPDIR)/FunctionLang.Tpo -c -o FunctionLang.lo `test -f 'src/functions/FunctionLang.cpp' || echo '$(srcdir)/'`src/functions/FunctionLang.cpp
@@ -3480,13 +3333,6 @@ FunctionNamespaceUri.lo: src/functions/FunctionNamespaceUri.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o FunctionNamespaceUri.lo `test -f 'src/functions/FunctionNamespaceUri.cpp' || echo '$(srcdir)/'`src/functions/FunctionNamespaceUri.cpp
 
-FunctionNamespaceURIForPrefix.lo: src/functions/FunctionNamespaceURIForPrefix.cpp
-@am__fastdepCXX_TRUE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT FunctionNamespaceURIForPrefix.lo -MD -MP -MF $(DEPDIR)/FunctionNamespaceURIForPrefix.Tpo -c -o FunctionNamespaceURIForPrefix.lo `test -f 'src/functions/FunctionNamespaceURIForPrefix.cpp' || echo '$(srcdir)/'`src/functions/FunctionNamespaceURIForPrefix.cpp
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/FunctionNamespaceURIForPrefix.Tpo $(DEPDIR)/FunctionNamespaceURIForPrefix.Plo
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/functions/FunctionNamespaceURIForPrefix.cpp' object='FunctionNamespaceURIForPrefix.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o FunctionNamespaceURIForPrefix.lo `test -f 'src/functions/FunctionNamespaceURIForPrefix.cpp' || echo '$(srcdir)/'`src/functions/FunctionNamespaceURIForPrefix.cpp
-
 FunctionNamespaceURIFromQName.lo: src/functions/FunctionNamespaceURIFromQName.cpp
 @am__fastdepCXX_TRUE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT FunctionNamespaceURIFromQName.lo -MD -MP -MF $(DEPDIR)/FunctionNamespaceURIFromQName.Tpo -c -o FunctionNamespaceURIFromQName.lo `test -f 'src/functions/FunctionNamespaceURIFromQName.cpp' || echo '$(srcdir)/'`src/functions/FunctionNamespaceURIFromQName.cpp
 @am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/FunctionNamespaceURIFromQName.Tpo $(DEPDIR)/FunctionNamespaceURIFromQName.Plo
@@ -3536,13 +3382,6 @@ FunctionNumber.lo: src/functions/FunctionNumber.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o FunctionNumber.lo `test -f 'src/functions/FunctionNumber.cpp' || echo '$(srcdir)/'`src/functions/FunctionNumber.cpp
 
-FunctionOneOrMore.lo: src/functions/FunctionOneOrMore.cpp
-@am__fastdepCXX_TRUE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT FunctionOneOrMore.lo -MD -MP -MF $(DEPDIR)/FunctionOneOrMore.Tpo -c -o FunctionOneOrMore.lo `test -f 'src/functions/FunctionOneOrMore.cpp' || echo '$(srcdir)/'`src/functions/FunctionOneOrMore.cpp
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/FunctionOneOrMore.Tpo $(DEPDIR)/FunctionOneOrMore.Plo
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/functions/FunctionOneOrMore.cpp' object='FunctionOneOrMore.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o FunctionOneOrMore.lo `test -f 'src/functions/FunctionOneOrMore.cpp' || echo '$(srcdir)/'`src/functions/FunctionOneOrMore.cpp
-
 FunctionPosition.lo: src/functions/FunctionPosition.cpp
 @am__fastdepCXX_TRUE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT FunctionPosition.lo -MD -MP -MF $(DEPDIR)/FunctionPosition.Tpo -c -o FunctionPosition.lo `test -f 'src/functions/FunctionPosition.cpp' || echo '$(srcdir)/'`src/functions/FunctionPosition.cpp
 @am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/FunctionPosition.Tpo $(DEPDIR)/FunctionPosition.Plo
@@ -3578,13 +3417,6 @@ FunctionRegexGroup.lo: src/functions/FunctionRegexGroup.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o FunctionRegexGroup.lo `test -f 'src/functions/FunctionRegexGroup.cpp' || echo '$(srcdir)/'`src/functions/FunctionRegexGroup.cpp
 
-FunctionRemove.lo: src/functions/FunctionRemove.cpp
-@am__fastdepCXX_TRUE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT FunctionRemove.lo -MD -MP -MF $(DEPDIR)/FunctionRemove.Tpo -c -o FunctionRemove.lo `test -f 'src/functions/FunctionRemove.cpp' || echo '$(srcdir)/'`src/functions/FunctionRemove.cpp
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/FunctionRemove.Tpo $(DEPDIR)/FunctionRemove.Plo
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/functions/FunctionRemove.cpp' object='FunctionRemove.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o FunctionRemove.lo `test -f 'src/functions/FunctionRemove.cpp' || echo '$(srcdir)/'`src/functions/FunctionRemove.cpp
-
 FunctionReplace.lo: src/functions/FunctionReplace.cpp
 @am__fastdepCXX_TRUE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT FunctionReplace.lo -MD -MP -MF $(DEPDIR)/FunctionReplace.Tpo -c -o FunctionReplace.lo `test -f 'src/functions/FunctionReplace.cpp' || echo '$(srcdir)/'`src/functions/FunctionReplace.cpp
 @am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/FunctionReplace.Tpo $(DEPDIR)/FunctionReplace.Plo
@@ -3592,26 +3424,12 @@ FunctionReplace.lo: src/functions/FunctionReplace.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o FunctionReplace.lo `test -f 'src/functions/FunctionReplace.cpp' || echo '$(srcdir)/'`src/functions/FunctionReplace.cpp
 
-FunctionResolveQName.lo: src/functions/FunctionResolveQName.cpp
-@am__fastdepCXX_TRUE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT FunctionResolveQName.lo -MD -MP -MF $(DEPDIR)/FunctionResolveQName.Tpo -c -o FunctionResolveQName.lo `test -f 'src/functions/FunctionResolveQName.cpp' || echo '$(srcdir)/'`src/functions/FunctionResolveQName.cpp
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/FunctionResolveQName.Tpo $(DEPDIR)/FunctionResolveQName.Plo
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/functions/FunctionResolveQName.cpp' object='FunctionResolveQName.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o FunctionResolveQName.lo `test -f 'src/functions/FunctionResolveQName.cpp' || echo '$(srcdir)/'`src/functions/FunctionResolveQName.cpp
-
 FunctionResolveURI.lo: src/functions/FunctionResolveURI.cpp
 @am__fastdepCXX_TRUE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT FunctionResolveURI.lo -MD -MP -MF $(DEPDIR)/FunctionResolveURI.Tpo -c -o FunctionResolveURI.lo `test -f 'src/functions/FunctionResolveURI.cpp' || echo '$(srcdir)/'`src/functions/FunctionResolveURI.cpp
 @am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/FunctionResolveURI.Tpo $(DEPDIR)/FunctionResolveURI.Plo
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/functions/FunctionResolveURI.cpp' object='FunctionResolveURI.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o FunctionResolveURI.lo `test -f 'src/functions/FunctionResolveURI.cpp' || echo '$(srcdir)/'`src/functions/FunctionResolveURI.cpp
-
-FunctionReverse.lo: src/functions/FunctionReverse.cpp
-@am__fastdepCXX_TRUE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT FunctionReverse.lo -MD -MP -MF $(DEPDIR)/FunctionReverse.Tpo -c -o FunctionReverse.lo `test -f 'src/functions/FunctionReverse.cpp' || echo '$(srcdir)/'`src/functions/FunctionReverse.cpp
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/FunctionReverse.Tpo $(DEPDIR)/FunctionReverse.Plo
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/functions/FunctionReverse.cpp' object='FunctionReverse.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o FunctionReverse.lo `test -f 'src/functions/FunctionReverse.cpp' || echo '$(srcdir)/'`src/functions/FunctionReverse.cpp
 
 FunctionRoot.lo: src/functions/FunctionRoot.cpp
 @am__fastdepCXX_TRUE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT FunctionRoot.lo -MD -MP -MF $(DEPDIR)/FunctionRoot.Tpo -c -o FunctionRoot.lo `test -f 'src/functions/FunctionRoot.cpp' || echo '$(srcdir)/'`src/functions/FunctionRoot.cpp
@@ -3683,13 +3501,6 @@ FunctionString.lo: src/functions/FunctionString.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o FunctionString.lo `test -f 'src/functions/FunctionString.cpp' || echo '$(srcdir)/'`src/functions/FunctionString.cpp
 
-FunctionStringJoin.lo: src/functions/FunctionStringJoin.cpp
-@am__fastdepCXX_TRUE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT FunctionStringJoin.lo -MD -MP -MF $(DEPDIR)/FunctionStringJoin.Tpo -c -o FunctionStringJoin.lo `test -f 'src/functions/FunctionStringJoin.cpp' || echo '$(srcdir)/'`src/functions/FunctionStringJoin.cpp
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/FunctionStringJoin.Tpo $(DEPDIR)/FunctionStringJoin.Plo
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/functions/FunctionStringJoin.cpp' object='FunctionStringJoin.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o FunctionStringJoin.lo `test -f 'src/functions/FunctionStringJoin.cpp' || echo '$(srcdir)/'`src/functions/FunctionStringJoin.cpp
-
 FunctionStringLength.lo: src/functions/FunctionStringLength.cpp
 @am__fastdepCXX_TRUE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT FunctionStringLength.lo -MD -MP -MF $(DEPDIR)/FunctionStringLength.Tpo -c -o FunctionStringLength.lo `test -f 'src/functions/FunctionStringLength.cpp' || echo '$(srcdir)/'`src/functions/FunctionStringLength.cpp
 @am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/FunctionStringLength.Tpo $(DEPDIR)/FunctionStringLength.Plo
@@ -3704,40 +3515,12 @@ FunctionStringToCodepoints.lo: src/functions/FunctionStringToCodepoints.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o FunctionStringToCodepoints.lo `test -f 'src/functions/FunctionStringToCodepoints.cpp' || echo '$(srcdir)/'`src/functions/FunctionStringToCodepoints.cpp
 
-FunctionSubsequence.lo: src/functions/FunctionSubsequence.cpp
-@am__fastdepCXX_TRUE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT FunctionSubsequence.lo -MD -MP -MF $(DEPDIR)/FunctionSubsequence.Tpo -c -o FunctionSubsequence.lo `test -f 'src/functions/FunctionSubsequence.cpp' || echo '$(srcdir)/'`src/functions/FunctionSubsequence.cpp
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/FunctionSubsequence.Tpo $(DEPDIR)/FunctionSubsequence.Plo
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/functions/FunctionSubsequence.cpp' object='FunctionSubsequence.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o FunctionSubsequence.lo `test -f 'src/functions/FunctionSubsequence.cpp' || echo '$(srcdir)/'`src/functions/FunctionSubsequence.cpp
-
-FunctionSubstringAfter.lo: src/functions/FunctionSubstringAfter.cpp
-@am__fastdepCXX_TRUE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT FunctionSubstringAfter.lo -MD -MP -MF $(DEPDIR)/FunctionSubstringAfter.Tpo -c -o FunctionSubstringAfter.lo `test -f 'src/functions/FunctionSubstringAfter.cpp' || echo '$(srcdir)/'`src/functions/FunctionSubstringAfter.cpp
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/FunctionSubstringAfter.Tpo $(DEPDIR)/FunctionSubstringAfter.Plo
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/functions/FunctionSubstringAfter.cpp' object='FunctionSubstringAfter.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o FunctionSubstringAfter.lo `test -f 'src/functions/FunctionSubstringAfter.cpp' || echo '$(srcdir)/'`src/functions/FunctionSubstringAfter.cpp
-
-FunctionSubstringBefore.lo: src/functions/FunctionSubstringBefore.cpp
-@am__fastdepCXX_TRUE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT FunctionSubstringBefore.lo -MD -MP -MF $(DEPDIR)/FunctionSubstringBefore.Tpo -c -o FunctionSubstringBefore.lo `test -f 'src/functions/FunctionSubstringBefore.cpp' || echo '$(srcdir)/'`src/functions/FunctionSubstringBefore.cpp
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/FunctionSubstringBefore.Tpo $(DEPDIR)/FunctionSubstringBefore.Plo
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/functions/FunctionSubstringBefore.cpp' object='FunctionSubstringBefore.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o FunctionSubstringBefore.lo `test -f 'src/functions/FunctionSubstringBefore.cpp' || echo '$(srcdir)/'`src/functions/FunctionSubstringBefore.cpp
-
 FunctionSubstring.lo: src/functions/FunctionSubstring.cpp
 @am__fastdepCXX_TRUE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT FunctionSubstring.lo -MD -MP -MF $(DEPDIR)/FunctionSubstring.Tpo -c -o FunctionSubstring.lo `test -f 'src/functions/FunctionSubstring.cpp' || echo '$(srcdir)/'`src/functions/FunctionSubstring.cpp
 @am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/FunctionSubstring.Tpo $(DEPDIR)/FunctionSubstring.Plo
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/functions/FunctionSubstring.cpp' object='FunctionSubstring.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o FunctionSubstring.lo `test -f 'src/functions/FunctionSubstring.cpp' || echo '$(srcdir)/'`src/functions/FunctionSubstring.cpp
-
-FunctionSum.lo: src/functions/FunctionSum.cpp
-@am__fastdepCXX_TRUE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT FunctionSum.lo -MD -MP -MF $(DEPDIR)/FunctionSum.Tpo -c -o FunctionSum.lo `test -f 'src/functions/FunctionSum.cpp' || echo '$(srcdir)/'`src/functions/FunctionSum.cpp
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/FunctionSum.Tpo $(DEPDIR)/FunctionSum.Plo
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/functions/FunctionSum.cpp' object='FunctionSum.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o FunctionSum.lo `test -f 'src/functions/FunctionSum.cpp' || echo '$(srcdir)/'`src/functions/FunctionSum.cpp
 
 FunctionTime.lo: src/functions/FunctionTime.cpp
 @am__fastdepCXX_TRUE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT FunctionTime.lo -MD -MP -MF $(DEPDIR)/FunctionTime.Tpo -c -o FunctionTime.lo `test -f 'src/functions/FunctionTime.cpp' || echo '$(srcdir)/'`src/functions/FunctionTime.cpp
@@ -3760,19 +3543,19 @@ FunctionTrace.lo: src/functions/FunctionTrace.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o FunctionTrace.lo `test -f 'src/functions/FunctionTrace.cpp' || echo '$(srcdir)/'`src/functions/FunctionTrace.cpp
 
-FunctionTranslate.lo: src/functions/FunctionTranslate.cpp
-@am__fastdepCXX_TRUE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT FunctionTranslate.lo -MD -MP -MF $(DEPDIR)/FunctionTranslate.Tpo -c -o FunctionTranslate.lo `test -f 'src/functions/FunctionTranslate.cpp' || echo '$(srcdir)/'`src/functions/FunctionTranslate.cpp
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/FunctionTranslate.Tpo $(DEPDIR)/FunctionTranslate.Plo
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/functions/FunctionTranslate.cpp' object='FunctionTranslate.lo' libtool=yes @AMDEPBACKSLASH@
+FunctionHead.lo: src/functions/FunctionHead.cpp
+@am__fastdepCXX_TRUE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT FunctionHead.lo -MD -MP -MF $(DEPDIR)/FunctionHead.Tpo -c -o FunctionHead.lo `test -f 'src/functions/FunctionHead.cpp' || echo '$(srcdir)/'`src/functions/FunctionHead.cpp
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/FunctionHead.Tpo $(DEPDIR)/FunctionHead.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/functions/FunctionHead.cpp' object='FunctionHead.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o FunctionTranslate.lo `test -f 'src/functions/FunctionTranslate.cpp' || echo '$(srcdir)/'`src/functions/FunctionTranslate.cpp
+@am__fastdepCXX_FALSE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o FunctionHead.lo `test -f 'src/functions/FunctionHead.cpp' || echo '$(srcdir)/'`src/functions/FunctionHead.cpp
 
-FunctionTrue.lo: src/functions/FunctionTrue.cpp
-@am__fastdepCXX_TRUE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT FunctionTrue.lo -MD -MP -MF $(DEPDIR)/FunctionTrue.Tpo -c -o FunctionTrue.lo `test -f 'src/functions/FunctionTrue.cpp' || echo '$(srcdir)/'`src/functions/FunctionTrue.cpp
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/FunctionTrue.Tpo $(DEPDIR)/FunctionTrue.Plo
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/functions/FunctionTrue.cpp' object='FunctionTrue.lo' libtool=yes @AMDEPBACKSLASH@
+FunctionTail.lo: src/functions/FunctionTail.cpp
+@am__fastdepCXX_TRUE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT FunctionTail.lo -MD -MP -MF $(DEPDIR)/FunctionTail.Tpo -c -o FunctionTail.lo `test -f 'src/functions/FunctionTail.cpp' || echo '$(srcdir)/'`src/functions/FunctionTail.cpp
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/FunctionTail.Tpo $(DEPDIR)/FunctionTail.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/functions/FunctionTail.cpp' object='FunctionTail.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o FunctionTrue.lo `test -f 'src/functions/FunctionTrue.cpp' || echo '$(srcdir)/'`src/functions/FunctionTrue.cpp
+@am__fastdepCXX_FALSE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o FunctionTail.lo `test -f 'src/functions/FunctionTail.cpp' || echo '$(srcdir)/'`src/functions/FunctionTail.cpp
 
 FunctionUnordered.lo: src/functions/FunctionUnordered.cpp
 @am__fastdepCXX_TRUE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT FunctionUnordered.lo -MD -MP -MF $(DEPDIR)/FunctionUnordered.Tpo -c -o FunctionUnordered.lo `test -f 'src/functions/FunctionUnordered.cpp' || echo '$(srcdir)/'`src/functions/FunctionUnordered.cpp
@@ -3801,13 +3584,6 @@ FunctionWords.lo: src/functions/FunctionWords.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/functions/FunctionWords.cpp' object='FunctionWords.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o FunctionWords.lo `test -f 'src/functions/FunctionWords.cpp' || echo '$(srcdir)/'`src/functions/FunctionWords.cpp
-
-FunctionZeroOrOne.lo: src/functions/FunctionZeroOrOne.cpp
-@am__fastdepCXX_TRUE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT FunctionZeroOrOne.lo -MD -MP -MF $(DEPDIR)/FunctionZeroOrOne.Tpo -c -o FunctionZeroOrOne.lo `test -f 'src/functions/FunctionZeroOrOne.cpp' || echo '$(srcdir)/'`src/functions/FunctionZeroOrOne.cpp
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/FunctionZeroOrOne.Tpo $(DEPDIR)/FunctionZeroOrOne.Plo
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/functions/FunctionZeroOrOne.cpp' object='FunctionZeroOrOne.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o FunctionZeroOrOne.lo `test -f 'src/functions/FunctionZeroOrOne.cpp' || echo '$(srcdir)/'`src/functions/FunctionZeroOrOne.cpp
 
 FunctionAdjustDateTimeToTimezone.lo: src/functions/FunctionAdjustDateTimeToTimezone.cpp
 @am__fastdepCXX_TRUE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT FunctionAdjustDateTimeToTimezone.lo -MD -MP -MF $(DEPDIR)/FunctionAdjustDateTimeToTimezone.Tpo -c -o FunctionAdjustDateTimeToTimezone.lo `test -f 'src/functions/FunctionAdjustDateTimeToTimezone.cpp' || echo '$(srcdir)/'`src/functions/FunctionAdjustDateTimeToTimezone.cpp
@@ -5530,6 +5306,9 @@ uninstall-am: uninstall-binPROGRAMS uninstall-libLTLIBRARIES
 
 $(top_srcdir)/src/functions/CoreModule.hpp: $(top_srcdir)/src/functions/CoreModule.xq
 	./compile-delayed-module $(top_srcdir)/src/functions/CoreModule.xq >$(top_srcdir)/src/functions/CoreModule.hpp
+
+$(top_srcdir)/src/functions/FnModule.hpp: $(top_srcdir)/src/functions/FnModule.xq
+	./compile-delayed-module $(top_srcdir)/src/functions/FnModule.xq >$(top_srcdir)/src/functions/FnModule.hpp
 
 $(LEXERFILE): $(LEXTEMPLATE) $(LEXSKEL)
 	$(LEX) -BUs -Pxq -S$(LEXSKEL) -o$(LEXERFILE) $(LEXTEMPLATE) # This can take a long time

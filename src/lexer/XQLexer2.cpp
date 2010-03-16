@@ -54,7 +54,7 @@ XQLexer::XQLexer(XPath2MemoryManager* memMgr, const XMLCh *queryFile, const XMLC
 }
 
 XQLexer::XQLexer(XPath2MemoryManager* memMgr, int firstToken, const XMLCh *queryFile, int line, int column, const XMLCh *query)
-  : Lexer(memMgr, (XQilla::Language)(XQilla::XQUERY_FULLTEXT_UPDATE | XQilla::EXTENSIONS), queryFile, line, column),
+  : Lexer(memMgr, (XQilla::Language)(XQilla::XQUERY11_FULLTEXT_UPDATE | XQilla::EXTENSIONS), queryFile, line, column),
     firstToken_(firstToken),
     mode_(MODE_NORMAL),
     m_szQuery(XPath2Utils::normalizeEOL(query, memMgr)),

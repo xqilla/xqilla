@@ -57,7 +57,8 @@ public:
     NO_STATIC_RESOLUTION = 0x1, ///< Don't perform static resolution or any optimization
     NO_ADOPT_CONTEXT     = 0x2, ///< Don't adopt the context and delete it when the XQQuery is deleted
     DEBUG_QUERY          = 0x4, ///< Build debugging hooks into the query to enable the use of DebugListener
-    NO_OPTIMIZATION      = 0x8  ///< Don't perform optimization
+    NO_OPTIMIZATION      = 0x8, ///< Don't perform optimization
+    NO_DEFAULT_MODULES   = 0x10 ///< Don't automatically import the default modules
   };
 
   /// Enumeration used to select a language to parse

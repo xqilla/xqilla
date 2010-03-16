@@ -246,7 +246,11 @@ public:
   /// Adds a function defined in XQuery syntax. Parsing is delayed until the function
   /// is actually needed.
   void addDelayedFunction(const XMLCh *uri, const XMLCh *name, size_t numArgs,
-	  const XMLCh *functionDeclaration, int line = 1, int column = 1);
+                          const XMLCh *functionDeclaration, bool isPrivate = false,
+                          int line = 1, int column = 1);
+  void addDelayedFunction(const XMLCh *uri, const XMLCh *name, size_t numArgs,
+                          const char *functionDeclaration, bool isPrivate = false,
+                          int line = 1, int column = 1);
   /// Returns a vector of all XQUserFunction objects from the query
   const DelayedFunctions &getDelayedFunctions() const { return m_delayedFunctions; }
 

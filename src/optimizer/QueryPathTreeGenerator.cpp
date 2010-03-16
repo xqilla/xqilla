@@ -47,28 +47,22 @@
 
 #include <xqilla/functions/FunctionBaseURI.hpp>
 #include <xqilla/functions/FunctionCollection.hpp>
-#include <xqilla/functions/FunctionDeepEqual.hpp>
 #include <xqilla/functions/FunctionDoc.hpp>
 #include <xqilla/functions/FunctionDocument.hpp>
-#include <xqilla/functions/FunctionExactlyOne.hpp>
 #include <xqilla/functions/FunctionId.hpp>
 #include <xqilla/functions/FunctionIdref.hpp>
-#include <xqilla/functions/FunctionInsertBefore.hpp>
 #include <xqilla/functions/FunctionLang.hpp>
 #include <xqilla/functions/FunctionNormalizeSpace.hpp>
 #include <xqilla/functions/FunctionNumber.hpp>
-#include <xqilla/functions/FunctionOneOrMore.hpp>
 #include <xqilla/functions/FunctionParseXML.hpp>
 #include <xqilla/functions/FunctionParseJSON.hpp>
-#include <xqilla/functions/FunctionRemove.hpp>
-#include <xqilla/functions/FunctionReverse.hpp>
 #include <xqilla/functions/FunctionRoot.hpp>
 #include <xqilla/functions/FunctionString.hpp>
 #include <xqilla/functions/FunctionStringLength.hpp>
-#include <xqilla/functions/FunctionSubsequence.hpp>
 #include <xqilla/functions/FunctionTrace.hpp>
 #include <xqilla/functions/FunctionUnordered.hpp>
-#include <xqilla/functions/FunctionZeroOrOne.hpp>
+#include <xqilla/functions/FunctionHead.hpp>
+#include <xqilla/functions/FunctionTail.hpp>
 
 #include <xqilla/update/FunctionPut.hpp>
 
@@ -642,41 +636,11 @@ ASTNode *QueryPathTreeGenerator::optimizeFunction(XQFunction *item)
       result = generate(args[0]);
       generate(args[1]);
     }
-    else if(name == FunctionZeroOrOne::name ||
-            name == FunctionOneOrMore::name ||
-            name == FunctionExactlyOne::name ||
-            name == FunctionReverse::name ||
+    else if(name == FunctionHead::name ||
+            name == FunctionTail::name ||
             name == FunctionUnordered::name) {
       // return their argument
       result = generate(args[0]);
-    }
-    else if(name == FunctionInsertBefore::name) {
-      // behaves a bit like union
-      PathResult ret = generate(args[0]);
-      result.join(ret);
-
-      generate(args[1]);
-
-      PathResult ret2 = generate(args[2]);
-      result.join(ret2);
-    }
-    else if(name == FunctionRemove::name) {
-      result = generate(args[0]);
-      generate(args[1]);
-    }
-    else if(name == FunctionSubsequence::name) {
-      result = generate(args[0]);
-      generate(args[1]);
-      if(args.size() > 2) {
-        generate(args[2]);
-      }
-    }
-    else if(name == FunctionDeepEqual::name) {
-      generate(args[0]).markSubtreeResult();
-      generate(args[1]).markSubtreeResult();
-      if(args.size() > 2) {
-        generate(args[2]);
-      }
     }
     else if(name == FunctionId::name ||
             name == FunctionIdref::name) {

@@ -14,6 +14,7 @@
   <error id="K-NumericAdd-6" reason="result failure"/>
   <error id="K-SeqExprCast-1496" reason="error failure"/>
   <error id="K-SeqExprCast-1497" reason="error failure"/>
+  <error id="K-StringJoinFunc-1" reason="no error failure" comment="XQuery 1.1 provides this function"/>
   <error id="casthcds9" reason="result failure"/>
   <error id="fn-avg-mix-args-012" reason="result failure"/>
   <error id="fn-avg-mix-args-013" reason="result failure"/>
@@ -49,7 +50,7 @@
   <error id="fn-current-time-4" reason="inspect" action="pass"/>
   <error id="fn-current-time-6" reason="inspect" action="pass"/>
   <error id="fn-current-time-7" reason="inspect" action="pass"/>
-  <error id="fn-deep-equal-mix-args-019" reason="result failure"/>
+  <error id="fn-deep-equal-mix-args-019" reason="result failure" comment="Incorrect test result?"/>
   <error id="fn-doc-10" reason="error failure"/>
   <error id="fn-doc-11" reason="error failure"/>
   <error id="fn-doc-12" reason="error failure"/>

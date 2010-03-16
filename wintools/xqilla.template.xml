@@ -266,7 +266,6 @@
         <file name='include/xqilla/functions/FunctionBoolean.hpp'/>
         <file name='include/xqilla/functions/FunctionCaseFold.hpp'/>
         <file name='include/xqilla/functions/FunctionCeiling.hpp'/>
-        <file name='include/xqilla/functions/FunctionCodepointEqual.hpp'/>
         <file name='include/xqilla/functions/FunctionCodepointsToString.hpp'/>
         <file name='include/xqilla/functions/FunctionCollection.hpp'/>
         <file name='include/xqilla/functions/FunctionCompare.hpp'/>
@@ -283,7 +282,6 @@
         <file name='include/xqilla/functions/FunctionDayFromDate.hpp'/>
         <file name='include/xqilla/functions/FunctionDayFromDateTime.hpp'/>
         <file name='include/xqilla/functions/FunctionDaysFromDuration.hpp'/>
-        <file name='include/xqilla/functions/FunctionDeepEqual.hpp'/>
         <file name='include/xqilla/functions/FunctionDefaultCollation.hpp'/>
         <file name='include/xqilla/functions/FunctionDistinctValues.hpp'/>
         <file name='include/xqilla/functions/FunctionDocAvailable.hpp'/>
@@ -291,10 +289,8 @@
         <file name='include/xqilla/functions/FunctionDocument.hpp'/>
         <file name='include/xqilla/functions/FunctionDocumentURI.hpp'/>
         <file name='include/xqilla/functions/FunctionEmpty.hpp'/>
-        <file name='include/xqilla/functions/FunctionEncodeForUri.hpp'/>
         <file name='include/xqilla/functions/FunctionEndsWith.hpp'/>
         <file name='include/xqilla/functions/FunctionError.hpp'/>
-        <file name='include/xqilla/functions/FunctionEscapeHtmlUri.hpp'/>
         <file name='include/xqilla/functions/FunctionExactlyOne.hpp'/>
         <file name='include/xqilla/functions/FunctionExists.hpp'/>
         <file name='include/xqilla/functions/FunctionExp.hpp'/>
@@ -309,9 +305,7 @@
         <file name='include/xqilla/functions/FunctionIdref.hpp'/>
         <file name='include/xqilla/functions/FunctionImplicitTimezone.hpp'/>
         <file name='include/xqilla/functions/FunctionIndexOf.hpp'/>
-        <file name='include/xqilla/functions/FunctionInScopePrefixes.hpp'/>
         <file name='include/xqilla/functions/FunctionInsertBefore.hpp'/>
-        <file name='include/xqilla/functions/FunctionIriToUri.hpp'/>
         <file name='include/xqilla/functions/FunctionLang.hpp'/>
         <file name='include/xqilla/functions/FunctionLast.hpp'/>
         <file name='include/xqilla/functions/FunctionLocalNameFromQName.hpp'/>
@@ -328,7 +322,6 @@
         <file name='include/xqilla/functions/FunctionMonthFromDateTime.hpp'/>
         <file name='include/xqilla/functions/FunctionMonthsFromDuration.hpp'/>
         <file name='include/xqilla/functions/FunctionName.hpp'/>
-        <file name='include/xqilla/functions/FunctionNamespaceURIForPrefix.hpp'/>
         <file name='include/xqilla/functions/FunctionNamespaceURIFromQName.hpp'/>
         <file name='include/xqilla/functions/FunctionNamespaceUri.hpp'/>
         <file name='include/xqilla/functions/FunctionNilled.hpp'/>
@@ -352,7 +345,6 @@
         <file name='include/xqilla/functions/FunctionRegexGroup.hpp'/>
         <file name='include/xqilla/functions/FunctionRemove.hpp'/>
         <file name='include/xqilla/functions/FunctionReplace.hpp'/>
-        <file name='include/xqilla/functions/FunctionResolveQName.hpp'/>
         <file name='include/xqilla/functions/FunctionResolveURI.hpp'/>
         <file name='include/xqilla/functions/FunctionReverse.hpp'/>
         <file name='include/xqilla/functions/FunctionRoot.hpp'/>
@@ -369,8 +361,6 @@
         <file name='include/xqilla/functions/FunctionStringLength.hpp'/>
         <file name='include/xqilla/functions/FunctionStringToCodepoints.hpp'/>
         <file name='include/xqilla/functions/FunctionSubsequence.hpp'/>
-        <file name='include/xqilla/functions/FunctionSubstringAfter.hpp'/>
-        <file name='include/xqilla/functions/FunctionSubstringBefore.hpp'/>
         <file name='include/xqilla/functions/FunctionSubstring.hpp'/>
         <file name='include/xqilla/functions/FunctionSum.hpp'/>
         <file name='include/xqilla/functions/FunctionTan.hpp'/>
@@ -380,8 +370,9 @@
         <file name='include/xqilla/functions/FunctionTimezoneFromTime.hpp'/>
         <file name='include/xqilla/functions/FunctionTokenize.hpp'/>
         <file name='include/xqilla/functions/FunctionTrace.hpp'/>
-        <file name='include/xqilla/functions/FunctionTranslate.hpp'/>
         <file name='include/xqilla/functions/FunctionTrue.hpp'/>
+        <file name='include/xqilla/functions/FunctionHead.hpp'/>
+        <file name='include/xqilla/functions/FunctionTail.hpp'/>
         <file name='include/xqilla/functions/FunctionUnordered.hpp'/>
         <file name='include/xqilla/functions/FunctionUnparsedText.hpp'/>
         <file name='include/xqilla/functions/FunctionUpperCase.hpp'/>
@@ -816,6 +807,8 @@
         <file name="src/functions/FunctionTrace.cpp"/>
         <file name="src/functions/FunctionTranslate.cpp"/>
         <file name="src/functions/FunctionTrue.cpp"/>
+        <file name="src/functions/FunctionHead.cpp"/>
+        <file name="src/functions/FunctionTail.cpp"/>
         <file name="src/functions/FunctionUnordered.cpp"/>
         <file name="src/functions/FunctionUnparsedText.cpp"/>
         <file name="src/functions/FunctionUpperCase.cpp"/>
@@ -829,6 +822,7 @@
         <file name="src/functions/XQillaFunction.cpp"/>
         <file name="src/functions/BuiltInModules.cpp"/>
         <file name="src/functions/CoreModule.hpp"/>
+        <file name="src/functions/FnModule.hpp"/>
       </filter>
       <filter name="items">
         <file name="src/items/ATDurationOrDerived.cpp"/>
