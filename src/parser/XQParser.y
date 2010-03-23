@@ -721,12 +721,12 @@ namespace XQParser {
 %type <tupleNode>       ForBinding LetBinding WhereClause FLWORTuples OrderByClause OrderSpec OrderSpecList CountClause
 %type <tupleNode>       ForClause LetClause ForBindingList LetBindingList QuantifyBinding QuantifyBindingList InitialClause IntermediateClause
 %type <letTuple>        VariableAttrs_XSLT
-%type <caseClause>      CaseClause DefaultCase
-%type <caseClauses>     CaseClauseList
+%type <caseClause>      DefaultCase
+%type <caseClauses>     CaseClauseList CaseClause CaseSequenceTypeUnion
 %type <orderByModifier> OrderDirection EmptyHandling
 %type <stringList>      ResourceLocations
 %type <str>             PositionalVar SchemaPrefix URILiteral FTScoreVar DirCommentContents DirElemConstructorQName
-%type <str>             FunctionName QNameValue VarName NCName DirPIContents PragmaContents Number_XSLT
+%type <str>             FunctionName QNameValue VarName NCName DirPIContents PragmaContents Number_XSLT CaseClauseVariable
 
 %type <modeList>        TemplateModes_XSLT TemplateDeclModesSection TemplateDeclModes
 %type <mode>            ApplyTemplatesMode_XSLT ApplyTemplatesMode TemplateDeclMode
@@ -3599,7 +3599,7 @@ QuantifyBinding:
   }
 ;
 
-// [45]    TypeswitchExpr    ::=    <"typeswitch" "("> Expr ")" CaseClause+ "default" ("$" VarName)? "return" ExprSingle 
+// [74] TypeswitchExpr ::= "typeswitch" "(" Expr ")" CaseClause+ "default" ("$" VarName)? "return" ExprSingle
 TypeswitchExpr:
   _TYPESWITCH_ _LPAR_ Expr _RPAR_ CaseClauseList DefaultCase
   {
@@ -3610,15 +3610,15 @@ TypeswitchExpr:
 CaseClauseList:
   CaseClauseList CaseClause
   {
-    $1->push_back($2);
-    $$=$1;
+    XQTypeswitch::Cases::iterator it = $2->begin();
+    for(; it != $2->end(); ++it) {
+      $1->push_back(*it);
+    }
+
+    $$ = $1;
   }
   | CaseClause
-  {
-    $$=new (MEMMGR) XQTypeswitch::Cases(XQillaAllocator<XQTypeswitch::Case*>(MEMMGR));
-    $$->push_back($1);
-  }
-;
+  ;
 
 DefaultCase:
   _DEFAULT_ _DOLLAR_ VarName _RETURN_ ExprSingle
@@ -3631,17 +3631,49 @@ DefaultCase:
   }
 ;
 
-// [46]    CaseClause    ::=    "case" ("$" VarName "as")? SequenceType "return" ExprSingle
+// [75] CaseClause ::= "case" ("$" VarName "as")? SequenceTypeUnion "return" ExprSingle
 CaseClause:
-  _CASE_ SequenceType _RETURN_ ExprSingle
-  { 
-    $$ = WRAP(@1, new (MEMMGR) XQTypeswitch::Case(NULL, $2, $4));
+    CaseSequenceTypeUnion _RETURN_ ExprSingle
+  {
+    // TBD Don't copy the expression when unions of SequenceTypes are implemented - jpcs
+    XQTypeswitch::Cases::iterator it = $1->begin();
+    if(it != $1->end()) {
+      (*it)->setExpression($3);
+
+      for(++it; it != $1->end(); ++it) {
+        (*it)->setExpression($3->copy(CONTEXT));
+      }
+    }
+
+    $$ = $1;
   }
-  |  _CASE_ _DOLLAR_ VarName _AS_ SequenceType _RETURN_ ExprSingle
-  { 
-    $$ = WRAP(@1, new (MEMMGR) XQTypeswitch::Case($3, $5, $7));
+  ;
+
+// [75a] SequenceTypeUnion ::= SequenceType ("|" SequenceType)*
+CaseSequenceTypeUnion:
+    _CASE_ CaseClauseVariable SequenceType
+  {
+    $$ = new (MEMMGR) XQTypeswitch::Cases(XQillaAllocator<XQTypeswitch::Case*>(MEMMGR));
+    $$->push_back(WRAP(@1, new (MEMMGR) XQTypeswitch::Case($2, $3, 0)));
   }
-;
+  | CaseSequenceTypeUnion _BAR_ SequenceType
+  {
+    REJECT_NOT_VERSION11(SequenceTypeUnion, @2);
+    $1->push_back(WRAP(@3, new (MEMMGR) XQTypeswitch::Case($1->back()->getQName(), $3, 0)));
+    $$ = $1;
+  }
+  ;
+
+CaseClauseVariable:
+    /* empty */
+  {
+    $$ = 0;
+  }
+  | _DOLLAR_ VarName _AS_
+  {
+    $$ = $2;
+  }
+  ;
 
 // [47]    IfExpr    ::=    <"if" "("> Expr ")" "then" ExprSingle "else" ExprSingle 
 IfExpr:
