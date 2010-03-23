@@ -936,7 +936,7 @@ bool SequenceType::isSubtypeOf(const SequenceType *b, const StaticContext* conte
   if(b->m_pItemType == 0)
     return a->m_pItemType == 0;
   if(a->m_pItemType == 0)
-    return m_nOccurrence == QUESTION_MARK || m_nOccurrence == STAR;
+    return b->m_nOccurrence == QUESTION_MARK || b->m_nOccurrence == STAR;
 
   switch(b->m_nOccurrence) {
   case EXACTLY_ONE:
@@ -1202,11 +1202,6 @@ ASTNode *SequenceType::convertFunctionArg(ASTNode *arg, StaticContext *context, 
   if(m_pItemType!=NULL)
   {
     SequenceType::ItemType::ItemTestType testType = getItemTestType();
-    // FS says we atomize first if the sequence type is atomic, and I think that's sensible - jpcs
-    if(testType == ItemType::TEST_ATOMIC_TYPE) {
-      arg = new (mm) XQAtomize(arg, mm);
-      arg->setLocationInfo(location);
-    }
 
     // If XPath 1.0 compatibility mode is true and an argument is not of the expected type, then the following
     // conversions are applied sequentially to the argument value V:
@@ -1248,7 +1243,7 @@ ASTNode *SequenceType::convertFunctionArg(ASTNode *arg, StaticContext *context, 
     }
     // If the expected type is a sequence of an atomic type (possibly with an occurrence indicator *, +, or ?),
     // the following conversions are applied:
-    else if(testType == ItemType::TEST_ATOMIC_TYPE) {
+    if(testType == ItemType::TEST_ATOMIC_TYPE) {
       arg = new (mm) XQAtomize(arg, mm);
       arg->setLocationInfo(location);
 
