@@ -377,10 +377,13 @@ public:
 private:
   virtual ASTNode *optimizeUserFunction(XQUserFunctionInstance *item)
   {
-    // See if we can work out a better return type for the user defined function.
-    // This call will just return if it's already been static typed
-    const_cast<XQUserFunction*>(item->getFunctionDefinition())->staticTypingOnce(context_, styper_);
-
+    XQQuery *module = context_->getModule()->
+      findModuleForFunction(item->getFunctionURI(), item->getFunctionName(), item->getArguments().size());
+    if(module == context_->getModule()) {
+      // See if we can work out a better return type for the user defined function.
+      // This call will just return if it's already been static typed
+      const_cast<XQUserFunction*>(item->getFunctionDefinition())->staticTypingOnce(context_, styper_);
+    }
     return ASTVisitor::optimizeUserFunction(item);
   }
 
