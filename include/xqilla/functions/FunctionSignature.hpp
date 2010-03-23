@@ -30,6 +30,8 @@ public:
   ArgumentSpec(const XMLCh *qname, SequenceType *type, XPath2MemoryManager *memMgr);
   ArgumentSpec(const ArgumentSpec *o, XPath2MemoryManager *memMgr);
 
+  void release(XPath2MemoryManager *mm);
+
   const XMLCh *getURI() const { return uri_; }
   void setURI(const XMLCh *uri) { uri_ = uri; }
   const XMLCh *getName() const { return name_; }
@@ -61,6 +63,7 @@ public:
   FunctionSignature(XPath2MemoryManager *mm);
   FunctionSignature(ArgumentSpecs *a, SequenceType *r, XPath2MemoryManager *mm);
   FunctionSignature(const FunctionSignature *o, XPath2MemoryManager *mm);
+  FunctionSignature(const FunctionSignature *o, unsigned int skipArg, XPath2MemoryManager *mm);
 
   void release();
 

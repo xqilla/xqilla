@@ -20,8 +20,11 @@
 #include "../../config/xqilla_config.h"
 #include "FunctionRefImpl.hpp"
 #include <xqilla/ast/XQVariable.hpp>
+#include <xqilla/ast/XQFunction.hpp>
+#include <xqilla/ast/XQCastAs.hpp>
 #include <xqilla/exceptions/XPath2TypeMatchException.hpp>
 #include <xqilla/functions/FuncFactory.hpp>
+#include <xqilla/functions/FunctionSignature.hpp>
 #include <xqilla/context/impl/VarStoreImpl.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/context/ContextHelpers.hpp>
@@ -31,35 +34,43 @@
 #include <xqilla/events/EventHandler.hpp>
 #include <xqilla/runtime/ClosureResult.hpp>
 
+#include <xercesc/validators/schema/SchemaSymbols.hpp>
+
 XERCES_CPP_NAMESPACE_USE;
 using namespace std;
 
 XMLCh FunctionRefImpl::argVarPrefix[] = { '#', 'a', 'r', 'g', 0 };
+static const XMLCh constructorArgName[] = { 'a', 'r', 'g', 0 };
 
 FunctionRefImpl::FunctionRefImpl(const XMLCh *prefix, const XMLCh *uri, const XMLCh *localname,
-                                 const ASTNode *instance, size_t numArgs, DynamicContext *context)
+                                 const FunctionSignature *signature, const ASTNode *instance, DynamicContext *context)
   : prefix_(prefix),
     uri_(uri),
     name_(localname),
+    signature_(signature),
+    signatureOwned_(false),
     instance_(instance),
     varStore_(context->getMemoryManager())
 {
-  for(unsigned int i = 0; i < numArgs; ++i) {
+  for(unsigned int i = 0; i < getNumArgs(); ++i) {
     args_.push_back(i);
   }  
 }
 
-FunctionRefImpl::FunctionRefImpl(const ASTNode *instance, size_t numArgs, const StaticAnalysis &sa, DynamicContext *context)
+FunctionRefImpl::FunctionRefImpl(const FunctionSignature *signature, const ASTNode *instance,
+                                 const StaticAnalysis &sa, DynamicContext *context)
   : prefix_(0),
     uri_(0),
     name_(0),
+    signature_(signature),
+    signatureOwned_(false),
     instance_(instance),
     varStore_(context->getMemoryManager())
 {
   // Copy the variables we need into our local storage
   varStore_.cacheVariableStore(sa, context->getVariableStore());
 
-  for(unsigned int i = 0; i < numArgs; ++i) {
+  for(unsigned int i = 0; i < getNumArgs(); ++i) {
     args_.push_back(i);
   }  
 }
@@ -68,6 +79,8 @@ FunctionRefImpl::FunctionRefImpl(const FunctionRefImpl *other, const Result &arg
   : prefix_(other->prefix_),
     uri_(other->uri_),
     name_(other->name_),
+    signature_(new (context->getMemoryManager()) FunctionSignature(other->signature_, argNum, context->getMemoryManager())),
+    signatureOwned_(true),
     instance_(other->instance_),
     args_(other->args_),
     varStore_(other->varStore_, context->getMemoryManager())
@@ -84,6 +97,12 @@ FunctionRefImpl::FunctionRefImpl(const FunctionRefImpl *other, const Result &arg
   args_.erase(argsIt);
 
   varStore_.setVar(0, context->getMemoryManager()->getPooledString(buf.getRawBuffer()), argument);
+}
+
+FunctionRefImpl::~FunctionRefImpl()
+{
+  if(signatureOwned_)
+    const_cast<FunctionSignature*>(signature_)->release();
 }
 
 class FunctionRefScope : public VariableStore
@@ -147,6 +166,12 @@ ATQNameOrDerived::Ptr FunctionRefImpl::getName(const DynamicContext *context) co
   return context->getItemFactory()->createQName(uri_, prefix_, name_, context);
 }
 
+size_t FunctionRefImpl::getNumArgs() const
+{
+  if(signature_->argSpecs == 0) return 0;
+  return signature_->argSpecs->size();
+}
+
 FunctionRef::Ptr FunctionRefImpl::partialApply(const Result &arg, unsigned int argNum, DynamicContext *context, const LocationInfo *location) const
 {
   if(getNumArgs() < argNum) {
@@ -172,17 +197,25 @@ void FunctionRefImpl::generateEvents(EventHandler *events, const DynamicContext 
 const XMLCh *FunctionRefImpl::asString(const DynamicContext *context) const
 {
   XMLBuffer buf;
-  buf.append(X("function(#"));
-  XPath2Utils::numToBuf((unsigned int)getNumArgs(), buf);
-  buf.append(')');
+  typeToBuffer(const_cast<DynamicContext*>(context), buf);
   return context->getMemoryManager()->getPooledString(buf.getRawBuffer());
 }
 
 void FunctionRefImpl::typeToBuffer(DynamicContext *context, XMLBuffer &buffer) const
 {
   buffer.append(X("function("));
-  XPath2Utils::numToBuf((unsigned int)getNumArgs(), buffer);
-  buffer.append(X(")"));
+
+  if(signature_->argSpecs) {
+    bool doneOne = false;
+    for(ArgumentSpecs::const_iterator i = signature_->argSpecs->begin();
+        i != signature_->argSpecs->end(); ++i) {
+      if(doneOne) buffer.append(',');
+      doneOne = true;
+      (*i)->getType()->toBuffer(buffer);
+    }
+  }
+  buffer.append(X(") as "));
+  signature_->returnType->toBuffer(buffer);
 }
 
 void *FunctionRefImpl::getInterface(const XMLCh *name) const
@@ -208,7 +241,9 @@ ASTNode *FunctionRefImpl::createInstance(const FuncFactory *factory, unsigned in
   return instance;
 }
 
-ASTNode *FunctionRefImpl::createInstance(const XMLCh *uri, const XMLCh *name, unsigned int numArgs, StaticContext *context, const LocationInfo *location)
+ASTNode *FunctionRefImpl::createInstance(const XMLCh *uri, const XMLCh *name, unsigned int numArgs,
+                                         StaticContext *context, const LocationInfo *location,
+                                         FunctionSignature *&signature)
 {
   XPath2MemoryManager *mm = context->getMemoryManager();
 
@@ -223,5 +258,40 @@ ASTNode *FunctionRefImpl::createInstance(const XMLCh *uri, const XMLCh *name, un
     newArgs.push_back(var);
   }
 
-  return context->lookUpFunction(uri, name, newArgs, location);
+  ASTNode *result = context->lookUpFunction(uri, name, newArgs, location);
+  if(!result) return 0;
+
+  switch(result->getType()) {
+  case ASTNode::FUNCTION:
+  case ASTNode::USER_FUNCTION: {
+    XQFunction *function = (XQFunction*)result;
+    function->parseSignature(context);
+    signature = new (mm) FunctionSignature(function->getSignature(), mm);
+    break;
+  }
+  case ASTNode::CAST_AS: {
+    XQCastAs *cast = (XQCastAs*)result;
+
+    // Create a signature for the constructor function
+    SequenceType *argType = new (mm) SequenceType(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
+                                                  AnyAtomicType::fgDT_ANYATOMICTYPE,
+                                                  SequenceType::QUESTION_MARK, mm);
+    argType->setLocationInfo(location);
+
+    ArgumentSpec *arg = new (mm) ArgumentSpec(constructorArgName, argType, mm);
+    arg->setLocationInfo(location);
+
+    ArgumentSpecs *args = new (mm) ArgumentSpecs(XQillaAllocator<ArgumentSpec*>(mm));
+    args->push_back(arg);
+
+    signature = new (mm) FunctionSignature(args, cast->getSequenceType(), mm);
+    signature->staticResolution(context);
+    break;
+  }
+  default:
+    assert(false);
+    break;
+  }
+
+  return result;
 }

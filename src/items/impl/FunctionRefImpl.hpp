@@ -33,14 +33,14 @@ public:
   typedef RefCountPointer<const FunctionRefImpl> Ptr;
 
   FunctionRefImpl(const XMLCh *prefix, const XMLCh *uri, const XMLCh *localname,
-                  const ASTNode *instance, size_t numArgs, DynamicContext *context);
+                  const FunctionSignature *signature, const ASTNode *instance, DynamicContext *context);
   /** Initialises closure from the StaticAnalysis of variables that are needed */
-  FunctionRefImpl(const ASTNode *instance, size_t numArgs, const StaticAnalysis &sa, DynamicContext *context);
-  /** Partially evaluates the given FunctionRefImpl with the given argument */
-  FunctionRefImpl(const FunctionRefImpl *other, const Result &argument, unsigned int argNum, DynamicContext *context);
+  FunctionRefImpl(const FunctionSignature *signature, const ASTNode *instance, const StaticAnalysis &sa, DynamicContext *context);
+  ~FunctionRefImpl();
 
   virtual ATQNameOrDerived::Ptr getName(const DynamicContext *context) const;
-  virtual size_t getNumArgs() const { return args_.size(); }
+  virtual size_t getNumArgs() const;
+  virtual const FunctionSignature *getSignature() const { return signature_; }
   virtual Result execute(const VectorOfResults &args, DynamicContext *context, const LocationInfo *location) const;
   virtual FunctionRef::Ptr partialApply(const Result &arg, unsigned int argNum, DynamicContext *context, const LocationInfo *location) const;
 
@@ -53,13 +53,20 @@ public:
 
   virtual void *getInterface(const XMLCh *name) const;
 
-  static ASTNode *createInstance(const FuncFactory *factory, unsigned int numArgs, XPath2MemoryManager *mm, const LocationInfo *location);
-  static ASTNode *createInstance(const XMLCh *uri, const XMLCh *name, unsigned int numArgs, StaticContext *context, const LocationInfo *location);
+  static ASTNode *createInstance(const FuncFactory *factory, unsigned int numArgs, XPath2MemoryManager *mm,
+                                 const LocationInfo *location);
+  static ASTNode *createInstance(const XMLCh *uri, const XMLCh *name, unsigned int numArgs, StaticContext *context,
+                                 const LocationInfo *location, FunctionSignature *&signature);
 
   static XMLCh argVarPrefix[];
 
 protected:
+  /** Partially evaluates the given FunctionRefImpl with the given argument */
+  FunctionRefImpl(const FunctionRefImpl *other, const Result &argument, unsigned int argNum, DynamicContext *context);
+
   const XMLCh *prefix_, *uri_, *name_;
+  const FunctionSignature *signature_;
+  bool signatureOwned_;
   const ASTNode *instance_;
   std::vector<unsigned int> args_;
   VarStoreImpl varStore_;

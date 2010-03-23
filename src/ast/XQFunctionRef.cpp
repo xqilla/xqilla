@@ -27,6 +27,7 @@
 #include <xqilla/utils/XStr.hpp>
 #include <xqilla/schema/SequenceType.hpp>
 #include <xqilla/exceptions/StaticErrorException.hpp>
+#include <xqilla/functions/FunctionSignature.hpp>
 
 #include "../items/impl/FunctionRefImpl.hpp"
 
@@ -36,19 +37,24 @@ using namespace std;
 XQFunctionRef::XQFunctionRef(const XMLCh *qname, unsigned int numArgs, XPath2MemoryManager *mm)
   : ASTNodeImpl(FUNCTION_REF, mm),
     qname_(qname),
+    prefix_(0),
     uri_(0),
     name_(0),
     numArgs_(numArgs),
+    signature_(0),
     instance_(0)
 {
 }
 
-XQFunctionRef::XQFunctionRef(const XMLCh *uri, const XMLCh *name, unsigned int numArgs, ASTNode *instance, XPath2MemoryManager *mm)
+XQFunctionRef::XQFunctionRef(const XMLCh *prefix, const XMLCh *uri, const XMLCh *name, unsigned int numArgs,
+                             FunctionSignature *signature, ASTNode *instance, XPath2MemoryManager *mm)
   : ASTNodeImpl(FUNCTION_REF, mm),
     qname_(0),
+    prefix_(prefix),
     uri_(uri),
     name_(name),
     numArgs_(numArgs),
+    signature_(signature),
     instance_(instance)
 {
 }
@@ -67,7 +73,7 @@ ASTNode *XQFunctionRef::staticResolution(StaticContext *context)
     uri_ = context->getUriBoundToPrefix(prefix_, this);
   }
 
-  instance_ = FunctionRefImpl::createInstance(uri_, name_, numArgs_, context, this);
+  instance_ = FunctionRefImpl::createInstance(uri_, name_, numArgs_, context, this, signature_);
   if(instance_ == 0) {
     XMLBuffer buf;
     buf.set(X("A function called {"));
@@ -100,6 +106,5 @@ ASTNode *XQFunctionRef::staticTypingImpl(StaticContext *context)
 
 Result XQFunctionRef::createResult(DynamicContext *context, int flags) const
 {
-  return (Item::Ptr)new FunctionRefImpl(prefix_, uri_, name_,
-                                        instance_, numArgs_, context);
+  return (Item::Ptr)new FunctionRefImpl(prefix_, uri_, name_, signature_, instance_, context);
 }

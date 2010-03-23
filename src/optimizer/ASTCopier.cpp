@@ -289,7 +289,6 @@ COPY_XQ5(AnalyzeString, Expression, Regex, Flags, Match, NonMatch)
 COPY_XQ2(CopyOf, Expression, CopyNamespaces)
 COPY_XQ4(Copy, Expression, Children, CopyNamespaces, InheritNamespaces)
 COPY1(ASTDebugHook, Expression)
-COPY_XQ4(FunctionRef, URI, Name, NumArgs, Instance)
 COPY1(UDelete, Expression)
 COPY2(URename, Target, Name)
 COPY2(UReplace, Target, Expression)
@@ -305,9 +304,20 @@ COPY_XQ2(Nav, Steps, SortAdded);
 COPY_FULL3(UserFunction, XQUserFunctionInstance, FunctionDefinition, Arguments, AddReturnCheck);
 
 
+ASTNode *ASTCopier::optimizeFunctionRef(XQFunctionRef *item)
+{
+  XQFunctionRef *result = new (mm_) XQFunctionRef(item->getPrefix(), item->getURI(), item->getName(), item->getNumArgs(), 
+                                                  new (mm_) FunctionSignature(item->getSignature(), mm_),
+                                                  item->getInstance(), mm_);
+  ASTVisitor::optimizeFunctionRef(result);
+  COPY_IMPL();
+}
+
 ASTNode *ASTCopier::optimizeInlineFunction(XQInlineFunction *item)
 {
-  XQInlineFunction *result = new (mm_) XQInlineFunction(item->getUserFunction(), item->getNumArgs(), item->getInstance(), mm_);
+  XQInlineFunction *result = new (mm_) XQInlineFunction(item->getUserFunction(), item->getNumArgs(),
+                                                        new (mm_) FunctionSignature(item->getSignature(), mm_),
+                                                        item->getInstance(), mm_);
   ASTVisitor::optimizeInlineFunction(result);
 
   if(result->getUserFunction()) {

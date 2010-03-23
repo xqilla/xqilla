@@ -117,6 +117,19 @@ void XQFunction::parseSignature(StaticContext *context)
     XQParser::yyparse(&args);
     signature_ = args._signature;
     signature_->staticResolution(context);
+
+    if(signature_->argSpecs) {
+      // If the signature has too many arguments, remove some
+      while(signature_->argSpecs->size() > _args.size()) {
+        signature_->argSpecs->back()->release(mm);
+        signature_->argSpecs->pop_back();
+      }
+
+      // If the signature has too few arguments, duplicate the last one
+      while(signature_->argSpecs->size() < _args.size()) {
+        signature_->argSpecs->push_back(new (mm) ArgumentSpec(signature_->argSpecs->back(), mm));
+      }
+    }
   }
 }
 

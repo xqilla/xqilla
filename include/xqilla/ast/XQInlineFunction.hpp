@@ -24,12 +24,13 @@
 
 class XQUserFunction;
 class InlineFunctionResult;
+class FunctionSignature;
 
 class XQILLA_API XQInlineFunction : public ASTNodeImpl
 {
 public:
   XQInlineFunction(XQUserFunction *func, XPath2MemoryManager *mm);
-  XQInlineFunction(XQUserFunction *func, unsigned int numArgs, ASTNode *instance, XPath2MemoryManager *mm);
+  XQInlineFunction(XQUserFunction *func, unsigned int numArgs, FunctionSignature *signature, ASTNode *instance, XPath2MemoryManager *mm);
 
   virtual ASTNode *staticResolution(StaticContext *context);
   virtual ASTNode *staticTypingImpl(StaticContext *context);
@@ -40,12 +41,16 @@ public:
   XQUserFunction *getUserFunction() const { return func_; }
   void setUserFunction(XQUserFunction *func) { func_ = func; }
 
+  FunctionSignature *getSignature() const { return signature_; }
+  void setSignature(FunctionSignature *s) { signature_ = s; }
+
   ASTNode *getInstance() const { return instance_; }
   void setInstance(ASTNode *i) { instance_ = i; }
 
 private:
   XQUserFunction *func_;
   unsigned int numArgs_;
+  FunctionSignature *signature_;
   ASTNode *instance_;
 
   friend class InlineFunctionResult;

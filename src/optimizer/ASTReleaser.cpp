@@ -148,8 +148,6 @@ RELEASE_XQ(FunctionConversion)
 RELEASE_XQ(AnalyzeString)
 RELEASE_XQ(CopyOf)
 RELEASE(ASTDebugHook)
-RELEASE_XQ(FunctionRef)
-RELEASE_XQ(InlineFunction)
 RELEASE(UDelete)
 RELEASE(URename)
 RELEASE(UReplace)
@@ -161,6 +159,22 @@ RELEASE(UInsertAfter)
 RELEASE(UInsertBefore)
 RELEASE(UApplyUpdates)
 RELEASE(FTContains)
+
+ASTNode *ASTReleaser::optimizeFunctionRef(XQFunctionRef *item)
+{
+  ASTVisitor::optimizeFunctionRef(item);
+  if(item->getSignature())
+    item->getSignature()->release();
+  RELEASE_IMPL();
+}
+
+ASTNode *ASTReleaser::optimizeInlineFunction(XQInlineFunction *item)
+{
+  ASTVisitor::optimizeInlineFunction(item);
+  if(item->getSignature())
+    item->getSignature()->release();
+  RELEASE_IMPL();
+}
 
 ASTNode *ASTReleaser::optimizeFunction(XQFunction *item)
 {

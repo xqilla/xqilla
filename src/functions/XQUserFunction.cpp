@@ -621,6 +621,7 @@ XQUserFunctionInstance::XQUserFunctionInstance(const XQUserFunction* funcDef, co
 {
   _type = ASTNode::USER_FUNCTION;
   uri_ = funcDef->getURI();
+  signature_ = funcDef->getSignature();
 }
 
 XQUserFunctionInstance::XQUserFunctionInstance(const XQUserFunction *funcDef, const VectorOfASTNodes& args, bool addReturnCheck, XPath2MemoryManager *mm)
@@ -630,6 +631,7 @@ XQUserFunctionInstance::XQUserFunctionInstance(const XQUserFunction *funcDef, co
 {
   _type = ASTNode::USER_FUNCTION;
   uri_ = funcDef->getURI();
+  signature_ = funcDef->getSignature();
 }
 
 Result XQUserFunctionInstance::getArgument(size_t index, DynamicContext *context) const

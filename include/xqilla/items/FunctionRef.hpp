@@ -28,6 +28,7 @@
 
 class DynamicContext;
 class LocationInfo;
+class FunctionSignature;
 
 typedef std::vector<Result> VectorOfResults;
 
@@ -45,6 +46,7 @@ public:
 
   virtual ATQNameOrDerived::Ptr getName(const DynamicContext *context) const = 0;
   virtual size_t getNumArgs() const = 0;
+  virtual const FunctionSignature *getSignature() const = 0;
   virtual Result execute(const VectorOfResults &args, DynamicContext *context, const LocationInfo *location) const = 0;
   virtual FunctionRef::Ptr partialApply(const Result &arg, unsigned int argNum, DynamicContext *context, const LocationInfo *location) const = 0;
 

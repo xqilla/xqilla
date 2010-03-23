@@ -23,28 +23,33 @@
 #include <xqilla/ast/ASTNodeImpl.hpp>
 
 class XQFunctionRefResult;
+class FunctionSignature;
 
 class XQILLA_API XQFunctionRef : public ASTNodeImpl
 {
 public:
   XQFunctionRef(const XMLCh *qname, unsigned int numArgs, XPath2MemoryManager *mm);
-  XQFunctionRef(const XMLCh *uri, const XMLCh *name, unsigned int numArgs, ASTNode *instance, XPath2MemoryManager *mm);
+  XQFunctionRef(const XMLCh *prefix, const XMLCh *uri, const XMLCh *name, unsigned int numArgs,
+                FunctionSignature *signature, ASTNode *instance, XPath2MemoryManager *mm);
 
   virtual ASTNode *staticResolution(StaticContext *context);
   virtual ASTNode *staticTypingImpl(StaticContext *context);
   virtual Result createResult(DynamicContext* context, int flags=0) const;
 
   const XMLCh *getQName() const { return qname_; }
+  const XMLCh *getPrefix() const { return prefix_; }
   const XMLCh *getURI() const { return uri_; }
   const XMLCh *getName() const { return name_; }
   unsigned int getNumArgs() const { return numArgs_; }
 
+  FunctionSignature *getSignature() const { return signature_; }
   ASTNode *getInstance() const { return instance_; }
   void setInstance(ASTNode *i) { instance_ = i; }
 
 private:
   const XMLCh *qname_, *prefix_, *uri_, *name_;
   unsigned int numArgs_;
+  FunctionSignature *signature_;
   ASTNode *instance_;
 
   friend class XQFunctionRefResult;

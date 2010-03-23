@@ -67,13 +67,32 @@ FunctionSignature::FunctionSignature(const FunctionSignature *o, XPath2MemoryMan
   }
 }   
 
+FunctionSignature::FunctionSignature(const FunctionSignature *o, unsigned int skipArg, XPath2MemoryManager *mm)
+  : updating(o->updating),
+    nondeterministic(o->nondeterministic),
+    privateOption(o->privateOption),
+    argSpecs(0),
+    returnType(o->returnType),
+    memMgr(mm)
+{
+  if(o->argSpecs) {
+    argSpecs = new (mm) ArgumentSpecs(XQillaAllocator<ArgumentSpec*>(mm));
+
+    unsigned int count = 0;
+    ArgumentSpecs::const_iterator argIt = o->argSpecs->begin();
+    for(; argIt != o->argSpecs->end(); ++argIt, ++count) {
+      if(count != skipArg)
+        argSpecs->push_back(new (mm) ArgumentSpec(*argIt, mm));
+    }
+  }
+}
+
 void FunctionSignature::release()
 {
   if(argSpecs) {
     ArgumentSpecs::iterator argIt = argSpecs->begin();
     for(; argIt != argSpecs->end(); ++argIt) {
-      const_cast<StaticAnalysis&>((*argIt)->getStaticAnalysis()).clear();
-      memMgr->deallocate(*argIt);
+      (*argIt)->release(memMgr);
     }
 #if defined(_MSC_VER) && (_MSC_VER < 1300)
     argSpecs->~vector<ArgumentSpec*,XQillaAllocator<ArgumentSpec*> >();
@@ -137,6 +156,12 @@ ArgumentSpec::ArgumentSpec(const ArgumentSpec *o, XPath2MemoryManager *memMgr)
     seqType_(o->seqType_),
     src_(memMgr)
 {
+}
+
+void ArgumentSpec::release(XPath2MemoryManager *mm)
+{
+  src_.clear();
+  mm->deallocate(this);
 }
 
 void ArgumentSpec::staticResolution(StaticContext* context)
