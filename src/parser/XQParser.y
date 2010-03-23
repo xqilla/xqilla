@@ -394,6 +394,7 @@ namespace XQParser {
 %token <str> _ATTRIBUTE_ "attribute"
 %token <str> _COMMENT_ "comment"
 %token <str> _DOCUMENT_NODE_ "document-node"
+%token <str> _NAMESPACE_NODE_ "namespace-node"
 %token <str> _NODE_ "node"
 %token <str> _PROCESSING_INSTRUCTION_ "processing-instruction"
 %token <str> _SCHEMA_ATTRIBUTE_ "schema-attribute"
@@ -682,7 +683,7 @@ namespace XQParser {
 %type <astNode>      ForwardStep ReverseStep AbbrevForwardStep AbbrevReverseStep OrderExpr CompPIConstructorContent
 %type <astNode>      PathPattern_XSLT IdValue_XSLT KeyValue_XSLT CallTemplateExpr ApplyTemplatesExpr
 %type <astNode>      DynamicFunctionInvocation InlineFunction LiteralFunctionItem FunctionItemExpr
-%type <astNode>      ForwardStepPredicateList ReverseStepPredicateList Argument FunctionBody
+%type <astNode>      ForwardStepPredicateList ReverseStepPredicateList Argument FunctionBody CompNamespaceConstructor
 %type <astNode>      LiteralResultElement_XSLT ValueOf_XSLT ValueOfAttrs_XSLT Text_XSLT TextNode_XSLT ApplyTemplates_XSLT
 %type <astNode>      ApplyTemplatesAttrs_XSLT CallTemplate_XSLT CallTemplateAttrs_XSLT Sequence_XSLT Choose_XSLT If_XSLT
 %type <astNode>      WhenList_XSLT When_XSLT Otherwise_XSLT Variable_XSLT Comment_XSLT CommentAttrs_XSLT
@@ -712,7 +713,7 @@ namespace XQParser {
 %type <sequenceTypes>   FunctionTypeArguments
 %type <occurrence>      OccurrenceIndicator SingleTypeOccurrence
 %type <itemType>        ItemType KindTest AttributeTest SchemaAttributeTest PITest CommentTest TextTest AnyKindTest ElementTest DocumentTest SchemaElementTest
-%type <itemType>        FunctionTest AnyFunctionTest TypedFunctionTest ParenthesizedItemType
+%type <itemType>        FunctionTest AnyFunctionTest TypedFunctionTest ParenthesizedItemType NamespaceNodeTest
 %type <copyBinding>     TransformBinding
 %type <copyBindingList> TransformBindingList
 %type <templateArg>     TemplateArgument WithParamAttrs_XSLT WithParam_XSLT
@@ -742,11 +743,11 @@ namespace XQParser {
 //%expect 50
 
 // We're expecting 90 shift/reduce conflicts. These have been checked and are harmless.
-// 48 arise from the xgs:leading-lone-slash grammar constraint (http://www.w3.org/TR/xquery/#parse-note-leading-lone-slash)
+// 49 arise from the xgs:leading-lone-slash grammar constraint (http://www.w3.org/TR/xquery/#parse-note-leading-lone-slash)
 // 3 arise from the xgs:occurrence-indicator grammar constriant (http://www.w3.org/TR/xquery/#parse-note-occurence-indicators)
 // 17 are due to template extensions
 // 21 are due to Variable_XSLT
-%expect 89
+%expect 90
 
 %%
 
@@ -4684,16 +4685,18 @@ DirPIContents:
   }
   ;
 
-// [112]    ComputedConstructor    ::=   CompDocConstructor
-//                     | CompElemConstructor
-//                     | CompAttrConstructor
-//                     | CompTextConstructor
-//                     | CompCommentConstructor
-//                     | CompPIConstructor 
+// [152] ComputedConstructor ::= CompDocConstructor
+//                             | CompElemConstructor
+//                             | CompAttrConstructor
+//                             | CompNamespaceConstructor
+//                             | CompTextConstructor
+//                             | CompCommentConstructor
+//                             | CompPIConstructor
 ComputedConstructor:
   CompDocConstructor
   | CompElemConstructor
   | CompAttrConstructor
+  | CompNamespaceConstructor
   | CompTextConstructor
   | CompCommentConstructor
   | CompPIConstructor 
@@ -4756,6 +4759,16 @@ CompAttrName:
   | _LBRACE_ Expr _RBRACE_
   {
     $$ = $2;
+  }
+  ;
+
+// [157]   CompNamespaceConstructor   ::=   "namespace" (Prefix | ("{" PrefixExpr "}")) "{" URIExpr? "}"
+// [159]   PrefixExpr   ::=   Expr
+// [160]   URIExpr   ::=   Expr
+CompNamespaceConstructor:
+  _NAMESPACE_ CompPINCName ContentExpr
+  {
+    $$ = WRAP(@1, new (MEMMGR) XQNamespaceConstructor($2, $3, MEMMGR));
   }
   ;
 
@@ -4911,6 +4924,7 @@ KindTest:
   |  PITest
   |  CommentTest
   |  TextTest
+  |  NamespaceNodeTest
   |  AnyKindTest
   ;
 
@@ -4953,6 +4967,15 @@ CommentTest:
   _COMMENT_ _LPAR_ _RPAR_
   {
     $$ = new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_COMMENT);
+  }
+  ;
+
+// [178] NamespaceNodeTest ::= "namespace-node" "(" ")"
+NamespaceNodeTest:
+  _NAMESPACE_NODE_ _LPAR_ _RPAR_
+  {
+    REJECT_NOT_VERSION11(NamespaceNodeTest, @1);
+    $$ = new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_NAMESPACE);
   }
   ;
 
@@ -6038,7 +6061,7 @@ ParenthesizedItemType:
 QNameValue:
 FunctionName | _ATTRIBUTE_ | _COMMENT_ | _DOCUMENT_NODE_ | _ELEMENT_ | _ITEM_ | _IF_ | _NODE_ |
 _PROCESSING_INSTRUCTION_ | _SCHEMA_ATTRIBUTE_ | _SCHEMA_ELEMENT_ | _TEXT_ | _TYPESWITCH_ | _EMPTY_SEQUENCE_ |
-_FUNCTION_EXT_
+_FUNCTION_EXT_ | _NAMESPACE_NODE_
   ;
 
 FunctionName:

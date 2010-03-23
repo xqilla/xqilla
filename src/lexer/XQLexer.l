@@ -422,6 +422,7 @@ void XQLexer::undoLessThan()
   if(!isXPath() && !isExtensions() && lookAhead() == _COLON_COLON_) {
     RECOGNIZE_VALUE(_QNAME_, yytext);
   } else {
+    CHANGE_STATE(COMPUTED_CONSTRUCTOR);
     RECOGNIZE_VALUE(_NAMESPACE_, yytext);
   }
 }
@@ -520,6 +521,13 @@ void XQLexer::undoLessThan()
 <INITIAL>"nondeterministic" {
   if(isVersion11()) {
     RECOGNIZE_VALUE(_NONDETERMINISTIC_, yytext);
+  } else {
+    RECOGNIZE_VALUE(_QNAME_, yytext);
+  }
+}
+<INITIAL>"namespace-node" {
+  if(isVersion11()) {
+    RECOGNIZE_VALUE(_NAMESPACE_NODE_, yytext);
   } else {
     RECOGNIZE_VALUE(_QNAME_, yytext);
   }

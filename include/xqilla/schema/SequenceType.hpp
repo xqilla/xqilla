@@ -55,6 +55,7 @@ public:
       TEST_COMMENT,      ///< comment node
       TEST_TEXT,         ///< text node
       TEST_DOCUMENT,     ///< document node
+      TEST_NAMESPACE,    ///< namespace node
       TEST_ANYTHING,     ///< any item
       TEST_ATOMIC_TYPE,  ///< the named atomic type
       TEST_FUNCTION      ///< function

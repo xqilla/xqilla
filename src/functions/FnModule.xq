@@ -450,6 +450,11 @@ declare private function deep-equal-nodes($p1 as node()*, $p2 as node()*, $colla
       deep-equal(node-name($i1), node-name($i2), $collation) and
       codepoint-equal($i1, $i2) and
       deep-equal-nodes(tail($p1), tail($p2), $collation)
+(:     case namespace-node() return :)
+(:       deep-equal(node-name($i1), node-name($i2), $collation) and :)
+(:       codepoint-equal($i1, $i2) and :)
+(:       deep-equal-nodes(tail($p1), tail($p2), $collation) :)
+(:     default return false() :)
 };
 
 (:----------------------------------------------------------------------------------------------------:)

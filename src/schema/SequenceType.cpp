@@ -439,6 +439,11 @@ void SequenceType::ItemType::getStaticType(StaticType &st, const StaticContext *
     isExact = true;
     break;
   }
+  case TEST_NAMESPACE: {
+    st = StaticType::NAMESPACE_TYPE;
+    isExact = true;
+    break;
+  }
   case TEST_NODE: {
     st = StaticType::NODE_TYPE;
     isExact = true;
@@ -617,6 +622,10 @@ void SequenceType::ItemType::toBuffer(XMLBuffer &buffer, bool addBrackets) const
   }
   case TEST_TEXT: {
     buffer.append(X("text()"));
+    break;
+  }
+  case TEST_NAMESPACE: {
+    buffer.append(X("namespace-node()"));
     break;
   }
   case TEST_NODE: {
@@ -829,6 +838,11 @@ bool SequenceType::ItemType::matches(const Node::Ptr &toBeTested, DynamicContext
       return (toBeTested->dmNodeKind() == Node::text_string);
     }
 
+    case TEST_NAMESPACE:
+    {
+      return (toBeTested->dmNodeKind() == Node::namespace_string);
+    }
+
     case TEST_SCHEMA_DOCUMENT:
     case TEST_DOCUMENT:
     {
@@ -884,6 +898,7 @@ bool SequenceType::ItemType::matches(const Item::Ptr &toBeTested, DynamicContext
     case TEST_TEXT:
     case TEST_DOCUMENT:
     case TEST_SCHEMA_DOCUMENT:
+    case TEST_NAMESPACE:
     {
       return false;
     }
@@ -1004,6 +1019,11 @@ bool SequenceType::ItemType::isSubtypeOf(const ItemType *b, const StaticContext*
   case TEST_COMMENT: {
     // Bi is comment() and Ai is also comment().
     return a->m_nTestType == TEST_COMMENT;
+  }
+
+  case TEST_NAMESPACE: {
+    // Bi is namespace-node() and Ai is also namespace-node().
+    return a->m_nTestType == TEST_NAMESPACE;
   }
 
   case TEST_PI: {
