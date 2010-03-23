@@ -25,9 +25,11 @@
 #include <xqilla/ast/StaticAnalysis.hpp>
 #include <xqilla/update/PendingUpdateList.hpp>
 
+XERCES_CPP_NAMESPACE_USE;
+
 const XMLCh FunctionError::name[] = {
-  XERCES_CPP_NAMESPACE_QUALIFIER chLatin_e, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_r, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_r, 
-  XERCES_CPP_NAMESPACE_QUALIFIER chLatin_o, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_r, XERCES_CPP_NAMESPACE_QUALIFIER chNull 
+  chLatin_e, chLatin_r, chLatin_r, 
+  chLatin_o, chLatin_r, chNull 
 };
 const unsigned int FunctionError::minArgs = 0;
 const unsigned int FunctionError::maxArgs = 3;
@@ -67,32 +69,27 @@ PendingUpdateList FunctionError::createUpdateList(DynamicContext *context) const
 
 Sequence FunctionError::createSequence(DynamicContext* context, int flags) const
 {
-    XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer exc_name(1023, context->getMemoryManager());
-    exc_name.set(X("User-requested error"));
+    XMLBuffer exc_name;
     switch(getNumArgs()) {
     case 3: // TODO: extra storage in the exception object for the user object
     case 2: {
-      Sequence arg = getParamNumber(2,context)->toSequence(context);
-      exc_name.append(X(": "));
-      exc_name.append(arg.first()->asString(context));
+      exc_name.set(getParamNumber(2, context)->next(context)->asString(context));
+      // Fall through
     }
     case 1: {
-      Sequence arg = getParamNumber(1,context)->toSequence(context);
-      if(arg.isEmpty()) {
-        if(getNumArgs() == 1)
-          XQThrow(XPath2ErrorException, X("FunctionError::createSequence"), X("ItemType matching failed [err:XPTY0004]"));
-        else
-          exc_name.append(X(" [err:FOER0000]"));
+      Item::Ptr qname = getParamNumber(1, context)->next(context);
+      if(qname.isNull()) {
+        exc_name.append(X(" [err:FOER0000]"));
       }
       else {
         exc_name.append(X(" ["));
-        exc_name.append(arg.first()->asString(context));
+        exc_name.append(qname->asString(context));
         exc_name.append(X("]"));
       }
       break;
     }
     case 0:
-      exc_name.append(X(" [err:FOER0000]"));
+      exc_name.set(X("User-requested error [err:FOER0000]"));
       break;
     }
     XQThrow(XPath2ErrorException, X("FunctionError::createSequence"), exc_name.getRawBuffer());
