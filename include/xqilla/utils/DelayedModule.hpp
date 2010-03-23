@@ -29,10 +29,12 @@ class XQQuery;
 class DynamicContext;
 class ModuleCache;
 
-struct XQILLA_API DelayedModule
+class XQILLA_API DelayedModule
 {
-  struct XQILLA_API FuncDef
+public:
+  class XQILLA_API FuncDef
   {
+  public:
     const char *name;
     unsigned int args;
     bool isPrivate;
