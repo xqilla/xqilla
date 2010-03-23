@@ -275,7 +275,6 @@ COPY_XQ2(Validate, Expression, Mode)
 COPY_XQ2(OrderingChange, OrderingValue, Expr)
 COPY_XQ2(Atomize, Expression, DoPSVI)
 COPY_XQ1(EffectiveBooleanValue, Expression)
-COPY2(XPath1CompatConvertFunctionArg, Expression, SequenceType) // SequenceType
 COPY_XQ5(PromoteUntyped, Expression, TypeURI, TypeName, IsPrimitive, TypeIndex)
 COPY_XQ4(PromoteNumeric, Expression, TypeURI, TypeName, TypeIndex)
 COPY_XQ3(PromoteAnyURI, Expression, TypeURI, TypeName)

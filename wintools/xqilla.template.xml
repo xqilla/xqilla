@@ -150,7 +150,6 @@
         <file name='include/xqilla/ast/XQEffectiveBooleanValue.hpp'/>
         <file name='include/xqilla/ast/XQMap.hpp'/>
         <file name='include/xqilla/ast/XQAnalyzeString.hpp'/>
-        <file name='include/xqilla/ast/XPath1Compat.hpp'/>
         <file name='include/xqilla/ast/ConvertFunctionArg.hpp'/>
         <file name='include/xqilla/ast/XQDocumentOrder.hpp'/>
         <file name='include/xqilla/ast/XQPredicate.hpp'/>
@@ -527,7 +526,6 @@
         <file name="src/ast/StaticType.cpp"/>
         <file name="src/ast/WhereTuple.cpp"/>
         <file name="src/ast/CountTuple.cpp"/>
-        <file name="src/ast/XPath1Compat.cpp"/>
         <file name="src/ast/XQAnalyzeString.cpp"/>
         <file name="src/ast/XQApplyTemplates.cpp"/>
         <file name="src/ast/XQAtomize.cpp"/>

@@ -39,10 +39,10 @@
 #include <xqilla/items/FunctionRef.hpp>
 #include <xqilla/functions/FunctionString.hpp>
 #include <xqilla/functions/FunctionNumber.hpp>
+#include <xqilla/functions/FunctionHead.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
 #include <xqilla/ast/XQAtomize.hpp>
 #include <xqilla/ast/XQTreatAs.hpp>
-#include <xqilla/ast/XPath1Compat.hpp>
 #include <xqilla/ast/ConvertFunctionArg.hpp>
 
 #include <xercesc/validators/schema/SchemaAttDef.hpp>
@@ -1097,7 +1097,31 @@ Result SequenceType::convertFunctionArg(const Result &input, DynamicContext *con
     // conversions are applied sequentially to the argument value V:
     if(xpath1Compat) {
       if(m_nOccurrence == SequenceType::EXACTLY_ONE || m_nOccurrence == SequenceType::QUESTION_MARK) {
-        result = new XPath1CompatConvertFunctionArgResult(location, result, this);
+        // 1. If the expected type calls for a single item or optional single item (examples: xs:string,
+        //    xs:string?, xdt:untypedAtomic, xdt:untypedAtomic?, node(), node()?, item(), item()?), then the
+        //    value V is effectively replaced by V[1].
+        Item::Ptr item = result->next(context);
+
+        if(testType == ItemType::TEST_ATOMIC_TYPE) {
+          const XMLCh* typeURI = m_pItemType->getTypeURI();
+          const XMLCh* typeName = m_pItemType->getType()->getName();
+
+          // 2. If the expected type is xs:string or xs:string?, then the value V is effectively replaced by
+          //    fn:string(V).
+          if(XPath2Utils::equals(typeName, SchemaSymbols::fgDT_STRING) &&
+             XPath2Utils::equals(typeURI, SchemaSymbols::fgURI_SCHEMAFORSCHEMA)) {
+            item = FunctionString::string_item(item, context);
+          }
+
+          // 3. If the expected type is xs:double or xs:double?, then the value V is effectively replaced by
+          //    fn:number(V).
+          else if(XPath2Utils::equals(typeName, SchemaSymbols::fgDT_DOUBLE) &&
+                  XPath2Utils::equals(typeURI, SchemaSymbols::fgURI_SCHEMAFORSCHEMA)) {
+            item = FunctionNumber::number(item, context, this);
+          }
+        }
+
+        result = item;
       }
     }
     // If the expected type is a sequence of an atomic type (possibly with an occurrence indicator *, +, or ?),
@@ -1156,8 +1180,38 @@ ASTNode *SequenceType::convertFunctionArg(ASTNode *arg, StaticContext *context, 
     // conversions are applied sequentially to the argument value V:
     if(context->getXPath1CompatibilityMode()) {
       if(m_nOccurrence == SequenceType::EXACTLY_ONE || m_nOccurrence == SequenceType::QUESTION_MARK) {
-          arg = new (mm) XPath1CompatConvertFunctionArg(arg, this, mm);
-          arg->setLocationInfo(location);
+        // 1. If the expected type calls for a single item or optional single item (examples: xs:string,
+        //    xs:string?, xdt:untypedAtomic, xdt:untypedAtomic?, node(), node()?, item(), item()?), then the
+        //    value V is effectively replaced by V[1].
+        VectorOfASTNodes headargs = VectorOfASTNodes(XQillaAllocator<ASTNode*>(mm));
+        headargs.push_back(arg);
+        arg = new (mm) FunctionHead(headargs, mm);
+        arg->setLocationInfo(location);
+
+        if(testType == ItemType::TEST_ATOMIC_TYPE) {
+          const XMLCh *typeURI = m_pItemType->getTypeURI();
+          const XMLCh *typeName = m_pItemType->getType()->getName();
+
+          // 2. If the expected type is xs:string or xs:string?, then the value V is effectively replaced by
+          //    fn:string(V).
+          if(XPath2Utils::equals(typeName, SchemaSymbols::fgDT_STRING) &&
+             XPath2Utils::equals(typeURI, SchemaSymbols::fgURI_SCHEMAFORSCHEMA)) {
+            VectorOfASTNodes stringargs = VectorOfASTNodes(XQillaAllocator<ASTNode*>(mm));
+            stringargs.push_back(arg);
+            arg = new (mm) FunctionString(stringargs, mm);
+            arg->setLocationInfo(location);
+          }
+
+          // 3. If the expected type is xs:double or xs:double?, then the value V is effectively replaced by
+          //    fn:number(V).
+          else if(XPath2Utils::equals(typeName, SchemaSymbols::fgDT_DOUBLE) &&
+                  XPath2Utils::equals(typeURI, SchemaSymbols::fgURI_SCHEMAFORSCHEMA)) {
+            VectorOfASTNodes numberargs = VectorOfASTNodes(XQillaAllocator<ASTNode*>(mm));
+            numberargs.push_back(arg);
+            arg = new (mm) FunctionNumber(numberargs, mm);
+            arg->setLocationInfo(location);
+          }
+        }
       }
     }
     // If the expected type is a sequence of an atomic type (possibly with an occurrence indicator *, +, or ?),

@@ -99,7 +99,7 @@ Numeric::Ptr FunctionNumber::number(const Item::Ptr &item, DynamicContext *conte
     tmp = atomized->next(context);
 
     if(tmp.notNull() && atomized->next(context).notNull()) {
-      XQThrow3(XPath2TypeMatchException, X("XPath1CompatConvertFunctionArgResult::next"),
+      XQThrow3(XPath2TypeMatchException, X("FunctionNumber::number"),
                X("Sequence does not match type xs:anyAtomicType? - found more than one item [err:XPTY0004]"), location);
     }
   }
@@ -109,7 +109,7 @@ Numeric::Ptr FunctionNumber::number(const Item::Ptr &item, DynamicContext *conte
     buf.append(X(" - found item of type "));
     item->typeToBuffer(context, buf);
     buf.append(X(" [err:XPTY0004]"));
-    XQThrow3(XPath2TypeMatchException, X("XPath1CompatConvertFunctionArgResult::next"), buf.getRawBuffer(), location);
+    XQThrow3(XPath2TypeMatchException, X("FunctionNumber::number"), buf.getRawBuffer(), location);
   }
 
   return number((AnyAtomicType*)tmp.get(), context);

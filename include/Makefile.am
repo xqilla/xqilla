@@ -46,7 +46,6 @@ xqilla/ast/XQValidate.hpp \
 xqilla/ast/XQAtomize.hpp \
 xqilla/ast/XQEffectiveBooleanValue.hpp \
 xqilla/ast/XQAnalyzeString.hpp \
-xqilla/ast/XPath1Compat.hpp \
 xqilla/ast/ConvertFunctionArg.hpp \
 xqilla/ast/XQDocumentOrder.hpp \
 xqilla/ast/XQPredicate.hpp \

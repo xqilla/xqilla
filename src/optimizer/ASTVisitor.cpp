@@ -132,8 +132,6 @@ ASTNode *ASTVisitor::optimize(ASTNode *item)
     return optimizeEffectiveBooleanValue((XQEffectiveBooleanValue *)item);
   case ASTNode::MAP:
     return optimizeMap((XQMap *)item);
-  case ASTNode::XPATH1_CONVERT:
-    return optimizeXPath1CompatConvertFunctionArg((XPath1CompatConvertFunctionArg *)item);
   case ASTNode::PROMOTE_UNTYPED:
     return optimizePromoteUntyped((XQPromoteUntyped *)item);
   case ASTNode::PROMOTE_NUMERIC:
@@ -436,12 +434,6 @@ ASTNode *ASTVisitor::optimizeMap(XQMap *item)
 {
   item->setArg1(optimize(item->getArg1()));
   item->setArg2(optimize(item->getArg2()));
-  return item;
-}
-
-ASTNode *ASTVisitor::optimizeXPath1CompatConvertFunctionArg(XPath1CompatConvertFunctionArg *item)
-{
-  item->setExpression(optimize(const_cast<ASTNode *>(item->getExpression())));
   return item;
 }
 

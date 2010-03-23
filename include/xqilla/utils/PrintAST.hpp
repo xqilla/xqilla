@@ -58,7 +58,6 @@ class XQValidate;
 class XQOrderingChange;
 class XQAtomize;
 class XQEffectiveBooleanValue;
-class XPath1CompatConvertFunctionArg;
 class XQPromoteUntyped;
 class XQPromoteNumeric;
 class XQPromoteAnyURI;
@@ -160,7 +159,6 @@ public:
   virtual std::string printOrderingChange(const XQOrderingChange *item, const DynamicContext *context, int indent);
   virtual std::string printAtomize(const XQAtomize *item, const DynamicContext *context, int indent);
   virtual std::string printEffectiveBooleanValue(const XQEffectiveBooleanValue *item, const DynamicContext *context, int indent);
-  virtual std::string printXPath1CompatConvertFunctionArg(const XPath1CompatConvertFunctionArg *item, const DynamicContext *context, int indent);
   virtual std::string printPromoteUntyped(const XQPromoteUntyped *item, const DynamicContext *context, int indent);
   virtual std::string printPromoteNumeric(const XQPromoteNumeric *item, const DynamicContext *context, int indent);
   virtual std::string printPromoteAnyURI(const XQPromoteAnyURI *item, const DynamicContext *context, int indent);

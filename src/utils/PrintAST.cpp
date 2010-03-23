@@ -60,7 +60,6 @@
 #include <xqilla/ast/XQOrderingChange.hpp>
 #include <xqilla/ast/XQAtomize.hpp>
 #include <xqilla/ast/XQEffectiveBooleanValue.hpp>
-#include <xqilla/ast/XPath1Compat.hpp>
 #include <xqilla/ast/ConvertFunctionArg.hpp>
 #include <xqilla/ast/XQDocumentOrder.hpp>
 #include <xqilla/ast/XQPredicate.hpp>
@@ -381,10 +380,6 @@ string PrintAST::printASTNode(const ASTNode *item, const DynamicContext *context
   }
   case ASTNode::DOCUMENT_ORDER: {
     return printDocumentOrder((XQDocumentOrder *)item, context, indent);
-    break;
-  }
-  case ASTNode::XPATH1_CONVERT: {
-    return printXPath1CompatConvertFunctionArg((XPath1CompatConvertFunctionArg *)item, context, indent);
     break;
   }
   case ASTNode::PROMOTE_UNTYPED: {
@@ -1503,20 +1498,6 @@ string PrintAST::printDocumentOrder(const XQDocumentOrder *item, const DynamicCo
   s << in << "<" << name << ">" << endl;
   s << printASTNode(item->getExpression(), context, indent + INDENT);
   s << in << "</" << name << ">" << endl;
-
-  return s.str();
-}
-
-string PrintAST::printXPath1CompatConvertFunctionArg(const XPath1CompatConvertFunctionArg *item, const DynamicContext *context, int indent)
-{
-  ostringstream s;
-
-  string in(getIndent(indent));
-
-  s << in << "<XPath1CompatConvertFunctionArg>" << endl;
-  s << printASTNode(item->getExpression(), context, indent + INDENT);
-  s << printSequenceType(item->getSequenceType(), context, indent + INDENT);
-  s << in << "</XPath1CompatConvertFunctionArg>" << endl;
 
   return s.str();
 }

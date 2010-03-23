@@ -106,18 +106,18 @@ am_libxqilla_la_OBJECTS = ReferenceCounted.lo BaseMemoryManager.lo \
 	XQTextConstructor.lo XQFunctionCall.lo XQFunctionConversion.lo \
 	XQFunctionDeref.lo XQPartialApply.lo XQFunctionRef.lo \
 	XQGlobalVariable.lo XQOrderingChange.lo XQQuantified.lo \
-	XQValidate.lo XQTypeswitch.lo XPath1Compat.lo \
-	ConvertFunctionArg.lo XQDocumentOrder.lo XQPredicate.lo \
-	XQReturn.lo TupleNode.lo ContextTuple.lo ForTuple.lo \
-	LetTuple.lo WhereTuple.lo CountTuple.lo OrderByTuple.lo \
-	XQNamespaceBinding.lo XQCallTemplate.lo XQApplyTemplates.lo \
-	ASTDebugHook.lo DebugHookDecorator.lo TupleDebugHook.lo \
-	InputParser.lo InteractiveDebugger.lo StackFrame.lo \
-	ContentSequenceFilter.lo EventGenerator.lo EventSerializer.lo \
-	NoInheritFilter.lo NSFixupFilter.lo QueryPathTreeFilter.lo \
-	FTContains.lo FTWords.lo FTOr.lo FTAnd.lo FTMildnot.lo \
-	FTUnaryNot.lo DefaultTokenizer.lo DefaultTokenStore.lo \
-	FTOrder.lo FTDistance.lo FTScope.lo FTContent.lo FTWindow.lo \
+	XQValidate.lo XQTypeswitch.lo ConvertFunctionArg.lo \
+	XQDocumentOrder.lo XQPredicate.lo XQReturn.lo TupleNode.lo \
+	ContextTuple.lo ForTuple.lo LetTuple.lo WhereTuple.lo \
+	CountTuple.lo OrderByTuple.lo XQNamespaceBinding.lo \
+	XQCallTemplate.lo XQApplyTemplates.lo ASTDebugHook.lo \
+	DebugHookDecorator.lo TupleDebugHook.lo InputParser.lo \
+	InteractiveDebugger.lo StackFrame.lo ContentSequenceFilter.lo \
+	EventGenerator.lo EventSerializer.lo NoInheritFilter.lo \
+	NSFixupFilter.lo QueryPathTreeFilter.lo FTContains.lo \
+	FTWords.lo FTOr.lo FTAnd.lo FTMildnot.lo FTUnaryNot.lo \
+	DefaultTokenizer.lo DefaultTokenStore.lo FTOrder.lo \
+	FTDistance.lo FTScope.lo FTContent.lo FTWindow.lo \
 	XQillaBuilderImpl.lo XQillaDocumentImpl.lo \
 	XQillaExpressionImpl.lo XQillaNSResolverImpl.lo \
 	XQillaXMLGrammarPoolImpl.lo XPathDocumentImpl.lo \
@@ -572,7 +572,6 @@ src/ast/XQOrderingChange.cpp \
 src/ast/XQQuantified.cpp \
 src/ast/XQValidate.cpp \
 src/ast/XQTypeswitch.cpp \
-src/ast/XPath1Compat.cpp \
 src/ast/ConvertFunctionArg.cpp \
 src/ast/XQDocumentOrder.cpp \
 src/ast/XQPredicate.cpp \
@@ -1580,7 +1579,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/VarTypeStoreImpl.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/WhereTuple.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XMLChCompare.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XPath1Compat.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XPath2MemoryManagerImpl.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XPath2NSUtils.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XPath2NodeSerializer.Plo@am__quote@
@@ -2474,13 +2472,6 @@ XQTypeswitch.lo: src/ast/XQTypeswitch.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/ast/XQTypeswitch.cpp' object='XQTypeswitch.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQTypeswitch.lo `test -f 'src/ast/XQTypeswitch.cpp' || echo '$(srcdir)/'`src/ast/XQTypeswitch.cpp
-
-XPath1Compat.lo: src/ast/XPath1Compat.cpp
-@am__fastdepCXX_TRUE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT XPath1Compat.lo -MD -MP -MF $(DEPDIR)/XPath1Compat.Tpo -c -o XPath1Compat.lo `test -f 'src/ast/XPath1Compat.cpp' || echo '$(srcdir)/'`src/ast/XPath1Compat.cpp
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/XPath1Compat.Tpo $(DEPDIR)/XPath1Compat.Plo
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/ast/XPath1Compat.cpp' object='XPath1Compat.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XPath1Compat.lo `test -f 'src/ast/XPath1Compat.cpp' || echo '$(srcdir)/'`src/ast/XPath1Compat.cpp
 
 ConvertFunctionArg.lo: src/ast/ConvertFunctionArg.cpp
 @am__fastdepCXX_TRUE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ConvertFunctionArg.lo -MD -MP -MF $(DEPDIR)/ConvertFunctionArg.Tpo -c -o ConvertFunctionArg.lo `test -f 'src/ast/ConvertFunctionArg.cpp' || echo '$(srcdir)/'`src/ast/ConvertFunctionArg.cpp

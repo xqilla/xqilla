@@ -46,7 +46,6 @@
 #include <xqilla/ast/XQOrderingChange.hpp>
 #include <xqilla/ast/XQAtomize.hpp>
 #include <xqilla/ast/XQEffectiveBooleanValue.hpp>
-#include <xqilla/ast/XPath1Compat.hpp>
 #include <xqilla/ast/ConvertFunctionArg.hpp>
 #include <xqilla/ast/XQDocumentOrder.hpp>
 #include <xqilla/ast/XQPredicate.hpp>
@@ -129,7 +128,6 @@
   virtual ASTNode *optimizeOrderingChange(XQOrderingChange *item); \
   virtual ASTNode *optimizeAtomize(XQAtomize *item); \
   virtual ASTNode *optimizeEffectiveBooleanValue(XQEffectiveBooleanValue *item); \
-  virtual ASTNode *optimizeXPath1CompatConvertFunctionArg(XPath1CompatConvertFunctionArg *item); \
   virtual ASTNode *optimizePromoteUntyped(XQPromoteUntyped *item); \
   virtual ASTNode *optimizePromoteNumeric(XQPromoteNumeric *item); \
   virtual ASTNode *optimizePromoteAnyURI(XQPromoteAnyURI *item); \
