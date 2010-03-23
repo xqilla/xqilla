@@ -38,11 +38,11 @@ const unsigned int FunctionPartialApply::minArgs = 2;
 const unsigned int FunctionPartialApply::maxArgs = 3;
 
 /**
- * fn:partial-apply($function as function(), $arg as item()*) as function()
- * fn:partial-apply($function as function(), $arg as item()*, $argNum as xs:integer) as function()
+ * fn:partial-apply($function as function(*), $arg as item()*) as function(*)
+ * fn:partial-apply($function as function(*), $arg as item()*, $argNum as xs:integer) as function(*)
  */
 FunctionPartialApply::FunctionPartialApply(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
-  : XQFunction(name, "($function as function(), $arg as item()*, $argNum as xs:integer) as function()", args, memMgr)
+  : XQFunction(name, "($function as function(*), $arg as item()*, $argNum as xs:integer) as function(*)", args, memMgr)
 {
 }
 

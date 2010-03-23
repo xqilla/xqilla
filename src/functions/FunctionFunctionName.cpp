@@ -34,10 +34,10 @@ const unsigned int FunctionFunctionName::minArgs = 1;
 const unsigned int FunctionFunctionName::maxArgs = 1;
 
 /**
- * fn:function-name($function as function()) as xs:QName?
+ * fn:function-name($function as function(*)) as xs:QName?
  */
 FunctionFunctionName::FunctionFunctionName(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
-  : XQFunction(name, "($function as function()) as xs:QName?", args, memMgr)
+  : XQFunction(name, "($function as function(*)) as xs:QName?", args, memMgr)
 {
 }
 

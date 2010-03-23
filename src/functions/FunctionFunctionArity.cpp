@@ -34,16 +34,16 @@ const unsigned int FunctionFunctionArity::minArgs = 1;
 const unsigned int FunctionFunctionArity::maxArgs = 1;
 
 /**
- * fn:function-arity($function as function()) as xs:integer
+ * fn:function-arity($function as function(*)) as xs:integer
  */
 FunctionFunctionArity::FunctionFunctionArity(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
-  : XQFunction(name, "($function as function()) as xs:integer", args, memMgr)
+  : XQFunction(name, "($function as function(*)) as xs:integer", args, memMgr)
 {
 }
 
 Sequence FunctionFunctionArity::createSequence(DynamicContext* context, int flags) const
 {
   FunctionRef::Ptr func = (FunctionRef*)getParamNumber(1, context)->next(context).get();
-  return Sequence(context->getItemFactory()->createInteger((const int)func->getNumArgs(), context),
+  return Sequence(context->getItemFactory()->createInteger((int)func->getNumArgs(), context),
                   context->getMemoryManager());
 }
