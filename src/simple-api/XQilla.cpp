@@ -102,8 +102,10 @@ XQQuery* XQilla::parse(const XMLCh* inputQuery, DynamicContext* context,
     result = queryGuard;
   }
   result->setQueryText(inputQuery);
-  if(queryFile)
+  if(queryFile) {
+    queryFile = context->getMemoryManager()->getPooledString(queryFile);
     result->setFile(queryFile);
+  }
   if((flags & XQilla::NO_DEFAULT_MODULES) == 0) {
     BuiltInModules::core.importModuleInto(result);
     BuiltInModules::fn.importModuleInto(result);
