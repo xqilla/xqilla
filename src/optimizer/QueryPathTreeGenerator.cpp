@@ -66,6 +66,9 @@
 #include <xqilla/functions/FunctionSignature.hpp>
 
 #include <xqilla/update/FunctionPut.hpp>
+#include <xqilla/utils/XPath2Utils.hpp>
+
+#include "../items/impl/FunctionRefImpl.hpp"
 
 #include <xercesc/util/XMLUri.hpp>
 
@@ -1428,7 +1431,29 @@ ASTNode *QueryPathTreeGenerator::optimizeInlineFunction(XQInlineFunction *item)
   if(item->getUserFunction())
     optimizeFunctionDef(item->getUserFunction());
 
-  // TBD What about the function instance? - jpcs
+  const ArgumentSpecs *params = item->getSignature()->argSpecs;
+  if(params) {
+    varStore_.addScope(VarStore::MyScope::LOCAL_SCOPE);
+
+    ArgumentSpecs::const_iterator it = params->begin();
+    unsigned int c = 0;
+    for(; it != params->end(); ++it, ++c) {
+      XMLBuffer buf(20);
+      buf.set(FunctionRefImpl::argVarPrefix);
+      XPath2Utils::numToBuf(c, buf);
+
+      PathResult paramRes;
+      if((*it)->getStaticAnalysis().getStaticType().containsType(StaticType::NODE_TYPE))
+        createAnyNodeResult(paramRes);
+      setVariable(0, mm_->getPooledString(buf.getRawBuffer()), paramRes);
+    }
+  }
+
+  generate(item->getInstance());
+
+  if(params) {
+    delete varStore_.popScope();
+  }
 
   push(PathResult());
   return item;
@@ -1436,7 +1461,30 @@ ASTNode *QueryPathTreeGenerator::optimizeInlineFunction(XQInlineFunction *item)
 
 ASTNode *QueryPathTreeGenerator::optimizeFunctionRef(XQFunctionRef *item)
 {
-  // TBD What about the function instance? - jpcs
+  const ArgumentSpecs *params = item->getSignature()->argSpecs;
+  if(params) {
+    varStore_.addScope(VarStore::MyScope::LOCAL_SCOPE);
+
+    ArgumentSpecs::const_iterator it = params->begin();
+    unsigned int c = 0;
+    for(; it != params->end(); ++it, ++c) {
+      XMLBuffer buf(20);
+      buf.set(FunctionRefImpl::argVarPrefix);
+      XPath2Utils::numToBuf(c, buf);
+
+      PathResult paramRes;
+      if((*it)->getStaticAnalysis().getStaticType().containsType(StaticType::NODE_TYPE))
+        createAnyNodeResult(paramRes);
+      setVariable(0, mm_->getPooledString(buf.getRawBuffer()), paramRes);
+    }
+  }
+
+  generate(item->getInstance());
+
+  if(params) {
+    delete varStore_.popScope();
+  }
+
   push(PathResult());
   return item;
 }
