@@ -32,6 +32,7 @@ Result ClosureResult::create(const ASTNode *ast, DynamicContext *context, const 
   if((!ast->getStaticAnalysis().variablesUsed() &&
       !ast->getStaticAnalysis().areContextFlagsUsed()) ||
      ast->getType() == ASTNode::VARIABLE) {
+    AutoVariableStoreReset vsReset(context, sourceScope ? sourceScope : context->getVariableStore());
     return ast->createResult(context);
   }
 
