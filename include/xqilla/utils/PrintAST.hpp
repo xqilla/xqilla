@@ -44,7 +44,6 @@ class XQSequence;
 class XQStep;
 class XQVariable;
 class XQIf;
-class XQInstanceOf;
 class XQCastableAs;
 class XQCastAs;
 class XQTreatAs;
@@ -146,7 +145,6 @@ public:
   virtual std::string printStep(const XQStep *item, const DynamicContext *context, int indent);
   virtual std::string printVariable(const XQVariable *item, const DynamicContext *context, int indent);
   virtual std::string printIf(const XQIf *item, const DynamicContext *context, int indent);
-  virtual std::string printInstanceOf(const XQInstanceOf *item, const DynamicContext *context, int indent);
   virtual std::string printCastableAs(const XQCastableAs *item, const DynamicContext *context, int indent);
   virtual std::string printCastAs(const XQCastAs *item, const DynamicContext *context, int indent);
   virtual std::string printTreatAs(const XQTreatAs *item, const DynamicContext *context, int indent);

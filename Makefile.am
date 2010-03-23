@@ -47,7 +47,6 @@ src/ast/XQCopyOf.cpp \
 src/ast/XQFunction.cpp \
 src/ast/XQIf.cpp \
 src/ast/ASTNodeImpl.cpp \
-src/ast/XQInstanceOf.cpp \
 src/ast/XQInlineFunction.cpp \
 src/ast/XQLiteral.cpp \
 src/ast/XQNav.cpp \

@@ -14,7 +14,6 @@ xqilla/ast/XQFunction.hpp \
 xqilla/ast/ASTNode.hpp \
 xqilla/ast/XQIf.hpp \
 xqilla/ast/ASTNodeImpl.hpp \
-xqilla/ast/XQInstanceOf.hpp \
 xqilla/ast/XQInlineFunction.hpp \
 xqilla/ast/XQLiteral.hpp \
 xqilla/ast/XQNav.hpp \

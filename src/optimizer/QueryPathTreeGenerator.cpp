@@ -916,13 +916,6 @@ ASTNode *QueryPathTreeGenerator::optimizeIf(XQIf *item)
   return item;
 }
 
-ASTNode *QueryPathTreeGenerator::optimizeInstanceOf(XQInstanceOf *item)
-{
-  generate(const_cast<ASTNode *>(item->getExpression()));
-  push(PathResult());
-  return item;
-}
-
 TupleNode *QueryPathTreeGenerator::optimizeForTuple(ForTuple *item)
 {
   optimizeTupleNode(const_cast<TupleNode*>(item->getParent()));

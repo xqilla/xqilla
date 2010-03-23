@@ -49,7 +49,6 @@ public:
     VARIABLE,
     STEP,
     IF,
-    INSTANCE_OF,
     CASTABLE_AS,
     CAST_AS,
     TREAT_AS,

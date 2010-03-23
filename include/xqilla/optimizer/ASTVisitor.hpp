@@ -31,7 +31,6 @@
 #include <xqilla/ast/XQStep.hpp>
 #include <xqilla/ast/XQVariable.hpp>
 #include <xqilla/ast/XQIf.hpp>
-#include <xqilla/ast/XQInstanceOf.hpp>
 #include <xqilla/ast/XQCastableAs.hpp>
 #include <xqilla/ast/XQCastAs.hpp>
 #include <xqilla/ast/XQTreatAs.hpp>
@@ -115,7 +114,6 @@
   virtual ASTNode *optimizeStep(XQStep *item); \
   virtual ASTNode *optimizeVariable(XQVariable *item); \
   virtual ASTNode *optimizeIf(XQIf *item); \
-  virtual ASTNode *optimizeInstanceOf(XQInstanceOf *item); \
   virtual ASTNode *optimizeCastableAs(XQCastableAs *item); \
   virtual ASTNode *optimizeCastAs(XQCastAs *item); \
   virtual ASTNode *optimizeTreatAs(XQTreatAs *item); \

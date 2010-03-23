@@ -36,7 +36,6 @@
 #include <xqilla/ast/XQStep.hpp>
 #include <xqilla/ast/XQVariable.hpp>
 #include <xqilla/ast/XQIf.hpp>
-#include <xqilla/ast/XQInstanceOf.hpp>
 #include <xqilla/ast/XQCastableAs.hpp>
 #include <xqilla/ast/XQCastAs.hpp>
 #include <xqilla/ast/XQTreatAs.hpp>
@@ -318,10 +317,6 @@ string PrintAST::printASTNode(const ASTNode *item, const DynamicContext *context
   }
   case ASTNode::IF: {
     return printIf((XQIf *)item, context, indent);
-    break;
-  }
-  case ASTNode::INSTANCE_OF: {
-    return printInstanceOf((XQInstanceOf *)item, context, indent);
     break;
   }
   case ASTNode::CASTABLE_AS: {
@@ -799,20 +794,6 @@ string PrintAST::printIf(const XQIf *item, const DynamicContext *context, int in
   s << printASTNode(item->getWhenFalse(), context, indent + INDENT + INDENT);
   s << in << "  </Else>" << endl;
   s << in << "</If>" << endl;
-
-  return s.str();
-}
-
-string PrintAST::printInstanceOf(const XQInstanceOf *item, const DynamicContext *context, int indent)
-{
-  ostringstream s;
-
-  string in(getIndent(indent));
-
-  s << in << "<InstanceOf>" << endl;
-  s << printASTNode(item->getExpression(), context, indent + INDENT);
-  s << printSequenceType(item->getSequenceType(), context, indent + INDENT);
-  s << in << "</InstanceOf>" << endl;
 
   return s.str();
 }

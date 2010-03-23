@@ -56,7 +56,6 @@ protected:
   virtual ASTNode *optimizeAnalyzeString(XQAnalyzeString *item);
   virtual ASTNode *optimizeNav(XQNav *item);
   virtual ASTNode *optimizeQuantified(XQQuantified *item);
-  virtual ASTNode *optimizeInstanceOf(XQInstanceOf *item);
   virtual ASTNode *optimizeMap(XQMap *item);
   virtual ASTNode *optimizeReturn(XQReturn *item);
   virtual ASTNode *optimizeTypeswitch(XQTypeswitch *item);

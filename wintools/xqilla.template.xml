@@ -117,7 +117,6 @@
         <file name='include/xqilla/ast/ASTNode.hpp'/>
         <file name='include/xqilla/ast/XQIf.hpp'/>
         <file name='include/xqilla/ast/ASTNodeImpl.hpp'/>
-        <file name='include/xqilla/ast/XQInstanceOf.hpp'/>
         <file name='include/xqilla/ast/XQInlineFunction.hpp'/>
         <file name='include/xqilla/ast/XQLiteral.hpp'/>
         <file name='include/xqilla/ast/XQNav.hpp'/>
@@ -556,7 +555,6 @@
         <file name="src/ast/XQGlobalVariable.cpp"/>
         <file name="src/ast/XQIf.cpp"/>
         <file name="src/ast/XQInlineFunction.cpp"/>
-        <file name="src/ast/XQInstanceOf.cpp"/>
         <file name="src/ast/XQLiteral.cpp"/>
         <file name="src/ast/XQNamespaceBinding.cpp"/>
         <file name="src/ast/XQNav.cpp"/>

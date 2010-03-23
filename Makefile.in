@@ -96,9 +96,9 @@ am_libxqilla_la_OBJECTS = ReferenceCounted.lo BaseMemoryManager.lo \
 	XQAtomize.lo XQEffectiveBooleanValue.lo XQMap.lo \
 	XQAnalyzeString.lo XQCastableAs.lo XQCastAs.lo \
 	XQContextItem.lo XQCopy.lo XQCopyOf.lo XQFunction.lo XQIf.lo \
-	ASTNodeImpl.lo XQInstanceOf.lo XQInlineFunction.lo \
-	XQLiteral.lo XQNav.lo XQOperator.lo XQSequence.lo XQStep.lo \
-	XQTreatAs.lo XQVariable.lo StaticAnalysis.lo StaticType.lo \
+	ASTNodeImpl.lo XQInlineFunction.lo XQLiteral.lo XQNav.lo \
+	XQOperator.lo XQSequence.lo XQStep.lo XQTreatAs.lo \
+	XQVariable.lo StaticAnalysis.lo StaticType.lo \
 	NumericFunction.lo XQDOMConstructor.lo \
 	XQDocumentConstructor.lo XQElementConstructor.lo \
 	XQAttributeConstructor.lo XQNamespaceConstructor.lo \
@@ -543,7 +543,6 @@ src/ast/XQCopyOf.cpp \
 src/ast/XQFunction.cpp \
 src/ast/XQIf.cpp \
 src/ast/ASTNodeImpl.cpp \
-src/ast/XQInstanceOf.cpp \
 src/ast/XQInlineFunction.cpp \
 src/ast/XQLiteral.cpp \
 src/ast/XQNav.cpp \
@@ -1616,7 +1615,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQGlobalVariable.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQIf.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQInlineFunction.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQInstanceOf.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQLexer.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQLexer2.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQLiteral.Plo@am__quote@
@@ -2273,13 +2271,6 @@ ASTNodeImpl.lo: src/ast/ASTNodeImpl.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/ast/ASTNodeImpl.cpp' object='ASTNodeImpl.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ASTNodeImpl.lo `test -f 'src/ast/ASTNodeImpl.cpp' || echo '$(srcdir)/'`src/ast/ASTNodeImpl.cpp
-
-XQInstanceOf.lo: src/ast/XQInstanceOf.cpp
-@am__fastdepCXX_TRUE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT XQInstanceOf.lo -MD -MP -MF $(DEPDIR)/XQInstanceOf.Tpo -c -o XQInstanceOf.lo `test -f 'src/ast/XQInstanceOf.cpp' || echo '$(srcdir)/'`src/ast/XQInstanceOf.cpp
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/XQInstanceOf.Tpo $(DEPDIR)/XQInstanceOf.Plo
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/ast/XQInstanceOf.cpp' object='XQInstanceOf.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQInstanceOf.lo `test -f 'src/ast/XQInstanceOf.cpp' || echo '$(srcdir)/'`src/ast/XQInstanceOf.cpp
 
 XQInlineFunction.lo: src/ast/XQInlineFunction.cpp
 @am__fastdepCXX_TRUE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT XQInlineFunction.lo -MD -MP -MF $(DEPDIR)/XQInlineFunction.Tpo -c -o XQInlineFunction.lo `test -f 'src/ast/XQInlineFunction.cpp' || echo '$(srcdir)/'`src/ast/XQInlineFunction.cpp

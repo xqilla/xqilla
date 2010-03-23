@@ -100,8 +100,6 @@ ASTNode *ASTVisitor::optimize(ASTNode *item)
     return optimizeStep((XQStep *)item);
   case ASTNode::IF:
     return optimizeIf((XQIf *)item);
-  case ASTNode::INSTANCE_OF:
-    return optimizeInstanceOf((XQInstanceOf *)item);
   case ASTNode::CASTABLE_AS:
     return optimizeCastableAs((XQCastableAs *)item);
   case ASTNode::CAST_AS:
@@ -273,12 +271,6 @@ ASTNode *ASTVisitor::optimizeIf(XQIf *item)
   item->setTest(optimize(const_cast<ASTNode *>(item->getTest())));
   item->setWhenTrue(optimize(const_cast<ASTNode *>(item->getWhenTrue())));
   item->setWhenFalse(optimize(const_cast<ASTNode *>(item->getWhenFalse())));
-  return item;
-}
-
-ASTNode *ASTVisitor::optimizeInstanceOf(XQInstanceOf *item)
-{
-  item->setExpression(optimize(const_cast<ASTNode *>(item->getExpression())));
   return item;
 }
 

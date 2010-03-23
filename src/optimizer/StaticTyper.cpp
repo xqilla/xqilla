@@ -361,28 +361,6 @@ ASTNode *StaticTyper::optimizeEffectiveBooleanValue(XQEffectiveBooleanValue *ite
   return item;
 }
 
-ASTNode *StaticTyper::optimizeInstanceOf(XQInstanceOf *item)
-{
-  try {
-    item->setExpression(optimize(const_cast<ASTNode *>(item->getExpression())));
-  }
-  catch(const XPath2TypeMatchException &ex) {
-    // The expression was constant folded, and the type matching failed.
-    if(context_ && !item->getExpression()->getStaticAnalysis().isNoFoldingForced()) {
-      XPath2MemoryManager *mm = context_->getMemoryManager();
-
-      ASTNode *result = new (mm) XQLiteral(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-                                           SchemaSymbols::fgDT_BOOLEAN,
-                                           SchemaSymbols::fgATTVAL_FALSE,
-                                           AnyAtomicType::BOOLEAN, mm);
-      result->setLocationInfo(item);
-      item->release();
-      return optimize(result);
-    }
-  }
-  return item;
-}
-
 ASTNode *StaticTyper::optimizeVariable(XQVariable *item)
 {
   if(!context_) return item;

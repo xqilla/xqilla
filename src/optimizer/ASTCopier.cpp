@@ -265,7 +265,6 @@ COPY_XQ1(Sequence, Children)
 COPY_XQ2(Step, Axis, NodeTest)
 COPY_XQ4(Variable, Prefix, URI, Name, Global)
 COPY_XQ3(If, Test, WhenTrue, WhenFalse)
-COPY_XQ2(InstanceOf, Expression, SequenceType) // SequenceType
 COPY_XQ4(CastableAs, Expression, SequenceType, IsPrimitive, TypeIndex)
 COPY_XQ4(CastAs, Expression, SequenceType, IsPrimitive, TypeIndex)
 COPY_XQ8(TreatAs, Expression, SequenceType, ErrorCode, DoTypeCheck, DoCardinalityCheck, FuncConvert, TreatType, IsExact)
