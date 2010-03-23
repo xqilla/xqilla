@@ -17,12 +17,6 @@
  * limitations under the License.
  */
 
-/*
-
-  lang function
-
-*/
-
 #ifndef _FUNCTIONLANG_HPP
 #define _FUNCTIONLANG_HPP
 
@@ -30,7 +24,6 @@
 
 #include <xqilla/ast/XQFunction.hpp>
 
-/** lang function. */
 class XQILLA_API FunctionLang : public XQFunction
 {
 public:
@@ -41,19 +34,9 @@ public:
   FunctionLang(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
   
   virtual ASTNode* staticResolution(StaticContext *context);
-  virtual ASTNode *staticTypingImpl(StaticContext *context);
-
-  /** The lang function returns true or false depending on whether the language of
-      the context node as specified by xml:lang attributes is the same as or is a
-      sublanguage of the language specified by the argument string. The language of 
-      the context node is determined by the value of the xml:lang attribute on the 
-      context node, or, if the context node has no xml:lang attribute, by the value 
-      of the xml:lang attribute on the nearest ancestor of the context node that has 
-      an xml:lang attribute.**/
 
   Sequence createSequence(DynamicContext* context, int flags=0) const;
-
 };
 
-#endif // _FUNCTIONLANG_HPP
+#endif
 

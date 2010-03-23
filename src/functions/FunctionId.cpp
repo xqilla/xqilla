@@ -26,9 +26,12 @@
 #include <xqilla/items/Node.hpp>
 #include <xqilla/ast/StaticAnalysis.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
+#include <xqilla/ast/XQContextItem.hpp>
+
+XERCES_CPP_NAMESPACE_USE;
 
 const XMLCh FunctionId::name[] = {
-  XERCES_CPP_NAMESPACE_QUALIFIER chLatin_i, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_d, XERCES_CPP_NAMESPACE_QUALIFIER chNull 
+  chLatin_i, chLatin_d, chNull 
 };
 const unsigned int FunctionId::minArgs = 1;
 const unsigned int FunctionId::maxArgs = 2;
@@ -45,40 +48,21 @@ FunctionId::FunctionId(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr
 
 ASTNode* FunctionId::staticResolution(StaticContext *context)
 {
-  if(_args.size()==2 && _args.back()->getType()==ASTNode::CONTEXT_ITEM)
-      _args.pop_back();
-  resolveArguments(context);
-  return this;
-}
+  XPath2MemoryManager *mm = context->getMemoryManager();
 
-ASTNode *FunctionId::staticTypingImpl(StaticContext *context)
-{
-  _src.clearExceptType();
-  if(_args.size()==1)
-    _src.contextItemUsed(true);
-  calculateSRCForArguments(context);
+  if(_args.size() == 1) {
+    XQContextItem *ci = new (mm) XQContextItem(mm);
+    ci->setLocationInfo(this);
+    _args.push_back(ci);
+  }
+
+  resolveArguments(context);
   return this;
 }
 
 Sequence FunctionId::createSequence(DynamicContext* context, int flags) const
 {
-  Node::Ptr ctxNode;
-  if(getNumArgs() == 2)
-  {
-    Sequence arg=getParamNumber(2,context)->toSequence(context);
-    ctxNode=arg.first();
-  }
-  else
-  {
-    const Item::Ptr item = context->getContextItem();
-    if(item==NULLRCP)
-      XQThrow(FunctionException, X("FunctionId::createSequence"),X("Undefined context item in fn:id [err:XPDY0002]"));
-    if(!item->isNode())
-      XQThrow(FunctionException, X("FunctionId::createSequence"),X("The context item is not a node [err:XPTY0004]"));
-    ctxNode=item;
-  }
-
-  Node::Ptr root = ctxNode->root(context);
+  Node::Ptr root = ((Node*)getParamNumber(2, context)->next(context).get())->root(context);
   if(root->dmNodeKind() != Node::document_string) {
     XQThrow(FunctionException,X("FunctionId::createSequence"), X("Current context doesn't belong to a document [err:FODC0001]"));
   }

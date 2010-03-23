@@ -23,11 +23,14 @@
 #include <xqilla/items/Node.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
 #include <xqilla/exceptions/FunctionException.hpp>
+#include <xqilla/ast/XQContextItem.hpp>
+
+XERCES_CPP_NAMESPACE_USE;
 
 const XMLCh FunctionBaseURI::name[] = {
-  XERCES_CPP_NAMESPACE_QUALIFIER chLatin_b, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_a, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_s, 
-  XERCES_CPP_NAMESPACE_QUALIFIER chLatin_e, XERCES_CPP_NAMESPACE_QUALIFIER chDash,    XERCES_CPP_NAMESPACE_QUALIFIER chLatin_u, 
-  XERCES_CPP_NAMESPACE_QUALIFIER chLatin_r, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_i, XERCES_CPP_NAMESPACE_QUALIFIER chNull 
+  chLatin_b, chLatin_a, chLatin_s, 
+  chLatin_e, chDash,    chLatin_u, 
+  chLatin_r, chLatin_i, chNull 
 };
 const unsigned int FunctionBaseURI::minArgs = 0;
 const unsigned int FunctionBaseURI::maxArgs = 1;
@@ -44,40 +47,21 @@ FunctionBaseURI::FunctionBaseURI(const VectorOfASTNodes &args, XPath2MemoryManag
 
 ASTNode* FunctionBaseURI::staticResolution(StaticContext *context)
 {
-  if(!_args.empty() && (*_args.begin())->getType() == ASTNode::CONTEXT_ITEM)
-      _args.clear();
+  XPath2MemoryManager *mm = context->getMemoryManager();
+
+  if(_args.empty()) {
+    XQContextItem *ci = new (mm) XQContextItem(mm);
+    ci->setLocationInfo(this);
+    _args.push_back(ci);
+  }
+
   resolveArguments(context);
-  return this;
-}
-
-ASTNode *FunctionBaseURI::staticTypingImpl(StaticContext *context)
-{
-  _src.clearExceptType();
-
-  if(_args.empty())
-    _src.contextItemUsed(true);
-  calculateSRCForArguments(context);
   return this;
 }
 
 Sequence FunctionBaseURI::createSequence(DynamicContext* context, int flags) const
 {
-  Node::Ptr node = NULL;
-  if(getNumArgs() == 1)
-  {
-    Sequence arg1=getParamNumber(1,context)->toSequence(context);
-    if(arg1.isEmpty())
-      return Sequence(context->getMemoryManager());
-    node = (const Node::Ptr )arg1.first();
-  }
-  else
-  {
-    const Item::Ptr item = context->getContextItem();
-    if(item==NULLRCP)
-        XQThrow(FunctionException, X("FunctionBaseURI::createSequence"),X("Undefined context item in fn:base-uri [err:XPDY0002]"));
-    if(!item->isNode())
-        XQThrow(FunctionException, X("FunctionBaseURI::createSequence"),X("The context item is not a node [err:XPTY0004]"));
-    node = (const Node::Ptr )item;
-  }
+  Node::Ptr node = (Node*)getParamNumber(1, context)->next(context).get();
+  if(node.isNull()) return Sequence(context->getMemoryManager());
   return node->dmBaseURI(context);
 }

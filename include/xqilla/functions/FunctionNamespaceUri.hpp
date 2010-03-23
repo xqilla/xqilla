@@ -17,12 +17,6 @@
  * limitations under the License.
  */
 
-/*
-
-   Namespace-uri function
-
-*/
-
 #ifndef _FUNCTIONNAMESPACEURI_HPP
 #define _FUNCTIONNAMESPACEURI_HPP
 
@@ -30,7 +24,6 @@
 
 #include <xqilla/ast/XQFunction.hpp>
 
-/** Namespace-uri function */
 class XQILLA_API FunctionNamespaceUri : public XQFunction
 {
 public:
@@ -40,21 +33,11 @@ public:
 
   FunctionNamespaceUri(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
   
-  /**
-   * Called during static analysis to determine if statically correct.
-   * Performs constant folding if the function has an argument, and it
-   * is constant.
-   */
   virtual ASTNode* staticResolution(StaticContext *context);
-  virtual ASTNode *staticTypingImpl(StaticContext *context);
 
-  /** Returns the namespace of the node. Takes an optional node,
-      and returns an empty string if the node has no name. Uses the current context
-      if a node is not specified. */
   Sequence createSequence(DynamicContext* context, int flags=0) const;
-
 };
 
-#endif // _FUNCTIONNAMESPACEURI_HPP
+#endif
 
 

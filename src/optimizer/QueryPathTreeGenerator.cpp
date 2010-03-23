@@ -645,14 +645,7 @@ ASTNode *QueryPathTreeGenerator::optimizeFunction(XQFunction *item)
     }
     else if(name == FunctionId::name ||
             name == FunctionIdref::name) {
-      PathResult nodes;
-      if(args.size() == 1) {
-        const PathResult &currentContext = getCurrentContext();
-        nodes = currentContext;
-      }
-      else {
-        nodes = generate(args[1]);
-      }
+      PathResult nodes = generate(args[1]);
 
       // We don't handle these, so we mark the trees as unoptimisable
       nodes.markRoot();
@@ -662,9 +655,7 @@ ASTNode *QueryPathTreeGenerator::optimizeFunction(XQFunction *item)
     else if(name == FunctionLang::name) {
       generate(args[0]);
 
-      PathResult nodeResult;
-      if(args.size() == 1) nodeResult = getCurrentContext();
-      else nodeResult = generate(args[1]);
+      PathResult nodeResult = generate(args[1]);
 
       // We want all the xml:lang attributes from all our lookup node's ancestors
 
@@ -686,9 +677,7 @@ ASTNode *QueryPathTreeGenerator::optimizeFunction(XQFunction *item)
       attrResult.markSubtreeValue();
     }
     else if(name == FunctionBaseURI::name) {
-      PathResult nodeResult;
-      if(args.size() == 0) nodeResult = getCurrentContext();
-      else nodeResult = generate(args[0]);
+      PathResult nodeResult = generate(args[0]);
 
       // We want all the xml:base attributes from all our lookup node's ancestors
 

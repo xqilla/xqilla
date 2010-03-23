@@ -481,10 +481,6 @@ static void initGlobalTable(FunctionLookup *t, MemoryManager *memMgr)
   t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionLocalNameFromQName>(memMgr));
   //   fn:namespace-uri-from-QName
   t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionNamespaceURIFromQName>(memMgr));
-  //   fn:namespace-uri-for-prefix
-//   t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionNamespaceURIForPrefix>(memMgr));
-  //   fn:in-scope-prefixes
-//   t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionInScopePrefixes>(memMgr));
 
   // Functions on anyURI values
   //   fn:resolve-URI

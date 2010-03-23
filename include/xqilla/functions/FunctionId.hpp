@@ -33,18 +33,10 @@ public:
   static const unsigned int minArgs;
   static const unsigned int maxArgs;
 
-  /**
-   * Constructor.
-   */
   FunctionId(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
   
   virtual ASTNode* staticResolution(StaticContext *context);
-  virtual ASTNode *staticTypingImpl(StaticContext *context);
 
-  /** 
-   * Returns the sequence of element nodes with ID values matching the value 
-   * of one of the IDREF values supplied in $srcval. 
-   */
   Sequence createSequence(DynamicContext* context, int flags=0) const;
 };
 

@@ -26,13 +26,16 @@
 #include <xqilla/items/ATStringOrDerived.hpp>
 #include <xqilla/ast/StaticAnalysis.hpp>
 #include <xqilla/exceptions/FunctionException.hpp>
+#include <xqilla/ast/XQContextItem.hpp>
+
+XERCES_CPP_NAMESPACE_USE;
 
 const XMLCh FunctionNamespaceUri::name[] = {
-  XERCES_CPP_NAMESPACE_QUALIFIER chLatin_n, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_a, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_m, 
-  XERCES_CPP_NAMESPACE_QUALIFIER chLatin_e, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_s, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_p, 
-  XERCES_CPP_NAMESPACE_QUALIFIER chLatin_a, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_c, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_e, 
-  XERCES_CPP_NAMESPACE_QUALIFIER chDash,    XERCES_CPP_NAMESPACE_QUALIFIER chLatin_u, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_r, 
-  XERCES_CPP_NAMESPACE_QUALIFIER chLatin_i, XERCES_CPP_NAMESPACE_QUALIFIER chNull 
+  chLatin_n, chLatin_a, chLatin_m, 
+  chLatin_e, chLatin_s, chLatin_p, 
+  chLatin_a, chLatin_c, chLatin_e, 
+  chDash,    chLatin_u, chLatin_r, 
+  chLatin_i, chNull 
 };
 const unsigned int FunctionNamespaceUri::minArgs = 0;
 const unsigned int FunctionNamespaceUri::maxArgs = 1;
@@ -49,20 +52,15 @@ FunctionNamespaceUri::FunctionNamespaceUri(const VectorOfASTNodes &args, XPath2M
 
 ASTNode* FunctionNamespaceUri::staticResolution(StaticContext *context)
 {
-  if(!_args.empty() && (*_args.begin())->getType()==ASTNode::CONTEXT_ITEM)
-      _args.clear();
-  resolveArguments(context);
-  return this;
-}
-
-ASTNode *FunctionNamespaceUri::staticTypingImpl(StaticContext *context)
-{
-  _src.clearExceptType();
+  XPath2MemoryManager *mm = context->getMemoryManager();
 
   if(_args.empty()) {
-    _src.contextItemUsed(true);
+    XQContextItem *ci = new (mm) XQContextItem(mm);
+    ci->setLocationInfo(this);
+    _args.push_back(ci);
   }
-  calculateSRCForArguments(context);
+
+  resolveArguments(context);
   return this;
 }
 
@@ -70,27 +68,11 @@ Sequence FunctionNamespaceUri::createSequence(DynamicContext* context, int flags
 {
   XPath2MemoryManager* memMgr = context->getMemoryManager();
 
-  Node::Ptr ctxNode;
-  if(getNumArgs() == 1)
-  {
-    Sequence arg=getParamNumber(1,context)->toSequence(context);
-    if(arg.isEmpty())
-      return Sequence(context->getItemFactory()->createAnyURI(XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString, context), memMgr);
-    ctxNode=arg.first();
+  Node::Ptr ctxNode = (Node*)getParamNumber(1, context)->next(context).get();
+  if(ctxNode.notNull()) {
+    ATQNameOrDerived::Ptr name = ctxNode->dmNodeName(context);
+    if(name.notNull())
+      return Sequence(context->getItemFactory()->createAnyURI(((const ATQNameOrDerived*)name.get())->getURI(), context), memMgr);
   }
-  else
-  {
-    const Item::Ptr item = context->getContextItem();
-    if(item==NULLRCP)
-      XQThrow(FunctionException, X("FunctionNamespaceUri::createSequence"),X("Undefined context item in fn:namespace-uri [err:XPDY0002]"));
-    if(!item->isNode())
-      XQThrow(FunctionException, X("FunctionNamespaceUri::createSequence"),X("The context item is not a node [err:XPTY0004]"));
-    ctxNode=item;
-  }
-
-  ATQNameOrDerived::Ptr name = ctxNode->dmNodeName(context);
-  if(name.notNull())
-    return Sequence(context->getItemFactory()->createAnyURI(((const ATQNameOrDerived*)name.get())->getURI(), context), memMgr);
-  
-  return Sequence(context->getItemFactory()->createAnyURI(XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString, context), memMgr);
+  return Sequence(context->getItemFactory()->createAnyURI(XMLUni::fgZeroLenString, context), memMgr);
 }

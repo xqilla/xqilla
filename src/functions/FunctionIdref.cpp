@@ -29,10 +29,13 @@
 #include <xqilla/ast/StaticAnalysis.hpp>
 #include <xqilla/framework/XPath2MemoryManagerImpl.hpp>
 #include <xqilla/context/ItemFactory.hpp>
+#include <xqilla/ast/XQContextItem.hpp>
+
+XERCES_CPP_NAMESPACE_USE;
 
 const XMLCh FunctionIdref::name[] = {
-  XERCES_CPP_NAMESPACE_QUALIFIER chLatin_i, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_d, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_r, 
-  XERCES_CPP_NAMESPACE_QUALIFIER chLatin_e, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_f, XERCES_CPP_NAMESPACE_QUALIFIER chNull 
+  chLatin_i, chLatin_d, chLatin_r, 
+  chLatin_e, chLatin_f, chNull 
 };
 const unsigned int FunctionIdref::minArgs = 1;
 const unsigned int FunctionIdref::maxArgs = 2;
@@ -49,41 +52,21 @@ FunctionIdref::FunctionIdref(const VectorOfASTNodes &args, XPath2MemoryManager* 
 
 ASTNode* FunctionIdref::staticResolution(StaticContext *context)
 {
-  if(_args.size()==2 && _args.back()->getType()==ASTNode::CONTEXT_ITEM)
-      _args.pop_back();
-  resolveArguments(context);
-  return this;
-}
+  XPath2MemoryManager *mm = context->getMemoryManager();
 
-ASTNode *FunctionIdref::staticTypingImpl(StaticContext *context)
-{
-  _src.clearExceptType();
-  if(_args.size()==1)
-    _src.contextItemUsed(true);
-  calculateSRCForArguments(context);
+  if(_args.size() == 1) {
+    XQContextItem *ci = new (mm) XQContextItem(mm);
+    ci->setLocationInfo(this);
+    _args.push_back(ci);
+  }
+
+  resolveArguments(context);
   return this;
 }
 
 Sequence FunctionIdref::createSequence(DynamicContext* context, int flags) const
 {
-  Node::Ptr ctxNode;
-  if(getNumArgs() == 2)
-  {
-    Sequence arg=getParamNumber(2,context)->toSequence(context);
-    ctxNode=arg.first();
-  }
-  else
-  {
-    const Item::Ptr item = context->getContextItem();
-    if(item==NULLRCP)
-      XQThrow(FunctionException, X("FunctionIdref::createSequence"),X("Undefined context item in fn:idref [err:XPDY0002]"));
-    if(!item->isNode())
-      XQThrow(FunctionException, X("FunctionIdref::createSequence"),X("The context item is not a node [err:XPTY0004]"));
-    ctxNode=item;
-  }
-
-  Node::Ptr root = ctxNode->root(context);
-
+  Node::Ptr root = ((Node*)getParamNumber(2, context)->next(context).get())->root(context);
   if(root->dmNodeKind() != Node::document_string) {
     XQThrow(FunctionException,X("FunctionIdref::createSequence"), X("Current context doesn't belong to a document [err:FODC0001]"));
   }
@@ -101,7 +84,7 @@ Sequence FunctionIdref::createSequence(DynamicContext* context, int flags) const
     //for each string check that it is lexically a xs:ID, if not ignore it
     bool validID = true;
     try {
-      context->getItemFactory()->createStringOrDerived(XERCES_CPP_NAMESPACE_QUALIFIER SchemaSymbols::fgURI_SCHEMAFORSCHEMA, XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgIDString, str, context);
+      context->getItemFactory()->createStringOrDerived(SchemaSymbols::fgURI_SCHEMAFORSCHEMA, XMLUni::fgIDString, str, context);
     } catch (InvalidLexicalSpaceException &e) {
       validID = false;
     }

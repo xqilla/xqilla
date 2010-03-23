@@ -26,12 +26,6 @@
 
 #include <vector>
 
-/** 
- * Function idref
- * 
- * fn:idref(string* $srcval) => element*
- *
- */
 class XQILLA_API FunctionIdref : public XQFunction
 {
 public:
@@ -39,24 +33,12 @@ public:
   static const unsigned int minArgs;
   static const unsigned int maxArgs;
 
-  /**
-   * Constructor
-   */
   FunctionIdref(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
   
   virtual ASTNode* staticResolution(StaticContext *context);
-  virtual ASTNode *staticTypingImpl(StaticContext *context);
 
-  /** 
-   * Returns the sequence of elements nodes having either an IDREF attribute 
-   * whose value matches the value of one of the items in the value of $srcval 
-   * or an IDREFS attribute whose value contains an IDREF value that matches 
-   * the value of one of the items in the value of $srcval. 
-   *
-   * This function allows reverse navigation from IDs to IDREFs.
-   */
   Sequence createSequence(DynamicContext* context, int flags=0) const;
 };
 
-#endif // _FUNCTIONIDREF_HPP
+#endif
 

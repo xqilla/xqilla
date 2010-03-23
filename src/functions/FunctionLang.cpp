@@ -28,10 +28,13 @@
 #include <xqilla/items/Node.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
 #include <xqilla/ast/StaticAnalysis.hpp>
+#include <xqilla/ast/XQContextItem.hpp>
+
+XERCES_CPP_NAMESPACE_USE;
 
 const XMLCh FunctionLang::name[] = {
-  XERCES_CPP_NAMESPACE_QUALIFIER chLatin_l, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_a, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_n, 
-  XERCES_CPP_NAMESPACE_QUALIFIER chLatin_g, XERCES_CPP_NAMESPACE_QUALIFIER chNull 
+  chLatin_l, chLatin_a, chLatin_n, 
+  chLatin_g, chNull 
 };
 const unsigned int FunctionLang::minArgs = 1;
 const unsigned int FunctionLang::maxArgs = 2;
@@ -48,18 +51,15 @@ FunctionLang::FunctionLang(const VectorOfASTNodes &args, XPath2MemoryManager* me
 
 ASTNode* FunctionLang::staticResolution(StaticContext *context)
 {
-  if(_args.size() == 2 && _args[1]->getType() == ASTNode::CONTEXT_ITEM)
-    _args.pop_back();
-  resolveArguments(context);
-  return this;
-}
+  XPath2MemoryManager *mm = context->getMemoryManager();
 
-ASTNode *FunctionLang::staticTypingImpl(StaticContext *context)
-{
-  _src.clearExceptType();
-  if(_args.size()==1)
-    _src.contextItemUsed(true);
-  calculateSRCForArguments(context);
+  if(_args.size() == 1) {
+    XQContextItem *ci = new (mm) XQContextItem(mm);
+    ci->setLocationInfo(this);
+    _args.push_back(ci);
+  }
+
+  resolveArguments(context);
   return this;
 }
 
@@ -67,37 +67,19 @@ Sequence FunctionLang::createSequence(DynamicContext* context, int flags) const
 {
     XPath2MemoryManager* memMgr = context->getMemoryManager();
 
-    Sequence arg1=getParamNumber(1, context)->toSequence(context);
-    const XMLCh *param1 = XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgZeroLenString;
-    if(!arg1.isEmpty())
-        param1=arg1.first()->asString(context);
+    Item::Ptr arg1 = getParamNumber(1, context)->next(context);
+    const XMLCh *param1 = arg1.isNull() ? XMLUni::fgZeroLenString : arg1->asString(context);
 
     const XMLCh* xmlLangValue = XPath2Utils::toLower(param1, context->getMemoryManager());
-    bool isSubLang = XERCES_CPP_NAMESPACE_QUALIFIER XMLString::indexOf(xmlLangValue, XERCES_CPP_NAMESPACE_QUALIFIER chDash) > 0;
+    bool isSubLang = XMLString::indexOf(xmlLangValue, chDash) > 0;
 
-    Node::Ptr ctxNode;
-    if(getNumArgs() == 2)
-    {
-        Sequence arg=getParamNumber(2,context)->toSequence(context);
-        ctxNode=arg.first();
-    }
-    else
-    {
-        const Item::Ptr item = context->getContextItem();
-        if(item==NULLRCP)
-            XQThrow(FunctionException, X("FunctionLang::createSequence"),X("Undefined context item in fn:lang [err:XPDY0002]"));
-        if(!item->isNode())
-            XQThrow(FunctionException, X("FunctionLang::createSequence"),X("The context item is not a node [err:XPTY0004]"));
-        ctxNode=item;
-    }
+    static const XMLCh xmlLang[] = { chLatin_l, chLatin_a,
+                                     chLatin_n, chLatin_g,
+                                     chNull};
 
-    static const XMLCh xmlLang[] = { XERCES_CPP_NAMESPACE_QUALIFIER chLatin_l, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_a,
-                                     XERCES_CPP_NAMESPACE_QUALIFIER chLatin_n, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_g,
-                                     XERCES_CPP_NAMESPACE_QUALIFIER chNull};
+    static const XMLCh* xmlLangNamespace = XMLUni::fgXMLURIName;
 
-    static const XMLCh* xmlLangNamespace = XERCES_CPP_NAMESPACE_QUALIFIER XMLUni::fgXMLURIName;
-
-    Node::Ptr node = ctxNode;
+    Node::Ptr node = (Node*)getParamNumber(2, context)->next(context).get();
     while(node.notNull())
     {
       Result attrs = node->dmAttributes(context, this);
@@ -113,7 +95,7 @@ Sequence FunctionLang::createSequence(DynamicContext* context, int flags) const
             const XMLCh *value = att->dmStringValue(context);
 
             const XMLCh* asLower = XPath2Utils::toLower(value, context->getMemoryManager());
-            int dashLocation = XERCES_CPP_NAMESPACE_QUALIFIER XMLString::indexOf(asLower, XERCES_CPP_NAMESPACE_QUALIFIER chDash);
+            int dashLocation = XMLString::indexOf(asLower, chDash);
 
             if(dashLocation!=-1 && !isSubLang) {
               asLower = XPath2Utils::subString(asLower, 0, dashLocation, memMgr);

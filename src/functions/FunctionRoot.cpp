@@ -26,7 +26,6 @@
 #include <xqilla/runtime/Sequence.hpp>
 #include <xqilla/items/Node.hpp>
 #include <xqilla/ast/StaticAnalysis.hpp>
-#include <xqilla/ast/XQContextItem.hpp>
 #include <xqilla/exceptions/StaticErrorException.hpp>
 
 XERCES_CPP_NAMESPACE_USE

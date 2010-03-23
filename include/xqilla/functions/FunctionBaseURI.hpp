@@ -17,12 +17,6 @@
  * limitations under the License.
  */
 
-/*
-
-   base-uri function
-
-*/
-
 #ifndef _FUNCTIONBASEURI_HPP
 #define _FUNCTIONBASEURI_HPP
 
@@ -31,7 +25,6 @@
 #include <xqilla/ast/XQFunction.hpp>
 #include <xqilla/runtime/Sequence.hpp>
 
-/** base-uri function */
 class XQILLA_API FunctionBaseURI : public XQFunction
 {
 public:
@@ -42,10 +35,7 @@ public:
   FunctionBaseURI(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
   
   virtual ASTNode* staticResolution(StaticContext *context);
-  virtual ASTNode *staticTypingImpl(StaticContext *context);
 
-	/* returns the base-URI property of document or element nodes,
-	 * and the empty sequence for all other kinds of nodes */
   Sequence createSequence(DynamicContext* context, int flags=0) const;
 };
 
