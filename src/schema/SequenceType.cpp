@@ -199,6 +199,12 @@ void SequenceType::ItemType::staticResolution(StaticContext *context, const Loca
         XQThrow3(StaticErrorException, X("SequenceType::ItemType::staticResolution"), buf.getRawBuffer(), location);
       }
     }
+    else if(XPath2Utils::equals(m_pType->getName(), SchemaSymbols::fgATTVAL_ANYTYPE) &&
+            XPath2Utils::equals(m_TypeURI, SchemaSymbols::fgURI_SCHEMAFORSCHEMA)) {
+      // xs:anyType is the same as a type wildcard
+      m_pType = 0;
+      m_TypeURI = 0;
+    }
     else if(!context->getDocumentCache()->isTypeDefined(m_TypeURI, m_pType->getName())) {
       XMLBuffer msg;
       msg.set(X("Type {"));
@@ -908,58 +914,72 @@ bool SequenceType::ItemType::matches(const Item::Ptr &toBeTested, DynamicContext
   return true;
 }
 
-bool SequenceType::matches(const SequenceType *toBeTested, const StaticContext* context) const
+bool SequenceType::isSubtypeOf(const SequenceType *b, const StaticContext* context) const
 {
-  if(m_pItemType == 0)
-    return toBeTested->m_pItemType == 0;
-  if(toBeTested->m_pItemType == 0)
+  const SequenceType *a = this;
+
+  if(b->m_pItemType == 0)
+    return a->m_pItemType == 0;
+  if(a->m_pItemType == 0)
     return m_nOccurrence == QUESTION_MARK || m_nOccurrence == STAR;
 
-  switch(m_nOccurrence) {
+  switch(b->m_nOccurrence) {
   case EXACTLY_ONE:
-    if(toBeTested->m_nOccurrence != EXACTLY_ONE) return false;
+    if(a->m_nOccurrence != EXACTLY_ONE) return false;
     break;
   case PLUS:
-    if(toBeTested->m_nOccurrence != EXACTLY_ONE &&
-       toBeTested->m_nOccurrence != PLUS) return false;
+    if(a->m_nOccurrence != EXACTLY_ONE && a->m_nOccurrence != PLUS) return false;
     break;
   case QUESTION_MARK:
-    if(toBeTested->m_nOccurrence == PLUS) return false;
+    if(a->m_nOccurrence != QUESTION_MARK && a->m_nOccurrence != EXACTLY_ONE) return false;
     break;
   case STAR:
     break;
   }
 
-  return m_pItemType->matches(toBeTested->m_pItemType, context);
+  return a->m_pItemType->isSubtypeOf(b->m_pItemType, context);
 }
 
-bool SequenceType::ItemType::matchesNameType(const ItemType *toBeTested, const StaticContext* context) const
+bool SequenceType::ItemType::isSubtypeOfNameType(const ItemType *b, const StaticContext* context) const
 {
-  if(m_pName) {
-    if(toBeTested->m_pName == 0) return false;
-    if(!XPath2Utils::equals(m_pName->getName(), toBeTested->m_pName->getName()) ||
-       !XPath2Utils::equals(m_NameURI, toBeTested->m_NameURI))
+  const ItemType *a = this;
+
+  if(a->m_pName) {
+    if(b->m_pName == 0) return false;
+    if(!XPath2Utils::equals(a->m_pName->getName(), b->m_pName->getName()) ||
+       !XPath2Utils::equals(a->m_NameURI, b->m_NameURI))
       return false;
   }
 
-  if(m_pType) {
-    if(toBeTested->m_pType == 0) return false;
-    if(!context->isTypeOrDerivedFromType(toBeTested->m_TypeURI, toBeTested->m_pType->getName(), m_TypeURI, m_pType->getName()))
+  if(a->m_pType) {
+    if(b->m_pType == 0) return false;
+    if(!context->isTypeOrDerivedFromType(a->m_TypeURI, a->m_pType->getName(), b->m_TypeURI, b->m_pType->getName()))
       return false;
   }
 
   return true;
 }
 
-bool SequenceType::ItemType::matches(const ItemType *toBeTested, const StaticContext* context) const
+bool SequenceType::ItemType::isSubtypeOf(const ItemType *b, const StaticContext* context) const
 {
-  switch(m_nTestType) {
+  const ItemType *a = this;
+
+  switch(b->m_nTestType) {
+
+  case TEST_ATOMIC_TYPE: {
+    // Ai and Bi are AtomicTypes, and derives-from(Ai, Bi) returns true.
+    if(b->m_nTestType != TEST_ATOMIC_TYPE) return false;
+    return a->isSubtypeOfNameType(b, context);
+  }
+
   case TEST_ANYTHING: {
+    // Bi is item().
     return true;
   }
 
   case TEST_NODE: {
-    switch(toBeTested->m_nTestType) {
+    // Bi is node(), and Ai is a KindTest.
+    switch(a->m_nTestType) {
     case TEST_ELEMENT:
     case TEST_ATTRIBUTE:
     case TEST_SCHEMA_ELEMENT:
@@ -976,99 +996,91 @@ bool SequenceType::ItemType::matches(const ItemType *toBeTested, const StaticCon
     }
   }
 
+  case TEST_TEXT: {
+    // Bi is text() and Ai is also text().
+    return b->m_nTestType == TEST_TEXT;
+  }
+
+  case TEST_COMMENT: {
+    // Bi is comment() and Ai is also comment().
+    return a->m_nTestType == TEST_COMMENT;
+  }
+
+  case TEST_PI: {
+    // Bi is processing-instruction() and Ai is either processing-instruction() or processing-instruction(N) for any name N..
+    // Bi is processing-instruction(Bn), and Ai is also processing-instruction(Bn).
+    if(a->m_nTestType != TEST_PI) return false;
+    return a->isSubtypeOfNameType(b, context);
+  }
+
+  case TEST_DOCUMENT:
+    // Bi is document-node() and Ai is either document-node() or document-node(E) for any ElementTest E.
+    // Bi is document-node(Be) and Ai is document-node(Ae), and subtype-itemtype(Ae, Be).
   case TEST_ELEMENT: {
-    if(toBeTested->m_nTestType != TEST_ELEMENT)
-      return false;
-    if(!matchesNameType(toBeTested, context))
-      return false;
-    if(!m_bAllowNil && toBeTested->m_bAllowNil) return false;
-    return true;
+    // Bi is either element() or element(*), and Ai is an ElementTest.
+    // Bi is either element(Bn) or element(Bn, xs:anyType), and Ai is either element(Bn), or element(Bn, T) for any type T.
+    // Bi is element(Bn, Bt), Ai is element(Bn, At), and derives-from(At, Bt) returns true.
+    // Bi is element(Bn, Bt?), Ai is either element(Bn, At), or element(Bn, At?), and derives-from(At, Bt) returns true.
+    // Bi is element(*, Bt), Ai is either element(*, At), or element(N, At) for any name N, and derives-from(At, Bt) returns true.
+    // Bi is element(*, Bt?), Ai is either element(*, At), element(*, At?), element(N, At), or element(N, At?) for any name N, and derives-from(At, Bt) returns true.
+    if(a->m_nTestType != b->m_nTestType) return false;
+    if(!a->isSubtypeOfNameType(b, context)) return false;
+    return !a->m_bAllowNil || b->m_bAllowNil;
+  }
+
+  case TEST_SCHEMA_DOCUMENT:
+    // Bi is document-node() and Ai is either document-node() or document-node(E) for any ElementTest E.
+    // Bi is document-node(Be) and Ai is document-node(Ae), and subtype-itemtype(Ae, Be).
+  case TEST_SCHEMA_ELEMENT: {
+    // Bi is schema-element(Bn), Ai is schema-element(An), and either the expanded QName An equals the expanded QName Bn or
+    // the element declaration named An is in the substitution group of the element declaration named Bn.
+    if(a->m_nTestType != b->m_nTestType) return false;
+    if(a->isSubtypeOfNameType(b, context)) return true;
+
+    // Check substitution groups
+    SchemaElementDecl* aElemDecl = context->getDocumentCache()->getElementDecl(a->m_NameURI, a->m_pName->getName());
+    while(aElemDecl) {
+      if(XPath2Utils::equals(aElemDecl->getBaseName(), b->m_pName->getName()) &&
+         XPath2Utils::equals(context->getDocumentCache()->getSchemaUri(aElemDecl->getURI()), b->m_NameURI))
+        return true;
+      aElemDecl = aElemDecl->getSubstitutionGroupElem();
+    }
+    return false;
   }
 
   case TEST_ATTRIBUTE: {
-    if(toBeTested->m_nTestType != TEST_ATTRIBUTE)
-      return false;
-    if(!matchesNameType(toBeTested, context))
-      return false;
-    return true;
-  }
-
-  case TEST_SCHEMA_ELEMENT: {
-    if(toBeTested->m_nTestType != TEST_SCHEMA_ELEMENT)
-      return false;
-    if(!matchesNameType(toBeTested, context))
-      return false;
+    // Bi is either attribute() or attribute(*), and Ai is an AttributeTest.
+    // Bi is either attribute(Bn) or attribute(Bn, xs:anyType), and Ai is either attribute(Bn), or attribute(Bn, T) for any type T.
+    // Bi is attribute(Bn, Bt), Ai is attribute(Bn, At), and derives-from(At, Bt) returns true.
+    // Bi is attribute(*, Bt), Ai is either attribute(*, At), or attribute(N, At) for any name N, and derives-from(At, Bt) returns true.
+    if(a->m_nTestType != TEST_ATTRIBUTE) return false;
+    if(!a->isSubtypeOfNameType(b, context)) return false;
     return true;
   }
 
   case TEST_SCHEMA_ATTRIBUTE: {
-    if(toBeTested->m_nTestType != TEST_SCHEMA_ATTRIBUTE)
-      return false;
-    if(!matchesNameType(toBeTested, context))
-      return false;
-    return true;
-  }
-
-  case TEST_PI: {
-    if(toBeTested->m_nTestType != TEST_PI)
-      return false;
-    if(!matchesNameType(toBeTested, context))
-      return false;
-    return true;
-  }
-
-  case TEST_COMMENT: {
-    if(toBeTested->m_nTestType != TEST_COMMENT)
-      return false;
-    return true;
-  }
-
-  case TEST_TEXT: {
-    if(toBeTested->m_nTestType != TEST_TEXT)
-      return false;
-    return true;
-  }
-
-  case TEST_DOCUMENT: {
-    if(toBeTested->m_nTestType != TEST_DOCUMENT)
-      return false;
-    if(!matchesNameType(toBeTested, context))
-      return false;
-    return true;
-  }
-    
-  case TEST_SCHEMA_DOCUMENT: {
-    if(toBeTested->m_nTestType != TEST_SCHEMA_DOCUMENT)
-      return false;
-    if(!matchesNameType(toBeTested, context))
-      return false;
-    return true;
-  }
-    
-  case TEST_ATOMIC_TYPE: {
-    if(toBeTested->m_nTestType != TEST_ATOMIC_TYPE)
-      return false;
-    if(!matchesNameType(toBeTested, context))
-      return false;
-    return true;
+    // Bi is schema-attribute(Bn) and Ai is also schema-attribute(Bn).
+    if(a->m_nTestType != TEST_SCHEMA_ATTRIBUTE) return false;
+    return a->isSubtypeOfNameType(b, context);
   }
 
   case TEST_FUNCTION: {
-    if(toBeTested->m_nTestType != TEST_FUNCTION) return false;
-    if(returnType_ == 0) return true;
-    if(toBeTested->returnType_ == 0) return false;
+    // Bi is function(*), and Ai is a FunctionTest.
+    if(a->m_nTestType != TEST_FUNCTION) return false;
+    if(b->returnType_ == 0) return true;
+    if(a->returnType_ == 0) return false;
 
-    if(toBeTested->argTypes_->size() != argTypes_->size()) return false;
+    // Bi is function(Ba_1, Ba_2, ... Ba_N) as Br, Ai is function(Aa_1, Aa_2, ... Aa_M) as Ar, N (arity of Bi) equals M (arity of Ai),
+    // subtype(Ar, Br), and for values of I between 1 and N, subtype(Ba_I, Aa_I).
+    if(a->argTypes_->size() != b->argTypes_->size()) return false;
 
-    VectorOfSequenceTypes::const_iterator i = toBeTested->argTypes_->begin();
-    VectorOfSequenceTypes::const_iterator j = argTypes_->begin();
-    for(; i != toBeTested->argTypes_->end() && j != argTypes_->end(); ++i, ++j) {
-      if(!(*i)->matches(*j, context)) return false;
+    VectorOfSequenceTypes::const_iterator aa_i = a->argTypes_->begin();
+    VectorOfSequenceTypes::const_iterator ba_i = b->argTypes_->begin();
+    for(; aa_i != a->argTypes_->end() && ba_i != b->argTypes_->end(); ++aa_i, ++ba_i) {
+      if(!(*ba_i)->isSubtypeOf(*aa_i, context)) return false;
     }
 
-    if(!returnType_->matches(toBeTested->returnType_, context))
-      return false;
-    return true;
+    return a->returnType_->isSubtypeOf(b->returnType_, context);
   }
   }
   return true;

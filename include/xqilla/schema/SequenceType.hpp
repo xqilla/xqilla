@@ -101,14 +101,14 @@ public:
     bool matchesNameType(const Item::Ptr &toBeTested, const DynamicContext* context) const;
     bool matchesSchemaElement(const Node::Ptr &toBeTested, const DynamicContext* context) const;
 
-    bool matches(const ItemType *toBeTested, const StaticContext* context) const;
-    bool matchesNameType(const ItemType *toBeTested, const StaticContext* context) const;
+    bool isSubtypeOf(const ItemType *toBeTested, const StaticContext* context) const;
 
     void staticResolution(StaticContext *context, const LocationInfo *location);
 
     void toBuffer(XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer &buffer, bool addBrackets = false) const;
 
   protected:
+    bool isSubtypeOfNameType(const ItemType *toBeTested, const StaticContext* context) const;
 
     // The ItemTestType of this ItemType
     ItemTestType m_nTestType;
@@ -208,7 +208,7 @@ public:
 
   const ItemType *getItemType() const;
 
-  bool matches(const SequenceType *toBeTested, const StaticContext* context) const;
+  bool isSubtypeOf(const SequenceType *toBeTested, const StaticContext* context) const;
 
   void staticResolution(StaticContext* context);
   void getStaticType(StaticType &st, const StaticContext *context,
