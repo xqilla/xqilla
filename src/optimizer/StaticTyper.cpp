@@ -250,7 +250,7 @@ ASTNode *StaticTyper::optimizeTypeswitch(XQTypeswitch *item)
   return item;
 }
 
-ASTNode *StaticTyper::optimizeTreatAs(XQTreatAs *item)
+ASTNode *StaticTyper::optimizeFunctionCoercion(XQFunctionCoercion *item)
 {
   item->setExpression(optimize(item->getExpression()));
 
@@ -262,7 +262,7 @@ ASTNode *StaticTyper::optimizeTreatAs(XQTreatAs *item)
 
       VariableTypeStore *varStore = context_->getVariableTypeStore();
       varStore->addLogicalBlockScope();
-      varStore->declareVar(0, XQTreatAs::funcVarName, varSrc);
+      varStore->declareVar(0, XQFunctionCoercion::funcVarName, varSrc);
     }
 
     {

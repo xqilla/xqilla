@@ -34,6 +34,7 @@
 #include <xqilla/ast/XQCastableAs.hpp>
 #include <xqilla/ast/XQCastAs.hpp>
 #include <xqilla/ast/XQTreatAs.hpp>
+#include <xqilla/ast/XQFunctionCoercion.hpp>
 #include <xqilla/ast/XQOperator.hpp>
 #include <xqilla/ast/XQContextItem.hpp>
 #include <xqilla/ast/XQDOMConstructor.hpp>
@@ -116,6 +117,7 @@
   virtual ASTNode *optimizeCastableAs(XQCastableAs *item); \
   virtual ASTNode *optimizeCastAs(XQCastAs *item); \
   virtual ASTNode *optimizeTreatAs(XQTreatAs *item); \
+  virtual ASTNode *optimizeFunctionCoercion(XQFunctionCoercion *item); \
   virtual ASTNode *optimizeOperator(XQOperator *item); \
   virtual ASTNode *optimizeContextItem(XQContextItem *item); \
   virtual ASTNode *optimizeReturn(XQReturn *item); \

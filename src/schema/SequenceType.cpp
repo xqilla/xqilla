@@ -40,10 +40,12 @@
 #include <xqilla/functions/FunctionString.hpp>
 #include <xqilla/functions/FunctionNumber.hpp>
 #include <xqilla/functions/FunctionHead.hpp>
+#include <xqilla/functions/FunctionSignature.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
 #include <xqilla/ast/XQAtomize.hpp>
 #include <xqilla/ast/XQTreatAs.hpp>
 #include <xqilla/ast/ConvertFunctionArg.hpp>
+#include <xqilla/ast/XQFunctionCoercion.hpp>
 
 #include <xercesc/validators/schema/SchemaAttDef.hpp>
 #include <xercesc/validators/schema/SchemaElementDecl.hpp>
@@ -882,10 +884,67 @@ bool SequenceType::ItemType::matches(const Node::Ptr &toBeTested, DynamicContext
   return true;
 }
 
+bool SequenceType::ItemType::matches(const FunctionRef::Ptr &toBeTested, DynamicContext* context) const
+{
+  switch(m_nTestType) {
+    case TEST_ELEMENT:
+    case TEST_ATTRIBUTE:
+    case TEST_SCHEMA_ELEMENT:
+    case TEST_SCHEMA_ATTRIBUTE:
+    case TEST_NODE:
+    case TEST_PI:
+    case TEST_COMMENT:
+    case TEST_TEXT:
+    case TEST_DOCUMENT:
+    case TEST_SCHEMA_DOCUMENT:
+    case TEST_NAMESPACE:
+    case TEST_ATOMIC_TYPE:
+    {
+      return false;
+    }
+    
+    case TEST_ANYTHING:
+    {
+      return true;
+    }
+
+    case TEST_FUNCTION:
+    {
+      // function(*) matches any function item.
+      if(returnType_ == 0) return true;
+
+      // A TypedFunctionTest matches an item if it is a function item, and the function
+      // item's type signature is a subtype of the TypedFunctionTest.
+      FunctionRef *func = (FunctionRef*)toBeTested.get();
+      if(func->getNumArgs() != argTypes_->size()) return false;
+
+      const FunctionSignature *sig = func->getSignature();
+
+      if(sig->argSpecs) {
+        ArgumentSpecs::const_iterator aa_i = sig->argSpecs->begin();
+        VectorOfSequenceTypes::const_iterator ba_i = argTypes_->begin();
+        for(; aa_i != sig->argSpecs->end() && ba_i != argTypes_->end(); ++aa_i, ++ba_i) {
+          if(!(*ba_i)->isSubtypeOf((*aa_i)->getType(), context)) return false;
+        }
+      }
+
+      if(sig->returnType)
+        return sig->returnType->isSubtypeOf(returnType_, context);
+
+      return returnType_->m_nOccurrence == STAR && returnType_->m_pItemType &&
+        returnType_->m_pItemType->getItemTestType() == TEST_ANYTHING;
+    }
+
+  }
+  return true;
+}
+
 bool SequenceType::ItemType::matches(const Item::Ptr &toBeTested, DynamicContext* context) const
 {
   if(toBeTested->isNode())
-    return matches((const Node::Ptr)toBeTested, context);
+    return matches((Node::Ptr)toBeTested, context);
+  if(toBeTested->isFunction())
+    return matches((FunctionRef::Ptr)toBeTested, context);
     
   switch(m_nTestType) {
     case TEST_ELEMENT:
@@ -899,6 +958,7 @@ bool SequenceType::ItemType::matches(const Item::Ptr &toBeTested, DynamicContext
     case TEST_DOCUMENT:
     case TEST_SCHEMA_DOCUMENT:
     case TEST_NAMESPACE:
+    case TEST_FUNCTION:
     {
       return false;
     }
@@ -913,18 +973,6 @@ bool SequenceType::ItemType::matches(const Item::Ptr &toBeTested, DynamicContext
       if(!toBeTested->isAtomicValue()) return false;
       return matchesNameType(toBeTested, context);
     }
-
-    case TEST_FUNCTION:
-    {
-      if(!toBeTested->isFunction()) return false;
-      if(returnType_ == 0) return true;
-
-      FunctionRef *func = (FunctionRef*)toBeTested.get();
-      if(func->getNumArgs() != argTypes_->size()) return false;
-
-      return true;
-    }
-
   }
   return true;
 }
@@ -1268,6 +1316,9 @@ ASTNode *SequenceType::convertFunctionArg(ASTNode *arg, StaticContext *context, 
       arg->setLocationInfo(location);
       arg = new (mm) XQPromoteAnyURI(arg, uri, name, mm);
       arg->setLocationInfo(location);
+    }
+    else if(testType == ItemType::TEST_FUNCTION && m_pItemType->getReturnType() != 0) {
+      arg = new (mm) XQFunctionCoercion(arg, this, mm);
     }
   }
   // If, after the above conversions, the resulting value does not match the expected type according to the

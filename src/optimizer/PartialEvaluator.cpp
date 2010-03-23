@@ -547,7 +547,7 @@ protected:
     return item;
   }
 
-  virtual ASTNode *optimizeTreatAs(XQTreatAs *item)
+  virtual ASTNode *optimizeFunctionCoercion(XQFunctionCoercion *item)
   {
     item->setExpression(optimize(item->getExpression()));
 
@@ -555,11 +555,11 @@ protected:
       AutoReset<bool> reset(active_);
       AutoReset<bool> reset2(inScope_);
 
-      if(required_ && required_->isVariableUsed(0, XQTreatAs::funcVarName))
+      if(required_ && required_->isVariableUsed(0, XQFunctionCoercion::funcVarName))
         inScope_ = false;
 
       if(XPath2Utils::equals(uri_, 0) &&
-         XPath2Utils::equals(name_, XQTreatAs::funcVarName))
+         XPath2Utils::equals(name_, XQFunctionCoercion::funcVarName))
         active_ = false;
 
       item->setFuncConvert(optimize(item->getFuncConvert()));

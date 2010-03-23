@@ -54,6 +54,7 @@ src/ast/XQOperator.cpp \
 src/ast/XQSequence.cpp \
 src/ast/XQStep.cpp \
 src/ast/XQTreatAs.cpp \
+src/ast/XQFunctionCoercion.cpp \
 src/ast/XQVariable.cpp \
 src/ast/StaticAnalysis.cpp \
 src/ast/StaticType.cpp \

@@ -106,6 +106,8 @@ ASTNode *ASTVisitor::optimize(ASTNode *item)
     return optimizeCastAs((XQCastAs *)item);
   case ASTNode::TREAT_AS:
     return optimizeTreatAs((XQTreatAs *)item);
+  case ASTNode::FUNCTION_COERCION:
+    return optimizeFunctionCoercion((XQFunctionCoercion *)item);
   case ASTNode::OPERATOR:
     return optimizeOperator((XQOperator *)item);
   case ASTNode::CONTEXT_ITEM:
@@ -285,6 +287,12 @@ ASTNode *ASTVisitor::optimizeCastAs(XQCastAs *item)
 }
 
 ASTNode *ASTVisitor::optimizeTreatAs(XQTreatAs *item)
+{
+  item->setExpression(optimize(item->getExpression()));
+  return item;
+}
+
+ASTNode *ASTVisitor::optimizeFunctionCoercion(XQFunctionCoercion *item)
 {
   item->setExpression(optimize(item->getExpression()));
   if(item->getFuncConvert())

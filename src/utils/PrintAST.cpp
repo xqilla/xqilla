@@ -18,6 +18,7 @@
  */
 
 // #define SHOW_QUERY_PATH_TREES
+// #define SHOW_HIDDEN_AST
 
 #include "../config/xqilla_config.h"
 #include <iostream>
@@ -328,6 +329,10 @@ string PrintAST::printASTNode(const ASTNode *item, const DynamicContext *context
   }
   case ASTNode::TREAT_AS: {
     return printTreatAs((XQTreatAs *)item, context, indent);
+    break;
+  }
+  case ASTNode::FUNCTION_COERCION: {
+    return printFunctionCoercion((XQFunctionCoercion *)item, context, indent);
     break;
   }
   case ASTNode::OPERATOR: {
@@ -831,6 +836,24 @@ string PrintAST::printTreatAs(const XQTreatAs *item, const DynamicContext *conte
   s << printASTNode(item->getExpression(), context, indent + INDENT);
   s << printSequenceType(item->getSequenceType(), context, indent + INDENT);
   s << in << "</TreatAs>" << endl;
+
+  return s.str();
+}
+
+string PrintAST::printFunctionCoercion(const XQFunctionCoercion *item, const DynamicContext *context, int indent)
+{
+  ostringstream s;
+
+  string in(getIndent(indent));
+
+  s << in << "<FunctionCoercion>" << endl;
+  s << printASTNode(item->getExpression(), context, indent + INDENT);
+#ifdef SHOW_HIDDEN_AST
+  if(item->getFuncConvert())
+    s << printASTNode(item->getFuncConvert(), context, indent + INDENT);
+#endif
+  s << printSequenceType(item->getSequenceType(), context, indent + INDENT);
+  s << in << "</FunctionCoercion>" << endl;
 
   return s.str();
 }
@@ -1875,19 +1898,21 @@ string PrintAST::printCopy(const XQCopy *item, const DynamicContext *context, in
 
 string PrintAST::printASTDebugHook(const ASTDebugHook *item, const DynamicContext *context, int indent)
 {
+#ifdef SHOW_HIDDEN_AST
+  ostringstream s;
+
+  string in(getIndent(indent));
+
+  s << in << "<ASTDebugHook";
+  s << " location=\"" << UTF8(item->getFile()) << ":" << item->getLine() << ":" << item->getColumn() << "\"";
+  s <<">" << endl;
+  s << printASTNode(item->getExpression(), context, indent + INDENT);
+  s << in << "</ASTDebugHook>" << endl;
+
+  return s.str();
+#else
   return printASTNode(item->getExpression(), context, indent);
-
-//   ostringstream s;
-
-//   string in(getIndent(indent));
-
-//   s << in << "<ASTDebugHook";
-//   s << " location=\"" << UTF8(item->getFile()) << ":" << item->getLine() << ":" << item->getColumn() << "\"";
-//   s <<">" << endl;
-//   s << printASTNode(item->getExpression(), context, indent + INDENT);
-//   s << in << "</ASTDebugHook>" << endl;
-
-//   return s.str();
+#endif
 }
 
 string PrintAST::printCallTemplate(const XQCallTemplate *item, const DynamicContext *context, int indent)
@@ -1981,9 +2006,13 @@ string PrintAST::printInlineFunction(const XQInlineFunction *item, const Dynamic
   if(item->getUserFunction()) {
     s << printXQUserFunction(item->getUserFunction(), context, indent + INDENT);
   }
+#ifndef SHOW_HIDDEN_AST
   else {
+#endif
     s << printASTNode(item->getInstance(), context, indent + INDENT);
+#ifndef SHOW_HIDDEN_AST
   }
+#endif
   s << in << "</InlineFunction>" << endl;
 
   return s.str();
@@ -2053,16 +2082,18 @@ string PrintAST::printFunctionRef(const XQFunctionRef *item, const DynamicContex
     name += UTF8(item->getQName());
   }
 
+#ifdef SHOW_HIDDEN_AST
+  s << in << "<FunctionRef name=\"" << UTF8(item->getQName())
+    << "\" numArgs=\"" << item->getNumArgs() << "\">" << endl;
+
+  if(item->getInstance())
+	  s << printASTNode(item->getInstance(), context, indent + INDENT);
+
+  s << in << "</FunctionRef>" << endl;
+#else
   s << in << "<FunctionRef name=\"" << name
     << "\" numArgs=\"" << item->getNumArgs() << "\"/>" << endl;
-
-//   s << in << "<FunctionRef name=\"" << UTF8(item->getQName())
-//     << "\" numArgs=\"" << item->getNumArgs() << "\">" << endl;
-
-//   if(item->getInstance())
-// 	  s << printASTNode(item->getInstance(), context, indent + INDENT);
-
-//   s << in << "</FunctionRef>" << endl;
+#endif
 
   return s.str();
 }
@@ -2209,19 +2240,21 @@ string PrintAST::printOrderByTuple(const OrderByTuple *item, const DynamicContex
 
 string PrintAST::printTupleDebugHook(const TupleDebugHook *item, const DynamicContext *context, int indent)
 {
+#ifdef SHOW_HIDDEN_AST
+  ostringstream s;
+
+  string in(getIndent(indent));
+
+  s << in << "<TupleDebugHook";
+  s << " location=\"" << UTF8(item->getFile()) << ":" << item->getLine() << ":" << item->getColumn() << "\"";
+  s << ">" << endl;
+  s << printTupleNode(item->getParent(), context, indent + INDENT);
+  s << in << "</TupleDebugHook>" << endl;
+
+  return s.str();
+#else
   return printTupleNode(item->getParent(), context, indent);
-
-//   ostringstream s;
-
-//   string in(getIndent(indent));
-
-//   s << in << "<TupleDebugHook";
-//   s << " location=\"" << UTF8(item->getFile()) << ":" << item->getLine() << ":" << item->getColumn() << "\"";
-//   s << ">" << endl;
-//   s << printTupleNode(item->getParent(), context, indent + INDENT);
-//   s << in << "</TupleDebugHook>" << endl;
-
-//   return s.str();
+#endif
 }
 
 string PrintAST::printContextTuple(const ContextTuple *item, const DynamicContext *context, int indent)

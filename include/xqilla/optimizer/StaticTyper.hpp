@@ -59,7 +59,7 @@ protected:
   virtual ASTNode *optimizeMap(XQMap *item);
   virtual ASTNode *optimizeReturn(XQReturn *item);
   virtual ASTNode *optimizeTypeswitch(XQTypeswitch *item);
-  virtual ASTNode *optimizeTreatAs(XQTreatAs *item);
+  virtual ASTNode *optimizeFunctionCoercion(XQFunctionCoercion *item);
   virtual ASTNode *optimizeNamespaceBinding(XQNamespaceBinding *item);
   virtual ASTNode *optimizeFunctionRef(XQFunctionRef *item);
   virtual ASTNode *optimizeInlineFunction(XQInlineFunction *item);

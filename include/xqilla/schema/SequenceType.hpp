@@ -23,6 +23,7 @@
 #include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/items/Node.hpp>
+#include <xqilla/items/FunctionRef.hpp>
 #include <xqilla/parser/QName.hpp>
 #include <xqilla/runtime/Result.hpp>
 #include <xqilla/runtime/ResultImpl.hpp>
@@ -99,6 +100,7 @@ public:
 
     bool matches(const Item::Ptr &toBeTested, DynamicContext* context) const;
     bool matches(const Node::Ptr &toBeTested, DynamicContext* context) const;
+    bool matches(const FunctionRef::Ptr &toBeTested, DynamicContext* context) const;
     bool matchesNameType(const Item::Ptr &toBeTested, const DynamicContext* context) const;
     bool matchesSchemaElement(const Node::Ptr &toBeTested, const DynamicContext* context) const;
 

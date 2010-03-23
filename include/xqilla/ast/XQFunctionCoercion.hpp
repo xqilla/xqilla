@@ -17,48 +17,39 @@
  * limitations under the License.
  */
 
-#ifndef _XQTREATAS_HPP
-#define _XQTREATAS_HPP
+#ifndef _XQFUNCTIONCOERCION_HPP
+#define _XQFUNCTIONCOERCION_HPP
 
 #include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/ast/ASTNodeImpl.hpp>
-#include <xqilla/runtime/LazySequenceResult.hpp>
 
 class SequenceType;
 
-class XQILLA_API XQTreatAs : public ASTNodeImpl
+class XQILLA_API XQFunctionCoercion : public ASTNodeImpl
 {
 public:
-  XQTreatAs(ASTNode* expr, SequenceType *exprType, XPath2MemoryManager* memMgr, const XMLCh *errorCode = 0);
-  XQTreatAs(ASTNode* expr, SequenceType *exprType, const XMLCh *errorCode, bool doTypeCheck, bool doCardinalityCheck,
-            const StaticType &treatType, bool isExact, XPath2MemoryManager* memMgr);
+  XQFunctionCoercion(ASTNode *expr, SequenceType *exprType, XPath2MemoryManager *memMgr);
+  XQFunctionCoercion(ASTNode *expr, SequenceType *exprType, ASTNode *funcConvert, const StaticType &treatType, XPath2MemoryManager *memMgr);
 
   virtual Result createResult(DynamicContext* context, int flags=0) const;
-  virtual ASTNode* staticResolution(StaticContext *context);
+  virtual ASTNode *staticResolution(StaticContext *context);
   virtual ASTNode *staticTypingImpl(StaticContext *context);
 
-  ASTNode *getExpression() const;
-  SequenceType *getSequenceType() const;
-  bool getDoTypeCheck() const { return _doTypeCheck; }
-  bool getDoCardinalityCheck() const { return _doCardinalityCheck; }
-  const XMLCh *getErrorCode() const { return _errorCode; }
+  ASTNode *getExpression() const { return _expr; }
+  void setExpression(ASTNode *item) { _expr = item; }
+  ASTNode *getFuncConvert() const { return _funcConvert; }
+  void setFuncConvert(ASTNode *item) { _funcConvert = item; }
+  SequenceType *getSequenceType() const { return _exprType; }
   const StaticType &getTreatType() const { return _treatType; }
-  bool getIsExact() const { return _isExact; }
 
-  void setExpression(ASTNode *item);
-
-  static const XMLCh err_XPDY0050[];
-  static const XMLCh err_XPTY0004[];
+  static const XMLCh funcVarName[];
 
 protected:
   ASTNode* _expr;
   SequenceType *_exprType;
-  const XMLCh *_errorCode;
-  bool _doTypeCheck;
-  bool _doCardinalityCheck;
+  ASTNode *_funcConvert;
   StaticType _treatType;
-  bool _isExact;
 };
 
 #endif

@@ -98,8 +98,8 @@ am_libxqilla_la_OBJECTS = ReferenceCounted.lo BaseMemoryManager.lo \
 	XQContextItem.lo XQCopy.lo XQCopyOf.lo XQFunction.lo XQIf.lo \
 	ASTNodeImpl.lo XQInlineFunction.lo XQLiteral.lo XQNav.lo \
 	XQOperator.lo XQSequence.lo XQStep.lo XQTreatAs.lo \
-	XQVariable.lo StaticAnalysis.lo StaticType.lo \
-	NumericFunction.lo XQDOMConstructor.lo \
+	XQFunctionCoercion.lo XQVariable.lo StaticAnalysis.lo \
+	StaticType.lo NumericFunction.lo XQDOMConstructor.lo \
 	XQDocumentConstructor.lo XQElementConstructor.lo \
 	XQAttributeConstructor.lo XQNamespaceConstructor.lo \
 	XQPIConstructor.lo XQCommentConstructor.lo \
@@ -550,6 +550,7 @@ src/ast/XQOperator.cpp \
 src/ast/XQSequence.cpp \
 src/ast/XQStep.cpp \
 src/ast/XQTreatAs.cpp \
+src/ast/XQFunctionCoercion.cpp \
 src/ast/XQVariable.cpp \
 src/ast/StaticAnalysis.cpp \
 src/ast/StaticType.cpp \
@@ -1607,6 +1608,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQException.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQFunction.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQFunctionCall.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQFunctionCoercion.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQFunctionConversion.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQFunctionDeref.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQFunctionRef.Plo@am__quote@
@@ -2318,6 +2320,13 @@ XQTreatAs.lo: src/ast/XQTreatAs.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/ast/XQTreatAs.cpp' object='XQTreatAs.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQTreatAs.lo `test -f 'src/ast/XQTreatAs.cpp' || echo '$(srcdir)/'`src/ast/XQTreatAs.cpp
+
+XQFunctionCoercion.lo: src/ast/XQFunctionCoercion.cpp
+@am__fastdepCXX_TRUE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT XQFunctionCoercion.lo -MD -MP -MF $(DEPDIR)/XQFunctionCoercion.Tpo -c -o XQFunctionCoercion.lo `test -f 'src/ast/XQFunctionCoercion.cpp' || echo '$(srcdir)/'`src/ast/XQFunctionCoercion.cpp
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/XQFunctionCoercion.Tpo $(DEPDIR)/XQFunctionCoercion.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/ast/XQFunctionCoercion.cpp' object='XQFunctionCoercion.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQFunctionCoercion.lo `test -f 'src/ast/XQFunctionCoercion.cpp' || echo '$(srcdir)/'`src/ast/XQFunctionCoercion.cpp
 
 XQVariable.lo: src/ast/XQVariable.cpp
 @am__fastdepCXX_TRUE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT XQVariable.lo -MD -MP -MF $(DEPDIR)/XQVariable.Tpo -c -o XQVariable.lo `test -f 'src/ast/XQVariable.cpp' || echo '$(srcdir)/'`src/ast/XQVariable.cpp

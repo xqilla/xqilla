@@ -21,6 +21,7 @@ xqilla/ast/XQOperator.hpp \
 xqilla/ast/XQSequence.hpp \
 xqilla/ast/XQStep.hpp \
 xqilla/ast/XQTreatAs.hpp \
+xqilla/ast/XQFunctionCoercion.hpp \
 xqilla/ast/XQVariable.hpp \
 xqilla/ast/StaticAnalysis.hpp \
 xqilla/ast/StaticType.hpp \

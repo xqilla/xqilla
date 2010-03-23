@@ -47,6 +47,7 @@ class XQIf;
 class XQCastableAs;
 class XQCastAs;
 class XQTreatAs;
+class XQFunctionCoercion;
 class XQOperator;
 class XQContextItem;
 class XQQuery;
@@ -147,6 +148,7 @@ public:
   virtual std::string printCastableAs(const XQCastableAs *item, const DynamicContext *context, int indent);
   virtual std::string printCastAs(const XQCastAs *item, const DynamicContext *context, int indent);
   virtual std::string printTreatAs(const XQTreatAs *item, const DynamicContext *context, int indent);
+  virtual std::string printFunctionCoercion(const XQFunctionCoercion *item, const DynamicContext *context, int indent);
   virtual std::string printOperator(const XQOperator *item, const DynamicContext *context, int indent);
   virtual std::string printContextItem(const XQContextItem *item, const DynamicContext *context, int indent);
   virtual std::string printQuantified(const XQQuantified *item, const DynamicContext *context, int indent);

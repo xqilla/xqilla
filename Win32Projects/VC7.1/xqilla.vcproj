@@ -63,7 +63,6 @@
       <File RelativePath="..\..\include\xqilla\ast\ASTNode.hpp"/>
       <File RelativePath="..\..\include\xqilla\ast\XQIf.hpp"/>
       <File RelativePath="..\..\include\xqilla\ast\ASTNodeImpl.hpp"/>
-      <File RelativePath="..\..\include\xqilla\ast\XQInstanceOf.hpp"/>
       <File RelativePath="..\..\include\xqilla\ast\XQInlineFunction.hpp"/>
       <File RelativePath="..\..\include\xqilla\ast\XQLiteral.hpp"/>
       <File RelativePath="..\..\include\xqilla\ast\XQNav.hpp"/>
@@ -71,6 +70,7 @@
       <File RelativePath="..\..\include\xqilla\ast\XQSequence.hpp"/>
       <File RelativePath="..\..\include\xqilla\ast\XQStep.hpp"/>
       <File RelativePath="..\..\include\xqilla\ast\XQTreatAs.hpp"/>
+      <File RelativePath="..\..\include\xqilla\ast\XQFunctionCoercion.hpp"/>
       <File RelativePath="..\..\include\xqilla\ast\XQVariable.hpp"/>
       <File RelativePath="..\..\include\xqilla\ast\StaticAnalysis.hpp"/>
       <File RelativePath="..\..\include\xqilla\ast\StaticType.hpp"/>
@@ -97,7 +97,6 @@
       <File RelativePath="..\..\include\xqilla\ast\XQEffectiveBooleanValue.hpp"/>
       <File RelativePath="..\..\include\xqilla\ast\XQMap.hpp"/>
       <File RelativePath="..\..\include\xqilla\ast\XQAnalyzeString.hpp"/>
-      <File RelativePath="..\..\include\xqilla\ast\XPath1Compat.hpp"/>
       <File RelativePath="..\..\include\xqilla\ast\ConvertFunctionArg.hpp"/>
       <File RelativePath="..\..\include\xqilla\ast\XQDocumentOrder.hpp"/>
       <File RelativePath="..\..\include\xqilla\ast\XQPredicate.hpp"/>
@@ -236,7 +235,6 @@
       <File RelativePath="..\..\include\xqilla\functions\FunctionEndsWith.hpp"/>
       <File RelativePath="..\..\include\xqilla\functions\FunctionError.hpp"/>
       <File RelativePath="..\..\include\xqilla\functions\FunctionExactlyOne.hpp"/>
-      <File RelativePath="..\..\include\xqilla\functions\FunctionExists.hpp"/>
       <File RelativePath="..\..\include\xqilla\functions\FunctionExp.hpp"/>
       <File RelativePath="..\..\include\xqilla\functions\FunctionFalse.hpp"/>
       <File RelativePath="..\..\include\xqilla\functions\FunctionFloor.hpp"/>
@@ -257,8 +255,6 @@
       <File RelativePath="..\..\include\xqilla\functions\FunctionLog.hpp"/>
       <File RelativePath="..\..\include\xqilla\functions\FunctionLowerCase.hpp"/>
       <File RelativePath="..\..\include\xqilla\functions\FunctionMatches.hpp"/>
-      <File RelativePath="..\..\include\xqilla\functions\FunctionMax.hpp"/>
-      <File RelativePath="..\..\include\xqilla\functions\FunctionMin.hpp"/>
       <File RelativePath="..\..\include\xqilla\functions\FunctionMinutesFromDateTime.hpp"/>
       <File RelativePath="..\..\include\xqilla\functions\FunctionMinutesFromDuration.hpp"/>
       <File RelativePath="..\..\include\xqilla\functions\FunctionMinutesFromTime.hpp"/>
@@ -477,7 +473,6 @@
       <File RelativePath="..\..\src\ast\StaticType.cpp"/>
       <File RelativePath="..\..\src\ast\WhereTuple.cpp"/>
       <File RelativePath="..\..\src\ast\CountTuple.cpp"/>
-      <File RelativePath="..\..\src\ast\XPath1Compat.cpp"/>
       <File RelativePath="..\..\src\ast\XQAnalyzeString.cpp"/>
       <File RelativePath="..\..\src\ast\XQApplyTemplates.cpp"/>
       <File RelativePath="..\..\src\ast\XQAtomize.cpp"/>
@@ -505,7 +500,6 @@
       <File RelativePath="..\..\src\ast\XQGlobalVariable.cpp"/>
       <File RelativePath="..\..\src\ast\XQIf.cpp"/>
       <File RelativePath="..\..\src\ast\XQInlineFunction.cpp"/>
-      <File RelativePath="..\..\src\ast\XQInstanceOf.cpp"/>
       <File RelativePath="..\..\src\ast\XQLiteral.cpp"/>
       <File RelativePath="..\..\src\ast\XQNamespaceBinding.cpp"/>
       <File RelativePath="..\..\src\ast\XQNav.cpp"/>
@@ -519,6 +513,7 @@
       <File RelativePath="..\..\src\ast\XQStep.cpp"/>
       <File RelativePath="..\..\src\ast\XQTextConstructor.cpp"/>
       <File RelativePath="..\..\src\ast\XQTreatAs.cpp"/>
+      <File RelativePath="..\..\src\ast\XQFunctionCoercion.cpp"/>
       <File RelativePath="..\..\src\ast\XQTypeswitch.cpp"/>
       <File RelativePath="..\..\src\ast\XQValidate.cpp"/>
       <File RelativePath="..\..\src\ast\XQVariable.cpp"/>
@@ -663,7 +658,6 @@
       <File RelativePath="..\..\src\functions\FunctionError.cpp"/>
       <File RelativePath="..\..\src\functions\FunctionEscapeHtmlUri.cpp"/>
       <File RelativePath="..\..\src\functions\FunctionExactlyOne.cpp"/>
-      <File RelativePath="..\..\src\functions\FunctionExists.cpp"/>
       <File RelativePath="..\..\src\functions\FunctionExp.cpp"/>
       <File RelativePath="..\..\src\functions\FunctionFalse.cpp"/>
       <File RelativePath="..\..\src\functions\FunctionFloor.cpp"/>
@@ -687,8 +681,6 @@
       <File RelativePath="..\..\src\functions\FunctionLookup.cpp"/>
       <File RelativePath="..\..\src\functions\FunctionLowerCase.cpp"/>
       <File RelativePath="..\..\src\functions\FunctionMatches.cpp"/>
-      <File RelativePath="..\..\src\functions\FunctionMax.cpp"/>
-      <File RelativePath="..\..\src\functions\FunctionMin.cpp"/>
       <File RelativePath="..\..\src\functions\FunctionMinutesFromDateTime.cpp"/>
       <File RelativePath="..\..\src\functions\FunctionMinutesFromDuration.cpp"/>
       <File RelativePath="..\..\src\functions\FunctionMinutesFromTime.cpp"/>

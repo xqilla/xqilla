@@ -22,9 +22,6 @@
 #include <sstream>
 
 #include <xqilla/ast/XQTreatAs.hpp>
-#include <xqilla/ast/XQVariable.hpp>
-#include <xqilla/ast/XQFunctionDeref.hpp>
-#include <xqilla/ast/XQInlineFunction.hpp>
 #include <xqilla/schema/SequenceType.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/items/Item.hpp>
@@ -33,11 +30,6 @@
 #include <xqilla/exceptions/XPath2TypeMatchException.hpp>
 #include <xqilla/context/ContextHelpers.hpp>
 #include <xqilla/context/MessageListener.hpp>
-#include <xqilla/context/VariableTypeStore.hpp>
-#include <xqilla/functions/XQUserFunction.hpp>
-#include <xqilla/context/impl/VarStoreImpl.hpp>
-#include <xqilla/functions/FunctionSignature.hpp>
-#include "../items/impl/FunctionRefImpl.hpp"
 
 #include <xercesc/validators/schema/SchemaSymbols.hpp>
 
@@ -46,7 +38,6 @@ using namespace std;
 
 const XMLCh XQTreatAs::err_XPDY0050[] = { 'e', 'r', 'r', ':', 'X', 'P', 'D', 'Y', '0', '0', '5', '0', 0 };
 const XMLCh XQTreatAs::err_XPTY0004[] = { 'e', 'r', 'r', ':', 'X', 'P', 'T', 'Y', '0', '0', '0', '4', 0 };
-const XMLCh XQTreatAs::funcVarName[] = { '#', 'f', 'u', 'n', 'c', 'V', 'a', 'r', 0 };
 
 XQTreatAs::XQTreatAs(ASTNode* expr, SequenceType* exprType, XPath2MemoryManager* memMgr, const XMLCh *errorCode)
   : ASTNodeImpl(TREAT_AS, memMgr),
@@ -55,21 +46,19 @@ XQTreatAs::XQTreatAs(ASTNode* expr, SequenceType* exprType, XPath2MemoryManager*
     _errorCode(errorCode),
     _doTypeCheck(true),
     _doCardinalityCheck(true),
-    _funcConvert(0),
     _isExact(false)
 {
   if(_errorCode == 0) _errorCode = err_XPTY0004;
 }
 
 XQTreatAs::XQTreatAs(ASTNode* expr, SequenceType *exprType, const XMLCh *errorCode, bool doTypeCheck, bool doCardinalityCheck,
-                     ASTNode *funcConvert, const StaticType &treatType, bool isExact, XPath2MemoryManager* memMgr)
+                     const StaticType &treatType, bool isExact, XPath2MemoryManager* memMgr)
   : ASTNodeImpl(TREAT_AS, memMgr),
     _expr(expr),
     _exprType(exprType),
     _errorCode(errorCode),
     _doTypeCheck(doTypeCheck),
     _doCardinalityCheck(doCardinalityCheck),
-    _funcConvert(funcConvert),
     _treatType(treatType),
     _isExact(isExact)
 {
@@ -77,8 +66,6 @@ XQTreatAs::XQTreatAs(ASTNode* expr, SequenceType *exprType, const XMLCh *errorCo
 
 ASTNode* XQTreatAs::staticResolution(StaticContext *context)
 {
-  XPath2MemoryManager *mm = context->getMemoryManager();
-
   _exprType->staticResolution(context);
 
   if(_exprType->getOccurrenceIndicator() == SequenceType::QUESTION_MARK ||
@@ -91,54 +78,6 @@ ASTNode* XQTreatAs::staticResolution(StaticContext *context)
   }
 
   _exprType->getStaticType(_treatType, context, _isExact, this);
-
-  const SequenceType::ItemType *type = _exprType->getItemType();
-
-  if(type && type->getItemTestType() == SequenceType::ItemType::TEST_FUNCTION &&
-     type->getReturnType() != 0) {
-    // Construct an XQInlineFunction that will convert a function reference
-    // stored in a variable to the correct type, and will throw type errors
-    // if it isn't the correct type
-
-    // Simultaneously create the XQInlineFunction parameter spec and the
-    // XQFunctionDeref argument list
-    ArgumentSpecs *paramList = new (mm) ArgumentSpecs(XQillaAllocator<ArgumentSpec*>(mm));
-    VectorOfASTNodes *argList = new (mm) VectorOfASTNodes(XQillaAllocator<ASTNode*>(mm));
-
-    VectorOfSequenceTypes *argTypes = type->getArgumentTypes();
-    unsigned int count = 0;
-    for(VectorOfSequenceTypes::iterator i = argTypes->begin(); i != argTypes->end(); ++i) {
-      XMLBuffer buf(20);
-      buf.set(FunctionRefImpl::argVarPrefix);
-      XPath2Utils::numToBuf(count, buf);
-      ++count;
-      const XMLCh *argName = mm->getPooledString(buf.getRawBuffer());
-
-      ArgumentSpec *argSpec = new (mm) ArgumentSpec(argName, *i, mm);
-      argSpec->setLocationInfo(*i);
-      paramList->push_back(argSpec);
-
-      XQVariable *argVar = new (mm) XQVariable(0, argName, mm);
-      argVar->setLocationInfo(this);
-      argList->push_back(argVar);
-    }
-
-    XQVariable *funcVar = new (mm) XQVariable(0, funcVarName, mm);
-    funcVar->setLocationInfo(this);
-
-    XQFunctionDeref *body = new (mm) XQFunctionDeref(funcVar, argList, mm);
-    body->setLocationInfo(this);
-
-    FunctionSignature *signature = new (mm) FunctionSignature(paramList, type->getReturnType(), mm);
-
-    XQUserFunction *func = new (mm) XQUserFunction(0, signature, body, false, mm);
-    func->setLocationInfo(this);
-
-    _funcConvert = new (mm) XQInlineFunction(func, mm);
-    _funcConvert->setLocationInfo(this);
-
-    _funcConvert = _funcConvert->staticResolution(context);
-  }
 
   return this;
 }
@@ -216,42 +155,6 @@ void XQTreatAs::setExpression(ASTNode *item) {
   _expr = item;
 }
 
-class FunctionConversionResult : public ResultImpl
-{
-public:
-  FunctionConversionResult(const Result &parent, const ASTNode *funcConvert, const LocationInfo *location)
-    : ResultImpl(location),
-      parent_(parent),
-      funcConvert_(funcConvert)
-  {
-  }
-
-  virtual Item::Ptr next(DynamicContext *context)
-  {
-    Item::Ptr item = parent_->next(context);
-
-    if(item.notNull() && item->isFunction()) {
-      XPath2MemoryManager *mm = context->getMemoryManager();
-
-      VarStoreImpl scope(mm, context->getVariableStore());
-      scope.setVar(0, XQTreatAs::funcVarName, item);
-
-      AutoVariableStoreReset vsReset(context, &scope);
-
-      // funcConvert_ only returns one item
-      item = funcConvert_->createResult(context)->next(context);
-    }
-
-    return item;
-  }
-
-  string asString(DynamicContext *context, int indent) const { return ""; }
-
-private:
-  Result parent_;
-  const ASTNode *funcConvert_;
-};
-
 Result XQTreatAs::createResult(DynamicContext* context, int flags) const
 {
   Result result = _expr->createResult(context, flags);
@@ -262,10 +165,6 @@ Result XQTreatAs::createResult(DynamicContext* context, int flags) const
   }
   if(_doTypeCheck) {
     result = _exprType->typeMatches(result, this, _errorCode);
-
-    if(_funcConvert) {
-      result = new FunctionConversionResult(result, _funcConvert, this);
-    }
   }
   return result;
 }

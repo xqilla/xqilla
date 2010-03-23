@@ -215,7 +215,9 @@ void FunctionRefImpl::typeToBuffer(DynamicContext *context, XMLBuffer &buffer) c
     }
   }
   buffer.append(X(") as "));
-  signature_->returnType->toBuffer(buffer);
+  if(signature_->returnType)
+    signature_->returnType->toBuffer(buffer);
+  else buffer.append(X("item()*"));
 }
 
 void *FunctionRefImpl::getInterface(const XMLCh *name) const

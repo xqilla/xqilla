@@ -1498,6 +1498,7 @@ ASTNode *QueryPathTreeGenerator::optimize ## methodname (classname *item) \
 UNCHANGED_XQ(NameExpression)
 UNCHANGED_XQ(CastAs)
 UNCHANGED_XQ(TreatAs)
+UNCHANGED_XQ(FunctionCoercion)
 UNCHANGED_XQ(OrderingChange)
 UNCHANGED_XQ(CastableAs)
 UNCHANGED_XQ(PromoteUntyped)

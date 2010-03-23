@@ -124,6 +124,7 @@
         <file name='include/xqilla/ast/XQSequence.hpp'/>
         <file name='include/xqilla/ast/XQStep.hpp'/>
         <file name='include/xqilla/ast/XQTreatAs.hpp'/>
+        <file name='include/xqilla/ast/XQFunctionCoercion.hpp'/>
         <file name='include/xqilla/ast/XQVariable.hpp'/>
         <file name='include/xqilla/ast/StaticAnalysis.hpp'/>
         <file name='include/xqilla/ast/StaticType.hpp'/>
@@ -566,6 +567,7 @@
         <file name="src/ast/XQStep.cpp"/>
         <file name="src/ast/XQTextConstructor.cpp"/>
         <file name="src/ast/XQTreatAs.cpp"/>
+        <file name="src/ast/XQFunctionCoercion.cpp"/>
         <file name="src/ast/XQTypeswitch.cpp"/>
         <file name="src/ast/XQValidate.cpp"/>
         <file name="src/ast/XQVariable.cpp"/>
