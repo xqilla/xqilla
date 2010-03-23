@@ -27,6 +27,11 @@
 
 XERCES_CPP_NAMESPACE_USE;
 
+// http://www.w3.org/2005/xqt-errors
+const XMLCh FunctionError::XMLChXQueryErrorURI[] = {
+  'h', 't', 't', 'p', ':', '/', '/', 'w', 'w', 'w', '.', 'w', '3', '.', 'o', 'r', 'g', '/', '2', '0', '0', '5', '/', 'x', 'q', 't', '-', 'e', 'r', 'r', 'o', 'r', 's', 0
+};
+
 const XMLCh FunctionError::name[] = {
   chLatin_e, chLatin_r, chLatin_r, 
   chLatin_o, chLatin_r, chNull 

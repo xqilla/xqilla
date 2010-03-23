@@ -139,13 +139,12 @@ am_libxqilla_la_OBJECTS = ReferenceCounted.lo BaseMemoryManager.lo \
 	FunctionDistinctValues.lo FunctionDocAvailable.lo \
 	FunctionDoc.lo FunctionDocument.lo FunctionDocumentURI.lo \
 	FunctionEmpty.lo FunctionEndsWith.lo FunctionError.lo \
-	FunctionExists.lo FunctionExp.lo FunctionFloor.lo \
-	FunctionFunctionArity.lo FunctionFunctionName.lo FunctionId.lo \
-	FunctionIdref.lo FunctionImplicitTimezone.lo FunctionLang.lo \
-	FunctionLast.lo FunctionLocalname.lo \
-	FunctionLocalNameFromQName.lo FunctionLog.lo \
-	FunctionLowerCase.lo FunctionMatches.lo FunctionMax.lo \
-	FunctionMin.lo FunctionName.lo FunctionNamespaceUri.lo \
+	FunctionExp.lo FunctionFloor.lo FunctionFunctionArity.lo \
+	FunctionFunctionName.lo FunctionId.lo FunctionIdref.lo \
+	FunctionImplicitTimezone.lo FunctionLang.lo FunctionLast.lo \
+	FunctionLocalname.lo FunctionLocalNameFromQName.lo \
+	FunctionLog.lo FunctionLowerCase.lo FunctionMatches.lo \
+	FunctionName.lo FunctionNamespaceUri.lo \
 	FunctionNamespaceURIFromQName.lo FunctionNilled.lo \
 	FunctionNodeName.lo FunctionNormalizeSpace.lo \
 	FunctionNormalizeUnicode.lo FunctionNot.lo FunctionNumber.lo \
@@ -689,7 +688,6 @@ src/functions/FunctionDocumentURI.cpp \
 src/functions/FunctionEmpty.cpp \
 src/functions/FunctionEndsWith.cpp \
 src/functions/FunctionError.cpp \
-src/functions/FunctionExists.cpp \
 src/functions/FunctionExp.cpp \
 src/functions/FunctionFloor.cpp \
 src/functions/FunctionFunctionArity.cpp \
@@ -704,8 +702,6 @@ src/functions/FunctionLocalNameFromQName.cpp \
 src/functions/FunctionLog.cpp \
 src/functions/FunctionLowerCase.cpp \
 src/functions/FunctionMatches.cpp \
-src/functions/FunctionMax.cpp \
-src/functions/FunctionMin.cpp \
 src/functions/FunctionName.cpp \
 src/functions/FunctionNamespaceUri.cpp \
 src/functions/FunctionNamespaceURIFromQName.cpp \
@@ -1420,7 +1416,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionEmpty.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionEndsWith.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionError.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionExists.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionExp.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionFloor.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionFunctionArity.Plo@am__quote@
@@ -1440,8 +1435,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionLookup.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionLowerCase.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionMatches.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionMax.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionMin.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionMinutesFromDateTime.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionMinutesFromDuration.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionMinutesFromTime.Plo@am__quote@
@@ -3184,13 +3177,6 @@ FunctionError.lo: src/functions/FunctionError.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o FunctionError.lo `test -f 'src/functions/FunctionError.cpp' || echo '$(srcdir)/'`src/functions/FunctionError.cpp
 
-FunctionExists.lo: src/functions/FunctionExists.cpp
-@am__fastdepCXX_TRUE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT FunctionExists.lo -MD -MP -MF $(DEPDIR)/FunctionExists.Tpo -c -o FunctionExists.lo `test -f 'src/functions/FunctionExists.cpp' || echo '$(srcdir)/'`src/functions/FunctionExists.cpp
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/FunctionExists.Tpo $(DEPDIR)/FunctionExists.Plo
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/functions/FunctionExists.cpp' object='FunctionExists.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o FunctionExists.lo `test -f 'src/functions/FunctionExists.cpp' || echo '$(srcdir)/'`src/functions/FunctionExists.cpp
-
 FunctionExp.lo: src/functions/FunctionExp.cpp
 @am__fastdepCXX_TRUE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT FunctionExp.lo -MD -MP -MF $(DEPDIR)/FunctionExp.Tpo -c -o FunctionExp.lo `test -f 'src/functions/FunctionExp.cpp' || echo '$(srcdir)/'`src/functions/FunctionExp.cpp
 @am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/FunctionExp.Tpo $(DEPDIR)/FunctionExp.Plo
@@ -3288,20 +3274,6 @@ FunctionMatches.lo: src/functions/FunctionMatches.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/functions/FunctionMatches.cpp' object='FunctionMatches.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o FunctionMatches.lo `test -f 'src/functions/FunctionMatches.cpp' || echo '$(srcdir)/'`src/functions/FunctionMatches.cpp
-
-FunctionMax.lo: src/functions/FunctionMax.cpp
-@am__fastdepCXX_TRUE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT FunctionMax.lo -MD -MP -MF $(DEPDIR)/FunctionMax.Tpo -c -o FunctionMax.lo `test -f 'src/functions/FunctionMax.cpp' || echo '$(srcdir)/'`src/functions/FunctionMax.cpp
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/FunctionMax.Tpo $(DEPDIR)/FunctionMax.Plo
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/functions/FunctionMax.cpp' object='FunctionMax.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o FunctionMax.lo `test -f 'src/functions/FunctionMax.cpp' || echo '$(srcdir)/'`src/functions/FunctionMax.cpp
-
-FunctionMin.lo: src/functions/FunctionMin.cpp
-@am__fastdepCXX_TRUE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT FunctionMin.lo -MD -MP -MF $(DEPDIR)/FunctionMin.Tpo -c -o FunctionMin.lo `test -f 'src/functions/FunctionMin.cpp' || echo '$(srcdir)/'`src/functions/FunctionMin.cpp
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/FunctionMin.Tpo $(DEPDIR)/FunctionMin.Plo
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/functions/FunctionMin.cpp' object='FunctionMin.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o FunctionMin.lo `test -f 'src/functions/FunctionMin.cpp' || echo '$(srcdir)/'`src/functions/FunctionMin.cpp
 
 FunctionName.lo: src/functions/FunctionName.cpp
 @am__fastdepCXX_TRUE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT FunctionName.lo -MD -MP -MF $(DEPDIR)/FunctionName.Tpo -c -o FunctionName.lo `test -f 'src/functions/FunctionName.cpp' || echo '$(srcdir)/'`src/functions/FunctionName.cpp

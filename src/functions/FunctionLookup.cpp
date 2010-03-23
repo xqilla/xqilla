@@ -239,7 +239,6 @@ const ExternalFunction *FunctionLookup::lookUpGlobalExternalFunction(
 #include <xqilla/functions/FunctionEmpty.hpp>
 #include <xqilla/functions/FunctionEndsWith.hpp>
 #include <xqilla/functions/FunctionError.hpp>
-#include <xqilla/functions/FunctionExists.hpp>
 #include <xqilla/functions/FunctionQName.hpp>
 #include <xqilla/functions/FunctionFloor.hpp>
 #include <xqilla/functions/FunctionPrefixFromQName.hpp>
@@ -253,8 +252,6 @@ const ExternalFunction *FunctionLookup::lookUpGlobalExternalFunction(
 #include <xqilla/functions/FunctionLocalname.hpp>
 #include <xqilla/functions/FunctionLowerCase.hpp>
 #include <xqilla/functions/FunctionMatches.hpp>
-#include <xqilla/functions/FunctionMax.hpp>
-#include <xqilla/functions/FunctionMin.hpp>
 #include <xqilla/functions/FunctionName.hpp>
 #include <xqilla/functions/FunctionNamespaceUri.hpp>
 #include <xqilla/functions/FunctionNilled.hpp>
@@ -503,8 +500,6 @@ static void initGlobalTable(FunctionLookup *t, MemoryManager *memMgr)
   // Functions on sequences
   //   fn:empty
   t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionEmpty>(memMgr));
-  //   fn:exists
-  t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionExists>(memMgr));
   //   fn:distinct-values
   t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionDistinctValues>(memMgr));
   //   fn:unordered
@@ -516,10 +511,6 @@ static void initGlobalTable(FunctionLookup *t, MemoryManager *memMgr)
   
   //   fn:count
   t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionCount>(memMgr));
-  //   fn:max
-  t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionMax>(memMgr));
-  //   fn:min
-  t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionMin>(memMgr));
 
   //   fn:id
   t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionId>(memMgr));

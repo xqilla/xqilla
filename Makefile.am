@@ -192,7 +192,6 @@ src/functions/FunctionDocumentURI.cpp \
 src/functions/FunctionEmpty.cpp \
 src/functions/FunctionEndsWith.cpp \
 src/functions/FunctionError.cpp \
-src/functions/FunctionExists.cpp \
 src/functions/FunctionExp.cpp \
 src/functions/FunctionFloor.cpp \
 src/functions/FunctionFunctionArity.cpp \
@@ -207,8 +206,6 @@ src/functions/FunctionLocalNameFromQName.cpp \
 src/functions/FunctionLog.cpp \
 src/functions/FunctionLowerCase.cpp \
 src/functions/FunctionMatches.cpp \
-src/functions/FunctionMax.cpp \
-src/functions/FunctionMin.cpp \
 src/functions/FunctionName.cpp \
 src/functions/FunctionNamespaceUri.cpp \
 src/functions/FunctionNamespaceURIFromQName.cpp \

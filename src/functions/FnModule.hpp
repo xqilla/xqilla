@@ -232,13 +232,12 @@ static const DelayedModule::FuncDef fn_functions[] = {
     "    let $uri := namespace-uri-for-prefix(prefix-from-QName($mock), $element)\n"
     "    return\n"
     "      if(empty(prefix-from-QName($mock)) or exists($uri)) then QName($uri, $qname)\n"
-    "      else error(QName(\"http://www.w3.org/2005/xqt-errors\", \"err:FONS0004\"),\n"
-    "        concat(\"No namespace found for prefix: \"\"\", prefix-from-QName($mock), \"\"\"\"))\n"
+    "      else error(xs:QName(\"err:FONS0004\"), concat(\"No namespace found for prefix: \"\"\", prefix-from-QName($mock), \"\"\"\"))\n"
     "  default return ()\n"
     "}\n"
   },
   {
-    "namespace-uri-for-prefix", 2, false, 218, 1,
+    "namespace-uri-for-prefix", 2, false, 217, 1,
     "declare function namespace-uri-for-prefix($prefix as xs:string?, $element as element()) as xs:anyURI?\n"
     "{\n"
     "  let $prefix := if(empty($prefix)) then \"\" else $prefix\n"
@@ -246,63 +245,66 @@ static const DelayedModule::FuncDef fn_functions[] = {
     "}\n"
   },
   {
-    "in-scope-prefixes", 1, false, 224, 1,
+    "in-scope-prefixes", 1, false, 223, 1,
     "declare function in-scope-prefixes($element as element()) as xs:string*\n"
     "{\n"
     "  $element/namespace::*/name()\n"
     "}\n"
   },
   {
-    "true", 0, false, 232, 1,
+    "true", 0, false, 231, 1,
     "declare function true() as xs:boolean\n"
     "{\n"
     "  xs:boolean(\"1\")\n"
     "}\n"
   },
   {
-    "false", 0, false, 237, 1,
+    "false", 0, false, 236, 1,
     "declare function false() as xs:boolean\n"
     "{\n"
     "  xs:boolean(\"0\")\n"
     "}\n"
   },
   {
-    "boolean", 1, false, 242, 1,
+    "boolean", 1, false, 241, 1,
     "declare function boolean($arg as item()*) as xs:boolean\n"
     "{\n"
     "  $arg and true()\n"
     "}\n"
   },
   {
-    "zero-or-one", 1, false, 250, 1,
+    "exists", 1, false, 246, 1,
+    "declare function exists($arg as item()*) as xs:boolean\n"
+    "{\n"
+    "  not(empty($arg))\n"
+    "}\n"
+  },
+  {
+    "zero-or-one", 1, false, 254, 1,
     "declare function zero-or-one($arg as item()*) as item()?\n"
     "{\n"
     "  typeswitch($arg)\n"
     "  case $arg_ as item()? return $arg_\n"
-    "  default return error(QName(\"http://www.w3.org/2005/xqt-errors\", \"err:FORG0003\"),\n"
-    "    \"Sequence contains more then one item\")\n"
+    "  default return error(xs:QName(\"err:FORG0003\"), \"Sequence contains more then one item\")\n"
     "}\n"
   },
   {
-    "one-or-more", 1, false, 258, 1,
+    "one-or-more", 1, false, 261, 1,
     "declare function one-or-more($arg as item()*) as item()+\n"
     "{\n"
     "  typeswitch($arg)\n"
     "  case $arg_ as item()+ return $arg_\n"
-    "  default return error(QName(\"http://www.w3.org/2005/xqt-errors\", \"err:FORG0004\"),\n"
-    "    \"Sequence is empty\")\n"
+    "  default return error(xs:QName(\"err:FORG0004\"), \"Sequence is empty\")\n"
     "}\n"
   },
   {
-    "exactly-one", 1, false, 266, 1,
+    "exactly-one", 1, false, 268, 1,
     "declare function exactly-one($arg as item()*) as item()\n"
     "{\n"
     "  typeswitch($arg)\n"
     "  case $arg_ as item() return $arg_\n"
-    "  case empty-sequence() return error(QName(\"http://www.w3.org/2005/xqt-errors\", \"err:FORG0005\"),\n"
-    "    \"Sequence is empty\")\n"
-    "  default return error(QName(\"http://www.w3.org/2005/xqt-errors\", \"err:FORG0005\"),\n"
-    "    \"Sequence contains more then one item\")\n"
+    "  case empty-sequence() return error(xs:QName(\"err:FORG0005\"), \"Sequence is empty\")\n"
+    "  default return error(xs:QName(\"err:FORG0005\"), \"Sequence contains more then one item\")\n"
     "}\n"
   },
   {
@@ -435,12 +437,11 @@ static const DelayedModule::FuncDef fn_functions[] = {
     "deep-equal-error", 0, true, 378, 1,
     "declare private function deep-equal-error()\n"
     "{\n"
-    "  error(QName(\"http://www.w3.org/2005/xqt-errors\", \"err:FOTY0015\"),\n"
-    "    \"An argument to fn:deep-equal() contains a function item\")\n"
+    "  error(xs:QName(\"err:FOTY0015\"), \"An argument to fn:deep-equal() contains a function item\")\n"
     "}\n"
   },
   {
-    "deep-equal-nodes", 3, true, 384, 1,
+    "deep-equal-nodes", 3, true, 383, 1,
     "declare private function deep-equal-nodes($p1 as node()*, $p2 as node()*, $collation as xs:string) as xs:boolean\n"
     "{\n"
     "  if(empty($p1)) then empty($p2) else\n"
@@ -506,12 +507,7 @@ static const DelayedModule::FuncDef fn_functions[] = {
     "  \n"
     "  default (: namespace-node() :) return\n"
     "    typeswitch($i2)\n"
-    "    case document-node() return false()\n"
-    "    case element() return false()\n"
-    "    case attribute() return false()\n"
-    "    case processing-instruction() return false()\n"
-    "    case comment() return false()\n"
-    "    case text() return false()\n"
+    "    case document-node() | element() | attribute() | processing-instruction() | comment() | text() return false()\n"
     "    default (: namespace-node() :) return\n"
     "      deep-equal(node-name($i1), node-name($i2), $collation) and\n"
     "      codepoint-equal($i1, $i2) and\n"
@@ -519,81 +515,343 @@ static const DelayedModule::FuncDef fn_functions[] = {
     "}\n"
   },
   {
-    "avg", 1, false, 464, 1,
+    "avg", 1, false, 458, 1,
     "declare function avg($arg as xs:anyAtomicType*) as xs:anyAtomicType?\n"
     "{\n"
     "  sum($arg, ()) div count($arg)\n"
     "}\n"
   },
   {
-    "sum", 1, false, 469, 1,
+    "sum", 1, false, 463, 1,
     "declare function sum($arg as xs:anyAtomicType*) as xs:anyAtomicType\n"
     "{\n"
     "  sum($arg, 0)\n"
     "}\n"
   },
   {
-    "sum", 2, false, 474, 1,
+    "sum", 2, false, 468, 1,
     "declare function sum($arg as xs:anyAtomicType*, $zero as xs:anyAtomicType?) as xs:anyAtomicType?\n"
     "{\n"
     "  typeswitch(head($arg))\n"
     "  case empty-sequence() return $zero\n"
     "  case $head as xs:untypedAtomic return numeric-sum(tail($arg), xs:double($head))\n"
-    "  case $head as xs:double return if($head ne $head) then $head else numeric-sum(tail($arg), $head)\n"
-    "  case $head as xs:float return if($head ne $head) then $head else numeric-sum(tail($arg), $head)\n"
-    "  case $head as xs:decimal return numeric-sum(tail($arg), $head)\n"
+    "  case $head as xs:double | xs:float | xs:decimal return\n"
+    "    if($head ne $head) then $head else numeric-sum(tail($arg), $head)\n"
     "  case $head as xs:yearMonthDuration return yearMonthDuration-sum(tail($arg), $head)\n"
     "  case $head as xs:dayTimeDuration return dayTimeDuration-sum(tail($arg), $head)\n"
-    "  default return error(QName(\"http://www.w3.org/2005/xqt-errors\", \"err:FORG0006\"),\n"
-    "    \"Invalid argument to fn:sum() function\")\n"
+    "  default return error(xs:QName(\"err:FORG0006\"), \"Invalid argument to fn:sum() function\")\n"
     "}\n"
   },
   {
-    "numeric-sum", 2, true, 488, 1,
+    "numeric-sum", 2, true, 480, 1,
     "declare private function numeric-sum($arg as xs:anyAtomicType*, $result as xs:anyAtomicType) as xs:anyAtomicType\n"
     "{\n"
     "  typeswitch(head($arg))\n"
     "  case empty-sequence() return $result\n"
     "  case $head as xs:untypedAtomic return numeric-sum(tail($arg), xs:double($head) + $result)\n"
-    "  case $head as xs:double return if($head ne $head) then $head else numeric-sum(tail($arg), $head + $result)\n"
-    "  case $head as xs:float return if($head ne $head) then $head else numeric-sum(tail($arg), $head + $result)\n"
-    "  case $head as xs:decimal return numeric-sum(tail($arg), $head + $result)\n"
-    "  default return error(QName(\"http://www.w3.org/2005/xqt-errors\", \"err:FORG0006\"),\n"
-    "    \"Invalid argument to fn:sum() function\")\n"
+    "  case $head as xs:double | xs:float | xs:decimal return\n"
+    "    if($head ne $head) then $head else numeric-sum(tail($arg), $head + $result)\n"
+    "  default return error(xs:QName(\"err:FORG0006\"), \"Invalid argument to fn:sum() function\")\n"
     "}\n"
   },
   {
-    "yearMonthDuration-sum", 2, true, 500, 1,
+    "yearMonthDuration-sum", 2, true, 490, 1,
     "declare private function yearMonthDuration-sum($arg as xs:anyAtomicType*, $result as xs:yearMonthDuration) as xs:yearMonthDuration\n"
     "{\n"
     "  typeswitch(head($arg))\n"
     "  case empty-sequence() return $result\n"
     "  case $head as xs:yearMonthDuration return yearMonthDuration-sum(tail($arg), $head + $result)\n"
-    "  default return error(QName(\"http://www.w3.org/2005/xqt-errors\", \"err:FORG0006\"),\n"
-    "    \"Invalid argument to fn:sum() function\")\n"
+    "  default return error(xs:QName(\"err:FORG0006\"), \"Invalid argument to fn:sum() function\")\n"
     "}\n"
   },
   {
-    "dayTimeDuration-sum", 2, true, 509, 1,
+    "dayTimeDuration-sum", 2, true, 498, 1,
     "declare private function dayTimeDuration-sum($arg as xs:anyAtomicType*, $result as xs:dayTimeDuration) as xs:dayTimeDuration\n"
     "{\n"
     "  typeswitch(head($arg))\n"
     "  case empty-sequence() return $result\n"
     "  case $head as xs:dayTimeDuration return dayTimeDuration-sum(tail($arg), $head + $result)\n"
-    "  default return error(QName(\"http://www.w3.org/2005/xqt-errors\", \"err:FORG0006\"),\n"
-    "    \"Invalid argument to fn:sum() function\")\n"
+    "  default return error(xs:QName(\"err:FORG0006\"), \"Invalid argument to fn:sum() function\")\n"
     "}\n"
   },
   {
-    "map", 2, false, 523, 1,
+    "max", 1, false, 506, 1,
+    "declare function max($arg as xs:anyAtomicType*) as xs:anyAtomicType?\n"
+    "{\n"
+    "  max($arg, default-collation())\n"
+    "}\n"
+  },
+  {
+    "max", 2, false, 511, 1,
+    "declare function max($arg as xs:anyAtomicType*, $collation as xs:string) as xs:anyAtomicType?\n"
+    "{\n"
+    "  typeswitch(head($arg))\n"
+    "  case empty-sequence() return ()\n"
+    "  case $head as xs:untypedAtomic | xs:double return double-max(tail($arg), xs:double($head))\n"
+    "  case $head as xs:float return float-max(tail($arg), $head)\n"
+    "  case $head as xs:decimal return decimal-max(tail($arg), $head)\n"
+    "  case $head as xs:anyURI | xs:string return string-max(tail($arg), xs:string($head), $collation)\n"
+    "  case $head as xs:boolean return boolean-max(tail($arg), $head)\n"
+    "  case $head as xs:date return date-max(tail($arg), $head)\n"
+    "  case $head as xs:time return time-max(tail($arg), $head)\n"
+    "  case $head as xs:dateTime return dateTime-max(tail($arg), $head)\n"
+    "  case $head as xs:yearMonthDuration return yearMonthDuration-sum(tail($arg), $head)\n"
+    "  case $head as xs:dayTimeDuration return dayTimeDuration-sum(tail($arg), $head)\n"
+    "  default return error(xs:QName(\"err:FORG0006\"), \"Uncomparable items in argument to fn:max() function\")\n"
+    "}\n"
+  },
+  {
+    "double-max", 2, true, 528, 1,
+    "declare private function double-max($arg as xs:anyAtomicType*, $result as xs:double) as xs:double\n"
+    "{\n"
+    "  typeswitch(head($arg))\n"
+    "  case empty-sequence() return $result\n"
+    "  case $head as xs:untypedAtomic | xs:double | xs:float | xs:decimal return\n"
+    "    let $head := xs:double($head) return\n"
+    "      double-max(tail($arg), if($head gt $result or $head ne $head) then $head else $result)\n"
+    "  default return error(xs:QName(\"err:FORG0006\"), \"Uncomparable items in argument to fn:max() function\")\n"
+    "}\n"
+  },
+  {
+    "float-max", 2, true, 538, 1,
+    "declare private function float-max($arg as xs:anyAtomicType*, $result as xs:float) as xs:anyAtomicType\n"
+    "{\n"
+    "  typeswitch(head($arg))\n"
+    "  case empty-sequence() return $result\n"
+    "  case $head as xs:untypedAtomic | xs:double return double-max($arg, xs:double($result))\n"
+    "  case $head as xs:float | xs:decimal return\n"
+    "    let $head := xs:float($head) return\n"
+    "      float-max(tail($arg), if($head gt $result or $head ne $head) then $head else $result)\n"
+    "  default return error(xs:QName(\"err:FORG0006\"), \"Uncomparable items in argument to fn:max() function\")\n"
+    "}\n"
+  },
+  {
+    "decimal-max", 2, true, 549, 1,
+    "declare private function decimal-max($arg as xs:anyAtomicType*, $result as xs:decimal) as xs:anyAtomicType\n"
+    "{\n"
+    "  typeswitch(head($arg))\n"
+    "  case empty-sequence() return $result\n"
+    "  case $head as xs:untypedAtomic | xs:double return double-max($arg, xs:double($result))\n"
+    "  case $head as xs:float return float-max($arg, xs:float($result))\n"
+    "  case $head as xs:decimal return decimal-max(tail($arg), if($head gt $result) then $head else $result)\n"
+    "  default return error(xs:QName(\"err:FORG0006\"), \"Uncomparable items in argument to fn:max() function\")\n"
+    "}\n"
+  },
+  {
+    "string-max", 3, true, 559, 1,
+    "declare private function string-max($arg as xs:anyAtomicType*, $result as xs:string, $collation as xs:string) as xs:string\n"
+    "{\n"
+    "  typeswitch(head($arg))\n"
+    "  case empty-sequence() return $result\n"
+    "  case $head as xs:string | xs:anyURI return\n"
+    "    string-max(tail($arg), if(compare($head, $result, $collation) gt 0) then xs:string($head) else $result, $collation)\n"
+    "  default return error(xs:QName(\"err:FORG0006\"), \"Uncomparable items in argument to fn:max() function\")\n"
+    "}\n"
+  },
+  {
+    "boolean-max", 2, true, 568, 1,
+    "declare private function boolean-max($arg as xs:anyAtomicType*, $result as xs:boolean) as xs:boolean\n"
+    "{\n"
+    "  typeswitch(head($arg))\n"
+    "  case empty-sequence() return $result\n"
+    "  case $head as xs:boolean return boolean-max(tail($arg), if($head gt $result) then $head else $result)\n"
+    "  default return error(xs:QName(\"err:FORG0006\"), \"Uncomparable items in argument to fn:max() function\")\n"
+    "}\n"
+  },
+  {
+    "date-max", 2, true, 576, 1,
+    "declare private function date-max($arg as xs:anyAtomicType*, $result as xs:date) as xs:date\n"
+    "{\n"
+    "  typeswitch(head($arg))\n"
+    "  case empty-sequence() return $result\n"
+    "  case $head as xs:date return date-max(tail($arg), if($head gt $result) then $head else $result)\n"
+    "  default return error(xs:QName(\"err:FORG0006\"), \"Uncomparable items in argument to fn:max() function\")\n"
+    "}\n"
+  },
+  {
+    "time-max", 2, true, 584, 1,
+    "declare private function time-max($arg as xs:anyAtomicType*, $result as xs:time) as xs:time\n"
+    "{\n"
+    "  typeswitch(head($arg))\n"
+    "  case empty-sequence() return $result\n"
+    "  case $head as xs:time return time-max(tail($arg), if($head gt $result) then $head else $result)\n"
+    "  default return error(xs:QName(\"err:FORG0006\"), \"Uncomparable items in argument to fn:max() function\")\n"
+    "}\n"
+  },
+  {
+    "dateTime-max", 2, true, 592, 1,
+    "declare private function dateTime-max($arg as xs:anyAtomicType*, $result as xs:dateTime) as xs:dateTime\n"
+    "{\n"
+    "  typeswitch(head($arg))\n"
+    "  case empty-sequence() return $result\n"
+    "  case $head as xs:dateTime return dateTime-max(tail($arg), if($head gt $result) then $head else $result)\n"
+    "  default return error(xs:QName(\"err:FORG0006\"), \"Uncomparable items in argument to fn:max() function\")\n"
+    "}\n"
+  },
+  {
+    "yearMonthDuration-max", 2, true, 600, 1,
+    "declare private function yearMonthDuration-max($arg as xs:anyAtomicType*, $result as xs:yearMonthDuration) as xs:yearMonthDuration\n"
+    "{\n"
+    "  typeswitch(head($arg))\n"
+    "  case empty-sequence() return $result\n"
+    "  case $head as xs:yearMonthDuration return yearMonthDuration-max(tail($arg), if($head gt $result) then $head else $result)\n"
+    "  default return error(xs:QName(\"err:FORG0006\"), \"Uncomparable items in argument to fn:max() function\")\n"
+    "}\n"
+  },
+  {
+    "dayTimeDuration-max", 2, true, 608, 1,
+    "declare private function dayTimeDuration-max($arg as xs:anyAtomicType*, $result as xs:dayTimeDuration) as xs:dayTimeDuration\n"
+    "{\n"
+    "  typeswitch(head($arg))\n"
+    "  case empty-sequence() return $result\n"
+    "  case $head as xs:dayTimeDuration return dayTimeDuration-max(tail($arg), if($head gt $result) then $head else $result)\n"
+    "  default return error(xs:QName(\"err:FORG0006\"), \"Uncomparable items in argument to fn:max() function\")\n"
+    "}\n"
+  },
+  {
+    "min", 1, false, 616, 1,
+    "declare function min($arg as xs:anyAtomicType*) as xs:anyAtomicType?\n"
+    "{\n"
+    "  min($arg, default-collation())\n"
+    "}\n"
+  },
+  {
+    "min", 2, false, 621, 1,
+    "declare function min($arg as xs:anyAtomicType*, $collation as xs:string) as xs:anyAtomicType?\n"
+    "{\n"
+    "  typeswitch(head($arg))\n"
+    "  case empty-sequence() return ()\n"
+    "  case $head as xs:untypedAtomic | xs:double return double-min(tail($arg), xs:double($head))\n"
+    "  case $head as xs:float return float-min(tail($arg), $head)\n"
+    "  case $head as xs:decimal return decimal-min(tail($arg), $head)\n"
+    "  case $head as xs:anyURI | xs:string return string-min(tail($arg), xs:string($head), $collation)\n"
+    "  case $head as xs:boolean return boolean-min(tail($arg), $head)\n"
+    "  case $head as xs:date return date-min(tail($arg), $head)\n"
+    "  case $head as xs:time return time-min(tail($arg), $head)\n"
+    "  case $head as xs:dateTime return dateTime-min(tail($arg), $head)\n"
+    "  case $head as xs:yearMonthDuration return yearMonthDuration-sum(tail($arg), $head)\n"
+    "  case $head as xs:dayTimeDuration return dayTimeDuration-sum(tail($arg), $head)\n"
+    "  default return error(xs:QName(\"err:FORG0006\"), \"Uncomparable items in argument to fn:min() function\")\n"
+    "}\n"
+  },
+  {
+    "double-min", 2, true, 638, 1,
+    "declare private function double-min($arg as xs:anyAtomicType*, $result as xs:double) as xs:double\n"
+    "{\n"
+    "  typeswitch(head($arg))\n"
+    "  case empty-sequence() return $result\n"
+    "  case $head as xs:untypedAtomic | xs:double | xs:float | xs:decimal return\n"
+    "    let $head := xs:double($head) return\n"
+    "      double-min(tail($arg), if($head lt $result or $head ne $head) then $head else $result)\n"
+    "  default return error(xs:QName(\"err:FORG0006\"), \"Uncomparable items in argument to fn:min() function\")\n"
+    "}\n"
+  },
+  {
+    "float-min", 2, true, 648, 1,
+    "declare private function float-min($arg as xs:anyAtomicType*, $result as xs:float) as xs:anyAtomicType\n"
+    "{\n"
+    "  typeswitch(head($arg))\n"
+    "  case empty-sequence() return $result\n"
+    "  case $head as xs:untypedAtomic | xs:double return double-min($arg, xs:double($result))\n"
+    "  case $head as xs:float | xs:decimal return\n"
+    "    let $head := xs:float($head) return\n"
+    "      float-min(tail($arg), if($head lt $result or $head ne $head) then $head else $result)\n"
+    "  default return error(xs:QName(\"err:FORG0006\"), \"Uncomparable items in argument to fn:min() function\")\n"
+    "}\n"
+  },
+  {
+    "decimal-min", 2, true, 659, 1,
+    "declare private function decimal-min($arg as xs:anyAtomicType*, $result as xs:decimal) as xs:anyAtomicType\n"
+    "{\n"
+    "  typeswitch(head($arg))\n"
+    "  case empty-sequence() return $result\n"
+    "  case $head as xs:untypedAtomic | xs:double return double-min($arg, xs:double($result))\n"
+    "  case $head as xs:float return float-min($arg, xs:float($result))\n"
+    "  case $head as xs:decimal return decimal-min(tail($arg), if($head lt $result) then $head else $result)\n"
+    "  default return error(xs:QName(\"err:FORG0006\"), \"Uncomparable items in argument to fn:min() function\")\n"
+    "}\n"
+  },
+  {
+    "string-min", 3, true, 669, 1,
+    "declare private function string-min($arg as xs:anyAtomicType*, $result as xs:string, $collation as xs:string) as xs:string\n"
+    "{\n"
+    "  typeswitch(head($arg))\n"
+    "  case empty-sequence() return $result\n"
+    "  case $head as xs:string | xs:anyURI return\n"
+    "    string-min(tail($arg), if(compare($head, $result, $collation) lt 0) then xs:string($head) else $result, $collation)\n"
+    "  default return error(xs:QName(\"err:FORG0006\"), \"Uncomparable items in argument to fn:min() function\")\n"
+    "}\n"
+  },
+  {
+    "boolean-min", 2, true, 678, 1,
+    "declare private function boolean-min($arg as xs:anyAtomicType*, $result as xs:boolean) as xs:boolean\n"
+    "{\n"
+    "  typeswitch(head($arg))\n"
+    "  case empty-sequence() return $result\n"
+    "  case $head as xs:boolean return boolean-min(tail($arg), if($head lt $result) then $head else $result)\n"
+    "  default return error(xs:QName(\"err:FORG0006\"), \"Uncomparable items in argument to fn:min() function\")\n"
+    "}\n"
+  },
+  {
+    "date-min", 2, true, 686, 1,
+    "declare private function date-min($arg as xs:anyAtomicType*, $result as xs:date) as xs:date\n"
+    "{\n"
+    "  typeswitch(head($arg))\n"
+    "  case empty-sequence() return $result\n"
+    "  case $head as xs:date return date-min(tail($arg), if($head lt $result) then $head else $result)\n"
+    "  default return error(xs:QName(\"err:FORG0006\"), \"Uncomparable items in argument to fn:min() function\")\n"
+    "}\n"
+  },
+  {
+    "time-min", 2, true, 694, 1,
+    "declare private function time-min($arg as xs:anyAtomicType*, $result as xs:time) as xs:time\n"
+    "{\n"
+    "  typeswitch(head($arg))\n"
+    "  case empty-sequence() return $result\n"
+    "  case $head as xs:time return time-min(tail($arg), if($head lt $result) then $head else $result)\n"
+    "  default return error(xs:QName(\"err:FORG0006\"), \"Uncomparable items in argument to fn:min() function\")\n"
+    "}\n"
+  },
+  {
+    "dateTime-min", 2, true, 702, 1,
+    "declare private function dateTime-min($arg as xs:anyAtomicType*, $result as xs:dateTime) as xs:dateTime\n"
+    "{\n"
+    "  typeswitch(head($arg))\n"
+    "  case empty-sequence() return $result\n"
+    "  case $head as xs:dateTime return dateTime-min(tail($arg), if($head lt $result) then $head else $result)\n"
+    "  default return error(xs:QName(\"err:FORG0006\"), \"Uncomparable items in argument to fn:min() function\")\n"
+    "}\n"
+  },
+  {
+    "yearMonthDuration-min", 2, true, 710, 1,
+    "declare private function yearMonthDuration-min($arg as xs:anyAtomicType*, $result as xs:yearMonthDuration) as xs:yearMonthDuration\n"
+    "{\n"
+    "  typeswitch(head($arg))\n"
+    "  case empty-sequence() return $result\n"
+    "  case $head as xs:yearMonthDuration return yearMonthDuration-min(tail($arg), if($head lt $result) then $head else $result)\n"
+    "  default return error(xs:QName(\"err:FORG0006\"), \"Uncomparable items in argument to fn:min() function\")\n"
+    "}\n"
+  },
+  {
+    "dayTimeDuration-min", 2, true, 718, 1,
+    "declare private function dayTimeDuration-min($arg as xs:anyAtomicType*, $result as xs:dayTimeDuration) as xs:dayTimeDuration\n"
+    "{\n"
+    "  typeswitch(head($arg))\n"
+    "  case empty-sequence() return $result\n"
+    "  case $head as xs:dayTimeDuration return dayTimeDuration-min(tail($arg), if($head lt $result) then $head else $result)\n"
+    "  default return error(xs:QName(\"err:FORG0006\"), \"Uncomparable items in argument to fn:min() function\")\n"
+    "}\n"
+  },
+  {
+    "map", 2, false, 731, 1,
     "declare function map($f as function(item()) as item()*, $seq as item()*) as item()*\n"
     "{\n"
     "  if(empty($seq)) then ()\n"
-    "  else $f(head($seq)), map($f, tail($seq))\n"
+    "  else ($f(head($seq)), map($f, tail($seq)))\n"
     "}\n"
   },
   {
-    "filter", 2, false, 529, 1,
+    "filter", 2, false, 737, 1,
     "declare function filter($f as function(item()) as xs:boolean, $seq as item()*) as item()*\n"
     "{\n"
     "  if(empty($seq)) then ()\n"
@@ -604,7 +862,7 @@ static const DelayedModule::FuncDef fn_functions[] = {
     "}\n"
   },
   {
-    "fold-left", 3, false, 538, 1,
+    "fold-left", 3, false, 746, 1,
     "declare function fold-left($f as function(item()*, item()) as item()*, $zero as item()*,\n"
     "  $seq as item()*) as item()*\n"
     "{\n"
@@ -613,7 +871,7 @@ static const DelayedModule::FuncDef fn_functions[] = {
     "}\n"
   },
   {
-    "fold-right", 3, false, 545, 1,
+    "fold-right", 3, false, 753, 1,
     "declare function fold-right($f as function(item()*, item()) as item()*, $zero as item()*,\n"
     "  $seq as item()*) as item()*\n"
     "{\n"
@@ -622,16 +880,15 @@ static const DelayedModule::FuncDef fn_functions[] = {
     "}\n"
   },
   {
-    "map-pairs", 3, false, 552, 1,
+    "map-pairs", 3, false, 760, 1,
     "declare function map-pairs($f as function(item(), item()) as item()*, $seq1 as item()*,\n"
     "  $seq2 as item()*) as item()*\n"
     "{\n"
-    "   if(exists($seq1) and exists($seq2))\n"
-    "   then (\n"
+    "   if(empty($seq1) or empty($seq2)) then ()\n"
+    "   else (\n"
     "     $f(head($seq1), head($seq2)),\n"
     "     map-pairs($f, tail($seq1), tail($seq2))\n"
     "   )\n"
-    "   else ()\n"
     "}\n"
   },
   { 0, 0, 0, 0, 0 }

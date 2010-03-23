@@ -183,7 +183,6 @@ xqilla/functions/FunctionEmpty.hpp \
 xqilla/functions/FunctionEndsWith.hpp \
 xqilla/functions/FunctionExp.hpp \
 xqilla/functions/FunctionError.hpp \
-xqilla/functions/FunctionExists.hpp \
 xqilla/functions/FunctionFloor.hpp \
 xqilla/functions/FunctionFunctionArity.hpp \
 xqilla/functions/FunctionFunctionName.hpp \
@@ -200,8 +199,6 @@ xqilla/functions/FunctionLocalname.hpp \
 xqilla/functions/FunctionLog.hpp \
 xqilla/functions/FunctionLowerCase.hpp \
 xqilla/functions/FunctionMatches.hpp \
-xqilla/functions/FunctionMax.hpp \
-xqilla/functions/FunctionMin.hpp \
 xqilla/functions/FunctionMinutesFromDateTime.hpp \
 xqilla/functions/FunctionMinutesFromDuration.hpp \
 xqilla/functions/FunctionMinutesFromTime.hpp \

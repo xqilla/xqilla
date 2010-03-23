@@ -27,6 +27,8 @@
 class XQILLA_API FunctionError : public XQFunction
 {
 public:
+  static const XMLCh XMLChXQueryErrorURI[];
+
   static const XMLCh name[];
   static const unsigned int minArgs;
   static const unsigned int maxArgs;
