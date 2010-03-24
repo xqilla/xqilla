@@ -210,22 +210,23 @@ ASTNode *StaticTyper::optimizeReturn(XQReturn *item)
 
 void StaticTyper::optimizeCase(const StaticAnalysis &var_src, XQTypeswitch::Case *item)
 {
+  AutoDelete<StaticAnalysis> caseSrc(0);
   if(context_ && item->isVariableUsed()) {
     VariableTypeStore* varStore = context_->getVariableTypeStore();
 
-    StaticAnalysis caseSrc(context_->getMemoryManager());
-    caseSrc.copy(var_src);
+    caseSrc.set(new StaticAnalysis(context_->getMemoryManager()));
+    caseSrc->copy(var_src);
 
     if(item->getSequenceType() != 0) {
       bool isExact;
       StaticType type;
       item->getSequenceType()->getStaticType(type, context_, isExact, item);
   
-      caseSrc.getStaticType() &= type;
+      caseSrc->getStaticType() &= type;
     }
 
     varStore->addLogicalBlockScope();
-    varStore->declareVar(item->getURI(), item->getName(), caseSrc);
+    varStore->declareVar(item->getURI(), item->getName(), *caseSrc);
   }
 
   item->setExpression(optimize(item->getExpression()));
@@ -254,15 +255,16 @@ ASTNode *StaticTyper::optimizeFunctionCoercion(XQFunctionCoercion *item)
 {
   item->setExpression(optimize(item->getExpression()));
 
+  AutoDelete<StaticAnalysis> varSrc(0);
   if(item->getFuncConvert()) {
     if(context_) {
       // Could do better on the static type
-      StaticAnalysis varSrc(context_->getMemoryManager());
-      varSrc.getStaticType() = StaticType::FUNCTION_TYPE;
+      varSrc.set(new StaticAnalysis(context_->getMemoryManager()));
+      varSrc->getStaticType() = StaticType::FUNCTION_TYPE;
 
       VariableTypeStore *varStore = context_->getVariableTypeStore();
       varStore->addLogicalBlockScope();
-      varStore->declareVar(0, XQFunctionCoercion::funcVarName, varSrc);
+      varStore->declareVar(0, XQFunctionCoercion::funcVarName, *varSrc);
     }
 
     {
@@ -293,10 +295,11 @@ ASTNode *StaticTyper::optimizeNamespaceBinding(XQNamespaceBinding *item)
 
 ASTNode *StaticTyper::optimizeFunctionRef(XQFunctionRef *item)
 {
+  AutoDelete<StaticAnalysis> instanceVarSrc(0);
   if(context_) {
     XPath2MemoryManager *mm = context_->getMemoryManager();
-    StaticAnalysis instanceVarSrc(mm);
-    instanceVarSrc.getStaticType() = StaticType(StaticType::ITEM_TYPE, 0, StaticType::UNLIMITED);
+    instanceVarSrc.set(new StaticAnalysis(mm));
+    instanceVarSrc->getStaticType() = StaticType(StaticType::ITEM_TYPE, 0, StaticType::UNLIMITED);
 
     VariableTypeStore *varStore = context_->getVariableTypeStore();
     varStore->addLogicalBlockScope();
@@ -306,12 +309,15 @@ ASTNode *StaticTyper::optimizeFunctionRef(XQFunctionRef *item)
       buf.set(FunctionRefImpl::argVarPrefix);
       XPath2Utils::numToBuf(i, buf);
 
-      varStore->declareVar(0, mm->getPooledString(buf.getRawBuffer()), instanceVarSrc);
+      varStore->declareVar(0, mm->getPooledString(buf.getRawBuffer()), *instanceVarSrc);
     }
   }
 
   {
-    AutoMessageListenerReset reset(context_); // Turn off warnings
+    // The context item is not defined
+    AutoContextItemTypeReset contextTypeReset(context_, StaticType());
+    // Turn off warnings
+    AutoMessageListenerReset reset(context_);
     item->setInstance(optimize(item->getInstance()));
   }
 
@@ -326,10 +332,11 @@ ASTNode *StaticTyper::optimizeInlineFunction(XQInlineFunction *item)
   if(item->getUserFunction())
     item->getUserFunction()->staticTyping(context_, this);
 
+  AutoDelete<StaticAnalysis> instanceVarSrc(0);
   if(context_) {
     XPath2MemoryManager *mm = context_->getMemoryManager();
-    StaticAnalysis instanceVarSrc(mm);
-    instanceVarSrc.getStaticType() = StaticType(StaticType::ITEM_TYPE, 0, StaticType::UNLIMITED);
+    instanceVarSrc.set(new StaticAnalysis(mm));
+    instanceVarSrc->getStaticType() = StaticType(StaticType::ITEM_TYPE, 0, StaticType::UNLIMITED);
 
     VariableTypeStore *varStore = context_->getVariableTypeStore();
     varStore->addLogicalBlockScope();
@@ -339,12 +346,15 @@ ASTNode *StaticTyper::optimizeInlineFunction(XQInlineFunction *item)
       buf.set(FunctionRefImpl::argVarPrefix);
       XPath2Utils::numToBuf(i, buf);
 
-      varStore->declareVar(0, mm->getPooledString(buf.getRawBuffer()), instanceVarSrc);
+      varStore->declareVar(0, mm->getPooledString(buf.getRawBuffer()), *instanceVarSrc);
     }
   }
 
   {
-    AutoMessageListenerReset reset(context_); // Turn off warnings
+    // The context item is not defined
+    AutoContextItemTypeReset contextTypeReset(context_, StaticType());
+    // Turn off warnings
+    AutoMessageListenerReset reset(context_);
     item->setInstance(optimize(item->getInstance()));
   }
 

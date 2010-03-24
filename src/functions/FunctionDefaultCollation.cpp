@@ -25,14 +25,17 @@
 #include <xqilla/items/DatatypeFactory.hpp>
 #include <xqilla/items/ATStringOrDerived.hpp>
 #include <xqilla/context/ItemFactory.hpp>
+#include <xqilla/ast/XQLiteral.hpp>
+
+XERCES_CPP_NAMESPACE_USE;
 
 const XMLCh FunctionDefaultCollation::name[] = {
-  XERCES_CPP_NAMESPACE_QUALIFIER chLatin_d, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_e, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_f, 
-  XERCES_CPP_NAMESPACE_QUALIFIER chLatin_a, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_u, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_l, 
-  XERCES_CPP_NAMESPACE_QUALIFIER chLatin_t, XERCES_CPP_NAMESPACE_QUALIFIER chDash,    XERCES_CPP_NAMESPACE_QUALIFIER chLatin_c, 
-  XERCES_CPP_NAMESPACE_QUALIFIER chLatin_o, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_l, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_l, 
-  XERCES_CPP_NAMESPACE_QUALIFIER chLatin_a, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_t, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_i, 
-  XERCES_CPP_NAMESPACE_QUALIFIER chLatin_o, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_n, XERCES_CPP_NAMESPACE_QUALIFIER chNull 
+  chLatin_d, chLatin_e, chLatin_f, 
+  chLatin_a, chLatin_u, chLatin_l, 
+  chLatin_t, chDash,    chLatin_c, 
+  chLatin_o, chLatin_l, chLatin_l, 
+  chLatin_a, chLatin_t, chLatin_i, 
+  chLatin_o, chLatin_n, chNull 
 };
 const unsigned int FunctionDefaultCollation::minArgs = 0;
 const unsigned int FunctionDefaultCollation::maxArgs = 0;
@@ -46,13 +49,21 @@ FunctionDefaultCollation::FunctionDefaultCollation(const VectorOfASTNodes &args,
 {
 }
 
+ASTNode *FunctionDefaultCollation::staticResolution(StaticContext *context)
+{
+  XPath2MemoryManager *mm = context->getMemoryManager();
+
+  Collation *collation = context->getDefaultCollation(this);
+  ASTNode *newBlock = new (mm) XQLiteral(SchemaSymbols::fgURI_SCHEMAFORSCHEMA, SchemaSymbols::fgDT_STRING,
+                                         collation ? collation->getCollationName() : CodepointCollation::getCodepointCollationName(),
+                                         AnyAtomicType::STRING, mm);
+  newBlock->setLocationInfo(this);
+
+  return newBlock->staticResolution(context);
+}
+
 Sequence FunctionDefaultCollation::createSequence(DynamicContext* context, int flags) const
 {
-  Collation* collation = context->getDefaultCollation(this);
-  if(collation != NULL)
-    return Sequence(context->getItemFactory()->createString(collation->getCollationName(), context),
-                    context->getMemoryManager());
-
-  return Sequence(context->getItemFactory()->createString(CodepointCollation::getCodepointCollationName(), context),
-                  context->getMemoryManager());
+  // Always constant folded
+  return Sequence(context->getMemoryManager());
 }

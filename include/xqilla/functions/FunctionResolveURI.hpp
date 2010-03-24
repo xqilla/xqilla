@@ -33,12 +33,9 @@ public:
 
   FunctionResolveURI(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
   
-  ASTNode* staticResolution(StaticContext *context);
+  virtual ASTNode *staticResolution(StaticContext *context);
 
-  Sequence createSequence(DynamicContext* context, int flags=0) const;
-
-private:
-  const XMLCh *baseURI_;
+  virtual Sequence createSequence(DynamicContext* context, int flags=0) const;
 };
 
 #endif

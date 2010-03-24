@@ -22,12 +22,14 @@
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/items/ATDecimalOrDerived.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
-#include <xqilla/exceptions/FunctionException.hpp>
+#include <xqilla/exceptions/DynamicErrorException.hpp>
 #include <xqilla/ast/StaticAnalysis.hpp>
 
+XERCES_CPP_NAMESPACE_USE;
+
 const XMLCh FunctionLast::name[] = {
-  XERCES_CPP_NAMESPACE_QUALIFIER chLatin_l, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_a, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_s, 
-  XERCES_CPP_NAMESPACE_QUALIFIER chLatin_t, XERCES_CPP_NAMESPACE_QUALIFIER chNull 
+  chLatin_l, chLatin_a, chLatin_s, 
+  chLatin_t, chNull 
 };
 const unsigned int FunctionLast::minArgs = 0;
 const unsigned int FunctionLast::maxArgs = 0;
@@ -44,6 +46,12 @@ FunctionLast::FunctionLast(const VectorOfASTNodes &args, XPath2MemoryManager* me
 ASTNode *FunctionLast::staticTypingImpl(StaticContext *context)
 {
   _src.clearExceptType();
+
+  if(!context->getContextItemType().containsType(StaticType::ITEM_TYPE)) {
+    XQThrow(DynamicErrorException,X("XQContextItem::staticTyping"),
+            X("It is an error for the context item to be undefined when using it [err:XPDY0002]"));
+  }
+
   _src.contextSizeUsed(true);
   calculateSRCForArguments(context);
   return this;
@@ -54,7 +62,7 @@ Sequence FunctionLast::createSequence(DynamicContext* context, int flags) const
   XPath2MemoryManager* memMgr = context->getMemoryManager();
 
   if(context->getContextItem()==NULLRCP)
-    XQThrow(FunctionException,X("FunctionPosition::createSequence"), X("Undefined context item in fn:last [err:XPDY0002]"));
+    XQThrow(DynamicErrorException,X("FunctionPosition::createSequence"), X("Undefined context item in fn:last [err:XPDY0002]"));
   return Sequence(context->getItemFactory()->createInteger((long)context->getContextSize(), context), memMgr);
 }
 

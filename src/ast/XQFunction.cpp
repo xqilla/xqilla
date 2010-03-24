@@ -138,14 +138,12 @@ void XQFunction::resolveArguments(StaticContext *context, bool numericFunction)
   parseSignature(context);
 
   size_t paramNumber = 0;
-  for(VectorOfASTNodes::iterator i = _args.begin(); i != _args.end(); ++i) {
-    *i = (*signature_->argSpecs)[paramNumber]->getType()->convertFunctionArg(*i, context, numericFunction, this);
-    *i = (*i)->staticResolution(context);
-
-    ++paramNumber;
-    if(paramNumber >= signature_->argSpecs->size()) {
-      paramNumber = signature_->argSpecs->size() - 1;
+  for(VectorOfASTNodes::iterator i = _args.begin(); i != _args.end(); ++i, ++paramNumber) {
+    if(paramNumber < signature_->argSpecs->size()) {
+      *i = (*signature_->argSpecs)[paramNumber]->getType()->
+        convertFunctionArg(*i, context, numericFunction, this);
     }
+    *i = (*i)->staticResolution(context);
   }
 }
 

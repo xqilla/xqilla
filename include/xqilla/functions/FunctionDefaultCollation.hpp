@@ -17,19 +17,11 @@
  * limitations under the License.
  */
 
-/*
-
-   default-collation function
-
-*/
-
-
 #ifndef _FUNCTIONDEFAULTCOLLATION_HPP
 #define _FUNCTIONDEFAULTCOLLATION_HPP
 
 #include <xqilla/ast/XQFunction.hpp>
 
-/** default-collation function*/
 class XQILLA_API FunctionDefaultCollation : public XQFunction
 {
 public:
@@ -39,7 +31,8 @@ public:
 
   FunctionDefaultCollation(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
   
-  Sequence createSequence(DynamicContext* context, int flags=0) const;
+  virtual ASTNode *staticResolution(StaticContext *context);
+  virtual Sequence createSequence(DynamicContext* context, int flags=0) const;
 };
 
-#endif // _FUNCTIONDEFAULTCOLLATION_HPP
+#endif

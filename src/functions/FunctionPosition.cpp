@@ -22,14 +22,16 @@
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/items/ATDecimalOrDerived.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
-#include <xqilla/exceptions/FunctionException.hpp>
+#include <xqilla/exceptions/DynamicErrorException.hpp>
 #include <xqilla/ast/StaticAnalysis.hpp>
 #include <xqilla/runtime/ResultImpl.hpp>
 
+XERCES_CPP_NAMESPACE_USE;
+
 const XMLCh FunctionPosition::name[] = {
-  XERCES_CPP_NAMESPACE_QUALIFIER chLatin_p, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_o, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_s, 
-  XERCES_CPP_NAMESPACE_QUALIFIER chLatin_i, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_t, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_i, 
-  XERCES_CPP_NAMESPACE_QUALIFIER chLatin_o, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_n, XERCES_CPP_NAMESPACE_QUALIFIER chNull 
+  chLatin_p, chLatin_o, chLatin_s, 
+  chLatin_i, chLatin_t, chLatin_i, 
+  chLatin_o, chLatin_n, chNull 
 };
 const unsigned int FunctionPosition::minArgs = 0;
 const unsigned int FunctionPosition::maxArgs = 0;
@@ -46,6 +48,12 @@ FunctionPosition::FunctionPosition(const VectorOfASTNodes &args, XPath2MemoryMan
 ASTNode *FunctionPosition::staticTypingImpl(StaticContext *context)
 {
   _src.clearExceptType();
+
+  if(!context->getContextItemType().containsType(StaticType::ITEM_TYPE)) {
+    XQThrow(DynamicErrorException,X("XQContextItem::staticTyping"),
+            X("It is an error for the context item to be undefined when using it [err:XPDY0002]"));
+  }
+
   _src.contextPositionUsed(true);
   calculateSRCForArguments(context);
   return this;
@@ -60,7 +68,7 @@ public:
   virtual Item::Ptr nextOrTail(Result &tail, DynamicContext *context)
   {
     if(context->getContextItem().isNull())
-      XQThrow(FunctionException,X("FunctionPosition::createSequence"),
+      XQThrow(DynamicErrorException,X("FunctionPosition::createSequence"),
               X("Undefined context item in fn:position [err:XPDY0002]"));
 
     tail = 0;

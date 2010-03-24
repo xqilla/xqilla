@@ -22,9 +22,12 @@
 #include <xqilla/functions/FunctionResolveURI.hpp>
 #include <xqilla/items/ATStringOrDerived.hpp>
 #include <xqilla/exceptions/FunctionException.hpp>
+#include <xqilla/exceptions/StaticErrorException.hpp>
 #include "../exceptions/InvalidLexicalSpaceException.hpp"
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
+#include <xqilla/ast/XQLiteral.hpp>
+
 #include <xercesc/util/XMLString.hpp>
 #include <xercesc/util/XMLUri.hpp>
 
@@ -45,15 +48,23 @@ const unsigned int FunctionResolveURI::maxArgs = 2;
  **/
 
 FunctionResolveURI::FunctionResolveURI(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
-  : XQFunction(name, "($relative as xs:string?, $base as xs:string) as xs:anyURI?", args, memMgr),
-    baseURI_(0)
+  : XQFunction(name, "($relative as xs:string?, $base as xs:string) as xs:anyURI?", args, memMgr)
 {
 }
 
 ASTNode* FunctionResolveURI::staticResolution(StaticContext *context)
 {
-  if (getNumArgs() == 1) {
-    baseURI_ = context->getBaseURI();
+  if(getNumArgs() == 1) {
+    if(!context->getBaseURI())
+      XQThrow(StaticErrorException, X("FunctionResolveURI::staticResolution"),
+              X("Base uri undefined in the static context [err:FONS0005]"));
+
+    XPath2MemoryManager* mm = context->getMemoryManager();
+
+    ASTNode *baseURI = new (mm) XQLiteral(SchemaSymbols::fgURI_SCHEMAFORSCHEMA, SchemaSymbols::fgDT_STRING,
+                                          context->getBaseURI(), AnyAtomicType::STRING, mm);
+    baseURI->setLocationInfo(this);
+    _args.push_back(baseURI);
   }
 
   resolveArguments(context);
@@ -77,16 +88,7 @@ Sequence FunctionResolveURI::createSequence(DynamicContext* context, int flags) 
   }
 
   try {
-    const XMLCh *baseURI;
-    if(getNumArgs() == 1) {
-      baseURI = baseURI_;
-      if(!baseURI)
-        XQThrow(FunctionException, X("FunctionResolveURI::createSequence"),
-                X("Base uri undefined in the static context [err:FONS0005]"));
-    }
-    else {
-      baseURI = getParamNumber(2, context)->next(context)->asString(context);
-    }
+    const XMLCh *baseURI = getParamNumber(2, context)->next(context)->asString(context);
 
     if(!XMLUri::isValidURI(true, relativeURI))
       XQThrow(FunctionException, X("FunctionResolveURI::createSequence"),
