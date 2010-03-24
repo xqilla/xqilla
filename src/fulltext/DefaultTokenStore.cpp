@@ -37,13 +37,22 @@ DefaultTokenStore::DefaultTokenStore(const Node::Ptr &node, const Tokenizer *tok
                                      DynamicContext *context)
   : tokens_(73, /*adoptElems*/true, context->getMemoryManager()),
     numTokens_(0),
-    mm_(context->getMemoryManager())
+    mm_(context->getMemoryManager()),
+    context_(context)
 {
   TokenStream::Ptr stream = tokenizer->tokenize(node, context);
   TokenInfo token;
+	
+  int options = 0;
+  //consider stem, stop words, thesaurus, case options
+  if(context_->getFTCase() == StaticContext::CASE_INSENSITIVE) {
+    options = UTF8PROC_CASEFOLD;
+  }
+
+
   while((token = stream->next()).word_ != 0) {
     ++numTokens_;
-    AutoDeallocate<XMLCh> buf(UnicodeTransformer::caseFoldAndRemoveDiacritics(token.word_, mm_), mm_);
+    AutoDeallocate<XMLCh> buf(UnicodeTransformer::transform(token.word_, options, mm_), mm_);
     TokenEntry *entry = tokens_.get(buf.get());
     if(entry == 0) {
       entry = new TokenEntry();
@@ -62,7 +71,16 @@ DefaultTokenStore::DefaultTokenStore(XPath2MemoryManager *mm)
 
 TokenStream::Ptr DefaultTokenStore::findTokens(const XMLCh *searchString) const
 {
-  AutoDeallocate<XMLCh> buf(UnicodeTransformer::caseFoldAndRemoveDiacritics(searchString, mm_), mm_);
+  int options = 0;
+  if(context_->getFTCase() == StaticContext::CASE_INSENSITIVE){
+    options = UTF8PROC_CASEFOLD;
+  } else if(context_->getFTCase() == StaticContext::UPPERCASE){
+    options = UTF8PROC_UPPERCASE;
+  } else if(context_->getFTCase() == StaticContext::LOWERCASE){
+    options = UTF8PROC_LOWERCASE;
+  }
+
+  AutoDeallocate<XMLCh> buf(UnicodeTransformer::transform(searchString, options, mm_), mm_);
   const TokenEntry *entry = tokens_.get(buf.get());
   if(entry == 0) return 0;
   return entry->getTokenStream();

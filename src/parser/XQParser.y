@@ -5406,19 +5406,19 @@ FTMatchOption:
 FTCaseOption:
     _CASE_S_ _INSENSITIVE_
   {
-    std::cerr << "case insensitive" << std::endl;
+    CONTEXT->setFTCase(StaticContext::CASE_INSENSITIVE);
   }
   | _CASE_S_ _SENSITIVE_
   {
-    std::cerr << "case sensitive" << std::endl;
+    CONTEXT->setFTCase(StaticContext::CASE_SENSITIVE);
   }
   | _LOWERCASE_
   {
-    std::cerr << "lowercase" << std::endl;
+    CONTEXT->setFTCase(StaticContext::LOWERCASE);
   }
   | _UPPERCASE_
   {
-    std::cerr << "uppercase" << std::endl;
+    CONTEXT->setFTCase(StaticContext::UPPERCASE);
   }
   ;
 

@@ -72,6 +72,14 @@ public:
     FLWOR_ORDER_EMPTY_LEAST
   } FLWOROrderingMode;
 
+  typedef enum {
+      NONE,
+      CASE_INSENSITIVE,
+      CASE_SENSITIVE,
+      UPPERCASE,
+      LOWERCASE
+  } FTCaseOption;
+
   virtual ~StaticContext() {};
 
   virtual DynamicContext *createModuleContext(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *memMgr =
@@ -298,6 +306,10 @@ public:
   virtual XPath2MemoryManager* getMemoryManager() const = 0;
   /** Set the memory manager to the one given */
   virtual void setMemoryManager(XPath2MemoryManager* memMgr) = 0;
+
+  /** Set default full text query case option. */
+  virtual void setFTCase(FTCaseOption option) = 0;
+  virtual FTCaseOption getFTCase() = 0;
 };
 
 #endif

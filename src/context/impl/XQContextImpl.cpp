@@ -91,7 +91,8 @@ XQContextImpl::XQContextImpl(XQillaConfiguration *conf, XQilla::Language languag
     _stackFrame(0),
     _projection(true),
     _lint(false),
-    _tmpVarCounter(0)
+    _tmpVarCounter(0),
+    _ftCaseOption(StaticContext::CASE_INSENSITIVE)
 {
   _memMgr = &_internalMM;
 

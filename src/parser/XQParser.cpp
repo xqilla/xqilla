@@ -11452,7 +11452,7 @@ yyreduce:
 /* Line 1455 of yacc.c  */
 #line 5408 "../src/parser/XQParser.y"
     {
-    std::cerr << "case insensitive" << std::endl;
+    CONTEXT->setFTCase(StaticContext::CASE_INSENSITIVE);
   }
     break;
 
@@ -11461,7 +11461,7 @@ yyreduce:
 /* Line 1455 of yacc.c  */
 #line 5412 "../src/parser/XQParser.y"
     {
-    std::cerr << "case sensitive" << std::endl;
+    CONTEXT->setFTCase(StaticContext::CASE_SENSITIVE);
   }
     break;
 
@@ -11470,7 +11470,7 @@ yyreduce:
 /* Line 1455 of yacc.c  */
 #line 5416 "../src/parser/XQParser.y"
     {
-    std::cerr << "lowercase" << std::endl;
+    CONTEXT->setFTCase(StaticContext::LOWERCASE);
   }
     break;
 
@@ -11479,7 +11479,7 @@ yyreduce:
 /* Line 1455 of yacc.c  */
 #line 5420 "../src/parser/XQParser.y"
     {
-    std::cerr << "uppercase" << std::endl;
+    CONTEXT->setFTCase(StaticContext::UPPERCASE);
   }
     break;
 

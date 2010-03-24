@@ -87,6 +87,7 @@ private:
   XERCES_CPP_NAMESPACE_QUALIFIER RefHashTableOf<TokenEntry> tokens_;
   unsigned int numTokens_;
   XPath2MemoryManager *mm_;
+  DynamicContext *context_;
 };
 
 #endif

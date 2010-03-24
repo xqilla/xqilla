@@ -256,6 +256,9 @@ public:
   /** Gets the listener for warning and trace messages */
   virtual MessageListener *getMessageListener() const;
 
+  virtual void setFTCase(FTCaseOption option) { _ftCaseOption = option; }
+  virtual FTCaseOption getFTCase() { return _ftCaseOption; }
+
   virtual void setModule(XQQuery *module) { _module = module; }
   virtual XQQuery *getModule() const { return _module; }
 
@@ -474,6 +477,9 @@ protected:
 
   // used for memory management in expression evaluation
   XPath2MemoryManager* _memMgr;
+
+  //Full text related
+  FTCaseOption _ftCaseOption;
 };
 
 #endif

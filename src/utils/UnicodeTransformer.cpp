@@ -140,6 +140,11 @@ XMLCh* UnicodeTransformer::wordsAndSentences(const XMLCh* source, XPath2MemoryMa
   return transformUTF16(tmp.get(), UTF8PROC_WORDBOUND | UTF8PROC_SENTENCEBOUND, mm);
 }
 
+XMLCh* UnicodeTransformer::transform(const XMLCh* source, int options, XPath2MemoryManager *mm)
+{
+  return transformUTF16(source, options, mm);
+}
+
 bool UnicodeTransformer::isPunctuation(const XMLCh* source, int &codeSize)
 {
   codeSize = 1;

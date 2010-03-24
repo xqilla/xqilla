@@ -45,6 +45,8 @@ public:
   static XMLCh* words(const XMLCh* source, XPath2MemoryManager* mm);
   static XMLCh* sentences(const XMLCh* source, XPath2MemoryManager* mm);
   static XMLCh* wordsAndSentences(const XMLCh* source, XPath2MemoryManager* mm);
+
+  static XMLCh* transform(const XMLCh* source, int options, XPath2MemoryManager* mm);
  
   static bool isPunctuation(const XMLCh* source, int &codeSize);
   static bool isSpaceSeparator(const XMLCh* source);

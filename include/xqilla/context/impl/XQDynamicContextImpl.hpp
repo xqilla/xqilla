@@ -252,6 +252,10 @@ public:
   virtual void setModule(XQQuery *module);
   virtual XQQuery *getModule() const;
 
+  virtual void setFTCase(FTCaseOption option);
+  virtual FTCaseOption getFTCase();
+
+
   /////////////////////////////////////////
   //  XQilla context specific accessors  //
   /////////////////////////////////////////
@@ -427,6 +431,8 @@ inline DocumentCache::ValidationMode XQDynamicContextImpl::getRevalidationMode()
 inline bool XQDynamicContextImpl::getDoLintWarnings() const { XQThrow2(ContextException,X("XQDynamicContextImpl"), X("The static context is not available from a proxying dynamic context")); }
 inline XQQuery *XQDynamicContextImpl::getModule() const { XQThrow2(ContextException,X("XQDynamicContextImpl"), X("The static context is not available from a proxying dynamic context")); }
 
+inline void XQDynamicContextImpl::setFTCase(FTCaseOption option){ XQThrow2(ContextException,X("XQDynamicContextImpl"), X("The static context is not available from a proxying dynamic context")); }
+inline XQDynamicContextImpl::FTCaseOption XQDynamicContextImpl::getFTCase(){ XQThrow2(ContextException,X("XQDynamicContextImpl"), X("The static context is not available from a proxying dynamic context")); }
 
 inline XQilla::Language XQDynamicContextImpl::getLanguage() const { return _staticContext->getLanguage(); }
 inline const XMLCh* XQDynamicContextImpl::getBaseURI() const { return _staticContext->getBaseURI(); }
