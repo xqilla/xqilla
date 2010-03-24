@@ -690,7 +690,6 @@
         <file name="src/functions/FunctionEndsWith.cpp"/>
         <file name="src/functions/FunctionError.cpp"/>
         <file name="src/functions/FunctionExp.cpp"/>
-        <file name="src/functions/FunctionFalse.cpp"/>
         <file name="src/functions/FunctionFloor.cpp"/>
         <file name="src/functions/FunctionFunctionArity.cpp"/>
         <file name="src/functions/FunctionFunctionName.cpp"/>

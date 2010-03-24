@@ -716,7 +716,6 @@
       <File RelativePath="..\..\src\functions\FunctionEndsWith.cpp"/>
       <File RelativePath="..\..\src\functions\FunctionError.cpp"/>
       <File RelativePath="..\..\src\functions\FunctionExp.cpp"/>
-      <File RelativePath="..\..\src\functions\FunctionFalse.cpp"/>
       <File RelativePath="..\..\src\functions\FunctionFloor.cpp"/>
       <File RelativePath="..\..\src\functions\FunctionFunctionArity.cpp"/>
       <File RelativePath="..\..\src\functions\FunctionFunctionName.cpp"/>
