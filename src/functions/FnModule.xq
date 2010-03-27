@@ -755,7 +755,7 @@ declare function fold-left($f as function(item()*, item()) as item()*, $zero as 
   else fold-left($f, $f($zero, head($seq)), tail($seq))
 };
 
-declare function fold-right($f as function(item()*, item()) as item()*, $zero as item()*,
+declare function fold-right($f as function(item(), item()*) as item()*, $zero as item()*,
   $seq as item()*) as item()*
 {
   if(empty($seq)) then $zero

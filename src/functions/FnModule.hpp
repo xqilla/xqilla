@@ -877,7 +877,7 @@ static const DelayedModule::FuncDef fn_functions[] = {
   },
   {
     "fold-right", 3, false, 758, 1,
-    "declare function fold-right($f as function(item()*, item()) as item()*, $zero as item()*,\n"
+    "declare function fold-right($f as function(item(), item()*) as item()*, $zero as item()*,\n"
     "  $seq as item()*) as item()*\n"
     "{\n"
     "  if(empty($seq)) then $zero\n"
