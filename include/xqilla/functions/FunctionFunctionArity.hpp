@@ -33,7 +33,8 @@ public:
 
   FunctionFunctionArity(const VectorOfASTNodes &args, XPath2MemoryManager *memMgr);
   
-  Sequence createSequence(DynamicContext* context, int flags=0) const;
+  virtual ASTNode *staticTypingImpl(StaticContext *context);
+  virtual Sequence createSequence(DynamicContext* context, int flags=0) const;
 };
 
 #endif

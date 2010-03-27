@@ -23,6 +23,7 @@
 #include <xqilla/ast/StaticAnalysis.hpp>
 #include <xqilla/exceptions/XPath2TypeMatchException.hpp>
 #include <xqilla/items/FunctionRef.hpp>
+#include <xqilla/ast/XQLiteral.hpp>
 
 XERCES_CPP_NAMESPACE_USE;
 using namespace std;
@@ -39,6 +40,31 @@ const unsigned int FunctionFunctionArity::maxArgs = 1;
 FunctionFunctionArity::FunctionFunctionArity(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : XQFunction(name, "($function as function(*)) as xs:integer", args, memMgr)
 {
+}
+
+ASTNode *FunctionFunctionArity::staticTypingImpl(StaticContext *context)
+{
+  _src.clearExceptType();
+  calculateSRCForArguments(context);
+
+  if(context) {
+    const StaticAnalysis &sa = _args[0]->getStaticAnalysis();
+    const StaticType &sType = sa.getStaticType();
+    if(sType.getReturnType() && sType.getMinArgs() == sType.getMaxArgs() && !sa.areDocsOrCollectionsUsed() && !sa.isNoFoldingForced()) {
+      XPath2MemoryManager* mm = context->getMemoryManager();
+
+      try {
+        AutoDelete<DynamicContext> dContext(context->createDynamicContext());
+        dContext->setMemoryManager(mm);
+        return XQLiteral::create(mm->createInteger(sType.getMinArgs()), dContext, mm, this);
+      }
+      catch(XQException &ex) {
+        // Constant folding failed
+      }
+    }
+  }
+
+  return this;
 }
 
 Sequence FunctionFunctionArity::createSequence(DynamicContext* context, int flags) const
