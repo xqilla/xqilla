@@ -27,6 +27,9 @@
 #include <xqilla/exceptions/XQException.hpp>
 #include <xqilla/utils/PrintAST.hpp>
 #include <xqilla/functions/FunctionSignature.hpp>
+#include <xqilla/functions/FunctionCount.hpp>
+#include <xqilla/functions/FunctionEmpty.hpp>
+#include <xqilla/functions/FunctionFunctionArity.hpp>
 
 #include <xqilla/operators/Plus.hpp>
 #include <xqilla/operators/Minus.hpp>
@@ -1184,7 +1187,7 @@ static void findLetsToInline(TupleNode *ancestor, vector<LetTuple*> &toInline, m
   }
 }
 
-static ASTNode *inlineLets(XQReturn *item, DynamicContext *context, size_t &sizeLimit)
+static ASTNode *inlineLets(XQReturn *item, DynamicContext *context, size_t &sizeLimit, bool &success)
 {
   map<LetTuple*, unsigned int> toCount;
   vector<LetTuple*> toInline;
@@ -1196,12 +1199,14 @@ static ASTNode *inlineLets(XQReturn *item, DynamicContext *context, size_t &size
   vector<LetTuple*>::iterator i = toInline.begin();
   for(; i != toInline.end(); ++i) {
     inliner.inlineLet(item, *i, context, sizeLimit);
+    success = true;
   }
 
   map<LetTuple*, unsigned int>::iterator j = toCount.begin();
   for(; j != toCount.end(); ++j) {
     if(j->second != StaticType::UNLIMITED && j->second <= 1) {
       inliner.inlineLet(item, j->first, context, sizeLimit);
+      success = true;
     }
   }
 
@@ -1210,8 +1215,9 @@ static ASTNode *inlineLets(XQReturn *item, DynamicContext *context, size_t &size
 
 ASTNode *PartialEvaluator::optimizeReturn(XQReturn *item)
 {
-  ASTNode *result = inlineLets(item, context_, sizeLimit_);
-  if(result != item) {
+  bool success = false;
+  ASTNode *result = inlineLets(item, context_, sizeLimit_, success);
+  if(success || result != item) {
     redoTyping_ = true;
     return optimize(result);
   }
@@ -1248,10 +1254,11 @@ ASTNode *PartialEvaluator::optimizeReturn(XQReturn *item)
     }
   }
 
-  result = inlineLets(item, context_, sizeLimit_);
-  if(result != item) {
+  success = false;
+  result = inlineLets(item, context_, sizeLimit_, success);
+  if(success || result != item) {
     redoTyping_ = true;
-    return result;
+    return optimize(result);
   }
 
   if(item->getParent()->getType() == TupleNode::CONTEXT_TUPLE) {
@@ -1947,18 +1954,36 @@ ASTNode *PartialEvaluator::optimizeDivide(Divide *item)
   return foldEmptyArgument(item, context_);
 }
 
+ASTNode *PartialEvaluator::optimizeFunction(XQFunction *item)
+{
+  ASTNode *result = ASTVisitor::optimizeFunction(item);
+  if(result != item) return result;
+
+  const XMLCh *uri = item->getFunctionURI();
+  const XMLCh *name = item->getFunctionName();
+
+  if(uri == XQFunction::XMLChFunctionURI) {
+
+    if(name == FunctionCount::name ||
+       name == FunctionFunctionArity::name ||
+       name == FunctionEmpty::name) {
+      return item->staticTypingImpl(context_);
+    }
+
+  }
+
+  return item;
+}
 
 // Other things to constant fold:
 //
 // XQMap
 // XQTypeswitch - reduce to Let if one clause
 // XQSequence
-// empty(), exists(), count()
 // global variables
 // 
 //
 // XQNav
 // LetTuple
 // casts, conversions, atomize
-// FunctionCount
 //

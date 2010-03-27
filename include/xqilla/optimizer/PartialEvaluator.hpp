@@ -50,6 +50,7 @@ protected:
   virtual ASTNode *optimizeOperator(XQOperator *item);
   virtual ASTNode *optimizeNamespaceBinding(XQNamespaceBinding *item);
   virtual ASTNode *optimizeInlineFunction(XQInlineFunction *item);
+  virtual ASTNode *optimizeFunction(XQFunction *item);
 
   ASTNode *optimizePlus(Plus *item);
   ASTNode *optimizeMinus(Minus *item);
