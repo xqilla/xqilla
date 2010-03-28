@@ -84,8 +84,7 @@ declare private function string-index-of($str as xs:string, $index as xs:decimal
 
 declare function codepoint-equal($arg1 as xs:string?, $arg2 as xs:string?) as xs:boolean?
 {
-  if(empty($arg1) or empty($arg2)) then ()
-  else compare($arg1, $arg2, "http://www.w3.org/2005/xpath-functions/collation/codepoint") eq 0
+  compare($arg1, $arg2, "http://www.w3.org/2005/xpath-functions/collation/codepoint") eq 0
 };
 
 declare function translate($arg as xs:string?, $mapString as xs:string, $transString as xs:string) as xs:string
@@ -445,16 +444,11 @@ declare private function deep-equal-nodes($p1 as node()*, $p2 as node()*, $colla
   
   default (: namespace-node() :) return
     typeswitch($i2)
-    case document-node() | element() | attribute() | processing-instruction() | comment() | text() return false()
-    default (: namespace-node() :) return
+    case namespace-node() return
       deep-equal(node-name($i1), node-name($i2), $collation) and
       codepoint-equal($i1, $i2) and
       deep-equal-nodes(tail($p1), tail($p2), $collation)
-(:     case namespace-node() return :)
-(:       deep-equal(node-name($i1), node-name($i2), $collation) and :)
-(:       codepoint-equal($i1, $i2) and :)
-(:       deep-equal-nodes(tail($p1), tail($p2), $collation) :)
-(:     default return false() :)
+    default return false()
 };
 
 (:----------------------------------------------------------------------------------------------------:)
@@ -525,8 +519,8 @@ declare function max($arg as xs:anyAtomicType*, $collation as xs:string) as xs:a
   case $head as xs:date return date-max(tail($arg), $head)
   case $head as xs:time return time-max(tail($arg), $head)
   case $head as xs:dateTime return dateTime-max(tail($arg), $head)
-  case $head as xs:yearMonthDuration return yearMonthDuration-sum(tail($arg), $head)
-  case $head as xs:dayTimeDuration return dayTimeDuration-sum(tail($arg), $head)
+  case $head as xs:yearMonthDuration return yearMonthDuration-max(tail($arg), $head)
+  case $head as xs:dayTimeDuration return dayTimeDuration-max(tail($arg), $head)
   default return error(xs:QName("err:FORG0006"), "Uncomparable items in argument to fn:max() function")
 };
 
@@ -635,8 +629,8 @@ declare function min($arg as xs:anyAtomicType*, $collation as xs:string) as xs:a
   case $head as xs:date return date-min(tail($arg), $head)
   case $head as xs:time return time-min(tail($arg), $head)
   case $head as xs:dateTime return dateTime-min(tail($arg), $head)
-  case $head as xs:yearMonthDuration return yearMonthDuration-sum(tail($arg), $head)
-  case $head as xs:dayTimeDuration return dayTimeDuration-sum(tail($arg), $head)
+  case $head as xs:yearMonthDuration return yearMonthDuration-min(tail($arg), $head)
+  case $head as xs:dayTimeDuration return dayTimeDuration-min(tail($arg), $head)
   default return error(xs:QName("err:FORG0006"), "Uncomparable items in argument to fn:min() function")
 };
 
