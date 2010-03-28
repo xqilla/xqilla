@@ -30,17 +30,15 @@
 #include <xqilla/context/ContextHelpers.hpp>
 #include <xqilla/exceptions/StaticErrorException.hpp>
 #include <xqilla/ast/XQEffectiveBooleanValue.hpp>
+#include <xqilla/runtime/ClosureResult.hpp>
 
-/*static*/ const XMLCh And::name[]={ XERCES_CPP_NAMESPACE_QUALIFIER chLatin_a, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_n, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_d, XERCES_CPP_NAMESPACE_QUALIFIER chNull };
+XERCES_CPP_NAMESPACE_USE;
+
+/*static*/ const XMLCh And::name[]={ chLatin_a, chLatin_n, chLatin_d, chNull };
 
 And::And(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : XQOperator(name, args, memMgr)
 {
-}
-
-Result And::createResult(DynamicContext* context, int flags) const
-{
-  return new AndResult(this);
 }
 
 ASTNode* And::staticResolution(StaticContext *context)
@@ -74,21 +72,48 @@ ASTNode *And::staticTypingImpl(StaticContext *context)
   return this;
 }
 
-And::AndResult::AndResult(const And *op)
-  : SingleResult(op),
-    _op(op)
+class AndResult : public ResultImpl
 {
-}
-
-Item::Ptr And::AndResult::getSingleResult(DynamicContext *context) const
-{
-  unsigned int numArgs=_op->getNumArgs();
-  for(unsigned int i=0;i<numArgs;i++) {
-    if(!((ATBooleanOrDerived*)_op->getArgument(i)->createResult(context)->next(context).get())->isTrue()) {
-      return context->getItemFactory()->createBoolean(false, context);
-    }
+public:
+  AndResult(const And *ast)
+    : ResultImpl(ast),
+      ast_(ast)
+  {
   }
 
-  return context->getItemFactory()->createBoolean(true, context);
+  virtual Item::Ptr nextOrTail(Result &tail, DynamicContext *context)
+  {
+    VectorOfASTNodes::const_iterator i = ast_->getArguments().begin();
+    while(i != ast_->getArguments().end()) {
+      const ASTNode *arg = *i;
+      ++i;
+
+      if(i == ast_->getArguments().end()) {
+        // Tail call optimisation
+        tail = ClosureResult::create(arg, context);
+        return 0;
+      }
+
+      if(!((ATBooleanOrDerived*)arg->createResult(context)->next(context).get())->isTrue()) {
+        Item::Ptr result = context->getItemFactory()->createBoolean(false, context);
+        tail = 0;
+        return result;
+      }
+    }
+
+    Item::Ptr result = context->getItemFactory()->createBoolean(true, context);
+    tail = 0;
+    return result;
+  }
+
+private:
+  const And *ast_;
+};
+
+Result And::createResult(DynamicContext* context, int flags) const
+{
+  if(_args.empty())
+    return (Item::Ptr)context->getItemFactory()->createBoolean(true, context);
+  return new AndResult(this);
 }
 

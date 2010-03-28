@@ -1406,8 +1406,8 @@ ASTNode *PartialEvaluator::optimizeAnd(And *item)
 {
   VectorOfASTNodes &args = const_cast<VectorOfASTNodes &>(item->getArguments());
 
-  VectorOfASTNodes::iterator i;
-  for(i = args.begin(); i != args.end(); ++i) {
+  VectorOfASTNodes::iterator i = args.begin();
+  while(i != args.end()) {
     if(!(*i)->getStaticAnalysis().isUsed()) {
       if(!((ATBooleanOrDerived*)(*i)->createResult(context_)->next(context_).get())->isTrue()) {
         // It's constantly false, so this expression is false
@@ -1417,7 +1417,14 @@ ASTNode *PartialEvaluator::optimizeAnd(And *item)
         item->release();
         return result;
       }
+      else {
+        // Remove the constant true from the operator arguments
+        sizeLimit_ += ASTCounter().count(*i);
+        (*i)->release();
+        i = args.erase(i);
+      }
     }
+    else ++i;
   }
 
   return item;
@@ -1427,8 +1434,8 @@ ASTNode *PartialEvaluator::optimizeOr(Or *item)
 {
   VectorOfASTNodes &args = const_cast<VectorOfASTNodes &>(item->getArguments());
 
-  VectorOfASTNodes::iterator i;
-  for(i = args.begin(); i != args.end(); ++i) {
+  VectorOfASTNodes::iterator i = args.begin();
+  while(i != args.end()) {
     if(!(*i)->getStaticAnalysis().isUsed()) {
       if(((ATBooleanOrDerived*)(*i)->createResult(context_)->next(context_).get())->isTrue()) {
         // It's constantly true, so this expression is true
@@ -1438,7 +1445,14 @@ ASTNode *PartialEvaluator::optimizeOr(Or *item)
         item->release();
         return result;
       }
+      else {
+        // Remove the constant false from the operator arguments
+        sizeLimit_ += ASTCounter().count(*i);
+        (*i)->release();
+        i = args.erase(i);
+      }
     }
+    else ++i;
   }
 
   return item;

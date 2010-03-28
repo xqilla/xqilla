@@ -30,18 +30,16 @@
 #include <xqilla/context/ContextHelpers.hpp>
 #include <xqilla/exceptions/StaticErrorException.hpp>
 #include <xqilla/ast/XQEffectiveBooleanValue.hpp>
+#include <xqilla/runtime/ClosureResult.hpp>
 
-/*static*/ const XMLCh Or::name[]={ XERCES_CPP_NAMESPACE_QUALIFIER chLatin_o, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_r, XERCES_CPP_NAMESPACE_QUALIFIER chNull };
+XERCES_CPP_NAMESPACE_USE;
+
+/*static*/ const XMLCh Or::name[]={ chLatin_o, chLatin_r, chNull };
 
 Or::Or(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : XQOperator(name, args, memMgr)
 {
   // Nothing to do
-}
-
-Result Or::createResult(DynamicContext* context, int flags) const
-{
-  return new OrResult(this);
 }
 
 ASTNode* Or::staticResolution(StaticContext *context)
@@ -75,21 +73,48 @@ ASTNode *Or::staticTypingImpl(StaticContext *context)
   return this;
 }
 
-Or::OrResult::OrResult(const Or *op)
-  : SingleResult(op),
-    _op(op)
+class OrResult : public ResultImpl
 {
-}
-
-Item::Ptr Or::OrResult::getSingleResult(DynamicContext *context) const
-{
-  unsigned int numArgs=_op->getNumArgs();
-  for(unsigned int i=0;i<numArgs;i++) {
-    if(((ATBooleanOrDerived*)_op->getArgument(i)->createResult(context)->next(context).get())->isTrue()) {
-      return context->getItemFactory()->createBoolean(true, context);
-    }
+public:
+  OrResult(const Or *ast)
+    : ResultImpl(ast),
+      ast_(ast)
+  {
   }
 
-  return context->getItemFactory()->createBoolean(false, context);
+  virtual Item::Ptr nextOrTail(Result &tail, DynamicContext *context)
+  {
+    VectorOfASTNodes::const_iterator i = ast_->getArguments().begin();
+    while(i != ast_->getArguments().end()) {
+      const ASTNode *arg = *i;
+      ++i;
+
+      if(i == ast_->getArguments().end()) {
+        // Tail call optimisation
+        tail = ClosureResult::create(arg, context);
+        return 0;
+      }
+
+      if(((ATBooleanOrDerived*)arg->createResult(context)->next(context).get())->isTrue()) {
+        Item::Ptr result = context->getItemFactory()->createBoolean(true, context);
+        tail = 0;
+        return result;
+      }
+    }
+
+    Item::Ptr result = context->getItemFactory()->createBoolean(false, context);
+    tail = 0;
+    return result;
+  }
+
+private:
+  const Or *ast_;
+};
+
+Result Or::createResult(DynamicContext* context, int flags) const
+{
+  if(_args.empty())
+    return (Item::Ptr)context->getItemFactory()->createBoolean(false, context);
+  return new OrResult(this);
 }
 

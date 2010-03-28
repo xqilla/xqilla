@@ -35,17 +35,6 @@ public:
   Result createResult(DynamicContext* context, int flags=0) const;
   virtual ASTNode* staticResolution(StaticContext *context);
   virtual ASTNode *staticTypingImpl(StaticContext *context);
-
-private:
-  class AndResult : public SingleResult
-  {
-  public:
-    AndResult(const And *op);
-
-    Item::Ptr getSingleResult(DynamicContext *context) const;
-  private:
-    const And *_op;
-  };
 };
 
 #endif
