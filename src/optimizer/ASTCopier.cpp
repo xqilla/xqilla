@@ -399,7 +399,8 @@ ASTNode *ASTCopier::optimizeOperator(XQOperator *item)
 
 static XQTypeswitch::Case *copyCase(const XQTypeswitch::Case *in, XPath2MemoryManager *mm)
 {
-  XQTypeswitch::Case *result = new (mm) XQTypeswitch::Case(in->getQName(), in->getURI(), in->getName(), in->getSequenceType(), in->getExpression());
+  XQTypeswitch::Case *result = new (mm) XQTypeswitch::Case(in->getQName(), in->getURI(), in->getName(), in->getSequenceType(),
+                                                           in->getTreatType(), in->getIsExact(), in->getExpression());
   result->setLocationInfo(in);
   return result;
 }

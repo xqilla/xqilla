@@ -58,7 +58,7 @@ XQUserFunction *StaticTyper::optimizeFunctionDef(XQUserFunction *item)
 ASTNode *StaticTyper::optimize(ASTNode *item)
 {
   ASTNode *result = ASTVisitor::optimize(item);
-  if(result != item) return result;
+  if(result != item) return optimize(result);
 
   return item->staticTypingImpl(context_);
 }
@@ -218,11 +218,7 @@ void StaticTyper::optimizeCase(const StaticAnalysis &var_src, XQTypeswitch::Case
     caseSrc->copy(var_src);
 
     if(item->getSequenceType() != 0) {
-      bool isExact;
-      StaticType type;
-      item->getSequenceType()->getStaticType(type, context_, isExact, item);
-  
-      caseSrc->getStaticType() &= type;
+      caseSrc->getStaticType() &= item->getTreatType();
     }
 
     varStore->addLogicalBlockScope();

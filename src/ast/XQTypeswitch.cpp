@@ -22,6 +22,9 @@
 #include <xqilla/context/VariableTypeStore.hpp>
 #include <xqilla/context/ContextHelpers.hpp>
 #include <xqilla/ast/StaticAnalysis.hpp>
+#include <xqilla/ast/ContextTuple.hpp>
+#include <xqilla/ast/LetTuple.hpp>
+#include <xqilla/ast/XQReturn.hpp>
 #include <xqilla/runtime/ResultBuffer.hpp>
 #include <xqilla/utils/XPath2NSUtils.hpp>
 #include <xqilla/schema/SequenceType.hpp>
@@ -89,89 +92,103 @@ ASTNode *XQTypeswitch::staticTypingImpl(StaticContext *context)
     return this;
   }
 
+  XPath2MemoryManager *mm = context->getMemoryManager();
+
   if(exprSrc.isUsed()) {
     // Do basic static type checking on the clauses,
     // to eliminate ones which will never be matches,
     // and find ones which will always be matched.
     const StaticType &sType = expr_->getStaticAnalysis().getStaticType();
 
-    Cases newCases(XQillaAllocator<Case*>(context->getMemoryManager()));
+    bool found = false;
+    Cases newCases = Cases(XQillaAllocator<Case*>(mm));
     for(it = cases_->begin(); it != cases_->end(); ++it) {
-      bool isExact;
-      StaticType cseType;
-      (*it)->getSequenceType()->getStaticType(cseType, context, isExact, *it);
-
-      if(isExact && sType.isType(cseType) &&
-         sType.getMin() >= cseType.getMin() &&
-         sType.getMax() <= cseType.getMax()) {
-        // It always matches, so set this clause as the
-        // default clause and remove all the others
-        newCases.clear();
-        default_ = *it;
-        default_->setSequenceType(0);
-        break;
+      StaticType::TypeMatch match = (*it)->getTreatType().matches(sType);
+      if(found || match.type == StaticType::NEVER || match.cardinality == StaticType::NEVER) {
+        // It never matches
+        (*it)->getExpression()->release();
+        mm->deallocate(*it);
       }
-      else if((cseType.getMin() > sType.getMax()) ||
-              (cseType.getMax() < sType.getMin()) ||
-              (!sType.containsType(cseType) &&
-               (cseType.getMin() > 0 || sType.getMin() > 0))) {
-        // It never matches, so don't add it to the new clauses
+      else if((*it)->getIsExact() && match.type == StaticType::ALWAYS &&
+         match.cardinality == StaticType::ALWAYS) {
+        // It always matches, so set this clause as the
+        // default clause and remove all clauses after it
+        default_->getExpression()->release();
+        mm->deallocate(default_);
+        default_ = *it;
+        found = true;
       }
       else {
         newCases.push_back(*it);
       }
     }
 
-    if(newCases.size() != cases_->size()) {
-      *cases_ = newCases;
-
-      // Call static resolution on the new clauses
-      possiblyUpdating = true;
-      _src.clear();
-      _src.add(exprSrc);
-
-      default_->staticTyping(expr_->getStaticAnalysis(), context, _src, possiblyUpdating, /*first*/true);
-
-      for(it = cases_->begin(); it != cases_->end(); ++it) {
-        (*it)->staticTyping(expr_->getStaticAnalysis(), context, _src, possiblyUpdating, /*first*/false);
-      }
+    if(newCases.size() == cases_->size()) {
+      // No change
+      return this;
     }
 
-    return this;
+    *cases_ = newCases;
   }
   else {
     // If it's constant, we can narrow it down to the correct clause
     AutoDelete<DynamicContext> dContext(context->createDynamicContext());
-    dContext->setMemoryManager(context->getMemoryManager());
-    Sequence value = expr_->createResult(dContext)->toSequence(dContext);
+    dContext->setMemoryManager(mm);
 
-    Case *match = 0;
-    for(Cases::iterator it = cases_->begin(); it != cases_->end(); ++it) {
-      try {
-        (*it)->getSequenceType()->matches(value, (*it)->getSequenceType(), no_err)->toSequence(dContext);
-        match = *it;
-        break;
-      }
-      catch(const XPath2TypeMatchException &ex) {
-        // Well, it doesn't match that one then...
-      }
-    }
+    Sequence value;
+    Case *match = (Case*)chooseCase(dContext, value);    
 
     // Replace the default with the matched clause and
     // remove the remaining clauses, as they don't match
-    if(match) {
-      default_ = match;
-      default_->setSequenceType(0);
+    for(it = cases_->begin(); it != cases_->end(); ++it) {
+      if((*it) != match) {
+        (*it)->getExpression()->release();
+        mm->deallocate(*it);
+      }
     }
+    if(default_ != match) {
+      default_->getExpression()->release();
+      mm->deallocate(default_);
+    }
+
+    default_ = match;
     cases_->clear();
-
-    // Statically resolve the default clause
-    possiblyUpdating = true;
-    _src.clear();
-    default_->staticTyping(expr_->getStaticAnalysis(), context, _src, possiblyUpdating, /*first*/true);
-
-    return this;
   }
+
+  // Call static resolution on the new clauses
+  possiblyUpdating = true;
+  _src.clear();
+  _src.add(exprSrc);
+
+  default_->staticTyping(expr_->getStaticAnalysis(), context, _src, possiblyUpdating, /*first*/true);
+
+  for(it = cases_->begin(); it != cases_->end(); ++it) {
+    (*it)->staticTyping(expr_->getStaticAnalysis(), context, _src, possiblyUpdating, /*first*/false);
+  }
+
+  if(cases_->empty()) {
+    if(default_->isVariableUsed()) {
+      TupleNode *tuple = new (mm) ContextTuple(mm);
+      tuple->setLocationInfo(this);
+      tuple = new (mm) LetTuple(tuple, default_->getURI(), default_->getName(), expr_, mm);
+      tuple->setLocationInfo(this);
+      ASTNode *result = new (mm) XQReturn(tuple, default_->getExpression(), mm);
+      result->setLocationInfo(this);
+      const_cast<StaticAnalysis&>(result->getStaticAnalysis()).copy(_src);
+      expr_ = 0;
+      default_->setExpression(0);
+      this->release();
+      return result;
+    }
+    else if(!expr_->getStaticAnalysis().isNoFoldingForced()) {
+      ASTNode *result = default_->getExpression();
+      default_->setExpression(0);
+      this->release();
+      return result;
+    }
+  }
+
+  return this;
 }
 
 XQTypeswitch::Case::Case(const XMLCh *qname, SequenceType *seqType, ASTNode *expr)
@@ -179,23 +196,29 @@ XQTypeswitch::Case::Case(const XMLCh *qname, SequenceType *seqType, ASTNode *exp
     uri_(0),
     name_(0),
     seqType_(seqType),
+    isExact_(false),
     expr_(expr)
 {
 }
 
-XQTypeswitch::Case::Case(const XMLCh *qname, const XMLCh *uri, const XMLCh *name, SequenceType *seqType, ASTNode *expr)
+XQTypeswitch::Case::Case(const XMLCh *qname, const XMLCh *uri, const XMLCh *name, SequenceType *seqType,
+                         const StaticType &treatType, bool isExact, ASTNode *expr)
   : qname_(qname),
     uri_(uri),
     name_(name),
     seqType_(seqType),
+    treatType_(treatType),
+    isExact_(isExact),
     expr_(expr)
 {
 }
 
 void XQTypeswitch::Case::staticResolution(StaticContext* context)
 {
-  if(seqType_)
+  if(seqType_) {
     seqType_->staticResolution(context);
+    seqType_->getStaticType(treatType_, context, isExact_, this);
+  }
   expr_ = expr_->staticResolution(context);
 
   if(qname_ != 0) {

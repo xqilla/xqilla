@@ -675,7 +675,7 @@ public:
     return VariableScopeTracker::run(uri, name, expr, &varValue->getStaticAnalysis());
   }
 
-  void inlineLet(XQReturn *ret, LetTuple *let, DynamicContext *context, size_t &sizeLimit)
+  bool inlineLet(XQReturn *ret, LetTuple *let, DynamicContext *context, size_t &sizeLimit)
   {
     let_ = let;
     context_ = context;
@@ -693,14 +693,14 @@ public:
       // The LetTuple expression uses a variable with the same name as the LetTuple itself.
       // We can only inline it if the inline will be 100% successful, and we can remove the
       // LetTuple itself.
-      if(!removeLet_) return;
+      if(!removeLet_) return false;
     }
 
     if(removeLet_)
       count_ -= ASTCounter().count(let->getExpression()) + 1;
 
     // Check that we won't exceed the size limit
-    if(count_ > 0 && (size_t)count_ > sizeLimit) return;
+    if(count_ > 0 && (size_t)count_ > sizeLimit) return false;
 
     sizeLimit -= count_;
 
@@ -712,6 +712,8 @@ public:
       let->setParent(0);
       let->release();
     }
+
+    return true;
   }
 
 protected:
@@ -1198,15 +1200,13 @@ static ASTNode *inlineLets(XQReturn *item, DynamicContext *context, size_t &size
   InlineVar inliner;
   vector<LetTuple*>::iterator i = toInline.begin();
   for(; i != toInline.end(); ++i) {
-    inliner.inlineLet(item, *i, context, sizeLimit);
-    success = true;
+    success = inliner.inlineLet(item, *i, context, sizeLimit) || success;
   }
 
   map<LetTuple*, unsigned int>::iterator j = toCount.begin();
   for(; j != toCount.end(); ++j) {
     if(j->second != StaticType::UNLIMITED && j->second <= 1) {
-      inliner.inlineLet(item, j->first, context, sizeLimit);
-      success = true;
+      success = inliner.inlineLet(item, j->first, context, sizeLimit) || success;
     }
   }
 
@@ -1479,6 +1479,49 @@ ASTNode *PartialEvaluator::optimizeEffectiveBooleanValue(XQEffectiveBooleanValue
   }
 
   return item;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Folding based on static type
+
+ASTNode *PartialEvaluator::optimizeFunction(XQFunction *item)
+{
+  ASTNode *result = ASTVisitor::optimizeFunction(item);
+  if(result != item) return result;
+
+  const XMLCh *uri = item->getFunctionURI();
+  const XMLCh *name = item->getFunctionName();
+
+  if(uri == XQFunction::XMLChFunctionURI) {
+
+    if(name == FunctionCount::name ||
+       name == FunctionFunctionArity::name ||
+       name == FunctionEmpty::name) {
+      result = item->staticTypingImpl(context_);
+      if(result != item) {
+        redoTyping_ = true;
+        result = optimize(result->staticTyping(0, 0));
+      }
+      return result;
+    }
+
+  }
+
+  return item;
+}
+
+ASTNode *PartialEvaluator::optimizeTypeswitch(XQTypeswitch *item)
+{
+  ASTNode *result = ASTVisitor::optimizeTypeswitch(item);
+  if(result != item) return result;
+
+  result = item->staticTypingImpl(context_);
+  if(result != item) {
+    redoTyping_ = true;
+    result = optimize(result->staticTyping(0, 0));
+  }
+  return result;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1954,36 +1997,12 @@ ASTNode *PartialEvaluator::optimizeDivide(Divide *item)
   return foldEmptyArgument(item, context_);
 }
 
-ASTNode *PartialEvaluator::optimizeFunction(XQFunction *item)
-{
-  ASTNode *result = ASTVisitor::optimizeFunction(item);
-  if(result != item) return result;
-
-  const XMLCh *uri = item->getFunctionURI();
-  const XMLCh *name = item->getFunctionName();
-
-  if(uri == XQFunction::XMLChFunctionURI) {
-
-    if(name == FunctionCount::name ||
-       name == FunctionFunctionArity::name ||
-       name == FunctionEmpty::name) {
-      return item->staticTypingImpl(context_);
-    }
-
-  }
-
-  return item;
-}
-
 // Other things to constant fold:
 //
 // XQMap
-// XQTypeswitch - reduce to Let if one clause
-// XQSequence
 // global variables
 // 
 //
 // XQNav
-// LetTuple
 // casts, conversions, atomize
 //

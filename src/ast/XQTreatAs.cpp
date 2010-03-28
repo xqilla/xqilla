@@ -90,14 +90,14 @@ ASTNode *XQTreatAs::staticTypingImpl(StaticContext *context)
   // limited static typing that we implement
   const StaticType &actualType = _expr->getStaticAnalysis().getStaticType();
 
-  StaticType::TypeMatch match = _treatType.matches(actualType);
-
   // Get a better static type by looking at our expression's type too
   _src.getStaticType() = _treatType;
   _src.getStaticType() &= actualType;
 
   _src.setProperties(_expr->getStaticAnalysis().getProperties());
   _src.add(_expr->getStaticAnalysis());
+
+  StaticType::TypeMatch match = _treatType.matches(actualType);
 
   if(!_expr->getStaticAnalysis().isUpdating()) {
     if((match.type == StaticType::NEVER || match.cardinality == StaticType::NEVER) &&
