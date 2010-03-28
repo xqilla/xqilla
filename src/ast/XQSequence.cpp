@@ -27,7 +27,7 @@
 #include <xqilla/exceptions/StaticErrorException.hpp>
 #include <xqilla/runtime/ClosureResult.hpp>
 
-static const unsigned int CONSTANT_FOLD_LIMIT = 30;
+static const unsigned int CONSTANT_FOLD_LIMIT = 4;
 
 XQSequence *XQSequence::constantFold(Result &result, DynamicContext *context, XPath2MemoryManager* memMgr,
                                      const LocationInfo *location)
