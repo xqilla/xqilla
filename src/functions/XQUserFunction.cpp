@@ -86,7 +86,7 @@ XQUserFunction::XQUserFunction(const XMLCh *qname, FunctionSignature *signature,
     isTemplate_(false),
     memMgr_(mm),
     src_(mm),
-    staticTyped_(false),
+    staticTyped_(BEFORE),
     recursive_(false),
     delayed_(false),
     moduleDocCache_(NULL)
@@ -107,7 +107,7 @@ XQUserFunction::XQUserFunction(const XMLCh *qname, VectorOfASTNodes *pattern, Fu
     isTemplate_(true),
     memMgr_(mm),
     src_(mm),
-    staticTyped_(false),
+    staticTyped_(BEFORE),
     recursive_(false),
     delayed_(false),
     moduleDocCache_(NULL)
@@ -345,8 +345,8 @@ void XQUserFunction::staticResolutionStage2(StaticContext *context)
 {
   // Prevent static typing being run on this function by a
   // loop of delayed functions
-  AutoReset<bool> reset(staticTyped_);
-  staticTyped_ = true;
+  AutoReset<StaticTypingStatus> reset(staticTyped_);
+  staticTyped_ = AFTER;
 
   if(pattern_ != 0 && !pattern_->empty()) {
     VectorOfASTNodes::iterator patIt = pattern_->begin();
@@ -443,8 +443,9 @@ void XQUserFunction::staticTypingOnce(StaticContext *context, StaticTyper *stype
 {
   // Avoid inifinite recursion for recursive functions
   // TBD Need to declare everything as being used - jpcs
-  if(staticTyped_) {
-    recursive_ = true;
+  if(staticTyped_ != BEFORE) {
+    if(staticTyped_ == DURING)
+      recursive_ = true;
 
     XQGlobalVariable *global = 0;
     StaticTyper::PrologItem *breadcrumb = styper->getTrail();
@@ -465,7 +466,7 @@ void XQUserFunction::staticTypingOnce(StaticContext *context, StaticTyper *stype
 
     return;
   }
-  staticTyped_ = true;
+  staticTyped_ = DURING;
 
   StaticTyper::PrologItem breadcrumb(this, styper->getTrail());
   AutoReset<StaticTyper::PrologItem*> autorReset2(styper->getTrail());
@@ -488,11 +489,13 @@ void XQUserFunction::staticTypingOnce(StaticContext *context, StaticTyper *stype
     // Re-static type this function definition
     staticTyping(context, styper);
   }
+
+  staticTyped_ = AFTER;
 }
 
 void XQUserFunction::resetStaticTypingOnce()
 {
-  staticTyped_ = false;
+  staticTyped_ = BEFORE;
 }
 
 void XQUserFunction::staticTyping(StaticContext *context, StaticTyper *styper)

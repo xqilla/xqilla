@@ -193,7 +193,7 @@ protected:
 
   XPath2MemoryManager *memMgr_;
   StaticAnalysis src_;
-  bool staticTyped_;
+  enum StaticTypingStatus { BEFORE, DURING, AFTER } staticTyped_;
   bool recursive_;
   bool delayed_;
   DocumentCache *moduleDocCache_;
