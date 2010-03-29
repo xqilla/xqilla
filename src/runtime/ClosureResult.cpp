@@ -29,7 +29,7 @@ Result ClosureResult::create(const ASTNode *ast, DynamicContext *context, const 
 {
   // TBD We probably need to store the regex groups here too - jpcs
 
-  if((!ast->getStaticAnalysis().variablesUsed() &&
+  if((!ast->getStaticAnalysis().isVariableUsed() &&
       !ast->getStaticAnalysis().areContextFlagsUsed()) ||
      ast->getType() == ASTNode::VARIABLE) {
     AutoVariableStoreReset vsReset(context, sourceScope ? sourceScope : context->getVariableStore());

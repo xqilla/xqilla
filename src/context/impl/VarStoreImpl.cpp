@@ -107,12 +107,13 @@ void VarStoreImpl::clear()
 
 void VarStoreImpl::cacheVariableStore(const StaticAnalysis &src, const VariableStore *toCache)
 {
-  StaticAnalysis::VarEntry *entry = src.variablesUsed();
-  while(entry) {
-    // TBD variable use count - jpcs
-    store_ = new VarEntry(entry->uri, entry->name, toCache->getVar(entry->uri, entry->name),
-                          ResultBufferImpl::UNLIMITED_COUNT, store_);
-    entry = entry->prev;
+  for(int i = 0; i < StaticAnalysis::HASH_SIZE; ++i) {
+    StaticAnalysis::VarEntry *entry = src.variablesUsed()[i];
+    while(entry) {
+      store_ = new VarEntry(entry->uri, entry->name, toCache->getVar(entry->uri, entry->name),
+                            ResultBufferImpl::UNLIMITED_COUNT, store_);
+      entry = entry->prev;
+    }
   }
 }
 

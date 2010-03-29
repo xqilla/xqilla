@@ -29,16 +29,18 @@ XERCES_CPP_NAMESPACE_USE;
 using namespace std;
 
 StaticAnalysis::StaticAnalysis(XPath2MemoryManager* memMgr)
-  : _dynamicVariables(0),
+  : _recycle(0),
     _memMgr(memMgr)
 {
+  memset(_dynamicVariables, 0, sizeof(_dynamicVariables));
   clear();
 }
 
 StaticAnalysis::StaticAnalysis(const StaticAnalysis &o, XPath2MemoryManager* memMgr)
-  : _dynamicVariables(0),
+  : _recycle(0),
     _memMgr(memMgr)
 {
+  memset(_dynamicVariables, 0, sizeof(_dynamicVariables));
   clear();
   copy(o);
 }
@@ -48,6 +50,24 @@ void StaticAnalysis::copy(const StaticAnalysis &o)
   add(o);
   _properties = o._properties;
   _staticType = o._staticType;
+}
+
+void StaticAnalysis::release()
+{
+  _staticType = StaticType();
+  VarEntry *tmp;
+  for(int i = 0; i < HASH_SIZE; ++i) {
+    while(_dynamicVariables[i]) {
+      tmp = _dynamicVariables[i];
+      _dynamicVariables[i] = tmp->prev;
+      _memMgr->deallocate(tmp);
+    }
+  }
+  while(_recycle) {
+    tmp = _recycle;
+    _recycle = tmp->prev;
+    _memMgr->deallocate(tmp);
+  }
 }
 
 void StaticAnalysis::clear()
@@ -73,10 +93,13 @@ void StaticAnalysis::clearExceptType()
   _properties = 0;
 
   VarEntry *tmp;
-  while(_dynamicVariables) {
-    tmp = _dynamicVariables;
-    _dynamicVariables = tmp->prev;
-    _memMgr->deallocate(tmp);
+  for(int i = 0; i < HASH_SIZE; ++i) {
+    while(_dynamicVariables[i]) {
+      tmp = _dynamicVariables[i];
+      _dynamicVariables[i] = tmp->prev;
+      tmp->prev = _recycle;
+      _recycle = tmp;
+    }
   }
 }
 
@@ -151,54 +174,93 @@ bool StaticAnalysis::isNoFoldingForced() const
   return _forceNoFolding;
 }
 
+#define CREATE_VAR_ENTRY(entry) \
+do { \
+  if(_recycle) { \
+    (entry) = _recycle; \
+    _recycle = (entry)->prev; \
+  } \
+  else { \
+    (entry) = new (_memMgr) VarEntry(); \
+  } \
+} while(0)
+
+
+#define ADD_VAR_ENTRY(entry) \
+do { \
+  VarEntry *ve = _dynamicVariables[(entry)->hash]; \
+  while(ve) { \
+    if(ve->uri == (entry)->uri && ve->name == (entry)->name) \
+      break; \
+    ve = ve->prev; \
+  } \
+  if(ve) { \
+    (entry)->prev = _recycle; \
+    _recycle = (entry); \
+  } \
+  else { \
+    (entry)->prev = _dynamicVariables[(entry)->hash]; \
+    _dynamicVariables[(entry)->hash] = (entry); \
+  } \
+} while(0)
+
 void StaticAnalysis::variableUsed(const XMLCh *namespaceURI, const XMLCh *name)
 {
-  namespaceURI = _memMgr->getPooledString(namespaceURI);
-  name = _memMgr->getPooledString(name);
+  VarEntry *entry;
+  CREATE_VAR_ENTRY(entry);
 
-  _dynamicVariables = new (_memMgr) VarEntry(namespaceURI, name, _dynamicVariables);
+  entry->set(_memMgr->getPooledString(namespaceURI), _memMgr->getPooledString(name));
+
+  ADD_VAR_ENTRY(entry);
 }
 
-StaticAnalysis::VarEntry *StaticAnalysis::variablesUsed() const
+StaticAnalysis::VarEntry **StaticAnalysis::variablesUsed() const
 {
-  return _dynamicVariables;
+  return (VarEntry**)_dynamicVariables;
 }
 
 bool StaticAnalysis::removeVariable(const XMLCh *namespaceURI, const XMLCh *name)
 {
-  namespaceURI = _memMgr->getPooledString(namespaceURI);
-  name = _memMgr->getPooledString(name);
+  VarEntry lookup;
+  lookup.set(_memMgr->getPooledString(namespaceURI), _memMgr->getPooledString(name));
 
-  bool found = false;
-
-  VarEntry **parent = &_dynamicVariables;
+  VarEntry **parent = &_dynamicVariables[lookup.hash];
   while(*parent) {
-    if((*parent)->uri == namespaceURI && (*parent)->name == name) {
+    if((*parent)->uri == lookup.uri && (*parent)->name == lookup.name) {
       VarEntry *tmp = *parent;
       *parent = tmp->prev;
-      _memMgr->deallocate(tmp);
-      found = true;
+      tmp->prev = _recycle;
+      _recycle = tmp;
+      return true;
     } else {
       parent = &(*parent)->prev;
     }
   }
 
-  return found;
+  return false;
 }
 
 bool StaticAnalysis::isVariableUsed(const XMLCh *namespaceURI, const XMLCh *name) const
 {
-  namespaceURI = _memMgr->getPooledString(namespaceURI);
-  name = _memMgr->getPooledString(name);
+  VarEntry lookup;
+  lookup.set(_memMgr->getPooledString(namespaceURI), _memMgr->getPooledString(name));
 
-  VarEntry *entry = _dynamicVariables;
+  VarEntry *entry = _dynamicVariables[lookup.hash];
   while(entry) {
-    if(entry->uri == namespaceURI && entry->name == name) {
+    if(entry->uri == lookup.uri && entry->name == lookup.name) {
       return true;
     }
     entry = entry->prev;
   }
 
+  return false;
+}
+
+bool StaticAnalysis::isVariableUsed() const
+{
+  for(int i = 0; i < HASH_SIZE; ++i) {
+    if(_dynamicVariables[i]) return true;
+  }
   return false;
 }
 
@@ -217,10 +279,15 @@ void StaticAnalysis::add(const StaticAnalysis &o)
   if(o._updating) _updating = true;
   // Don't copy _possiblyUpdating
 
-  VarEntry *entry = o._dynamicVariables;
-  while(entry) {
-    variableUsed(entry->uri, entry->name);
-    entry = entry->prev;
+  for(int i = 0; i < HASH_SIZE; ++i) {
+    VarEntry *entry = o._dynamicVariables[i];
+    while(entry) {
+      VarEntry *newEntry;
+      CREATE_VAR_ENTRY(newEntry);
+      newEntry->set(entry->uri, entry->name, entry->hash);
+      ADD_VAR_ENTRY(newEntry);
+      entry = entry->prev;
+    }
   }
 }
 
@@ -235,10 +302,15 @@ void StaticAnalysis::addExceptContextFlags(const StaticAnalysis &o)
   if(o._updating) _updating = true;
   // Don't copy _possiblyUpdating
 
-  VarEntry *entry = o._dynamicVariables;
-  while(entry) {
-    variableUsed(entry->uri, entry->name);
-    entry = entry->prev;
+  for(int i = 0; i < HASH_SIZE; ++i) {
+    VarEntry *entry = o._dynamicVariables[i];
+    while(entry) {
+      VarEntry *newEntry;
+      CREATE_VAR_ENTRY(newEntry);
+      newEntry->set(entry->uri, entry->name, entry->hash);
+      ADD_VAR_ENTRY(newEntry);
+      entry = entry->prev;
+    }
   }
 }
 
@@ -259,11 +331,17 @@ void StaticAnalysis::addExceptVariable(const XMLCh *namespaceURI, const XMLCh *n
   if(o._updating) _updating = true;
   // Don't copy _possiblyUpdating
 
-  VarEntry *entry = o._dynamicVariables;
-  while(entry) {
-    if(namespaceURI != entry->uri || name != entry->name)
-      variableUsed(entry->uri, entry->name);
-    entry = entry->prev;
+  for(int i = 0; i < HASH_SIZE; ++i) {
+    VarEntry *entry = o._dynamicVariables[i];
+    while(entry) {
+      if(namespaceURI != entry->uri || name != entry->name) {
+        VarEntry *newEntry;
+        CREATE_VAR_ENTRY(newEntry);
+        newEntry->set(entry->uri, entry->name, entry->hash);
+        ADD_VAR_ENTRY(newEntry);
+      }
+      entry = entry->prev;
+    }
   }
 }
 
@@ -273,14 +351,14 @@ bool StaticAnalysis::isUsed() const
   return _contextItem || _contextPosition || _contextSize
     || _currentTime || _implicitTimezone || _availableCollections
     || _availableDocuments || _forceNoFolding || _creative
-    || _dynamicVariables;
+    || isVariableUsed();
 }
 
 bool StaticAnalysis::isUsedExceptContextFlags() const
 {
   return _currentTime || _implicitTimezone || _availableCollections
     || _availableDocuments || _forceNoFolding || _creative
-    || _dynamicVariables;
+    || isVariableUsed();
 }
 
 void StaticAnalysis::creative(bool value)
@@ -351,17 +429,19 @@ std::string StaticAnalysis::toString() const
 
   s << "Variables Used:        [";
   bool first = true;
-  VarEntry *entry = _dynamicVariables;
-  while(entry) {
-    if(first) {
-      first = false;
-    }
-    else {
-      s << ", ";
-    }
+  for(int i = 0; i < HASH_SIZE; ++i) {
+    VarEntry *entry = _dynamicVariables[i];
+    while(entry) {
+      if(first) {
+        first = false;
+      }
+      else {
+        s << ", ";
+      }
 
-    s << "{" << UTF8(entry->uri) << "}" << UTF8(entry->name);
-    entry = entry->prev;
+      s << "{" << UTF8(entry->uri) << "}" << UTF8(entry->name);
+      entry = entry->prev;
+    }
   }
   s << "]" << std::endl;
 
@@ -371,4 +451,31 @@ std::string StaticAnalysis::toString() const
   s << "Static Type:           " << UTF8(buf.getRawBuffer()) << std::endl;
 
   return s.str();
+}
+
+void StaticAnalysis::VarEntry::set(const XMLCh *u, const XMLCh *n)
+{
+  uri = u;
+  name = n;
+  hash = 5381;
+  prev = 0;
+
+  if(u) {
+    while(*u++)
+      hash = ((hash << 5) + hash) + *u;
+  }
+  if(n) {
+    while(*n++)
+      hash = ((hash << 5) + hash) + *n;
+  }
+
+  hash %= HASH_SIZE;
+}
+
+void StaticAnalysis::VarEntry::set(const XMLCh *u, const XMLCh *n, size_t h)
+{
+  uri = u;
+  name = n;
+  hash = h;
+  prev = 0;
 }

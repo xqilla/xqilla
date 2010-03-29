@@ -99,7 +99,7 @@ FTSelection *ASTReleaser::optimizeFTSelection(FTSelection *selection)
 }
 
 #define RELEASE_IMPL() { \
-  const_cast<StaticAnalysis&>(item->getStaticAnalysis()).clear(); \
+  const_cast<StaticAnalysis&>(item->getStaticAnalysis()).release(); \
   item->getMemoryManager()->deallocate(item); \
   return 0; \
 }
@@ -324,7 +324,7 @@ ASTNode *ASTReleaser::optimizeCallTemplate(XQCallTemplate *item)
   TemplateArguments *args = item->getArguments();
   if(args != 0) {
     for(TemplateArguments::iterator i = args->begin(); i != args->end(); ++i) {
-      (*i)->varSrc.clear();
+      (*i)->varSrc.release();
       item->getMemoryManager()->deallocate(*i);
     }
     args->~TemplateArguments();
@@ -342,7 +342,7 @@ ASTNode *ASTReleaser::optimizeApplyTemplates(XQApplyTemplates *item)
   TemplateArguments *args = item->getArguments();
   if(args != 0) {
     for(TemplateArguments::iterator i = args->begin(); i != args->end(); ++i) {
-      (*i)->varSrc.clear();
+      (*i)->varSrc.release();
       item->getMemoryManager()->deallocate(*i);
     }
     args->~TemplateArguments();
@@ -384,7 +384,7 @@ ASTNode *ASTReleaser::optimizeUTransform(UTransform *item)
   VectorOfCopyBinding *bindings = const_cast<VectorOfCopyBinding*>(item->getBindings());
   if(bindings != 0) {
     for(VectorOfCopyBinding::iterator i = bindings->begin(); i != bindings->end(); ++i) {
-      (*i)->src_.clear();
+      (*i)->src_.release();
       item->getMemoryManager()->deallocate(*i);
     }
     bindings->~VectorOfCopyBinding();
@@ -415,7 +415,7 @@ RELEASE_TUPLE(TupleDebugHook)
 FTSelection *ASTReleaser::optimize ## classname (classname *selection) \
 { \
   ASTVisitor::optimize ## classname (selection); \
-  const_cast<StaticAnalysis&>(selection->getStaticAnalysis()).clear(); \
+  const_cast<StaticAnalysis&>(selection->getStaticAnalysis()).release(); \
   selection->getMemoryManager()->deallocate(selection); \
   return 0; \
 }
@@ -436,7 +436,7 @@ FTSelection *ASTReleaser::optimizeFTOr(FTOr *selection)
 {
   ASTVisitor::optimizeFTOr(selection);
   const_cast<VectorOfFTSelections&>(selection->getArguments()).~VectorOfFTSelections();
-  const_cast<StaticAnalysis&>(selection->getStaticAnalysis()).clear();
+  const_cast<StaticAnalysis&>(selection->getStaticAnalysis()).release();
   selection->getMemoryManager()->deallocate(selection);
   return 0;
 }
@@ -445,7 +445,7 @@ FTSelection *ASTReleaser::optimizeFTAnd(FTAnd *selection)
 {
   ASTVisitor::optimizeFTAnd(selection);
   const_cast<VectorOfFTSelections&>(selection->getArguments()).~VectorOfFTSelections();
-  const_cast<StaticAnalysis&>(selection->getStaticAnalysis()).clear();
+  const_cast<StaticAnalysis&>(selection->getStaticAnalysis()).release();
   selection->getMemoryManager()->deallocate(selection);
   return 0;
 }

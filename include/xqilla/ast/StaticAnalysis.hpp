@@ -35,13 +35,17 @@ class XPath2MemoryManager;
 class XQILLA_API StaticAnalysis
 {
 public:
+  static const int HASH_SIZE = 13;
+
   class XQILLA_API VarEntry
   {
   public:
-    VarEntry(const XMLCh *u, const XMLCh *n, VarEntry *p)
-      : uri(u), name(n), prev(p) {}
+    VarEntry() : uri(0), name(0), hash(0), prev(0) {}
+    void set(const XMLCh *u, const XMLCh *n);
+    void set(const XMLCh *u, const XMLCh *n, size_t h);
 
     const XMLCh *uri, *name;
+    size_t hash;
     VarEntry *prev;
   };
 
@@ -49,6 +53,7 @@ public:
   StaticAnalysis(const StaticAnalysis &o, XPath2MemoryManager* memMgr);
 
   void copy(const StaticAnalysis &o);
+  void release();
 
   /// Clears all the information in this StaticAnalysis
   void clear();
@@ -78,7 +83,8 @@ public:
   void variableUsed(const XMLCh *namespaceURI, const XMLCh *name);
   bool removeVariable(const XMLCh *namespaceURI, const XMLCh *name);
   bool isVariableUsed(const XMLCh *namespaceURI, const XMLCh *name) const;
-  VarEntry *variablesUsed() const;
+  bool isVariableUsed() const;
+  VarEntry **variablesUsed() const;
 
   /** Sets the members of this StaticAnalysis from the given StaticAnalysis */
   void add(const StaticAnalysis &o);
@@ -139,7 +145,8 @@ private:
   unsigned int _properties;
   StaticType _staticType;
 
-  VarEntry *_dynamicVariables;
+  VarEntry *_dynamicVariables[HASH_SIZE];
+  VarEntry *_recycle;
   XPath2MemoryManager *_memMgr;
 };
 
