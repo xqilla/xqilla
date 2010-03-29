@@ -307,7 +307,7 @@ int XQLexer::LexerInput( YY_CHAR* buf, int max_size )
 
   if(nToRead>max_size)
     nToRead=max_size;
-  XMLString::subString((XMLCh*)buf,m_szQuery,m_position,m_position+nToRead);
+  memcpy(buf, m_szQuery + m_position, nToRead * sizeof(XMLCh));
   m_position+=nToRead;
   return nToRead;
 }
