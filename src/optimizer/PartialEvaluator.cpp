@@ -853,69 +853,131 @@ ASTNode *PartialEvaluator::optimizeFunctionDeref(XQFunctionDeref *item)
 {
   ASTVisitor::optimizeFunctionDeref(item);
 
-  size_t numArgs = 0;
-  ASTNode *instance = 0;
-  FunctionSignature *signature = 0;
-  switch(item->getExpression()->getType()) {
-    case ASTNode::INLINE_FUNCTION:
-      numArgs = ((XQInlineFunction*)item->getExpression())->getNumArgs();
-      instance = ((XQInlineFunction*)item->getExpression())->getInstance();
-      signature = ((XQInlineFunction*)item->getExpression())->getSignature();
-      break;
-  default: break;
-  }
+  if(item->getExpression()->getType() != ASTNode::INLINE_FUNCTION || functionInlineLimit_ <= 0)
+    return item;
+
+  XQInlineFunction *func = (XQInlineFunction*)item->getExpression();
 
   VectorOfASTNodes *args = const_cast<VectorOfASTNodes*>(item->getArguments());
   size_t numGiven = args ? args->size() : 0;
+  if(func->getNumArgs() != numGiven)
+    return item;
 
-  if(instance && numArgs == numGiven && functionInlineLimit_ > 0) {
-    AutoReset<size_t> reset(functionInlineLimit_);
-    --functionInlineLimit_;
+  AutoReset<size_t> reset(functionInlineLimit_);
+  --functionInlineLimit_;
 
-    XPath2MemoryManager *mm = context_->getMemoryManager();
-    TupleNode *tuple = new (mm) ContextTuple(mm);
-    tuple->setLocationInfo(item);
+  XPath2MemoryManager *mm = context_->getMemoryManager();
+  TupleNode *tuple = new (mm) ContextTuple(mm);
+  tuple->setLocationInfo(item);
 
-    ASTNode *bodyCopy = instance->copy(context_);
-    InlineVar inliner;
+  ASTNode *bodyCopy = func->getInstance()->copy(context_);
+  InlineVar inliner;
 
-    VectorOfASTNodes *args = const_cast<VectorOfASTNodes*>(item->getArguments());
-    if(args && signature->argSpecs) {
-      ArgumentSpecs::const_iterator specIt = signature->argSpecs->begin();
-      for(VectorOfASTNodes::iterator argIt = args->begin(); argIt != args->end(); ++argIt, ++specIt) {
-        // Rename the variable to avoid naming conflicts
-        const XMLCh *newName = context_->allocateTempVarName(X("inline_arg"));
+  if(args && func->getSignature()->argSpecs) {
+    ArgumentSpecs::const_iterator specIt = func->getSignature()->argSpecs->begin();
+    for(VectorOfASTNodes::iterator argIt = args->begin(); argIt != args->end(); ++argIt, ++specIt) {
+      // Rename the variable to avoid naming conflicts
+      const XMLCh *newName = context_->allocateTempVarName(X("inline_arg"));
 
-        tuple = new (mm) LetTuple(tuple, 0, newName, (*argIt)->copy(context_), mm);
-        tuple->setLocationInfo(item);
+      tuple = new (mm) LetTuple(tuple, 0, newName, (*argIt)->copy(context_), mm);
+      tuple->setLocationInfo(item);
 
-        AutoRelease<ASTNode> newVar(new (mm) XQVariable(0, newName, mm));
-        newVar->setLocationInfo(*argIt);
-        StaticAnalysis &varSrc = const_cast<StaticAnalysis&>(newVar->getStaticAnalysis());
-        varSrc.getStaticType() = (*argIt)->getStaticAnalysis().getStaticType();
-        varSrc.setProperties((*argIt)->getStaticAnalysis().getProperties() & ~(StaticAnalysis::SUBTREE|StaticAnalysis::SAMEDOC));
-        varSrc.variableUsed(0, newName);
+      AutoRelease<ASTNode> newVar(new (mm) XQVariable(0, newName, mm));
+      newVar->setLocationInfo(*argIt);
+      StaticAnalysis &varSrc = const_cast<StaticAnalysis&>(newVar->getStaticAnalysis());
+      varSrc.getStaticType() = (*argIt)->getStaticAnalysis().getStaticType();
+      varSrc.setProperties((*argIt)->getStaticAnalysis().getProperties() & ~(StaticAnalysis::SUBTREE|StaticAnalysis::SAMEDOC));
+      varSrc.variableUsed(0, newName);
 
-        bodyCopy = inliner.run((*specIt)->getURI(), (*specIt)->getName(), newVar, bodyCopy, context_);
-      }
-    }
-
-    ASTNode *result = new (mm) XQReturn(tuple, bodyCopy, mm);
-    result->setLocationInfo(item);
-
-    if(checkSizeLimit(item, result)) {
-      redoTyping_ = true;
-      result = optimize(result->staticTyping(0, 0));
-      item->release();
-      return result;
-    }
-    else {
-      result->release();
-      return item;
+      bodyCopy = inliner.run((*specIt)->getURI(), (*specIt)->getName(), newVar, bodyCopy, context_);
     }
   }
 
-  return item;
+  ASTNode *result = new (mm) XQReturn(tuple, bodyCopy, mm);
+  result->setLocationInfo(item);
+
+  if(checkSizeLimit(item, result)) {
+    redoTyping_ = true;
+    result = optimize(result->staticTyping(0, 0));
+    item->release();
+    return result;
+  }
+  else {
+    result->release();
+    return item;
+  }
+}
+
+ASTNode *PartialEvaluator::optimizePartialApply(XQPartialApply *item)
+{
+  ASTVisitor::optimizePartialApply(item);
+
+  if(item->getExpression()->getType() != ASTNode::INLINE_FUNCTION || functionInlineLimit_ <= 0)
+    return item;
+
+  XQInlineFunction *func = (XQInlineFunction*)item->getExpression();
+
+  VectorOfASTNodes *args = const_cast<VectorOfASTNodes*>(item->getArguments());
+  size_t numGiven = args ? args->size() : 0;
+  if(func->getNumArgs() != numGiven)
+    return item;
+
+  AutoReset<size_t> reset(functionInlineLimit_);
+  --functionInlineLimit_;
+
+  XPath2MemoryManager *mm = context_->getMemoryManager();
+  TupleNode *tuple = new (mm) ContextTuple(mm);
+  tuple->setLocationInfo(item);
+
+  ASTNode *bodyCopy = func->getInstance()->copy(context_);
+  InlineVar inliner;
+
+  FunctionSignature *signature = new (mm) FunctionSignature(func->getSignature(), mm);
+
+  if(args && signature->argSpecs) {
+    ArgumentSpecs::iterator specIt = signature->argSpecs->begin();
+    for(VectorOfASTNodes::iterator argIt = args->begin(); argIt != args->end(); ++argIt) {
+      if(*argIt == 0) {
+        ++specIt;
+        continue;
+      }
+
+      // Rename the variable to avoid naming conflicts
+      const XMLCh *newName = context_->allocateTempVarName(X("inline_arg"));
+
+      tuple = new (mm) LetTuple(tuple, 0, newName, (*argIt)->copy(context_), mm);
+      tuple->setLocationInfo(item);
+
+      AutoRelease<ASTNode> newVar(new (mm) XQVariable(0, newName, mm));
+      newVar->setLocationInfo(*argIt);
+      StaticAnalysis &varSrc = const_cast<StaticAnalysis&>(newVar->getStaticAnalysis());
+      varSrc.getStaticType() = (*argIt)->getStaticAnalysis().getStaticType();
+      varSrc.setProperties((*argIt)->getStaticAnalysis().getProperties() & ~(StaticAnalysis::SUBTREE|StaticAnalysis::SAMEDOC));
+      varSrc.variableUsed(0, newName);
+
+      bodyCopy = inliner.run((*specIt)->getURI(), (*specIt)->getName(), newVar, bodyCopy, context_);
+
+      specIt = signature->argSpecs->erase(specIt);
+    }
+  }
+
+  ASTNode *ret = new (mm) XQReturn(tuple, bodyCopy, mm);
+  ret->setLocationInfo(item);
+
+  ASTNode *result = new (mm) XQInlineFunction(0, func->getPrefix(), func->getURI(), func->getName(),
+                                              signature->argSpecs->size(), signature, ret, mm);
+  result->setLocationInfo(item);
+
+  if(checkSizeLimit(item, result)) {
+    redoTyping_ = true;
+    result = optimize(result->staticTyping(0, 0));
+    item->release();
+    return result;
+  }
+  else {
+    result->release();
+    return item;
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
