@@ -434,7 +434,6 @@ xqilla/functions/FunctionParseJSON.hpp \
 xqilla/functions/FunctionSentences.hpp \
 xqilla/functions/FunctionSerializeJSON.hpp \
 xqilla/functions/FunctionParseXML.hpp \
-xqilla/functions/FunctionPartialApply.hpp \
 xqilla/functions/FunctionPosition.hpp \
 xqilla/functions/FunctionPower.hpp \
 xqilla/functions/FunctionPrefixFromQName.hpp \

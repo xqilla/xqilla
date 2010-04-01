@@ -23,7 +23,7 @@ declare function local:fib2() as xs:integer+
 string-join(
 for $a in subsequence(
 
-let $interleave := func:curry(func:zipWith#3)(function($a, $b) { $a, $b })
+let $interleave := func:curry(map-pairs#3)(function($a, $b) { $a, $b })
 let $enumerate := $interleave(func:iterate(func:incr#1, 0))
 return
 $enumerate(local:fib2())

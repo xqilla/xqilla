@@ -323,7 +323,6 @@
         <file name='include/xqilla/functions/FunctionSin.hpp'/>
         <file name='include/xqilla/functions/FunctionSqrt.hpp'/>
         <file name='include/xqilla/functions/FunctionParseXML.hpp'/>
-        <file name='include/xqilla/functions/FunctionPartialApply.hpp'/>
         <file name='include/xqilla/functions/FunctionPosition.hpp'/>
         <file name='include/xqilla/functions/FunctionPower.hpp'/>
         <file name='include/xqilla/functions/FunctionPrefixFromQName.hpp'/>
@@ -725,7 +724,6 @@
         <file name="src/functions/FunctionParseHTML.cpp"/>
         <file name="src/functions/FunctionParseJSON.cpp"/>
         <file name="src/functions/FunctionParseXML.cpp"/>
-        <file name="src/functions/FunctionPartialApply.cpp"/>
         <file name="src/functions/FunctionPosition.cpp"/>
         <file name="src/functions/FunctionPower.cpp"/>
         <file name="src/functions/FunctionPrefixFromQName.cpp"/>

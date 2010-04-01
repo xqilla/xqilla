@@ -319,7 +319,6 @@ const ExternalFunction *FunctionLookup::lookUpGlobalExternalFunction(
 #include <xqilla/functions/FunctionWords.hpp>
 #include <xqilla/functions/FunctionSentences.hpp>
 // Higher Order Functions extension functions
-#include <xqilla/functions/FunctionPartialApply.hpp>
 #include <xqilla/functions/FunctionFunctionArity.hpp>
 #include <xqilla/functions/FunctionFunctionName.hpp>
 //exslt math functions
@@ -561,7 +560,6 @@ static void initGlobalTable(FunctionLookup *t, MemoryManager *memMgr)
 #endif
 
   // Higher Order Functions extension functions
-  t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionPartialApply>(memMgr));
   t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionFunctionArity>(memMgr));
   t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionFunctionName>(memMgr));
 

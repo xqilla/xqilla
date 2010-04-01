@@ -270,7 +270,6 @@ src/functions/FunctionYearsFromDuration.cpp \
 src/functions/FunctionParseJSON.cpp \
 src/functions/FunctionSerializeJSON.cpp \
 src/functions/FunctionParseHTML.cpp \
-src/functions/FunctionPartialApply.cpp \
 src/functions/FunctionAnalyzeString.cpp \
 src/functions/RegExpFunction.cpp \
 src/functions/XQUserFunction.cpp \
