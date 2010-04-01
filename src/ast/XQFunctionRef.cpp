@@ -18,6 +18,7 @@
  */
 
 #include <xqilla/ast/XQFunctionRef.hpp>
+#include <xqilla/ast/XQInlineFunction.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/runtime/SingleResult.hpp>
 #include <xqilla/context/VariableTypeStore.hpp>
@@ -97,9 +98,7 @@ ASTNode *XQFunctionRef::staticTypingImpl(StaticContext *context)
   _src.clear();
 
   // TBD Using getMemoryManager() might not be thread safe in DB XML - jpcs
-
-  XPath2MemoryManager *mm = getMemoryManager();
-  _src.getStaticType() = StaticType(mm, numArgs_, instance_->getStaticAnalysis().getStaticType());
+  _src.getStaticType() = StaticType(getMemoryManager(), numArgs_, instance_->getStaticAnalysis().getStaticType());
 
   return this;
 }

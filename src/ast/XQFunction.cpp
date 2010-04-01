@@ -125,9 +125,25 @@ void XQFunction::parseSignature(StaticContext *context)
         signature_->argSpecs->pop_back();
       }
 
-      // If the signature has too few arguments, duplicate the last one
-      while(signature_->argSpecs->size() < _args.size()) {
-        signature_->argSpecs->push_back(new (mm) ArgumentSpec(signature_->argSpecs->back(), mm));
+      // If the signature has too few arguments, duplicate the last one.
+      // (This is really only for fn:concat.)
+      if(signature_->argSpecs->size() < _args.size()) {
+        XMLBuffer buf(20);
+        ArgumentSpec *argSpec = signature_->argSpecs->back();
+        unsigned int last = _args.size() + 1 - signature_->argSpecs->size();
+        for(unsigned int i = 2; i <= last; ++i) {
+          ArgumentSpec *newArgSpec = new (mm) ArgumentSpec(argSpec, mm);
+          buf.set(argSpec->getName());
+          XPath2Utils::numToBuf(i, buf);
+          newArgSpec->setName(mm->getPooledString(buf.getRawBuffer()));
+          newArgSpec->setQName(0);
+          signature_->argSpecs->push_back(newArgSpec);
+        }
+
+        buf.set(argSpec->getName());
+        XPath2Utils::numToBuf(1, buf);
+        argSpec->setName(mm->getPooledString(buf.getRawBuffer()));
+        argSpec->setQName(0);
       }
     }
   }

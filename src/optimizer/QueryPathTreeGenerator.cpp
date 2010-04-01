@@ -1438,14 +1438,10 @@ ASTNode *QueryPathTreeGenerator::optimizeInlineFunction(XQInlineFunction *item)
     ArgumentSpecs::const_iterator it = params->begin();
     unsigned int c = 0;
     for(; it != params->end(); ++it, ++c) {
-      XMLBuffer buf(20);
-      buf.set(FunctionRefImpl::argVarPrefix);
-      XPath2Utils::numToBuf(c, buf);
-
       PathResult paramRes;
       if((*it)->getStaticAnalysis().getStaticType().containsType(StaticType::NODE_TYPE))
         createAnyNodeResult(paramRes);
-      setVariable(0, mm_->getPooledString(buf.getRawBuffer()), paramRes);
+      setVariable((*it)->getURI(), (*it)->getName(), paramRes);
     }
   }
 
@@ -1468,14 +1464,10 @@ ASTNode *QueryPathTreeGenerator::optimizeFunctionRef(XQFunctionRef *item)
     ArgumentSpecs::const_iterator it = params->begin();
     unsigned int c = 0;
     for(; it != params->end(); ++it, ++c) {
-      XMLBuffer buf(20);
-      buf.set(FunctionRefImpl::argVarPrefix);
-      XPath2Utils::numToBuf(c, buf);
-
       PathResult paramRes;
       if((*it)->getStaticAnalysis().getStaticType().containsType(StaticType::NODE_TYPE))
         createAnyNodeResult(paramRes);
-      setVariable(0, mm_->getPooledString(buf.getRawBuffer()), paramRes);
+      setVariable((*it)->getURI(), (*it)->getName(), paramRes);
     }
   }
 

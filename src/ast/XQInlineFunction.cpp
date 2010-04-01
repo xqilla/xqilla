@@ -54,8 +54,9 @@ ASTNode *XQInlineFunction::staticResolution(StaticContext *context)
   XPath2MemoryManager *mm = context->getMemoryManager();
 
   func_->staticResolutionStage1(context);
+  signature_->staticResolution(context);
 
-  instance_ = FunctionRefImpl::createInstance(func_, numArgs_, mm, this);
+  instance_ = FunctionRefImpl::createInstance(func_, signature_, mm, this);
   instance_ = instance_->staticResolution(context);
 
   func_->staticResolutionStage2(context);
@@ -69,19 +70,16 @@ ASTNode *XQInlineFunction::staticTypingImpl(StaticContext *context)
 
   _src.addExceptContextFlags(instance_->getStaticAnalysis());
 
-  // TBD Using getMemoryManager() might not be thread safe in DB XML - jpcs
-
   // Remove the argument variables
-  XPath2MemoryManager *mm = getMemoryManager();
-  for(unsigned int i = 0; i < numArgs_; ++i) {
-    XMLBuffer buf(20);
-    buf.set(FunctionRefImpl::argVarPrefix);
-    XPath2Utils::numToBuf(i, buf);
-
-    _src.removeVariable(0, mm->getPooledString(buf.getRawBuffer()));
+  if(signature_->argSpecs) {
+    ArgumentSpecs::const_iterator argsIt = signature_->argSpecs->begin();
+    for(; argsIt != signature_->argSpecs->end(); ++argsIt) {
+      _src.removeVariable((*argsIt)->getURI(), (*argsIt)->getName());
+    }
   }
 
-  _src.getStaticType() = StaticType(mm, numArgs_, instance_->getStaticAnalysis().getStaticType());
+  // TBD Using getMemoryManager() might not be thread safe in DB XML - jpcs
+  _src.getStaticType() = StaticType(getMemoryManager(), numArgs_, instance_->getStaticAnalysis().getStaticType());
 
   return this;
 }

@@ -37,6 +37,7 @@ public:
   const XMLCh *getName() const { return name_; }
   void setName(const XMLCh *name) { name_ = name; }
   const XMLCh *getQName() const { return qname_; }
+  void setQName(const XMLCh *qname) { qname_ = qname; }
   SequenceType *getType() const { return seqType_; }
   void setType(SequenceType *type) { seqType_ = type; }
 
@@ -68,6 +69,8 @@ public:
   void release();
 
   void staticResolution(StaticContext *context);
+
+  void toBuffer(XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer &buffer, bool typeSyntax) const;
 
   enum OptionValue { OP_DEFAULT, OP_TRUE, OP_FALSE };
 

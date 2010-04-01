@@ -53,12 +53,10 @@ public:
 
   virtual void *getInterface(const XMLCh *name) const;
 
-  static ASTNode *createInstance(const FuncFactory *factory, unsigned int numArgs, XPath2MemoryManager *mm,
+  static ASTNode *createInstance(const FuncFactory *factory, const FunctionSignature *signature, XPath2MemoryManager *mm,
                                  const LocationInfo *location);
   static ASTNode *createInstance(const XMLCh *uri, const XMLCh *name, unsigned int numArgs, StaticContext *context,
                                  const LocationInfo *location, FunctionSignature *&signature);
-
-  static XMLCh argVarPrefix[];
 
 protected:
   /** Partially evaluates the given FunctionRefImpl with the given argument */
@@ -68,7 +66,6 @@ protected:
   const FunctionSignature *signature_;
   bool signatureOwned_;
   const ASTNode *instance_;
-  std::vector<unsigned int> args_;
   VarStoreImpl varStore_;
 
   friend class FunctionRefScope;

@@ -136,6 +136,42 @@ void FunctionSignature::staticResolution(StaticContext *context)
   }
 }
 
+void FunctionSignature::toBuffer(XMLBuffer &buffer, bool typeSyntax) const
+{
+  buffer.append(X("function("));
+
+  if(argSpecs) {
+    bool doneOne = false;
+    for(ArgumentSpecs::const_iterator i = argSpecs->begin();
+        i != argSpecs->end(); ++i) {
+      if(doneOne) buffer.append(X(", "));
+      doneOne = true;
+
+      if(!typeSyntax) {
+        buffer.append('$');
+        if((*i)->getQName()) {
+          buffer.append((*i)->getQName());
+        }
+        else {
+          if((*i)->getURI()) {
+            buffer.append('{');
+            buffer.append((*i)->getURI());
+            buffer.append('}');
+          }
+          buffer.append((*i)->getName());
+        }
+        buffer.append(X(" as "));
+      }
+
+      (*i)->getType()->toBuffer(buffer);
+    }
+  }
+  buffer.append(X(") as "));
+  if(returnType)
+    returnType->toBuffer(buffer);
+  else buffer.append(X("item()*"));
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 ArgumentSpec::ArgumentSpec(const XMLCh *qname, SequenceType *type, XPath2MemoryManager *memMgr)

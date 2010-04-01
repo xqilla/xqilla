@@ -2002,7 +2002,14 @@ string PrintAST::printInlineFunction(const XQInlineFunction *item, const Dynamic
 
   string in(getIndent(indent));
 
-  s << in << "<InlineFunction>" << endl;
+  s << in << "<InlineFunction";
+  if(item->getSignature()) {
+    s << " signature=\"";
+    XMLBuffer buf;
+    item->getSignature()->toBuffer(buf, /*typeSyntax*/false);
+    s << UTF8(buf.getRawBuffer()) << "\"";
+  }
+  s << ">" << endl;
   if(item->getUserFunction()) {
     s << printXQUserFunction(item->getUserFunction(), context, indent + INDENT);
   }
@@ -2082,17 +2089,23 @@ string PrintAST::printFunctionRef(const XQFunctionRef *item, const DynamicContex
     name += UTF8(item->getQName());
   }
 
+  s << in << "<FunctionRef name=\"" << name
+    << "\" numArgs=\"" << item->getNumArgs();
+  if(item->getSignature()) {
+    s << "\" signature=\"";
+    XMLBuffer buf;
+    item->getSignature()->toBuffer(buf, /*typeSyntax*/false);
+    s << UTF8(buf.getRawBuffer());
+  }
 #ifdef SHOW_HIDDEN_AST
-  s << in << "<FunctionRef name=\"" << UTF8(item->getQName())
-    << "\" numArgs=\"" << item->getNumArgs() << "\">" << endl;
+  s << "\">" << endl;
 
   if(item->getInstance())
-	  s << printASTNode(item->getInstance(), context, indent + INDENT);
+    s << printASTNode(item->getInstance(), context, indent + INDENT);
 
   s << in << "</FunctionRef>" << endl;
 #else
-  s << in << "<FunctionRef name=\"" << name
-    << "\" numArgs=\"" << item->getNumArgs() << "\"/>" << endl;
+  s << "\"/>" << endl;
 #endif
 
   return s.str();

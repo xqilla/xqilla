@@ -576,17 +576,16 @@ protected:
     AutoReset<bool> reset(active_);
     AutoReset<bool> reset2(inScope_);
 
-    for(unsigned int i = 0; i < item->getNumArgs(); ++i) {
-      XMLBuffer buf(20);
-      buf.set(FunctionRefImpl::argVarPrefix);
-      XPath2Utils::numToBuf(i, buf);
+    if(item->getSignature()->argSpecs) {
+      ArgumentSpecs::const_iterator argsIt = item->getSignature()->argSpecs->begin();
+      for(; argsIt != item->getSignature()->argSpecs->end(); ++argsIt) {
+        if(required_ && required_->isVariableUsed((*argsIt)->getURI(), (*argsIt)->getName()))
+          inScope_ = false;
 
-      if(required_ && required_->isVariableUsed(0, buf.getRawBuffer()))
-        inScope_ = false;
-
-      if(XPath2Utils::equals(uri_, 0) &&
-         XPath2Utils::equals(name_, buf.getRawBuffer()))
-        active_ = false;
+        if(XPath2Utils::equals(uri_, (*argsIt)->getURI()) &&
+           XPath2Utils::equals(name_, (*argsIt)->getName()))
+          active_ = false;
+      }
     }
 
     item->setInstance(optimize(item->getInstance()));
@@ -602,17 +601,16 @@ protected:
     AutoReset<bool> reset(active_);
     AutoReset<bool> reset2(inScope_);
 
-    for(unsigned int i = 0; i < item->getNumArgs(); ++i) {
-      XMLBuffer buf(20);
-      buf.set(FunctionRefImpl::argVarPrefix);
-      XPath2Utils::numToBuf(i, buf);
+    if(item->getSignature()->argSpecs) {
+      ArgumentSpecs::const_iterator argsIt = item->getSignature()->argSpecs->begin();
+      for(; argsIt != item->getSignature()->argSpecs->end(); ++argsIt) {
+        if(required_ && required_->isVariableUsed((*argsIt)->getURI(), (*argsIt)->getName()))
+          inScope_ = false;
 
-      if(required_ && required_->isVariableUsed(0, buf.getRawBuffer()))
-        inScope_ = false;
-
-      if(XPath2Utils::equals(uri_, 0) &&
-         XPath2Utils::equals(name_, buf.getRawBuffer()))
-        active_ = false;
+        if(XPath2Utils::equals(uri_, (*argsIt)->getURI()) &&
+           XPath2Utils::equals(name_, (*argsIt)->getName()))
+          active_ = false;
+      }
     }
 
     item->setInstance(optimize(item->getInstance()));
@@ -660,6 +658,7 @@ public:
       varValue_(0),
       context_(0),
       successful_(false),
+      doesSomething_(false),
       count_(0)
   {
   }
@@ -684,8 +683,11 @@ public:
     // Do a dummy run, to see if we would be 100% successful
     dummyRun_ = true;
     successful_ = true;
+    doesSomething_ = false;
     count_ = 0;
     VariableScopeTracker::run(let->getVarURI(), let->getVarName(), ret, &let->getExpression()->getStaticAnalysis());
+
+    if(!doesSomething_) return false;
 
     removeLet_ = successful_;
 
@@ -741,6 +743,7 @@ protected:
           // Mock up the extra size required to make this change
           count_ -= 1;
           count_ += ASTCounter().count(varValue_);
+          doesSomething_ = true;
         }
         else {
           item->release();
@@ -762,6 +765,7 @@ protected:
   DynamicContext *context_;
 
   bool successful_;
+  bool doesSomething_;
   ssize_t count_;
 };
 
@@ -873,14 +877,17 @@ ASTNode *PartialEvaluator::optimizeFunctionDeref(XQFunctionDeref *item)
 
   size_t numArgs = 0;
   ASTNode *instance = 0;
+  FunctionSignature *signature = 0;
   switch(item->getExpression()->getType()) {
     case ASTNode::INLINE_FUNCTION:
       numArgs = ((XQInlineFunction*)item->getExpression())->getNumArgs();
       instance = ((XQInlineFunction*)item->getExpression())->getInstance();
+      signature = ((XQInlineFunction*)item->getExpression())->getSignature();
       break;
     case ASTNode::FUNCTION_REF:
       numArgs = ((XQFunctionRef*)item->getExpression())->getNumArgs();
       instance = ((XQFunctionRef*)item->getExpression())->getInstance();
+      signature = ((XQFunctionRef*)item->getExpression())->getSignature();
       break;
   default: break;
   }
@@ -900,13 +907,9 @@ ASTNode *PartialEvaluator::optimizeFunctionDeref(XQFunctionDeref *item)
     InlineVar inliner;
 
     VectorOfASTNodes *args = const_cast<VectorOfASTNodes*>(item->getArguments());
-    if(args) {
-      XMLBuffer buf(20);
-      unsigned int i = 0;
-      for(VectorOfASTNodes::iterator argIt = args->begin(); argIt != args->end(); ++argIt, ++i) {
-        buf.set(FunctionRefImpl::argVarPrefix);
-        XPath2Utils::numToBuf(i, buf);
-
+    if(args && signature->argSpecs) {
+      ArgumentSpecs::const_iterator specIt = signature->argSpecs->begin();
+      for(VectorOfASTNodes::iterator argIt = args->begin(); argIt != args->end(); ++argIt, ++specIt) {
         // Rename the variable to avoid naming conflicts
         const XMLCh *newName = context_->allocateTempVarName(X("inline_arg"));
 
@@ -920,7 +923,7 @@ ASTNode *PartialEvaluator::optimizeFunctionDeref(XQFunctionDeref *item)
         varSrc.setProperties((*argIt)->getStaticAnalysis().getProperties() & ~(StaticAnalysis::SUBTREE|StaticAnalysis::SAMEDOC));
         varSrc.variableUsed(0, newName);
 
-        bodyCopy = inliner.run(0, buf.getRawBuffer(), newVar, bodyCopy, context_);
+        bodyCopy = inliner.run((*specIt)->getURI(), (*specIt)->getName(), newVar, bodyCopy, context_);
       }
     }
 

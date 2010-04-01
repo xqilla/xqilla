@@ -28,6 +28,7 @@
 #include <xqilla/fulltext/FTSelection.hpp>
 #include <xqilla/fulltext/DefaultTokenizer.hpp>
 #include <xqilla/schema/SequenceType.hpp>
+#include <xqilla/functions/FunctionSignature.hpp>
 
 #include "../items/impl/FunctionRefImpl.hpp"
 
@@ -300,12 +301,11 @@ ASTNode *StaticTyper::optimizeFunctionRef(XQFunctionRef *item)
     VariableTypeStore *varStore = context_->getVariableTypeStore();
     varStore->addLogicalBlockScope();
 
-    for(unsigned int i = 0; i < item->getNumArgs(); ++i) {
-      XMLBuffer buf(20);
-      buf.set(FunctionRefImpl::argVarPrefix);
-      XPath2Utils::numToBuf(i, buf);
-
-      varStore->declareVar(0, mm->getPooledString(buf.getRawBuffer()), *instanceVarSrc);
+    if(item->getSignature()->argSpecs) {
+      ArgumentSpecs::const_iterator argsIt = item->getSignature()->argSpecs->begin();
+      for(; argsIt != item->getSignature()->argSpecs->end(); ++argsIt) {
+        varStore->declareVar((*argsIt)->getURI(), (*argsIt)->getName(), *instanceVarSrc);
+      }
     }
   }
 
@@ -337,12 +337,11 @@ ASTNode *StaticTyper::optimizeInlineFunction(XQInlineFunction *item)
     VariableTypeStore *varStore = context_->getVariableTypeStore();
     varStore->addLogicalBlockScope();
 
-    for(unsigned int i = 0; i < item->getNumArgs(); ++i) {
-      XMLBuffer buf(20);
-      buf.set(FunctionRefImpl::argVarPrefix);
-      XPath2Utils::numToBuf(i, buf);
-
-      varStore->declareVar(0, mm->getPooledString(buf.getRawBuffer()), *instanceVarSrc);
+    if(item->getSignature()->argSpecs) {
+      ArgumentSpecs::const_iterator argsIt = item->getSignature()->argSpecs->begin();
+      for(; argsIt != item->getSignature()->argSpecs->end(); ++argsIt) {
+        varStore->declareVar((*argsIt)->getURI(), (*argsIt)->getName(), *instanceVarSrc);
+      }
     }
   }
 

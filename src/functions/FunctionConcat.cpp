@@ -40,7 +40,7 @@ const unsigned int FunctionConcat::maxArgs = 10000; // A reasonably large number
 **/
 
 FunctionConcat::FunctionConcat(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
-  : XQFunction(name, "($arg1 as xs:anyAtomicType?) as xs:string", args, memMgr)
+  : XQFunction(name, "($arg as xs:anyAtomicType?) as xs:string", args, memMgr)
 {
 }
 
