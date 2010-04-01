@@ -45,7 +45,7 @@ XERCES_CPP_NAMESPACE_USE
 using namespace std;
 
 const XMLCh XQFunctionCoercion::funcVarName[] = { '#', 'f', 'u', 'n', 'c', 'V', 'a', 'r', 0 };
-static const XMLCh argVarPrefix[] = { '#', 'a', 'r', 'g', 0 };
+static const XMLCh argVarPrefix[] = { 'a', 'r', 'g', 0 };
 
 XQFunctionCoercion::XQFunctionCoercion(ASTNode* expr, SequenceType* exprType, XPath2MemoryManager* memMgr)
   : ASTNodeImpl(FUNCTION_COERCION, memMgr),
@@ -89,13 +89,8 @@ ASTNode* XQFunctionCoercion::staticResolution(StaticContext *context)
   VectorOfASTNodes *argList = new (mm) VectorOfASTNodes(XQillaAllocator<ASTNode*>(mm));
 
   VectorOfSequenceTypes *argTypes = type->getArgumentTypes();
-  unsigned int count = 0;
   for(VectorOfSequenceTypes::iterator i = argTypes->begin(); i != argTypes->end(); ++i) {
-    XMLBuffer buf(20);
-    buf.set(argVarPrefix);
-    XPath2Utils::numToBuf(count, buf);
-    ++count;
-    const XMLCh *argName = mm->getPooledString(buf.getRawBuffer());
+    const XMLCh *argName = context->allocateTempVarName(argVarPrefix);
 
     ArgumentSpec *argSpec = new (mm) ArgumentSpec(argName, *i, mm);
     argSpec->setLocationInfo(*i);

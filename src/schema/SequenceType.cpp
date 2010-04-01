@@ -886,6 +886,11 @@ bool SequenceType::ItemType::matches(const Node::Ptr &toBeTested, DynamicContext
 
 bool SequenceType::ItemType::matches(const FunctionRef::Ptr &toBeTested, DynamicContext* context) const
 {
+  return matches(toBeTested->getSignature(), context);
+}
+
+bool SequenceType::ItemType::matches(const FunctionSignature *sig, DynamicContext* context) const
+{
   switch(m_nTestType) {
     case TEST_ELEMENT:
     case TEST_ATTRIBUTE:
@@ -915,10 +920,8 @@ bool SequenceType::ItemType::matches(const FunctionRef::Ptr &toBeTested, Dynamic
 
       // A TypedFunctionTest matches an item if it is a function item, and the function
       // item's type signature is a subtype of the TypedFunctionTest.
-      FunctionRef *func = (FunctionRef*)toBeTested.get();
-      if(func->getNumArgs() != argTypes_->size()) return false;
-
-      const FunctionSignature *sig = func->getSignature();
+      size_t numArgs = sig->argSpecs ? sig->argSpecs->size() : 0;
+      if(numArgs != argTypes_->size()) return false;
 
       if(sig->argSpecs) {
         ArgumentSpecs::const_iterator aa_i = sig->argSpecs->begin();
@@ -934,7 +937,6 @@ bool SequenceType::ItemType::matches(const FunctionRef::Ptr &toBeTested, Dynamic
       return returnType_->m_nOccurrence == STAR && returnType_->m_pItemType &&
         returnType_->m_pItemType->getItemTestType() == TEST_ANYTHING;
     }
-
   }
   return true;
 }

@@ -43,6 +43,7 @@ protected:
   virtual ASTNode *optimizeUserFunction(XQUserFunctionInstance *item);
   virtual ASTNode *optimizeFunctionDeref(XQFunctionDeref *item);
   virtual ASTNode *optimizePartialApply(XQPartialApply *item);
+  virtual ASTNode *optimizeFunctionCoercion(XQFunctionCoercion *item);
   virtual ASTNode *optimizeReturn(XQReturn *item);
   virtual ASTNode *optimizeIf(XQIf *item);
   virtual ASTNode *optimizeQuantified(XQQuantified *item);
@@ -53,6 +54,7 @@ protected:
   virtual ASTNode *optimizeInlineFunction(XQInlineFunction *item);
   virtual ASTNode *optimizeFunction(XQFunction *item);
   virtual ASTNode *optimizeTypeswitch(XQTypeswitch *item);
+  virtual ASTNode *optimizeTreatAs(XQTreatAs *item);
 
   ASTNode *optimizePlus(Plus *item);
   ASTNode *optimizeMinus(Minus *item);

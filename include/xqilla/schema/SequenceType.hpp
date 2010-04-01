@@ -31,6 +31,7 @@
 class Item;
 class XPath2MemoryManager;
 class SequenceType;
+class FunctionSignature;
 
 typedef std::vector<SequenceType*, XQillaAllocator<SequenceType*> > VectorOfSequenceTypes;
 
@@ -101,6 +102,7 @@ public:
     bool matches(const Item::Ptr &toBeTested, DynamicContext* context) const;
     bool matches(const Node::Ptr &toBeTested, DynamicContext* context) const;
     bool matches(const FunctionRef::Ptr &toBeTested, DynamicContext* context) const;
+    bool matches(const FunctionSignature *sig, DynamicContext* context) const;
     bool matchesNameType(const Item::Ptr &toBeTested, const DynamicContext* context) const;
     bool matchesSchemaElement(const Node::Ptr &toBeTested, const DynamicContext* context) const;
 

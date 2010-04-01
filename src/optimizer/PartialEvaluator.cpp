@@ -980,6 +980,82 @@ ASTNode *PartialEvaluator::optimizePartialApply(XQPartialApply *item)
   }
 }
 
+static inline FunctionSignature *findSignature(ASTNode *expr)
+{
+  FunctionSignature *signature = 0;
+
+  switch(expr->getType()) {
+  case ASTNode::INLINE_FUNCTION: {
+    signature = ((XQInlineFunction*)expr)->getSignature();
+    break;
+  }
+  case ASTNode::FUNCTION_COERCION: {
+    XQFunctionCoercion *coercion = (XQFunctionCoercion*)expr;
+    if(coercion->getFuncConvert()->getType() == ASTNode::INLINE_FUNCTION)
+      signature = ((XQInlineFunction*)coercion->getFuncConvert())->getSignature();
+    break;
+  }
+  default: break;
+  }
+
+  return signature;
+}
+
+ASTNode *PartialEvaluator::optimizeFunctionCoercion(XQFunctionCoercion *item)
+{
+  ASTVisitor::optimizeFunctionCoercion(item);
+
+  FunctionSignature *signature = findSignature(item->getExpression());
+  if(signature && item->getSequenceType()->getItemType()->matches(signature, context_)) {
+    ASTNode *result = item->getExpression();
+    item->setExpression(0);
+    sizeLimit_ += ASTCounter().count(item);
+    item->release();
+    return result;
+  }
+
+  if(item->getExpression()->getType() != ASTNode::INLINE_FUNCTION || functionInlineLimit_ <= 0)
+    return item;
+
+  XQInlineFunction *func = (XQInlineFunction*)item->getExpression();
+
+  AutoReset<size_t> reset(functionInlineLimit_);
+  --functionInlineLimit_;
+
+  ASTNode *result = item->getFuncConvert()->copy(context_);
+  result = InlineVar().run(0, XQFunctionCoercion::funcVarName, func->copy(context_), result, context_);
+
+  if(checkSizeLimit(item, result)) {
+    redoTyping_ = true;
+    result = optimize(result->staticTyping(0, 0));
+    item->release();
+    return result;
+  }
+  else {
+    result->release();
+    return item;
+  }
+}
+
+ASTNode *PartialEvaluator::optimizeTreatAs(XQTreatAs *item)
+{
+  ASTVisitor::optimizeTreatAs(item);
+
+  const SequenceType::ItemType *itemType = item->getSequenceType()->getItemType();
+  if(!itemType) return item;
+
+  FunctionSignature *signature = findSignature(item->getExpression());
+  if(signature && itemType->matches(signature, context_)) {
+    ASTNode *result = item->getExpression();
+    item->setExpression(0);
+    sizeLimit_ += ASTCounter().count(item);
+    item->release();
+    return result;
+  }
+
+  return item;
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //
 // Inline variables
