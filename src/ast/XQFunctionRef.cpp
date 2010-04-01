@@ -38,25 +38,7 @@ using namespace std;
 XQFunctionRef::XQFunctionRef(const XMLCh *qname, unsigned int numArgs, XPath2MemoryManager *mm)
   : ASTNodeImpl(FUNCTION_REF, mm),
     qname_(qname),
-    prefix_(0),
-    uri_(0),
-    name_(0),
-    numArgs_(numArgs),
-    signature_(0),
-    instance_(0)
-{
-}
-
-XQFunctionRef::XQFunctionRef(const XMLCh *prefix, const XMLCh *uri, const XMLCh *name, unsigned int numArgs,
-                             FunctionSignature *signature, ASTNode *instance, XPath2MemoryManager *mm)
-  : ASTNodeImpl(FUNCTION_REF, mm),
-    qname_(0),
-    prefix_(prefix),
-    uri_(uri),
-    name_(name),
-    numArgs_(numArgs),
-    signature_(signature),
-    instance_(instance)
+    numArgs_(numArgs)
 {
 }
 
@@ -64,23 +46,25 @@ ASTNode *XQFunctionRef::staticResolution(StaticContext *context)
 {
   XPath2MemoryManager *mm = context->getMemoryManager();
 
-  prefix_ = XPath2NSUtils::getPrefix(qname_, mm);
-  name_ = XPath2NSUtils::getLocalName(qname_);
+  const XMLCh *prefix = XPath2NSUtils::getPrefix(qname_, mm);
+  const XMLCh *name = XPath2NSUtils::getLocalName(qname_);
 
-  if(prefix_ == 0 || *prefix_ == 0) {
-    uri_ = context->getDefaultFuncNS();
+  const XMLCh *uri;
+  if(prefix == 0 || *prefix == 0) {
+    uri = context->getDefaultFuncNS();
   }
   else {
-    uri_ = context->getUriBoundToPrefix(prefix_, this);
+    uri = context->getUriBoundToPrefix(prefix, this);
   }
 
-  instance_ = FunctionRefImpl::createInstance(uri_, name_, numArgs_, context, this, signature_);
-  if(instance_ == 0) {
+  FunctionSignature *signature = 0;
+  ASTNode *instance = FunctionRefImpl::createInstance(uri, name, numArgs_, context, this, signature);
+  if(instance == 0) {
     XMLBuffer buf;
     buf.set(X("A function called {"));
-    buf.append(uri_);
+    buf.append(uri);
     buf.append(X("}"));
-    buf.append(name_);
+    buf.append(name);
     buf.append(X(" with "));
     XPath2Utils::numToBuf(numArgs_, buf);
     buf.append(X(" arguments is not defined [err:XPST0017]"));
@@ -88,22 +72,24 @@ ASTNode *XQFunctionRef::staticResolution(StaticContext *context)
     XQThrow(StaticErrorException, X("XQFunctionRef::staticResolution"), buf.getRawBuffer());
   }
 
-  instance_ = instance_->staticResolution(context);
+  instance = instance->staticResolution(context);
 
-  return this;
+  ASTNode *result = new (mm) XQInlineFunction(0, prefix, uri, name, numArgs_, signature, instance, mm);
+  result->setLocationInfo(result);
+  this->release();
+  return result; // Don't call staticResolution() on result
 }
 
 ASTNode *XQFunctionRef::staticTypingImpl(StaticContext *context)
 {
-  _src.clear();
-
-  // TBD Using getMemoryManager() might not be thread safe in DB XML - jpcs
-  _src.getStaticType() = StaticType(getMemoryManager(), numArgs_, instance_->getStaticAnalysis().getStaticType());
-
+  // Should never happen
+  assert(false);
   return this;
 }
 
 Result XQFunctionRef::createResult(DynamicContext *context, int flags) const
 {
-  return (Item::Ptr)new FunctionRefImpl(prefix_, uri_, name_, signature_, instance_, context);
+  // Should never happen
+  assert(false);
+  return 0;
 }

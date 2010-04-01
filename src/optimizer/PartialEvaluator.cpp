@@ -571,28 +571,6 @@ protected:
     return item;
   }
 
-  virtual ASTNode *optimizeFunctionRef(XQFunctionRef *item)
-  {
-    AutoReset<bool> reset(active_);
-    AutoReset<bool> reset2(inScope_);
-
-    if(item->getSignature()->argSpecs) {
-      ArgumentSpecs::const_iterator argsIt = item->getSignature()->argSpecs->begin();
-      for(; argsIt != item->getSignature()->argSpecs->end(); ++argsIt) {
-        if(required_ && required_->isVariableUsed((*argsIt)->getURI(), (*argsIt)->getName()))
-          inScope_ = false;
-
-        if(XPath2Utils::equals(uri_, (*argsIt)->getURI()) &&
-           XPath2Utils::equals(name_, (*argsIt)->getName()))
-          active_ = false;
-      }
-    }
-
-    item->setInstance(optimize(item->getInstance()));
-
-    return item;
-  }
-
   virtual ASTNode *optimizeInlineFunction(XQInlineFunction *item)
   {
     if(item->getUserFunction())
@@ -883,11 +861,6 @@ ASTNode *PartialEvaluator::optimizeFunctionDeref(XQFunctionDeref *item)
       numArgs = ((XQInlineFunction*)item->getExpression())->getNumArgs();
       instance = ((XQInlineFunction*)item->getExpression())->getInstance();
       signature = ((XQInlineFunction*)item->getExpression())->getSignature();
-      break;
-    case ASTNode::FUNCTION_REF:
-      numArgs = ((XQFunctionRef*)item->getExpression())->getNumArgs();
-      instance = ((XQFunctionRef*)item->getExpression())->getInstance();
-      signature = ((XQFunctionRef*)item->getExpression())->getSignature();
       break;
   default: break;
   }

@@ -42,22 +42,11 @@ using namespace std;
 static const XMLCh constructorArgName[] = { 'a', 'r', 'g', 0 };
 
 FunctionRefImpl::FunctionRefImpl(const XMLCh *prefix, const XMLCh *uri, const XMLCh *localname,
-                                 const FunctionSignature *signature, const ASTNode *instance, DynamicContext *context)
+                                 const FunctionSignature *signature, const ASTNode *instance,
+                                 const StaticAnalysis &sa, DynamicContext *context)
   : prefix_(prefix),
     uri_(uri),
     name_(localname),
-    signature_(signature),
-    signatureOwned_(false),
-    instance_(instance),
-    varStore_(context->getMemoryManager())
-{
-}
-
-FunctionRefImpl::FunctionRefImpl(const FunctionSignature *signature, const ASTNode *instance,
-                                 const StaticAnalysis &sa, DynamicContext *context)
-  : prefix_(0),
-    uri_(0),
-    name_(0),
     signature_(signature),
     signatureOwned_(false),
     instance_(instance),

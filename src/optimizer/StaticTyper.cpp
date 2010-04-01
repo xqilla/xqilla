@@ -290,39 +290,6 @@ ASTNode *StaticTyper::optimizeNamespaceBinding(XQNamespaceBinding *item)
   return item;
 }
 
-ASTNode *StaticTyper::optimizeFunctionRef(XQFunctionRef *item)
-{
-  AutoDelete<StaticAnalysis> instanceVarSrc(0);
-  if(context_) {
-    XPath2MemoryManager *mm = context_->getMemoryManager();
-    instanceVarSrc.set(new StaticAnalysis(mm));
-    instanceVarSrc->getStaticType() = StaticType(StaticType::ITEM_TYPE, 0, StaticType::UNLIMITED);
-
-    VariableTypeStore *varStore = context_->getVariableTypeStore();
-    varStore->addLogicalBlockScope();
-
-    if(item->getSignature()->argSpecs) {
-      ArgumentSpecs::const_iterator argsIt = item->getSignature()->argSpecs->begin();
-      for(; argsIt != item->getSignature()->argSpecs->end(); ++argsIt) {
-        varStore->declareVar((*argsIt)->getURI(), (*argsIt)->getName(), *instanceVarSrc);
-      }
-    }
-  }
-
-  {
-    // The context item is not defined
-    AutoContextItemTypeReset contextTypeReset(context_, StaticType());
-    // Turn off warnings
-    AutoMessageListenerReset reset(context_);
-    item->setInstance(optimize(item->getInstance()));
-  }
-
-  if(context_)
-    context_->getVariableTypeStore()->removeScope();
-
-  return item;
-}
-
 ASTNode *StaticTyper::optimizeInlineFunction(XQInlineFunction *item)
 {
   if(item->getUserFunction())

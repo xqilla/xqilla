@@ -1177,6 +1177,12 @@ ASTNode *QueryPathTreeGenerator::optimizeNumericLiteral(XQNumericLiteral *item)
   return item;
 }
 
+ASTNode *QueryPathTreeGenerator::optimizeFunctionRef(XQFunctionRef *item)
+{
+  push(PathResult());
+  return item;
+}
+
 ASTNode *QueryPathTreeGenerator::optimizeAtomize(XQAtomize *item)
 {
   generate(const_cast<ASTNode *>(item->getExpression())).markSubtreeValue();
@@ -1431,32 +1437,6 @@ ASTNode *QueryPathTreeGenerator::optimizeInlineFunction(XQInlineFunction *item)
   if(item->getUserFunction())
     optimizeFunctionDef(item->getUserFunction());
 
-  const ArgumentSpecs *params = item->getSignature()->argSpecs;
-  if(params) {
-    varStore_.addScope(VarStore::MyScope::LOCAL_SCOPE);
-
-    ArgumentSpecs::const_iterator it = params->begin();
-    unsigned int c = 0;
-    for(; it != params->end(); ++it, ++c) {
-      PathResult paramRes;
-      if((*it)->getStaticAnalysis().getStaticType().containsType(StaticType::NODE_TYPE))
-        createAnyNodeResult(paramRes);
-      setVariable((*it)->getURI(), (*it)->getName(), paramRes);
-    }
-  }
-
-  generate(item->getInstance());
-
-  if(params) {
-    delete varStore_.popScope();
-  }
-
-  push(PathResult());
-  return item;
-}
-
-ASTNode *QueryPathTreeGenerator::optimizeFunctionRef(XQFunctionRef *item)
-{
   const ArgumentSpecs *params = item->getSignature()->argSpecs;
   if(params) {
     varStore_.addScope(VarStore::MyScope::LOCAL_SCOPE);

@@ -61,7 +61,6 @@ protected:
   virtual ASTNode *optimizeTypeswitch(XQTypeswitch *item);
   virtual ASTNode *optimizeFunctionCoercion(XQFunctionCoercion *item);
   virtual ASTNode *optimizeNamespaceBinding(XQNamespaceBinding *item);
-  virtual ASTNode *optimizeFunctionRef(XQFunctionRef *item);
   virtual ASTNode *optimizeInlineFunction(XQInlineFunction *item);
   virtual ASTNode *optimizeEffectiveBooleanValue(XQEffectiveBooleanValue *item);
   virtual ASTNode *optimizeUTransform(UTransform *item);

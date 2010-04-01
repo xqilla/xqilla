@@ -560,7 +560,6 @@ ASTNode *ASTVisitor::optimizeInlineFunction(XQInlineFunction *item)
 
 ASTNode *ASTVisitor::optimizeFunctionRef(XQFunctionRef *item)
 {
-  item->setInstance(optimize(item->getInstance()));
   return item;
 }
 

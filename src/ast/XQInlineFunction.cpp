@@ -34,15 +34,23 @@ using namespace std;
 XQInlineFunction::XQInlineFunction(XQUserFunction *func, XPath2MemoryManager *mm)
   : ASTNodeImpl(INLINE_FUNCTION, mm),
     func_(func),
+    prefix_(0),
+    uri_(0),
+    name_(0),
     numArgs_((unsigned int)(func->getSignature()->argSpecs ? func->getSignature()->argSpecs->size() : 0)),
     signature_(new (mm) FunctionSignature(func->getSignature(), mm)),
     instance_(0)
 {
 }
 
-XQInlineFunction::XQInlineFunction(XQUserFunction *func, unsigned int numArgs, FunctionSignature *signature, ASTNode *instance, XPath2MemoryManager *mm)
+XQInlineFunction::XQInlineFunction(XQUserFunction *func, const XMLCh *prefix, const XMLCh *uri, const XMLCh *name,
+                                   unsigned int numArgs, FunctionSignature *signature, ASTNode *instance,
+                                   XPath2MemoryManager *mm)
   : ASTNodeImpl(INLINE_FUNCTION, mm),
     func_(func),
+    prefix_(prefix),
+    uri_(uri),
+    name_(name),
     numArgs_(numArgs),
     signature_(signature),
     instance_(instance)
@@ -86,5 +94,5 @@ ASTNode *XQInlineFunction::staticTypingImpl(StaticContext *context)
 
 Result XQInlineFunction::createResult(DynamicContext *context, int flags) const
 {
-  return (Item::Ptr)new FunctionRefImpl(signature_, instance_, _src, context);
+  return (Item::Ptr)new FunctionRefImpl(prefix_, uri_, name_, signature_, instance_, _src, context);
 }

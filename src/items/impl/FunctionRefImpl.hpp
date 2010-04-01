@@ -32,10 +32,10 @@ class XQILLA_API FunctionRefImpl : public FunctionRef
 public:
   typedef RefCountPointer<const FunctionRefImpl> Ptr;
 
-  FunctionRefImpl(const XMLCh *prefix, const XMLCh *uri, const XMLCh *localname,
-                  const FunctionSignature *signature, const ASTNode *instance, DynamicContext *context);
   /** Initialises closure from the StaticAnalysis of variables that are needed */
-  FunctionRefImpl(const FunctionSignature *signature, const ASTNode *instance, const StaticAnalysis &sa, DynamicContext *context);
+  FunctionRefImpl(const XMLCh *prefix, const XMLCh *uri, const XMLCh *localname,
+                  const FunctionSignature *signature, const ASTNode *instance,
+                  const StaticAnalysis &sa, DynamicContext *context);
   ~FunctionRefImpl();
 
   virtual ATQNameOrDerived::Ptr getName(const DynamicContext *context) const;
