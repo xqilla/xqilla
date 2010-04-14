@@ -265,6 +265,7 @@
       <File RelativePath="..\..\include\xqilla\functions\FunctionNumber.hpp"/>
       <File RelativePath="..\..\include\xqilla\functions\FunctionParseHTML.hpp"/>
       <File RelativePath="..\..\include\xqilla\functions\FunctionParseJSON.hpp"/>
+      <File RelativePath="..\..\include\xqilla\functions\FunctionExplain.hpp"/>
       <File RelativePath="..\..\include\xqilla\functions\FunctionSerializeJSON.hpp"/>
       <File RelativePath="..\..\include\xqilla\functions\FunctionSin.hpp"/>
       <File RelativePath="..\..\include\xqilla\functions\FunctionSqrt.hpp"/>
@@ -669,6 +670,7 @@
       <File RelativePath="..\..\src\functions\FunctionNumber.cpp"/>
       <File RelativePath="..\..\src\functions\FunctionParseHTML.cpp"/>
       <File RelativePath="..\..\src\functions\FunctionParseJSON.cpp"/>
+      <File RelativePath="..\..\src\functions\FunctionExplain.cpp"/>
       <File RelativePath="..\..\src\functions\FunctionParseXML.cpp"/>
       <File RelativePath="..\..\src\functions\FunctionPosition.cpp"/>
       <File RelativePath="..\..\src\functions\FunctionPower.cpp"/>

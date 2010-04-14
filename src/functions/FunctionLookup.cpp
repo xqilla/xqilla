@@ -318,6 +318,7 @@ const ExternalFunction *FunctionLookup::lookUpGlobalExternalFunction(
 #include <xqilla/functions/FunctionCaseFold.hpp>
 #include <xqilla/functions/FunctionWords.hpp>
 #include <xqilla/functions/FunctionSentences.hpp>
+#include <xqilla/functions/FunctionExplain.hpp>
 // Higher Order Functions extension functions
 #include <xqilla/functions/FunctionFunctionArity.hpp>
 #include <xqilla/functions/FunctionFunctionName.hpp>
@@ -554,6 +555,7 @@ static void initGlobalTable(FunctionLookup *t, MemoryManager *memMgr)
   t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionCaseFold>(memMgr));
   t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionWords>(memMgr));
   t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionSentences>(memMgr));
+  t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionExplain>(memMgr));
 
 #ifdef HAVE_LIBTIDY
   t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionParseHTML>(memMgr));

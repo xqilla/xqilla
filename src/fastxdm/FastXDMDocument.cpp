@@ -238,7 +238,13 @@ void FastXDMDocument::endElementEvent(const XMLCh *prefix, const XMLCh *uri, con
 {
   checkTextBuffer();
   prevNode_ = elementStack_.pop();
-  getNode(prevNode_)->setElementType(typeURI, typeName);
+
+  if(typeName) {
+    getNode(prevNode_)->setElementType(typeURI, typeName);
+  }
+  else {
+    getNode(prevNode_)->setElementType(SchemaSymbols::fgURI_SCHEMAFORSCHEMA, DocumentCache::g_szUntyped);
+  }
 }
 
 void FastXDMDocument::piEvent(const XMLCh *target, const XMLCh *value)
@@ -296,8 +302,15 @@ void FastXDMDocument::attributeEvent(const XMLCh *prefix, const XMLCh *uri, cons
 
   if(numAttributes_ == maxAttributes_) resizeAttributes();
 
-  attributes_[numAttributes_].set(owner, mm_->getPooledString(prefix), mm_->getPooledString(uri), mm_->getPooledString(localname),
-                                  mm_->getPooledString(value), mm_->getPooledString(typeURI), mm_->getPooledString(typeName));
+  if(typeName) {
+    attributes_[numAttributes_].set(owner, mm_->getPooledString(prefix), mm_->getPooledString(uri), mm_->getPooledString(localname),
+                                    mm_->getPooledString(value), mm_->getPooledString(typeURI), mm_->getPooledString(typeName));
+  }
+  else {
+    attributes_[numAttributes_].set(owner, mm_->getPooledString(prefix), mm_->getPooledString(uri), mm_->getPooledString(localname),
+                                    mm_->getPooledString(value), mm_->getPooledString(SchemaSymbols::fgURI_SCHEMAFORSCHEMA),
+                                    mm_->getPooledString(ATUntypedAtomic::fgDT_UNTYPEDATOMIC));
+  }
 
   if(owner != (unsigned int)-1) {
     Node *node = getNode(owner);

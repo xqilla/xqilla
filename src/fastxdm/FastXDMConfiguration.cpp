@@ -28,6 +28,7 @@
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/context/URIResolver.hpp>
 #include <xqilla/context/impl/ItemFactoryImpl.hpp>
+#include <xqilla/optimizer/ASTToXML.hpp>
 
 #include <xercesc/util/RefHashTableOf.hpp>
 #include <xercesc/util/NoSuchElementException.hpp>
@@ -174,5 +175,10 @@ private:
 URIResolver *FastXDMConfiguration::createDefaultURIResolver(MemoryManager *memMgr)
 {
   return new (memMgr) FastXDMURIResolver(memMgr);
+}
+
+ASTToXML *FastXDMConfiguration::createASTToXML()
+{
+  return new ASTToXML();
 }
 

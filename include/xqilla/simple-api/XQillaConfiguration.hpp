@@ -31,6 +31,7 @@ class SequenceBuilder;
 class ItemFactory;
 class UpdateFactory;
 class URIResolver;
+class ASTToXML;
 class StaticContext;
 class DynamicContext;
 
@@ -49,6 +50,8 @@ public:
   virtual UpdateFactory *createUpdateFactory(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *memMgr) = 0;
 
   virtual URIResolver *createDefaultURIResolver(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *memMgr) = 0;
+
+  virtual ASTToXML *createASTToXML() = 0;
 
   virtual void populateStaticContext(StaticContext *context) {}
 

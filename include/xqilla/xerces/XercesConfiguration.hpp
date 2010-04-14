@@ -52,6 +52,8 @@ public:
 
   virtual URIResolver *createDefaultURIResolver(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *memMgr);
 
+  virtual ASTToXML *createASTToXML();
+
   virtual Node::Ptr createNode(const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *node, const DynamicContext *context) const;
 };
 

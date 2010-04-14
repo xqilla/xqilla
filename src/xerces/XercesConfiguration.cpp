@@ -25,6 +25,7 @@
 #include <xqilla/context/impl/ItemFactoryImpl.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/utils/XPath2Utils.hpp>
+#include <xqilla/optimizer/ASTToXML.hpp>
 
 #include "XercesUpdateFactory.hpp"
 #include "XercesNodeImpl.hpp"
@@ -66,6 +67,11 @@ UpdateFactory *XercesConfiguration::createUpdateFactory(MemoryManager *memMgr)
 URIResolver *XercesConfiguration::createDefaultURIResolver(MemoryManager *memMgr)
 {
   return new (memMgr) XercesURIResolver(memMgr);
+}
+
+ASTToXML *XercesConfiguration::createASTToXML()
+{
+  return new ASTToXML();
 }
 
 Node::Ptr XercesConfiguration::createNode(const DOMNode *node, const DynamicContext *context) const

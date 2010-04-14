@@ -56,6 +56,7 @@
 #include <xqilla/functions/FunctionNumber.hpp>
 #include <xqilla/functions/FunctionParseXML.hpp>
 #include <xqilla/functions/FunctionParseJSON.hpp>
+#include <xqilla/functions/FunctionExplain.hpp>
 #include <xqilla/functions/FunctionRoot.hpp>
 #include <xqilla/functions/FunctionString.hpp>
 #include <xqilla/functions/FunctionStringLength.hpp>
@@ -748,6 +749,20 @@ ASTNode *QueryPathTreeGenerator::optimizeFunction(XQFunction *item)
         NodeTest *nt = createNodeTest(Node::element_string);
         root = createQueryPathNode(nt, QueryPathNode::CHILD);
         ((FunctionParseJSON*)item)->setQueryPathTree(root);
+      }
+
+      result.join(root);
+    }
+
+    else if(name == FunctionExplain::name) {
+      // Returns a sequence of elements
+      generate(args[0]);
+
+      QueryPathNode *root = ((FunctionExplain*)item)->getQueryPathTree();
+      if(!root) {
+        NodeTest *nt = createNodeTest(Node::element_string);
+        root = createQueryPathNode(nt, QueryPathNode::CHILD);
+        ((FunctionExplain*)item)->setQueryPathTree(root);
       }
 
       result.join(root);

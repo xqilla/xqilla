@@ -215,6 +215,7 @@ xqilla/functions/FunctionNot.hpp \
 xqilla/functions/FunctionNumber.hpp \
 xqilla/functions/FunctionParseHTML.hpp \
 xqilla/functions/FunctionParseJSON.hpp \
+xqilla/functions/FunctionExplain.hpp \
 xqilla/functions/FunctionSentences.hpp \
 xqilla/functions/FunctionSerializeJSON.hpp \
 xqilla/functions/FunctionParseXML.hpp \

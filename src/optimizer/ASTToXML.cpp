@@ -527,6 +527,9 @@ ASTNode *ASTToXML::optimizeFunction(XQFunction *item)
 //     else if(funName == FunctionParseJSON::name) {
 //       queryPathTree = ((FunctionParseJSON*)item)->getQueryPathTree();
 //     }
+//     else if(funName == FunctionExplain::name) {
+//       queryPathTree = ((FunctionExplain*)item)->getQueryPathTree();
+//     }
 //   }
 // #endif
 

@@ -174,9 +174,9 @@ am_libxqilla_la_OBJECTS = ReferenceCounted.lo BaseMemoryManager.lo \
 	FunctionTimezoneFromTime.lo FunctionYearFromDate.lo \
 	FunctionYearFromDateTime.lo FunctionYearsFromDuration.lo \
 	FunctionParseJSON.lo FunctionSerializeJSON.lo \
-	FunctionParseHTML.lo FunctionAnalyzeString.lo \
-	RegExpFunction.lo XQUserFunction.lo FunctionSignature.lo \
-	BuiltInModules.lo ATAnySimpleTypeImpl.lo \
+	FunctionParseHTML.lo FunctionExplain.lo \
+	FunctionAnalyzeString.lo RegExpFunction.lo XQUserFunction.lo \
+	FunctionSignature.lo BuiltInModules.lo ATAnySimpleTypeImpl.lo \
 	ATAnyURIOrDerivedImpl.lo ATBase64BinaryOrDerivedImpl.lo \
 	ATBooleanOrDerivedImpl.lo ATDateOrDerivedImpl.lo \
 	ATDateTimeOrDerivedImpl.lo ATDecimalOrDerivedImpl.lo \
@@ -765,6 +765,7 @@ src/functions/FunctionYearsFromDuration.cpp \
 src/functions/FunctionParseJSON.cpp \
 src/functions/FunctionSerializeJSON.cpp \
 src/functions/FunctionParseHTML.cpp \
+src/functions/FunctionExplain.cpp \
 src/functions/FunctionAnalyzeString.cpp \
 src/functions/RegExpFunction.cpp \
 src/functions/XQUserFunction.cpp \
@@ -1416,6 +1417,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionEndsWith.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionError.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionExp.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionExplain.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionFloor.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionFunctionArity.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionFunctionName.Plo@am__quote@
@@ -3711,6 +3713,13 @@ FunctionParseHTML.lo: src/functions/FunctionParseHTML.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/functions/FunctionParseHTML.cpp' object='FunctionParseHTML.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o FunctionParseHTML.lo `test -f 'src/functions/FunctionParseHTML.cpp' || echo '$(srcdir)/'`src/functions/FunctionParseHTML.cpp
+
+FunctionExplain.lo: src/functions/FunctionExplain.cpp
+@am__fastdepCXX_TRUE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT FunctionExplain.lo -MD -MP -MF $(DEPDIR)/FunctionExplain.Tpo -c -o FunctionExplain.lo `test -f 'src/functions/FunctionExplain.cpp' || echo '$(srcdir)/'`src/functions/FunctionExplain.cpp
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/FunctionExplain.Tpo $(DEPDIR)/FunctionExplain.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/functions/FunctionExplain.cpp' object='FunctionExplain.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o FunctionExplain.lo `test -f 'src/functions/FunctionExplain.cpp' || echo '$(srcdir)/'`src/functions/FunctionExplain.cpp
 
 FunctionAnalyzeString.lo: src/functions/FunctionAnalyzeString.cpp
 @am__fastdepCXX_TRUE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT FunctionAnalyzeString.lo -MD -MP -MF $(DEPDIR)/FunctionAnalyzeString.Tpo -c -o FunctionAnalyzeString.lo `test -f 'src/functions/FunctionAnalyzeString.cpp' || echo '$(srcdir)/'`src/functions/FunctionAnalyzeString.cpp

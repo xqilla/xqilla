@@ -36,6 +36,8 @@ public:
   virtual UpdateFactory *createUpdateFactory(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *memMgr);
 
   virtual URIResolver *createDefaultURIResolver(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *memMgr);
+
+  virtual ASTToXML *createASTToXML();
 };
 
 #endif

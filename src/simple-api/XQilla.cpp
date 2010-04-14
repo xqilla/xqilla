@@ -29,7 +29,6 @@
 #include <xqilla/optimizer/PartialEvaluator.hpp>
 #include <xqilla/optimizer/StaticTyper.hpp>
 #include <xqilla/debug/DebugHookDecorator.hpp>
-#include <xqilla/optimizer/ASTToXML.hpp>
 #include <xqilla/functions/BuiltInModules.hpp>
 #include "../lexer/XQLexer.hpp"
 #include "../lexer/XSLT2Lexer.hpp"

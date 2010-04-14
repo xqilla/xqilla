@@ -26,6 +26,7 @@
 #include <xqilla/exceptions/XQException.hpp>
 #include <xqilla/update/PendingUpdateList.hpp>
 #include <xqilla/optimizer/ASTToXML.hpp>
+#include <xqilla/simple-api/XQillaConfiguration.hpp>
 
 ASTDebugHook::ASTDebugHook(ASTNode *astNode, XPath2MemoryManager *mm)
   : ASTNodeImpl(DEBUG_HOOK, mm),
@@ -72,7 +73,8 @@ public:
   const TupleNode *getTupleNode() const { return 0; }
   virtual std::string getQueryPlan() const
   {
-    return ASTToXML().print(getASTNode(), context_);
+    AutoDelete<ASTToXML> a2x(context_->getConfiguration()->createASTToXML());
+    return a2x->print(getASTNode(), context_);
   }
 };
 

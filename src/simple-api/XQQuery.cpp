@@ -18,6 +18,7 @@
  */
 
 #include <xqilla/simple-api/XQQuery.hpp>
+#include <xqilla/simple-api/XQillaConfiguration.hpp>
 #include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/simple-api/XQilla.hpp>
 #include <xqilla/context/DynamicContext.hpp>
@@ -485,7 +486,8 @@ void XQQuery::staticTyping(StaticTyper *styper)
 
 std::string XQQuery::getQueryPlan() const
 {
-  return ASTToXML().print(this, m_context);
+  AutoDelete<ASTToXML> a2x(m_context->getConfiguration()->createASTToXML());
+  return a2x->print(this, m_context);
 }
 
 ASTNode* XQQuery::getQueryBody() const

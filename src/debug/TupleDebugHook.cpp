@@ -24,6 +24,7 @@
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/exceptions/XQException.hpp>
 #include <xqilla/optimizer/ASTToXML.hpp>
+#include <xqilla/simple-api/XQillaConfiguration.hpp>
 
 XERCES_CPP_NAMESPACE_USE;
 
@@ -59,7 +60,8 @@ public:
   const TupleNode *getTupleNode() const { return (TupleNode*)location_; }
   virtual std::string getQueryPlan() const
   {
-    return ASTToXML().print(getTupleNode(), context_);
+    AutoDelete<ASTToXML> a2x(context_->getConfiguration()->createASTToXML());
+    return a2x->print(getTupleNode(), context_);
   }
 };
 

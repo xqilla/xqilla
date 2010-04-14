@@ -1121,7 +1121,8 @@ bool InteractiveDebugger::outputCurrentFrame(unsigned int context) const
 void InteractiveDebugger::outputCurrentFrameQueryPlan() const
 {
   if(currentFrame_ == 0) {
-    cout << ASTToXML().print(query_, context_) << endl;;
+    AutoDelete<ASTToXML> a2x(context_->getConfiguration()->createASTToXML());
+    cout << a2x->print(query_, context_) << endl;
   }
   else {
     cout << currentFrame_->getQueryPlan() << endl;;
