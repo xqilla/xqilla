@@ -25,7 +25,7 @@
 #include <xqilla/debug/StackFrame.hpp>
 #include <xqilla/exceptions/XQException.hpp>
 #include <xqilla/update/PendingUpdateList.hpp>
-#include <xqilla/utils/PrintAST.hpp>
+#include <xqilla/optimizer/ASTToXML.hpp>
 
 ASTDebugHook::ASTDebugHook(ASTNode *astNode, XPath2MemoryManager *mm)
   : ASTNodeImpl(DEBUG_HOOK, mm),
@@ -72,7 +72,7 @@ public:
   const TupleNode *getTupleNode() const { return 0; }
   virtual std::string getQueryPlan() const
   {
-    return PrintAST::print(getASTNode(), context_, 0);
+    return ASTToXML().print(getASTNode(), context_);
   }
 };
 

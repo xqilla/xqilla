@@ -37,7 +37,7 @@
 #include <xqilla/runtime/Result.hpp>
 #include <xqilla/utils/XPath2Utils.hpp>
 #include <xqilla/utils/XPath2NSUtils.hpp>
-#include <xqilla/utils/PrintAST.hpp>
+#include <xqilla/optimizer/ASTToXML.hpp>
 #include <xqilla/events/EventHandler.hpp>
 #include <xqilla/optimizer/StaticTyper.hpp>
 #include <xqilla/functions/XQillaFunction.hpp>
@@ -485,7 +485,7 @@ void XQQuery::staticTyping(StaticTyper *styper)
 
 std::string XQQuery::getQueryPlan() const
 {
-  return PrintAST::print(this, m_context);
+  return ASTToXML().print(this, m_context);
 }
 
 ASTNode* XQQuery::getQueryBody() const

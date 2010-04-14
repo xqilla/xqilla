@@ -32,6 +32,7 @@ public:
   LetTuple(TupleNode *parent, const XMLCh *varQName, ASTNode *expr, XPath2MemoryManager *mm);
   LetTuple(TupleNode *parent, const XMLCh *varURI, const XMLCh *varName, ASTNode *expr, XPath2MemoryManager *mm);
 
+  const XMLCh *getVarQName() const { return varQName_; }
   const XMLCh *getVarURI() const { return varURI_; }
   void setVarURI(const XMLCh *uri) { varURI_ = uri; }
   const XMLCh *getVarName() const { return varName_; }

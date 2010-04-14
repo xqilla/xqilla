@@ -387,6 +387,7 @@
       <File RelativePath="..\..\include\xqilla\optimizer\StaticTyper.hpp"/>
       <File RelativePath="..\..\include\xqilla\optimizer\QueryPathNode.hpp"/>
       <File RelativePath="..\..\include\xqilla\optimizer\QueryPathTreeGenerator.hpp"/>
+      <File RelativePath="..\..\include\xqilla\optimizer\ASTToXML.hpp"/>
       <File RelativePath="..\..\include\xqilla\parser\QName.hpp"/>
       <File RelativePath="..\..\include\xqilla\runtime\ClosureResult.hpp"/>
       <File RelativePath="..\..\include\xqilla\runtime\TupleResult.hpp"/>
@@ -426,7 +427,6 @@
       <File RelativePath="..\..\include\xqilla\utils\XMLChCompare.hpp"/>
       <File RelativePath="..\..\include\xqilla\utils\XStr.hpp"/>
       <File RelativePath="..\..\include\xqilla\utils\ContextUtils.hpp"/>
-      <File RelativePath="..\..\include\xqilla\utils\PrintAST.hpp"/>
       <File RelativePath="..\..\include\xqilla\utils\UTF8Str.hpp"/>
       <File RelativePath="..\..\include\xqilla\utils\XQillaPlatformUtils.hpp"/>
       <File RelativePath="..\..\include\xqilla\utils\utf8proc.h"/>
@@ -843,6 +843,7 @@
       <File RelativePath="..\..\src\optimizer\Optimizer.cpp"/>
       <File RelativePath="..\..\src\optimizer\QueryPathNode.cpp"/>
       <File RelativePath="..\..\src\optimizer\QueryPathTreeGenerator.cpp"/>
+      <File RelativePath="..\..\src\optimizer\ASTToXML.cpp"/>
     </Filter>
     <Filter Name="parser" Filter="">
       <File RelativePath="..\..\src\parser\QName.cpp"/>
@@ -893,7 +894,6 @@
       <File RelativePath="..\..\src\utils\DateUtils.cpp"/>
       <File RelativePath="..\..\src\utils\DateUtils.hpp"/>
       <File RelativePath="..\..\src\utils\NumUtils.cpp"/>
-      <File RelativePath="..\..\src\utils\PrintAST.cpp"/>
       <File RelativePath="..\..\src\utils\UnicodeTransformer.cpp"/>
       <File RelativePath="..\..\src\utils\utf8proc\utf8proc.c"/>
       <File RelativePath="..\..\src\utils\utf8proc\utf8proc_data.h"/>

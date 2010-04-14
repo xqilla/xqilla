@@ -31,7 +31,7 @@
 
 XERCES_CPP_NAMESPACE_USE;
 
-const XMLCh Minus::name[]={ chLatin_m, chLatin_i, chLatin_n, chLatin_u, chLatin_s, chNull };
+const XMLCh Minus::name[]={ chLatin_M, chLatin_i, chLatin_n, chLatin_u, chLatin_s, chNull };
 
 Minus::Minus(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : ArithmeticOperator(name, args, memMgr)

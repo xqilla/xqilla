@@ -34,7 +34,7 @@
 // XQilla includes
 #include <xqilla/xqilla-simple.hpp>
 #include <xqilla/utils/XPath2Utils.hpp>
-#include <xqilla/utils/PrintAST.hpp>
+#include <xqilla/optimizer/ASTToXML.hpp>
 #include <xqilla/context/ContextHelpers.hpp>
 
 #include <xqilla/debug/InteractiveDebugger.hpp>
@@ -1110,7 +1110,7 @@ bool InteractiveDebugger::outputCurrentFrame(unsigned int context) const
 {
   if(currentFrame_ == 0) return false;
 
-	cerr << "#" << getCurrentFrameNumber();
+  cerr << "#" << getCurrentFrameNumber();
   output(currentFrame_);
   cerr << endl << endl;
   outputLocation(currentFrame_->getLocationInfo(), context);
@@ -1121,7 +1121,7 @@ bool InteractiveDebugger::outputCurrentFrame(unsigned int context) const
 void InteractiveDebugger::outputCurrentFrameQueryPlan() const
 {
   if(currentFrame_ == 0) {
-    cout << PrintAST::print(query_, context_, 0) << endl;;
+    cout << ASTToXML().print(query_, context_) << endl;;
   }
   else {
     cout << currentFrame_->getQueryPlan() << endl;;

@@ -146,7 +146,6 @@ src/utils/DateUtils.cpp \
 src/utils/DateUtils.hpp \
 src/utils/NumUtils.cpp \
 src/utils/XQillaPlatformUtils.cpp \
-src/utils/PrintAST.cpp \
 src/utils/XPath2NSUtils.cpp \
 src/utils/XPath2Utils.cpp \
 src/utils/UnicodeTransformer.cpp \
@@ -477,6 +476,7 @@ src/optimizer/PartialEvaluator.cpp \
 src/optimizer/StaticTyper.cpp \
 src/optimizer/QueryPathNode.cpp \
 src/optimizer/QueryPathTreeGenerator.cpp \
+src/optimizer/ASTToXML.cpp \
 src/yajl/yajl_buf.c \
 src/yajl/yajl_buf.h \
 src/yajl/yajl.c \

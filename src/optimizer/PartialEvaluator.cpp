@@ -25,7 +25,7 @@
 #include <xqilla/utils/XPath2Utils.hpp>
 #include <xqilla/ast/XQSequence.hpp>
 #include <xqilla/exceptions/XQException.hpp>
-#include <xqilla/utils/PrintAST.hpp>
+#include <xqilla/schema/SequenceType.hpp>
 #include <xqilla/functions/FunctionSignature.hpp>
 #include <xqilla/functions/FunctionCount.hpp>
 #include <xqilla/functions/FunctionEmpty.hpp>

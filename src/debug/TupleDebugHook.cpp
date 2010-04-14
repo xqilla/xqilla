@@ -23,7 +23,7 @@
 #include <xqilla/debug/StackFrame.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/exceptions/XQException.hpp>
-#include <xqilla/utils/PrintAST.hpp>
+#include <xqilla/optimizer/ASTToXML.hpp>
 
 XERCES_CPP_NAMESPACE_USE;
 
@@ -59,7 +59,7 @@ public:
   const TupleNode *getTupleNode() const { return (TupleNode*)location_; }
   virtual std::string getQueryPlan() const
   {
-    return PrintAST::print(getTupleNode(), context_, 0);
+    return ASTToXML().print(getTupleNode(), context_);
   }
 };
 

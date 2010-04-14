@@ -441,6 +441,7 @@
         <file name='include/xqilla/optimizer/StaticTyper.hpp'/>
         <file name='include/xqilla/optimizer/QueryPathNode.hpp'/>
         <file name='include/xqilla/optimizer/QueryPathTreeGenerator.hpp'/>
+        <file name='include/xqilla/optimizer/ASTToXML.hpp'/>
         <file name='include/xqilla/parser/QName.hpp'/>
         <file name='include/xqilla/runtime/ClosureResult.hpp'/>
         <file name='include/xqilla/runtime/TupleResult.hpp'/>
@@ -480,7 +481,6 @@
         <file name='include/xqilla/utils/XMLChCompare.hpp'/>
         <file name='include/xqilla/utils/XStr.hpp'/>
         <file name='include/xqilla/utils/ContextUtils.hpp'/>
-        <file name='include/xqilla/utils/PrintAST.hpp'/>
         <file name='include/xqilla/utils/UTF8Str.hpp'/>
         <file name='include/xqilla/utils/XQillaPlatformUtils.hpp'/>
         <file name='include/xqilla/utils/utf8proc.h'/>
@@ -897,6 +897,7 @@
         <file name="src/optimizer/Optimizer.cpp"/>
         <file name="src/optimizer/QueryPathNode.cpp"/>
         <file name="src/optimizer/QueryPathTreeGenerator.cpp"/>
+        <file name="src/optimizer/ASTToXML.cpp"/>
       </filter>
       <filter name="parser">
         <file name="src/parser/QName.cpp"/>
@@ -947,7 +948,6 @@
         <file name="src/utils/DateUtils.cpp"/>
         <file name="src/utils/DateUtils.hpp"/>
         <file name="src/utils/NumUtils.cpp"/>
-        <file name="src/utils/PrintAST.cpp"/>
         <file name="src/utils/UnicodeTransformer.cpp"/>
         <file name="src/utils/utf8proc/utf8proc.c"/>
         <file name="src/utils/utf8proc/utf8proc_data.h"/>

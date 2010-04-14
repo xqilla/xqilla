@@ -34,7 +34,7 @@
 
 XERCES_CPP_NAMESPACE_USE;
 
-/*static*/ const XMLCh Or::name[]={ chLatin_o, chLatin_r, chNull };
+/*static*/ const XMLCh Or::name[]={ chLatin_O, chLatin_r, chNull };
 
 Or::Or(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : XQOperator(name, args, memMgr)

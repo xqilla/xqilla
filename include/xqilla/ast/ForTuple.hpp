@@ -33,9 +33,11 @@ public:
   ForTuple(TupleNode *parent, const XMLCh *varURI, const XMLCh *varName,
 	  const XMLCh *posURI, const XMLCh *posName, ASTNode *expr, XPath2MemoryManager *mm);
 
+  const XMLCh *getVarQName() const { return varQName_; }
   const XMLCh *getVarURI() const { return varURI_; }
   const XMLCh *getVarName() const { return varName_; }
 
+  const XMLCh *getPosQName() const { return posQName_; }
   const XMLCh *getPosURI() const { return posURI_; }
   const XMLCh *getPosName() const { return posName_; }
 

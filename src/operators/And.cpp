@@ -34,7 +34,7 @@
 
 XERCES_CPP_NAMESPACE_USE;
 
-/*static*/ const XMLCh And::name[]={ chLatin_a, chLatin_n, chLatin_d, chNull };
+/*static*/ const XMLCh And::name[]={ chLatin_A, chLatin_n, chLatin_d, chNull };
 
 And::And(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   : XQOperator(name, args, memMgr)

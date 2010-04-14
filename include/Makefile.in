@@ -553,6 +553,7 @@ xqilla/optimizer/PartialEvaluator.hpp \
 xqilla/optimizer/StaticTyper.hpp \
 xqilla/optimizer/QueryPathNode.hpp \
 xqilla/optimizer/QueryPathTreeGenerator.hpp \
+xqilla/optimizer/ASTToXML.hpp \
 xqilla/parser/QName.hpp \
 xqilla/runtime/ClosureResult.hpp \
 xqilla/runtime/TupleResult.hpp \
@@ -592,7 +593,6 @@ xqilla/utils/XPath2Utils.hpp \
 xqilla/utils/XMLChCompare.hpp \
 xqilla/utils/XStr.hpp \
 xqilla/utils/ContextUtils.hpp \
-xqilla/utils/PrintAST.hpp \
 xqilla/utils/UTF8Str.hpp \
 xqilla/utils/XQillaPlatformUtils.hpp \
 xqilla/utils/UnicodeTransformer.hpp \

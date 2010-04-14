@@ -29,7 +29,6 @@
 #include <xqilla/ast/StaticAnalysis.hpp>
 #include <xqilla/exceptions/TypeErrorException.hpp>
 #include <xqilla/exceptions/DynamicErrorException.hpp>
-#include <xqilla/utils/PrintAST.hpp>
 #include <xqilla/ast/XQDocumentOrder.hpp>
 #include <xqilla/ast/XQContextItem.hpp>
 

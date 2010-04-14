@@ -19,7 +19,6 @@
 
 #include "../config/xqilla_config.h"
 
-#include <xqilla/utils/PrintAST.hpp>
 #include <xqilla/ast/XQNav.hpp>
 #include <xqilla/ast/XQStep.hpp>
 #include <xqilla/runtime/Sequence.hpp>
@@ -33,6 +32,7 @@
 #include <xqilla/runtime/SequenceResult.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
 #include <xqilla/context/ContextHelpers.hpp>
+#include <xqilla/axis/NodeTest.hpp>
 
 XQNav::XQNav(XPath2MemoryManager* memMgr)
   : ASTNodeImpl(NAVIGATION, memMgr),

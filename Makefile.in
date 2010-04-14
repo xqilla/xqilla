@@ -124,7 +124,7 @@ am_libxqilla_la_OBJECTS = ReferenceCounted.lo BaseMemoryManager.lo \
 	XPathNamespaceImpl.lo XPath2ResultImpl.lo \
 	XQillaImplementation.lo XPath2NodeSerializer.lo XQilla.lo \
 	XQQuery.lo UTF8Str.lo XMLChCompare.lo XStr.lo ContextUtils.lo \
-	DateUtils.lo NumUtils.lo XQillaPlatformUtils.lo PrintAST.lo \
+	DateUtils.lo NumUtils.lo XQillaPlatformUtils.lo \
 	XPath2NSUtils.lo XPath2Utils.lo UnicodeTransformer.lo \
 	utf8proc.lo DelayedModule.lo XQillaException.lo XQException.lo \
 	EXSLTMathFunction.lo ExternalFunction.lo XQillaFunction.lo \
@@ -225,11 +225,11 @@ am_libxqilla_la_OBJECTS = ReferenceCounted.lo BaseMemoryManager.lo \
 	XercesSequenceBuilder.lo XercesUpdateFactory.lo \
 	XercesURIResolver.lo Optimizer.lo ASTCopier.lo ASTReleaser.lo \
 	ASTVisitor.lo PartialEvaluator.lo StaticTyper.lo \
-	QueryPathNode.lo QueryPathTreeGenerator.lo yajl_buf.lo yajl.lo \
-	yajl_encode.lo yajl_gen.lo yajl_lex.lo yajl_parser.lo \
-	XQillaXQCImplementation.lo XQillaXQCStaticContext.lo \
-	XQillaXQCDynamicContext.lo XQillaXQCExpression.lo \
-	XQillaXQCSequence.lo
+	QueryPathNode.lo QueryPathTreeGenerator.lo ASTToXML.lo \
+	yajl_buf.lo yajl.lo yajl_encode.lo yajl_gen.lo yajl_lex.lo \
+	yajl_parser.lo XQillaXQCImplementation.lo \
+	XQillaXQCStaticContext.lo XQillaXQCDynamicContext.lo \
+	XQillaXQCExpression.lo XQillaXQCSequence.lo
 libxqilla_la_OBJECTS = $(am_libxqilla_la_OBJECTS)
 libxqilla_la_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
@@ -642,7 +642,6 @@ src/utils/DateUtils.cpp \
 src/utils/DateUtils.hpp \
 src/utils/NumUtils.cpp \
 src/utils/XQillaPlatformUtils.cpp \
-src/utils/PrintAST.cpp \
 src/utils/XPath2NSUtils.cpp \
 src/utils/XPath2Utils.cpp \
 src/utils/UnicodeTransformer.cpp \
@@ -973,6 +972,7 @@ src/optimizer/PartialEvaluator.cpp \
 src/optimizer/StaticTyper.cpp \
 src/optimizer/QueryPathNode.cpp \
 src/optimizer/QueryPathTreeGenerator.cpp \
+src/optimizer/ASTToXML.cpp \
 src/yajl/yajl_buf.c \
 src/yajl/yajl_buf.h \
 src/yajl/yajl.c \
@@ -1296,6 +1296,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ASTDebugHook.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ASTNodeImpl.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ASTReleaser.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ASTToXML.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ASTVisitor.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ATAnySimpleTypeImpl.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ATAnyURIOrDerivedImpl.Plo@am__quote@
@@ -1528,7 +1529,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Plus.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/PrecedingAxis.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/PrecedingSiblingAxis.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/PrintAST.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ProxyMemoryManager.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/QName.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/QueryPathNode.Plo@am__quote@
@@ -2885,13 +2885,6 @@ XQillaPlatformUtils.lo: src/utils/XQillaPlatformUtils.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/utils/XQillaPlatformUtils.cpp' object='XQillaPlatformUtils.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQillaPlatformUtils.lo `test -f 'src/utils/XQillaPlatformUtils.cpp' || echo '$(srcdir)/'`src/utils/XQillaPlatformUtils.cpp
-
-PrintAST.lo: src/utils/PrintAST.cpp
-@am__fastdepCXX_TRUE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT PrintAST.lo -MD -MP -MF $(DEPDIR)/PrintAST.Tpo -c -o PrintAST.lo `test -f 'src/utils/PrintAST.cpp' || echo '$(srcdir)/'`src/utils/PrintAST.cpp
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/PrintAST.Tpo $(DEPDIR)/PrintAST.Plo
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/utils/PrintAST.cpp' object='PrintAST.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o PrintAST.lo `test -f 'src/utils/PrintAST.cpp' || echo '$(srcdir)/'`src/utils/PrintAST.cpp
 
 XPath2NSUtils.lo: src/utils/XPath2NSUtils.cpp
 @am__fastdepCXX_TRUE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT XPath2NSUtils.lo -MD -MP -MF $(DEPDIR)/XPath2NSUtils.Tpo -c -o XPath2NSUtils.lo `test -f 'src/utils/XPath2NSUtils.cpp' || echo '$(srcdir)/'`src/utils/XPath2NSUtils.cpp
@@ -4635,6 +4628,13 @@ QueryPathTreeGenerator.lo: src/optimizer/QueryPathTreeGenerator.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/optimizer/QueryPathTreeGenerator.cpp' object='QueryPathTreeGenerator.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o QueryPathTreeGenerator.lo `test -f 'src/optimizer/QueryPathTreeGenerator.cpp' || echo '$(srcdir)/'`src/optimizer/QueryPathTreeGenerator.cpp
+
+ASTToXML.lo: src/optimizer/ASTToXML.cpp
+@am__fastdepCXX_TRUE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ASTToXML.lo -MD -MP -MF $(DEPDIR)/ASTToXML.Tpo -c -o ASTToXML.lo `test -f 'src/optimizer/ASTToXML.cpp' || echo '$(srcdir)/'`src/optimizer/ASTToXML.cpp
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/ASTToXML.Tpo $(DEPDIR)/ASTToXML.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/optimizer/ASTToXML.cpp' object='ASTToXML.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ASTToXML.lo `test -f 'src/optimizer/ASTToXML.cpp' || echo '$(srcdir)/'`src/optimizer/ASTToXML.cpp
 
 XQillaXQCImplementation.lo: src/xqc/XQillaXQCImplementation.cpp
 @am__fastdepCXX_TRUE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT XQillaXQCImplementation.lo -MD -MP -MF $(DEPDIR)/XQillaXQCImplementation.Tpo -c -o XQillaXQCImplementation.lo `test -f 'src/xqc/XQillaXQCImplementation.cpp' || echo '$(srcdir)/'`src/xqc/XQillaXQCImplementation.cpp
