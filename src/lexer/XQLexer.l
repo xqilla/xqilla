@@ -305,7 +305,6 @@ void XQLexer::undoLessThan()
 <INITIAL>"strip"                  RECOGNIZE_VALUE(_STRIP_, yytext);
 <INITIAL>"default"                RECOGNIZE_VALUE(_DEFAULT_, yytext);
 <INITIAL>"option"                 RECOGNIZE_VALUE(_OPTION_, yytext);
-<INITIAL>"ft-option"              RECOGNIZE_VALUE(_FT_OPTION_, yytext);
 <INITIAL>"ordering"               RECOGNIZE_VALUE(_ORDERING_, yytext);
 <INITIAL>"ordered"                RECOGNIZE_VALUE(_ORDERED_, yytext);
 <INITIAL>"unordered"              RECOGNIZE_VALUE(_UNORDERED_, yytext);
@@ -403,7 +402,6 @@ void XQLexer::undoLessThan()
 <INITIAL>"start"                  RECOGNIZE_VALUE(_START_, yytext);
 <INITIAL>"end"                    RECOGNIZE_VALUE(_END_, yytext);
 <INITIAL>"most"                   RECOGNIZE_VALUE(_MOST_, yytext);
-<INITIAL>"revalidation"           RECOGNIZE_VALUE(_REVALIDATION_, yytext);
 <INITIAL>"skip"                   RECOGNIZE_VALUE(_SKIP_, yytext);
 <INITIAL>"value"                  RECOGNIZE_VALUE(_VALUE_, yytext);
 <INITIAL>"first"                  RECOGNIZE_VALUE(_FIRST_, yytext);
@@ -569,6 +567,13 @@ void XQLexer::undoLessThan()
   }
 }
 
+<INITIAL>"ft-option" {
+  if(isFullText()) {
+    RECOGNIZE_VALUE(_FT_OPTION_, yytext);
+  } else {
+    RECOGNIZE_VALUE(_QNAME_, yytext);
+  }
+}
 <INITIAL>"score" {
   if(isFullText()) {
     RECOGNIZE_VALUE(_SCORE_, yytext);
@@ -605,6 +610,13 @@ void XQLexer::undoLessThan()
   }
 }
 
+<INITIAL>"revalidation" {
+  if(isUpdate()) {
+    RECOGNIZE_VALUE(_REVALIDATION_, yytext);
+  } else {
+    RECOGNIZE_VALUE(_QNAME_, yytext);
+  }
+}
 <INITIAL>"updating" {
   if(isUpdate()) {
     RECOGNIZE_VALUE(_UPDATING_, yytext);

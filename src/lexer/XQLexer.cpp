@@ -14480,7 +14480,13 @@ RECOGNIZE_VALUE(_OPTION_, yytext);
 case 56:
 YY_RULE_SETUP
 #line 308 "../src/lexer/XQLexer.l"
-RECOGNIZE_VALUE(_FT_OPTION_, yytext);
+{
+  if(isFullText()) {
+    RECOGNIZE_VALUE(_FT_OPTION_, yytext);
+  } else {
+    RECOGNIZE_VALUE(_QNAME_, yytext);
+  }
+}
 	YY_BREAK
 case 57:
 YY_RULE_SETUP
@@ -14970,7 +14976,13 @@ RECOGNIZE_VALUE(_MOST_, yytext);
 case 154:
 YY_RULE_SETUP
 #line 406 "../src/lexer/XQLexer.l"
-RECOGNIZE_VALUE(_REVALIDATION_, yytext);
+{
+  if(isUpdate()) {
+    RECOGNIZE_VALUE(_REVALIDATION_, yytext);
+  } else {
+    RECOGNIZE_VALUE(_QNAME_, yytext);
+  }
+}
 	YY_BREAK
 case 155:
 YY_RULE_SETUP

@@ -40,14 +40,6 @@ XQLexer::XQLexer(XPath2MemoryManager* memMgr, const XMLCh *queryFile, const XMLC
 {
   if((m_language & XQilla::XPATH2) != 0) {
     firstToken_ = _LANG_XPATH2_;
-  } else if((m_language & XQilla::FULLTEXT) != 0) {
-    if((m_language & XQilla::UPDATE) != 0) {
-      firstToken_ = _LANG_XQUERY_FULLTEXT_UPDATE_;
-    } else {
-      firstToken_ = _LANG_XQUERY_FULLTEXT_;
-    }
-  } else if((m_language & XQilla::UPDATE) != 0) {
-    firstToken_ = _LANG_XQUERY_UPDATE_;
   } else {
     firstToken_ = _LANG_XQUERY_;
   }
