@@ -136,6 +136,7 @@
 #include <xqilla/functions/FunctionRoot.hpp>
 #include <xqilla/functions/FunctionQName.hpp>
 #include <xqilla/functions/FunctionId.hpp>
+#include <xqilla/functions/FunctionError.hpp>
 #include <xqilla/functions/XQillaFunction.hpp>
 #include <xqilla/functions/BuiltInModules.hpp>
 
@@ -223,6 +224,11 @@ void *alloca (size_t);
   CONTEXT->setNamespaceBinding((prefix), (uri)); \
 }
 
+#define SET_BUILT_IN_NAMESPACE(prefix, uri) { \
+  if(!QP->_namespaceDecls.containsKey((prefix))) \
+    CONTEXT->setNamespaceBinding((prefix), (uri)); \
+}
+
 #undef yylex
 #define yylex QP->_lexer->yylex
 #undef yyerror
@@ -237,6 +243,12 @@ static const XMLCh option_projection[] = { 'p', 'r', 'o', 'j', 'e', 'c', 't', 'i
 static const XMLCh option_psvi[] = { 'p', 's', 'v', 'i', 0 };
 static const XMLCh option_lint[] = { 'l', 'i', 'n', 't', 0 };
 static const XMLCh var_name[] = { 'n', 'a', 'm', 'e', 0 };
+
+static const XMLCh XMLChXS[]    = { chLatin_x, chLatin_s, chNull };
+static const XMLCh XMLChXSI[]   = { chLatin_x, chLatin_s, chLatin_i, chNull };
+static const XMLCh XMLChFN[]    = { chLatin_f, chLatin_n, chNull };
+static const XMLCh XMLChLOCAL[] = { chLatin_l, chLatin_o, chLatin_c, chLatin_a, chLatin_l, chNull };
+static const XMLCh XMLChERR[]   = { chLatin_e, chLatin_r, chLatin_r, chNull };
 
 static inline VectorOfASTNodes packageArgs(ASTNode *arg1Impl, ASTNode *arg2Impl, XPath2MemoryManager* memMgr)
 {
@@ -754,17 +766,32 @@ namespace XQParser {
 // Select the language we parse, based on the (fake) first token from the lexer
 SelectLanguage:
     _LANG_XPATH2_ QueryBody
+  {
+    SET_BUILT_IN_NAMESPACE(XQillaFunction::XQillaPrefix, XQillaFunction::XMLChFunctionURI);
+  }
 
-  | _LANG_XQUERY_ Module_XQ
-  | _LANG_XQUERY_FULLTEXT_ Module_XQF
-  | _LANG_XQUERY_UPDATE_ Module_XQU
-  | _LANG_XQUERY_FULLTEXT_UPDATE_ Module
+  | XQueryLanguage
+  {
+    SET_BUILT_IN_NAMESPACE(XMLChXS, SchemaSymbols::fgURI_SCHEMAFORSCHEMA);
+    SET_BUILT_IN_NAMESPACE(XMLChXSI, SchemaSymbols::fgURI_XSI);
+    SET_BUILT_IN_NAMESPACE(XMLChFN, XQFunction::XMLChFunctionURI);
+    SET_BUILT_IN_NAMESPACE(XMLChLOCAL, XQUserFunction::XMLChXQueryLocalFunctionsURI);
+    SET_BUILT_IN_NAMESPACE(XMLChERR, FunctionError::XMLChXQueryErrorURI);
+    SET_BUILT_IN_NAMESPACE(XQillaFunction::XQillaPrefix, XQillaFunction::XMLChFunctionURI);
+  }
 
   | _LANG_XSLT2_ Start_XSLT
 
-  | _LANG_FUNCDECL_ Start_FunctionDecl
   | _LANG_DELAYEDMODULE_ Start_DelayedModule
   | _LANG_FUNCTION_SIGNATURE_ Start_FunctionSignature
+  ;
+
+XQueryLanguage:
+    _LANG_XQUERY_ Module_XQ
+  | _LANG_XQUERY_FULLTEXT_ Module_XQF
+  | _LANG_XQUERY_UPDATE_ Module_XQU
+  | _LANG_XQUERY_FULLTEXT_UPDATE_ Module
+  | _LANG_FUNCDECL_ Start_FunctionDecl
   ;
 
 Start_FunctionDecl:

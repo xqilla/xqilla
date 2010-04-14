@@ -47,19 +47,11 @@
 #include <xqilla/items/DatatypeFactory.hpp>
 #include <xqilla/functions/FunctionLookup.hpp>
 #include <xqilla/functions/XQUserFunction.hpp>
-#include <xqilla/functions/XQillaFunction.hpp>
-#include <xqilla/functions/FunctionError.hpp>
 #include <xqilla/dom-api/impl/XQillaNSResolverImpl.hpp>
 #include <xqilla/simple-api/XQillaConfiguration.hpp>
 #include <xqilla/schema/SequenceType.hpp>
 
 XERCES_CPP_NAMESPACE_USE;
-
-const XMLCh XMLChXS[]    = { chLatin_x, chLatin_s, chNull };
-const XMLCh XMLChXSI[]   = { chLatin_x, chLatin_s, chLatin_i, chNull };
-const XMLCh XMLChFN[]    = { chLatin_f, chLatin_n, chNull };
-const XMLCh XMLChLOCAL[] = { chLatin_l, chLatin_o, chLatin_c, chLatin_a, chLatin_l, chNull };
-const XMLCh XMLChERR[]   = { chLatin_e, chLatin_r, chLatin_r, chNull };
 
 static CodepointCollation g_codepointCollation;
 
@@ -152,21 +144,6 @@ XQContextImpl::XQContextImpl(XQillaConfiguration *conf, XQilla::Language languag
   _defaultResolver.resolver = conf->createDefaultURIResolver(&_internalMM);
   if(_defaultResolver.resolver != 0) {
     _defaultResolver.adopt = true;
-  }
-
-  if((language & XQilla::XPATH2) == 0 &&
-     (language & XQilla::XSLT2) == 0) {
-    // XQuery defines these predefined namespace bindings
-    setNamespaceBinding(XMLChXS, SchemaSymbols::fgURI_SCHEMAFORSCHEMA);
-    setNamespaceBinding(XMLChXSI, SchemaSymbols::fgURI_XSI);
-    setNamespaceBinding(XMLChFN, XQFunction::XMLChFunctionURI);
-    setNamespaceBinding(XMLChLOCAL, XQUserFunction::XMLChXQueryLocalFunctionsURI);
-    setNamespaceBinding(XMLChERR, FunctionError::XMLChXQueryErrorURI);
-  }
-
-  if((language & XQilla::XSLT2) == 0) {
-    // Predefine the namespace for xqilla extension functions
-    setNamespaceBinding(XQillaFunction::XQillaPrefix, XQillaFunction::XMLChFunctionURI);
   }
 }
 
