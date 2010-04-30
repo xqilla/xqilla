@@ -27,8 +27,8 @@ declare function local:pow4($x as xs:decimal, $n as xs:decimal, $r as xs:decimal
 };
 
 string-join( for $a in (
-xqilla:time(local:pow1(2, 3000), "pow"),
-xqilla:time(local:pow2(2, 3000, 1), "pow2"),
-xqilla:time(local:pow3(2, 3000), "pow3"),
-xqilla:time(local:pow4(2, 3000, 1), "pow4")
+xqilla:time(local:pow1(2, 2000), "pow"),
+xqilla:time(local:pow2(2, 2000, 1), "pow2"),
+xqilla:time(local:pow3(2, 2000), "pow3"),
+xqilla:time(local:pow4(2, 2000, 1), "pow4")
 ) return string($a), "&#10;")
