@@ -276,6 +276,11 @@ XQUserFunction *ASTToXML::optimizeFunctionDef(XQUserFunction *item)
 
 void ASTToXML::getElementName(ASTNode *item, XMLBuffer &buf)
 {
+  if(!item) {
+    buf.append(X("Null"));
+    return;
+  }
+
   switch(item->getType()) {
   case ASTNode::LITERAL:
     buf.append(X("Literal"));
@@ -479,7 +484,7 @@ ASTNode *ASTToXML::optimize(ASTNode *item)
   indent();
   events_->startElementEvent(0, 0, elementName.getRawBuffer());
 
-  {
+  if(item) {
     AutoReset<unsigned int> resetIndent(indent_);
     ++indent_;
     hasChildren_ = false;
