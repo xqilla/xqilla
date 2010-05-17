@@ -28,6 +28,7 @@
 #include <xqilla/optimizer/QueryPathTreeGenerator.hpp>
 #include <xqilla/optimizer/PartialEvaluator.hpp>
 #include <xqilla/optimizer/StaticTyper.hpp>
+#include <xqilla/optimizer/ASTToXML.hpp>
 #include <xqilla/debug/DebugHookDecorator.hpp>
 #include <xqilla/functions/BuiltInModules.hpp>
 #include "../lexer/XQLexer.hpp"

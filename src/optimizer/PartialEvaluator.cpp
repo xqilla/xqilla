@@ -116,6 +116,7 @@ protected:
     for(UserFunctions::iterator i2 = funcs.begin(); i2 != funcs.end(); ++i2) {
       if((*i2)->isTemplate() && functions_.insert(*i2).second) {
         newFunctions_.insert(*i2);
+        *i2 = optimizeFunctionDef(*i2);
       }
     }
 
