@@ -1086,7 +1086,7 @@ ASTNode *ASTToXML::optimizeCopyOf(XQCopyOf *item)
   static const XMLCh s_copy_namespaces[] = { 'c', 'o', 'p', 'y', '-', 'n', 'a', 'm', 'e', 's', 'p', 'a', 'c', 'e', 's', 0 };
 
   events_->attributeEvent(0, 0, s_copy_namespaces, item->getCopyNamespaces() ? s_true : s_false, 0, 0);
-  return optimizeCopyOf(item);
+  return ASTVisitor::optimizeCopyOf(item);
 }
 
 ASTNode *ASTToXML::optimizeASTDebugHook(ASTDebugHook *item)
