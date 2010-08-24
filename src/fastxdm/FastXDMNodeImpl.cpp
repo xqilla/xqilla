@@ -1049,7 +1049,9 @@ public:
         }
         break;
       case DO_XML:
-        result = new FastXDMNamespaceNodeImpl(owner_, XMLUni::fgXMLString, XMLUni::fgXMLURIName, order_++);
+        if(done_.insert(XMLUni::fgXMLString).second) {
+          result = new FastXDMNamespaceNodeImpl(owner_, XMLUni::fgXMLString, XMLUni::fgXMLURIName, order_++);
+        }
         state_ = DONE;
         owner_ = 0;
         break;

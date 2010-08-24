@@ -226,6 +226,9 @@ static void toEventsImpl(const DOMNode *node, EventHandler *events,
                              node->getNodeValue(), typeURI, typeName);
     }
     break;
+  case (DOMNode::NodeType)DOMXPathNamespace::XPATH_NAMESPACE_NODE:
+    events->namespaceEvent(emptyToNull(node->getNodeName()), emptyToNull(node->getNamespaceURI()));
+    break;
   default:
     break;
   }

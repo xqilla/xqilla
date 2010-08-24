@@ -122,7 +122,9 @@ const DOMNode *NamespaceAxis::nextNode(DynamicContext *context)
       break;
     }
     case DO_XML: {
-      result = createNamespaceNode(XMLUni::fgXMLString, XMLUni::fgXMLURIName, originalNode_);
+      if(done_.insert(XMLUni::fgXMLString).second) {
+        result = createNamespaceNode(XMLUni::fgXMLString, XMLUni::fgXMLURIName, originalNode_);
+      }
       state_ = DONE;
       break;
     }
