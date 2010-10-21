@@ -27,6 +27,7 @@
 #include <xqilla/exceptions/NamespaceLookupException.hpp>
 #include <xqilla/exceptions/XPath2TypeCastException.hpp>
 #include <xqilla/exceptions/StaticErrorException.hpp>
+#include <xqilla/exceptions/DynamicErrorException.hpp>
 #include <xercesc/util/XMLUni.hpp>
 #include <xercesc/util/XMLUniDefs.hpp>
 #include <xercesc/framework/XMLBuffer.hpp>
@@ -35,8 +36,11 @@
 #include <xqilla/framework/XPath2MemoryManager.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/context/ItemFactory.hpp>
+#include <xqilla/functions/FuncFactory.hpp>
+#include <xqilla/ast/XQFunction.hpp>
 
 #include <xercesc/util/XMLString.hpp>
+#include <xercesc/util/XMLChar.hpp>
 
 #if defined(XERCES_HAS_CPP_NAMESPACE)
 XERCES_CPP_NAMESPACE_USE
@@ -228,3 +232,94 @@ const XMLCh* ATQNameOrDerivedImpl::getPrimitiveName()  {
 AnyAtomicType::AtomicObjectType ATQNameOrDerivedImpl::getPrimitiveTypeIndex() const {
     return this->getTypeIndex();
 }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+static Result prefixFromQName(const VectorOfASTNodes &args, DynamicContext *context,
+                              const LocationInfo *info)
+{
+  Item::Ptr item = args[0]->createResult(context)->next(context);
+  if(item.isNull()) return 0;
+
+  const XMLCh *prefix = ((ATQNameOrDerived*)item.get())->getPrefix();
+  if(!prefix || !*prefix) return 0;
+
+  return (Item::Ptr)context->getItemFactory()->createStringOrDerived(
+    SchemaSymbols::fgURI_SCHEMAFORSCHEMA, SchemaSymbols::fgDT_NCNAME, prefix, context);
+}
+
+static const XMLCh prefixFromQNameName[] =
+{ 'p', 'r', 'e', 'f', 'i', 'x', '-', 'f', 'r', 'o', 'm', '-', 'Q', 'N', 'a', 'm', 'e', 0 };
+
+static SimpleBuiltinFactory prefixFromQNameFactory(
+  XQFunction::XMLChFunctionURI, prefixFromQNameName, 1,
+  "($arg as xs:QName?) as xs:NCName?", prefixFromQName
+);
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+static Result namespaceURIFromQName(const VectorOfASTNodes &args, DynamicContext *context,
+                                    const LocationInfo *info)
+{
+  Item::Ptr item = args[0]->createResult(context)->next(context);
+  if(item.isNull()) return 0;
+  return (Item::Ptr)context->getItemFactory()->createAnyURI(((ATQNameOrDerived*)item.get())->getURI(), context);
+}
+
+static const XMLCh namespaceURIFromQNameName[] =
+{ 'n', 'a', 'm', 'e', 's', 'p', 'a', 'c', 'e', '-', 'u', 'r', 'i', '-', 'f', 'r', 'o', 'm', '-', 'Q', 'N', 'a', 'm', 'e', 0 };
+
+static SimpleBuiltinFactory namespaceURIFromQNameFactory(
+  XQFunction::XMLChFunctionURI, namespaceURIFromQNameName, 1,
+  "($arg as xs:QName?) as xs:anyURI?", namespaceURIFromQName
+);
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+static Result localNameFromQName(const VectorOfASTNodes &args, DynamicContext *context,
+                                    const LocationInfo *info)
+{
+  Item::Ptr item = args[0]->createResult(context)->next(context);
+  if(item.isNull()) return 0;
+  return (Item::Ptr)context->getItemFactory()->createStringOrDerived(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
+    SchemaSymbols::fgDT_NCNAME, ((ATQNameOrDerived*)item.get())->getName(), context);
+}
+
+static const XMLCh localNameFromQNameName[] =
+{ 'l', 'o', 'c', 'a', 'l', '-', 'n', 'a', 'm', 'e', '-', 'f', 'r', 'o', 'm', '-', 'Q', 'N', 'a', 'm', 'e', 0 };
+
+static SimpleBuiltinFactory localNameFromQNameFactory(
+  XQFunction::XMLChFunctionURI, localNameFromQNameName, 1,
+  "($arg as xs:QName?) as xs:NCName?", localNameFromQName
+);
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+static Result QName(const VectorOfASTNodes &args, DynamicContext *context,
+  const LocationInfo *info)
+{
+  Item::Ptr uri_item = args[0]->createResult(context)->next(context);
+  Item::Ptr qname_item = args[1]->createResult(context)->next(context);
+
+  const XMLCh *uri = uri_item.isNull() ? 0 : uri_item->asString(context);
+  const XMLCh *qname = qname_item->asString(context);
+  if(!XMLChar1_0::isValidQName(qname, XMLString::stringLen(qname)))
+    XQThrow3(DynamicErrorException,X("QName"),
+      X("The second argument to fn:QName is not a valid xs:QName [err:FOCA0002]"), info);
+
+  const XMLCh *prefix = XPath2NSUtils::getPrefix(qname, context->getMemoryManager());
+  if((!uri || !*uri) && prefix && *prefix)
+    XQThrow3(DynamicErrorException,X("QName"),
+      X("The second argument to fn:QName specifies a prefix, but the specified uri is empty [err:FOCA0002]"), info);
+
+  return (Item::Ptr)context->getItemFactory()->createQName(uri, prefix, XPath2NSUtils::getLocalName(qname), context);
+}
+
+static const XMLCh QNameName[] =
+{ 'Q', 'N', 'a', 'm', 'e', 0 };
+
+static SimpleBuiltinFactory QNameFactory(
+  XQFunction::XMLChFunctionURI, QNameName, 2,
+  "($uri as xs:string?, $qname as xs:string) as xs:QName", QName
+);
+

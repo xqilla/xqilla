@@ -3,6 +3,8 @@
  *     DecisionSoft Limited. All rights reserved.
  * Copyright (c) 2004, 2010,
  *     Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010,
+ *     John Snelson. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +22,9 @@
 #include "../config/xqilla_config.h"
 #include <xqilla/functions/FuncFactory.hpp>
 #include <xqilla/utils/XPath2NSUtils.hpp>
+#include <xqilla/ast/XQFunction.hpp>
+
+#include <stdlib.h>
 
 XERCES_CPP_NAMESPACE_USE;
 
@@ -32,6 +37,16 @@ FuncFactory::FuncFactory(const XMLCh *uri, const XMLCh *name, size_t minArgs, si
     uriname_(0)
 {
   setURIName(uri, name, mm);
+}
+
+FuncFactory::FuncFactory(const XMLCh *uri, const XMLCh *name, size_t minArgs, size_t maxArgs,
+                         const XMLCh *uriname)
+  : uri_(uri),
+    name_(name),
+    minArgs_(minArgs),
+    maxArgs_(maxArgs),
+    uriname_(uriname)
+{
 }
 
 FuncFactory::FuncFactory(size_t numArgs, XPath2MemoryManager *mm)
@@ -48,4 +63,81 @@ void FuncFactory::setURIName(const XMLCh *uri, const XMLCh *name, XPath2MemoryMa
   uri_ = uri;
   name_ = name;
   uriname_ = XPath2NSUtils::makeURIName(uri, name, mm);
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+class BasicMemoryManager : public MemoryManager
+{
+public:
+  static inline MemoryManager *get() {
+    static BasicMemoryManager instance;
+    return &instance;
+  }
+
+#if _XERCES_VERSION >= 30000
+  void* allocate(XMLSize_t numElements)
+#else
+  void* allocate(size_t numElements)
+#endif  
+	{ return ::malloc(numElements); }
+	void deallocate(void *p) { ::free(p); }
+	MemoryManager *getExceptionMemoryManager() { return get(); }
+};
+
+SimpleBuiltinFactory::SimpleBuiltinFactory(const XMLCh *uri, const XMLCh *name,
+  unsigned args, const char *signature, ResultFunc result,
+  unsigned staticAnalysisFlags)
+  : FuncFactory(uri, name, args, args, (const XMLCh*)0),
+    buf_(1023, BasicMemoryManager::get()),
+    signature_(signature),
+    result_(result),
+    staticAnalysisFlags_(staticAnalysisFlags),
+    next_(getAll())
+{
+  XPath2NSUtils::makeURIName(uri, name, buf_);
+  uriname_ = buf_.getRawBuffer();
+
+  // Build a simple static linked list of the SimpleBuiltinFactory instances
+  getAll() = this;
+}
+
+const SimpleBuiltinFactory *&SimpleBuiltinFactory::getAll()
+{
+  static const SimpleBuiltinFactory *all = 0;
+  return all;
+}
+
+class SimpleBuiltin : public XQFunction
+{
+public:
+  SimpleBuiltin(const SimpleBuiltinFactory *sbf, const VectorOfASTNodes &args,
+    XPath2MemoryManager *mm)
+    : XQFunction(sbf->name_, sbf->signature_, args, mm),
+      sbf_(sbf)
+  {
+    uri_ = sbf->uri_;
+  }
+
+  virtual ASTNode *staticTypingImpl(StaticContext *context)
+  {
+    _src.clearExceptType();
+    calculateSRCForArguments(context);
+    _src.addFlags(sbf_->staticAnalysisFlags_);
+    return this;
+  }
+
+  virtual Result createResult(DynamicContext* context, int flags) const
+  {
+    return sbf_->result_(_args, context, this);
+  }
+
+private:
+  const SimpleBuiltinFactory *sbf_;
+};
+
+ASTNode *SimpleBuiltinFactory::createInstance(const VectorOfASTNodes &args,
+  XPath2MemoryManager* memMgr) const
+{
+  return new (memMgr) SimpleBuiltin(this, args, memMgr);
 }

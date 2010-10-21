@@ -29,8 +29,6 @@
 
 XERCES_CPP_NAMESPACE_USE
 
-// #define SECONDARY_KEY(func)(((func)->getMinArgs() << 16) | (func)->getMaxArgs())
-
 FunctionLookup *FunctionLookup::g_globalFunctionTable = 0;
 XPath2MemoryManager *FunctionLookup::g_memMgr = 0;
 
@@ -44,7 +42,7 @@ FunctionLookup::~FunctionLookup()
 {
 }
 
-void FunctionLookup::insertFunction(FuncFactory *func)
+void FunctionLookup::insertFunction(const FuncFactory *func)
 {
   // Use similar algorithm to lookup in order to detect overlaps
   // in argument numbers
@@ -78,7 +76,7 @@ void FunctionLookup::insertFunction(FuncFactory *func)
   _funcTable.add(func->getURIName(), hash, func);
 }
 
-void FunctionLookup::removeFunction(FuncFactory *func)
+void FunctionLookup::removeFunction(const FuncFactory *func)
 {
   FuncMap::iterator iterator = _funcTable.find(func->getURIName());
   for(; iterator != _funcTable.end(); ++iterator) {
@@ -185,7 +183,7 @@ void FunctionLookup::terminate()
 }
 
 // static
-void FunctionLookup::insertGlobalFunction(FuncFactory *func)
+void FunctionLookup::insertGlobalFunction(const FuncFactory *func)
 {
   g_globalFunctionTable->insertFunction(func);
 }
@@ -231,10 +229,6 @@ const ExternalFunction *FunctionLookup::lookUpGlobalExternalFunction(
 #include <xqilla/functions/FunctionConcat.hpp>
 #include <xqilla/functions/FunctionContains.hpp>
 #include <xqilla/functions/FunctionCount.hpp>
-#include <xqilla/functions/FunctionCurrentDate.hpp>
-#include <xqilla/functions/FunctionCurrentDateTime.hpp>
-#include <xqilla/functions/FunctionCurrentTime.hpp>
-#include <xqilla/functions/FunctionDateTime.hpp>
 #include <xqilla/functions/FunctionDefaultCollation.hpp>
 #include <xqilla/functions/FunctionDistinctValues.hpp>
 #include <xqilla/functions/FunctionDoc.hpp>
@@ -244,11 +238,7 @@ const ExternalFunction *FunctionLookup::lookUpGlobalExternalFunction(
 #include <xqilla/functions/FunctionEmpty.hpp>
 #include <xqilla/functions/FunctionEndsWith.hpp>
 #include <xqilla/functions/FunctionError.hpp>
-#include <xqilla/functions/FunctionQName.hpp>
 #include <xqilla/functions/FunctionFloor.hpp>
-#include <xqilla/functions/FunctionPrefixFromQName.hpp>
-#include <xqilla/functions/FunctionLocalNameFromQName.hpp>
-#include <xqilla/functions/FunctionNamespaceURIFromQName.hpp>
 #include <xqilla/functions/FunctionId.hpp>
 #include <xqilla/functions/FunctionIdref.hpp>
 #include <xqilla/functions/FunctionImplicitTimezone.hpp>
@@ -282,30 +272,6 @@ const ExternalFunction *FunctionLookup::lookUpGlobalExternalFunction(
 #include <xqilla/functions/FunctionTrace.hpp>
 #include <xqilla/functions/FunctionUnordered.hpp>
 #include <xqilla/functions/FunctionUpperCase.hpp>
-#include <xqilla/functions/FunctionYearsFromDuration.hpp>
-#include <xqilla/functions/FunctionMonthsFromDuration.hpp>
-#include <xqilla/functions/FunctionDaysFromDuration.hpp>
-#include <xqilla/functions/FunctionHoursFromDuration.hpp>
-#include <xqilla/functions/FunctionMinutesFromDuration.hpp>
-#include <xqilla/functions/FunctionSecondsFromDuration.hpp>
-#include <xqilla/functions/FunctionYearFromDateTime.hpp>
-#include <xqilla/functions/FunctionMonthFromDateTime.hpp>
-#include <xqilla/functions/FunctionDayFromDateTime.hpp>
-#include <xqilla/functions/FunctionHoursFromDateTime.hpp>
-#include <xqilla/functions/FunctionMinutesFromDateTime.hpp>
-#include <xqilla/functions/FunctionSecondsFromDateTime.hpp>
-#include <xqilla/functions/FunctionTimezoneFromDateTime.hpp>
-#include <xqilla/functions/FunctionYearFromDate.hpp>
-#include <xqilla/functions/FunctionMonthFromDate.hpp>
-#include <xqilla/functions/FunctionDayFromDate.hpp>
-#include <xqilla/functions/FunctionTimezoneFromDate.hpp>
-#include <xqilla/functions/FunctionHoursFromTime.hpp>
-#include <xqilla/functions/FunctionMinutesFromTime.hpp>
-#include <xqilla/functions/FunctionSecondsFromTime.hpp>
-#include <xqilla/functions/FunctionTimezoneFromTime.hpp>
-#include <xqilla/functions/FunctionAdjustDateTimeToTimezone.hpp>
-#include <xqilla/functions/FunctionAdjustDateToTimezone.hpp>
-#include <xqilla/functions/FunctionAdjustTimeToTimezone.hpp>
 #include <xqilla/functions/FunctionHead.hpp>
 #include <xqilla/functions/FunctionTail.hpp>
 // Updates
@@ -369,10 +335,6 @@ static void initGlobalTable(FunctionLookup *t, XPath2MemoryManager *memMgr)
   //   fn:trace
   t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionTrace>(memMgr));
 
-  // Special Constructor Functions:
-  //   fn:dateTime
-  t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionDateTime>(memMgr));
-
   // Functions on numeric values:
   //   fn:abs
   t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionAbs>(memMgr));
@@ -424,66 +386,6 @@ static void initGlobalTable(FunctionLookup *t, XPath2MemoryManager *memMgr)
   //   fn:not
   t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionNot>(memMgr));
 
-  // Functions on date values
-  //   fn:years-from-duration
-  t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionYearsFromDuration>(memMgr));
-  //   fn:months-from-duration
-  t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionMonthsFromDuration>(memMgr));
-  //   fn:days-from-duration
-  t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionDaysFromDuration>(memMgr));
-  //   fn:hours-from-duration
-  t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionHoursFromDuration>(memMgr));
-  //   fn:minutes-from-duration
-  t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionMinutesFromDuration>(memMgr));
-  //   fn:seconds-from-duration
-  t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionSecondsFromDuration>(memMgr));
-  //   fn:year-from-dateTime
-  t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionYearFromDateTime>(memMgr));
-  //   fn:month-from-dateTime
-  t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionMonthFromDateTime>(memMgr));
-  //   fn:day-from-dateTime
-  t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionDayFromDateTime>(memMgr));
-  //   fn:hours-from-dateTime
-  t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionHoursFromDateTime>(memMgr));
-  //   fn:minutes-from-dateTime
-  t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionMinutesFromDateTime>(memMgr));
-  //   fn:seconds-from-dateTime
-  t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionSecondsFromDateTime>(memMgr));
-  //   fn:timezone-from-dateTime
-  t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionTimezoneFromDateTime>(memMgr));
-  //   fn:year-from-date
-  t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionYearFromDate>(memMgr));
-  //   fn:month-from-date
-  t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionMonthFromDate>(memMgr));
-  //   fn:day-from-date
-  t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionDayFromDate>(memMgr));
-  //   fn:timezone-from-date
-  t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionTimezoneFromDate>(memMgr));
-  //   fn:hours-from-time
-  t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionHoursFromTime>(memMgr));
-  //   fn:minutes-from-time
-  t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionMinutesFromTime>(memMgr));
-  //   fn:seconds-from-time
-  t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionSecondsFromTime>(memMgr));
-  //   fn:timezone-from-time
-  t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionTimezoneFromTime>(memMgr));
-  //   fn:adjust-dateTime-to-timezone
-  t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionAdjustDateTimeToTimezone>(memMgr));
-  //   fn:adjust-date-to-timezone
-  t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionAdjustDateToTimezone>(memMgr));
-  //   fn:adjust-time-to-timezone
-  t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionAdjustTimeToTimezone>(memMgr));
-
-  // Functions on QName values
-  //   fn:QName
-  t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionQName>(memMgr));
-  //   fn:prefix-from-QName
-  t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionPrefixFromQName>(memMgr));
-  //   fn:local-name-from-QName
-  t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionLocalNameFromQName>(memMgr));
-  //   fn:namespace-uri-from-QName
-  t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionNamespaceURIFromQName>(memMgr));
-
   // Functions on anyURI values
   //   fn:resolve-URI
   t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionResolveURI>(memMgr));
@@ -533,12 +435,6 @@ static void initGlobalTable(FunctionLookup *t, XPath2MemoryManager *memMgr)
   t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionPosition>(memMgr));
   //   fn:last
   t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionLast>(memMgr));
-  //   fn:current-dateTime
-  t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionCurrentDateTime>(memMgr));
-  //   fn:current-date
-  t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionCurrentDate>(memMgr));
-  //   fn:current-time
-  t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionCurrentTime>(memMgr));
   //   fn:implicit-timezone
   t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionImplicitTimezone>(memMgr));
   //   fn:default-collation
@@ -582,4 +478,15 @@ static void initGlobalTable(FunctionLookup *t, XPath2MemoryManager *memMgr)
   t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionLog>(memMgr));
   t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionExp>(memMgr));
   t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionPower>(memMgr));
+
+  try {
+    const SimpleBuiltinFactory *sbf = SimpleBuiltinFactory::getAll();
+    while(sbf) {
+      t->insertFunction(sbf);
+      sbf = sbf->getNext();
+    }
+  } catch(StaticErrorException &e) {
+    e.printDebug(X("initGlobalTable"));
+    throw;
+  }
 }

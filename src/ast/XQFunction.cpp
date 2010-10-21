@@ -163,7 +163,7 @@ void XQFunction::resolveArguments(StaticContext *context, bool numericFunction)
   }
 }
 
-void XQFunction::calculateSRCForArguments(StaticContext *context, bool checkTimezone)
+void XQFunction::calculateSRCForArguments(StaticContext *context)
 {
   for(VectorOfASTNodes::iterator i = _args.begin(); i != _args.end(); ++i) {
     _src.add((*i)->getStaticAnalysis());
@@ -173,9 +173,6 @@ void XQFunction::calculateSRCForArguments(StaticContext *context, bool checkTime
               X("It is a static error for an argument to a function "
                 "to be an updating expression [err:XUST0001]"));
     }
-
-    if(checkTimezone && (*i)->isDateOrTimeAndHasNoTimezone(context))
-      _src.implicitTimezoneUsed(true);
   }
 
   if(context) {

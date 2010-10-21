@@ -58,7 +58,7 @@ public:
 
 protected:
   void resolveArguments(StaticContext *context, bool numericFunction = false);
-  void calculateSRCForArguments(StaticContext *context, bool checkTimezone = false);
+  void calculateSRCForArguments(StaticContext *context);
 
   const XMLCh *name_, *uri_;
   const char *sigString_;

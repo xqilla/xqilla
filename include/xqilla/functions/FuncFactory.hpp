@@ -3,6 +3,8 @@
  *     DecisionSoft Limited. All rights reserved.
  * Copyright (c) 2004, 2010,
  *     Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010,
+ *     John Snelson. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +25,8 @@
 #include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/ast/ASTNode.hpp>
 
+#include <xercesc/framework/XMLBuffer.hpp>
+
 class XQILLA_API FuncFactory
 {
 public:
@@ -42,9 +46,38 @@ public:
   size_t getMaxArgs() const { return maxArgs_; }
 
 protected:
+  FuncFactory(const XMLCh *uri, const XMLCh *name, size_t minArgs, size_t maxArgs,
+              const XMLCh *uriname);
+
   const XMLCh *uri_, *name_;
   size_t minArgs_, maxArgs_;
   const XMLCh *uriname_;
+};
+
+class XQILLA_API SimpleBuiltinFactory : public FuncFactory
+{
+public:
+  typedef Result (*ResultFunc) (const VectorOfASTNodes &args, DynamicContext *context,
+                                const LocationInfo *info);
+
+  SimpleBuiltinFactory(const XMLCh *uri, const XMLCh *name, unsigned args,
+                       const char *signature, ResultFunc result,
+                       unsigned staticAnalysisFlags = 0);
+
+  virtual ASTNode *createInstance(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr) const;
+
+  static const SimpleBuiltinFactory *&getAll();
+  const SimpleBuiltinFactory *getNext() const { return next_; }
+
+protected:
+  XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer buf_;
+  const char *signature_;
+  ResultFunc result_;
+  unsigned staticAnalysisFlags_;
+
+  const SimpleBuiltinFactory *next_;
+
+  friend class SimpleBuiltin;
 };
 
 #endif

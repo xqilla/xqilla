@@ -39,9 +39,9 @@ public:
   ~FunctionLookup();
 
   ///adds a function to the custom function table
-  void insertFunction(FuncFactory *func);
+  void insertFunction(const FuncFactory *func);
   /// Remove a function
-  void removeFunction(FuncFactory *func);
+  void removeFunction(const FuncFactory *func);
   ///returns the approriate Function object
   ASTNode* lookUpFunction(const XMLCh* URI, const XMLCh* fname,
                           const VectorOfASTNodes &args,
@@ -58,14 +58,14 @@ public:
   void insertUpdateFunctions(XPath2MemoryManager *memMgr);
 
 private:
-  typedef HashMap<const XMLCh*, FuncFactory*> FuncMap;
+  typedef HashMap<const XMLCh*, const FuncFactory*> FuncMap;
   typedef HashMap<const XMLCh*, const ExternalFunction*> ExFuncMap;
   FuncMap _funcTable;
   ExFuncMap _exFuncTable;
 
 public:
   // static (global table interfaces)
-  static void insertGlobalFunction(FuncFactory *func);
+  static void insertGlobalFunction(const FuncFactory *func);
   static void insertGlobalExternalFunction(const ExternalFunction *func);
   // next two look in global table first, then the contextTable
   static ASTNode* lookUpGlobalFunction(const XMLCh* URI, const XMLCh* fname,

@@ -134,7 +134,6 @@
 #include <xqilla/operators/And.hpp>
 
 #include <xqilla/functions/FunctionRoot.hpp>
-#include <xqilla/functions/FunctionQName.hpp>
 #include <xqilla/functions/FunctionId.hpp>
 #include <xqilla/functions/FunctionError.hpp>
 #include <xqilla/functions/XQillaFunction.hpp>
@@ -2022,10 +2021,11 @@ Attribute_XSLT:
 
     if(attr->namespaceExpr != 0) {
       // Use fn:QName() to assign the correct URI
-      VectorOfASTNodes args(XQillaAllocator<ASTNode*>(MEMMGR));
-      args.push_back(attr->namespaceExpr);
-      args.push_back(const_cast<ASTNode*>(attr->getName()));
-      FunctionQName *name = WRAP(@1, new (MEMMGR) FunctionQName(args, MEMMGR));
+      VectorOfASTNodes *args = new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR));
+      args->push_back(attr->namespaceExpr);
+      args->push_back(const_cast<ASTNode*>(attr->getName()));
+      ASTNode *name = WRAP(@1, new (MEMMGR) XQFunctionCall(0, XQFunction::XMLChFunctionURI,
+          MEMMGR->getPooledString("QName"), args, MEMMGR));
       attr->setName(name);
       attr->namespaceExpr = 0;
     }
@@ -2145,10 +2145,11 @@ Element_XSLT:
 
     if(elem->namespaceExpr != 0) {
       // Use fn:QName() to assign the correct URI
-      VectorOfASTNodes args(XQillaAllocator<ASTNode*>(MEMMGR));
-      args.push_back(elem->namespaceExpr);
-      args.push_back(const_cast<ASTNode*>(elem->getName()));
-      FunctionQName *name = WRAP(@1, new (MEMMGR) FunctionQName(args, MEMMGR));
+      VectorOfASTNodes *args = new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR));
+      args->push_back(elem->namespaceExpr);
+      args->push_back(const_cast<ASTNode*>(elem->getName()));
+      ASTNode *name = WRAP(@1, new (MEMMGR) XQFunctionCall(0, XQFunction::XMLChFunctionURI,
+          MEMMGR->getPooledString("QName"), args, MEMMGR));
       elem->setName(name);
       elem->namespaceExpr = 0;
     }
