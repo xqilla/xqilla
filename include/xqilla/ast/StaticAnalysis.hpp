@@ -24,8 +24,7 @@
 
 #include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/ast/StaticType.hpp>
-
-#include <vector>
+#include <xqilla/utils/HashMap.hpp>
 
 class XPath2MemoryManager;
 
@@ -35,19 +34,14 @@ class XPath2MemoryManager;
 class XQILLA_API StaticAnalysis
 {
 public:
-  static const int HASH_SIZE = 13;
-
   class XQILLA_API VarEntry
   {
   public:
-    VarEntry() : uri(0), name(0), hash(0), prev(0) {}
-    void set(const XMLCh *u, const XMLCh *n);
-    void set(const XMLCh *u, const XMLCh *n, size_t h);
-
+    VarEntry() : uri(0), name(0) {}
+    VarEntry(const XMLCh *u, const XMLCh *n) : uri(u), name(n) {}
     const XMLCh *uri, *name;
-    size_t hash;
-    VarEntry *prev;
   };
+  typedef HashMap<const XMLCh*,VarEntry>::iterator VarIterator;
 
   StaticAnalysis(XPath2MemoryManager* memMgr);
   StaticAnalysis(const StaticAnalysis &o, XPath2MemoryManager* memMgr);
@@ -58,6 +52,29 @@ public:
   /// Clears all the information in this StaticAnalysis
   void clear();
   void clearExceptType();
+
+  enum Flags {
+    CONTEXT_ITEM          = 1 << 0,
+    CONTEXT_POSITION      = 1 << 1,
+    CONTEXT_SIZE          = 1 << 2,
+    CURRENT_TIME          = 1 << 3,
+    TIMEZONE              = 1 << 4,
+    AVAILABLE_DOCUMENTS   = 1 << 5,
+    AVAILABLE_COLLECTIONS = 1 << 6,
+    FORCE_NO_FOLDING      = 1 << 7,
+    CREATIVE              = 1 << 8,
+    UPDATING              = 1 << 9,
+    VACUOUS               = 1 << 10,
+
+    CONTEXT_FLAGS = (CONTEXT_ITEM | CONTEXT_POSITION | CONTEXT_SIZE),
+    DOCS_OR_COLLECTIONS = (AVAILABLE_DOCUMENTS | AVAILABLE_COLLECTIONS),
+    USED_EXCEPT_CONTEXT = (CURRENT_TIME | TIMEZONE | DOCS_OR_COLLECTIONS | FORCE_NO_FOLDING | CREATIVE),
+    USED = (USED_EXCEPT_CONTEXT | CONTEXT_FLAGS)
+  };
+
+  unsigned getFlags() const { return _flags; }
+  void addFlags(unsigned flags) { _flags |= flags; }
+  void removeFlags(unsigned flags) { _flags &= ~flags; }
 
   /** Overrides all the other flags, and never allows this sub-expression
       to be constant folded. */
@@ -84,7 +101,7 @@ public:
   bool removeVariable(const XMLCh *namespaceURI, const XMLCh *name);
   bool isVariableUsed(const XMLCh *namespaceURI, const XMLCh *name) const;
   bool isVariableUsed() const;
-  VarEntry **variablesUsed() const;
+  void variablesUsed(VarIterator &begin, VarIterator &end) const;
 
   /** Sets the members of this StaticAnalysis from the given StaticAnalysis */
   void add(const StaticAnalysis &o);
@@ -130,23 +147,12 @@ private:
   StaticAnalysis(const StaticAnalysis &o);
   StaticAnalysis &operator=(const StaticAnalysis &o);
 
-  bool _contextItem;
-  bool _contextPosition;
-  bool _contextSize;
-  bool _currentTime;
-  bool _implicitTimezone;
-  bool _availableDocuments;
-  bool _availableCollections;
-  bool _forceNoFolding;
-  bool _creative;
-  bool _updating;
-  bool _possiblyUpdating;
-
-  unsigned int _properties;
+  unsigned _flags;
+  unsigned _properties;
   StaticType _staticType;
 
-  VarEntry *_dynamicVariables[HASH_SIZE];
-  VarEntry *_recycle;
+  HashMap<const XMLCh*,VarEntry> _dynamicVariables;
+
   XPath2MemoryManager *_memMgr;
 };
 

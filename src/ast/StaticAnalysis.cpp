@@ -29,19 +29,21 @@ XERCES_CPP_NAMESPACE_USE;
 using namespace std;
 
 StaticAnalysis::StaticAnalysis(XPath2MemoryManager* memMgr)
-  : _recycle(0),
+  : _flags(0),
+    _properties(0),
+    _staticType(),
+    _dynamicVariables(true, memMgr),
     _memMgr(memMgr)
 {
-  memset(_dynamicVariables, 0, sizeof(_dynamicVariables));
-  clear();
 }
 
 StaticAnalysis::StaticAnalysis(const StaticAnalysis &o, XPath2MemoryManager* memMgr)
-  : _recycle(0),
+  : _flags(0),
+    _properties(0),
+    _staticType(),
+    _dynamicVariables(true, memMgr),
     _memMgr(memMgr)
 {
-  memset(_dynamicVariables, 0, sizeof(_dynamicVariables));
-  clear();
   copy(o);
 }
 
@@ -55,19 +57,7 @@ void StaticAnalysis::copy(const StaticAnalysis &o)
 void StaticAnalysis::release()
 {
   _staticType = StaticType();
-  VarEntry *tmp;
-  for(int i = 0; i < HASH_SIZE; ++i) {
-    while(_dynamicVariables[i]) {
-      tmp = _dynamicVariables[i];
-      _dynamicVariables[i] = tmp->prev;
-      _memMgr->deallocate(tmp);
-    }
-  }
-  while(_recycle) {
-    tmp = _recycle;
-    _recycle = tmp->prev;
-    _memMgr->deallocate(tmp);
-  }
+  _dynamicVariables.release();
 }
 
 void StaticAnalysis::clear()
@@ -78,317 +68,183 @@ void StaticAnalysis::clear()
 
 void StaticAnalysis::clearExceptType()
 {
-  _contextItem = false;
-  _contextPosition = false;
-  _contextSize = false;
-  _currentTime = false;
-  _implicitTimezone = false;
-  _availableDocuments = false;
-  _availableCollections = false;
-  _forceNoFolding = false;
-  _creative = false;
-  _updating = false;
-  _possiblyUpdating = false;
-
+  _flags = 0;
   _properties = 0;
-
-  VarEntry *tmp;
-  for(int i = 0; i < HASH_SIZE; ++i) {
-    while(_dynamicVariables[i]) {
-      tmp = _dynamicVariables[i];
-      _dynamicVariables[i] = tmp->prev;
-      tmp->prev = _recycle;
-      _recycle = tmp;
-    }
-  }
+  _dynamicVariables.removeAll();
 }
+
+#define GET(flags, bit) (((flags) & (bit)) != 0)
+#define SET(flags, bit, value) (flags) = ((flags) & ~(bit)) | ((value) ? (bit) : 0)
 
 void StaticAnalysis::contextItemUsed(bool value)
 {
-  _contextItem = value;
+  SET(_flags, CONTEXT_ITEM, value);
 }
 
 void StaticAnalysis::contextPositionUsed(bool value)
 {
-  _contextPosition = value;
+  SET(_flags, CONTEXT_POSITION, value);
 }
 
 void StaticAnalysis::contextSizeUsed(bool value)
 {
-  _contextSize = value;
+  SET(_flags, CONTEXT_SIZE, value);
 }
 
 bool StaticAnalysis::isContextItemUsed() const
 {
-  return _contextItem;
+  return GET(_flags, CONTEXT_ITEM);
 }
 
 bool StaticAnalysis::isContextPositionUsed() const
 {
-  return _contextPosition;
+  return GET(_flags, CONTEXT_POSITION);
 }
 
 bool StaticAnalysis::isContextSizeUsed() const
 {
-  return _contextSize;
+  return GET(_flags, CONTEXT_SIZE);
 }
 
 /** Returns true if any of the context item flags have been used */
 bool StaticAnalysis::areContextFlagsUsed() const
 {
-  return _contextItem || _contextPosition || _contextSize;
+  return GET(_flags, CONTEXT_FLAGS);
 }
 
 void StaticAnalysis::currentTimeUsed(bool value)
 {
-  _currentTime = value;
+  SET(_flags, CURRENT_TIME, value);
 }
 
 void StaticAnalysis::implicitTimezoneUsed(bool value)
 {
-  _implicitTimezone = value;
+  SET(_flags, TIMEZONE, value);
 }
 
 void StaticAnalysis::availableDocumentsUsed(bool value)
 {
-  _availableDocuments = value;
+  SET(_flags, AVAILABLE_DOCUMENTS, value);
 }
 
 void StaticAnalysis::availableCollectionsUsed(bool value)
 {
-  _availableCollections = value;
+  SET(_flags, AVAILABLE_COLLECTIONS, value);
 }
 
 bool StaticAnalysis::areDocsOrCollectionsUsed() const
 {
-  return _availableDocuments || _availableCollections;
+  return GET(_flags, DOCS_OR_COLLECTIONS);
 }
 
 void StaticAnalysis::forceNoFolding(bool value)
 {
-  _forceNoFolding = value;
+  SET(_flags, FORCE_NO_FOLDING, value);
 }
 
 bool StaticAnalysis::isNoFoldingForced() const
 {
-  return _forceNoFolding;
+  return GET(_flags, FORCE_NO_FOLDING);
 }
-
-#define CREATE_VAR_ENTRY(entry) \
-do { \
-  if(_recycle) { \
-    (entry) = _recycle; \
-    _recycle = (entry)->prev; \
-  } \
-  else { \
-    (entry) = new (_memMgr) VarEntry(); \
-  } \
-} while(0)
-
-
-#define ADD_VAR_ENTRY(entry) \
-do { \
-  VarEntry *ve = _dynamicVariables[(entry)->hash]; \
-  while(ve) { \
-    if(ve->uri == (entry)->uri && ve->name == (entry)->name) \
-      break; \
-    ve = ve->prev; \
-  } \
-  if(ve) { \
-    (entry)->prev = _recycle; \
-    _recycle = (entry); \
-  } \
-  else { \
-    (entry)->prev = _dynamicVariables[(entry)->hash]; \
-    _dynamicVariables[(entry)->hash] = (entry); \
-  } \
-} while(0)
 
 void StaticAnalysis::variableUsed(const XMLCh *namespaceURI, const XMLCh *name)
 {
-  VarEntry *entry;
-  CREATE_VAR_ENTRY(entry);
-
-  entry->set(_memMgr->getPooledString(namespaceURI), _memMgr->getPooledString(name));
-
-  ADD_VAR_ENTRY(entry);
+  _dynamicVariables.put(XPath2NSUtils::makeURIName(namespaceURI, name, _memMgr),
+                        VarEntry(namespaceURI, name));
 }
 
-StaticAnalysis::VarEntry **StaticAnalysis::variablesUsed() const
+void StaticAnalysis::variablesUsed(VarIterator &begin, VarIterator &end) const
 {
-  return (VarEntry**)_dynamicVariables;
+  begin = const_cast<StaticAnalysis*>(this)->_dynamicVariables.begin();
+  end = const_cast<StaticAnalysis*>(this)->_dynamicVariables.end();
 }
 
 bool StaticAnalysis::removeVariable(const XMLCh *namespaceURI, const XMLCh *name)
 {
-  VarEntry lookup;
-  lookup.set(_memMgr->getPooledString(namespaceURI), _memMgr->getPooledString(name));
-
-  VarEntry **parent = &_dynamicVariables[lookup.hash];
-  while(*parent) {
-    if((*parent)->uri == lookup.uri && (*parent)->name == lookup.name) {
-      VarEntry *tmp = *parent;
-      *parent = tmp->prev;
-      tmp->prev = _recycle;
-      _recycle = tmp;
-      return true;
-    } else {
-      parent = &(*parent)->prev;
-    }
+  VarIterator i = _dynamicVariables.find(XPath2NSUtils::makeURIName(namespaceURI, name, _memMgr));
+  if(i != _dynamicVariables.end()) {
+    _dynamicVariables.remove(i);
+    return true;
   }
-
   return false;
 }
 
 bool StaticAnalysis::isVariableUsed(const XMLCh *namespaceURI, const XMLCh *name) const
 {
-  VarEntry lookup;
-  lookup.set(_memMgr->getPooledString(namespaceURI), _memMgr->getPooledString(name));
-
-  VarEntry *entry = _dynamicVariables[lookup.hash];
-  while(entry) {
-    if(entry->uri == lookup.uri && entry->name == lookup.name) {
-      return true;
-    }
-    entry = entry->prev;
-  }
-
-  return false;
+  return _dynamicVariables.contains(XPath2NSUtils::makeURIName(namespaceURI, name, _memMgr));
 }
 
 bool StaticAnalysis::isVariableUsed() const
 {
-  for(int i = 0; i < HASH_SIZE; ++i) {
-    if(_dynamicVariables[i]) return true;
-  }
-  return false;
+  return !_dynamicVariables.isEmpty();
 }
 
 /** Sets the members of this StaticAnalysis from the given StaticAnalysis */
 void StaticAnalysis::add(const StaticAnalysis &o)
 {
-  if(o._contextItem) _contextItem = true;
-  if(o._contextPosition) _contextPosition = true;
-  if(o._contextSize) _contextSize = true;
-  if(o._currentTime) _currentTime = true;
-  if(o._implicitTimezone) _implicitTimezone = true;
-  if(o._availableDocuments) _availableDocuments = true;
-  if(o._availableCollections) _availableCollections = true;
-  if(o._forceNoFolding) _forceNoFolding = true;
-  if(o._creative) _creative = true;
-  if(o._updating) _updating = true;
-  // Don't copy _possiblyUpdating
-
-  for(int i = 0; i < HASH_SIZE; ++i) {
-    VarEntry *entry = o._dynamicVariables[i];
-    while(entry) {
-      VarEntry *newEntry;
-      CREATE_VAR_ENTRY(newEntry);
-      newEntry->set(entry->uri, entry->name, entry->hash);
-      ADD_VAR_ENTRY(newEntry);
-      entry = entry->prev;
-    }
-  }
+  // Don't copy VACUOUS
+  _flags |= (o._flags & ~VACUOUS);
+  _dynamicVariables.putAll(o._dynamicVariables);
 }
 
 void StaticAnalysis::addExceptContextFlags(const StaticAnalysis &o)
 {
-  if(o._currentTime) _currentTime = true;
-  if(o._implicitTimezone) _implicitTimezone = true;
-  if(o._availableDocuments) _availableDocuments = true;
-  if(o._availableCollections) _availableCollections = true;
-  if(o._forceNoFolding) _forceNoFolding = true;
-  if(o._creative) _creative = true;
-  if(o._updating) _updating = true;
-  // Don't copy _possiblyUpdating
-
-  for(int i = 0; i < HASH_SIZE; ++i) {
-    VarEntry *entry = o._dynamicVariables[i];
-    while(entry) {
-      VarEntry *newEntry;
-      CREATE_VAR_ENTRY(newEntry);
-      newEntry->set(entry->uri, entry->name, entry->hash);
-      ADD_VAR_ENTRY(newEntry);
-      entry = entry->prev;
-    }
-  }
+  // Don't copy VACUOUS
+  _flags |= (o._flags & ~(CONTEXT_FLAGS | VACUOUS));
+  _dynamicVariables.putAll(o._dynamicVariables);
 }
 
 void StaticAnalysis::addExceptVariable(const XMLCh *namespaceURI, const XMLCh *name, const StaticAnalysis &o)
 {
-  namespaceURI = _memMgr->getPooledString(namespaceURI);
-  name = _memMgr->getPooledString(name);
+  const XMLCh *uriname = XPath2NSUtils::makeURIName(namespaceURI, name, _memMgr);
+  bool remove = !_dynamicVariables.contains(uriname);
 
-  if(o._contextItem) _contextItem = true;
-  if(o._contextPosition) _contextPosition = true;
-  if(o._contextSize) _contextSize = true;
-  if(o._currentTime) _currentTime = true;
-  if(o._implicitTimezone) _implicitTimezone = true;
-  if(o._availableDocuments) _availableDocuments = true;
-  if(o._availableCollections) _availableCollections = true;
-  if(o._forceNoFolding) _forceNoFolding = true;
-  if(o._creative) _creative = true;
-  if(o._updating) _updating = true;
-  // Don't copy _possiblyUpdating
+  // Don't copy VACUOUS
+  _flags |= (o._flags & ~VACUOUS);
+  _dynamicVariables.putAll(o._dynamicVariables);
 
-  for(int i = 0; i < HASH_SIZE; ++i) {
-    VarEntry *entry = o._dynamicVariables[i];
-    while(entry) {
-      if(namespaceURI != entry->uri || name != entry->name) {
-        VarEntry *newEntry;
-        CREATE_VAR_ENTRY(newEntry);
-        newEntry->set(entry->uri, entry->name, entry->hash);
-        ADD_VAR_ENTRY(newEntry);
-      }
-      entry = entry->prev;
-    }
-  }
+  if(remove) _dynamicVariables.remove(uriname);
 }
 
 /** Returns true if flags are set, or variables have been used */
 bool StaticAnalysis::isUsed() const
 {
-  return _contextItem || _contextPosition || _contextSize
-    || _currentTime || _implicitTimezone || _availableCollections
-    || _availableDocuments || _forceNoFolding || _creative
-    || isVariableUsed();
+  return GET(_flags, USED) || isVariableUsed();
 }
 
 bool StaticAnalysis::isUsedExceptContextFlags() const
 {
-  return _currentTime || _implicitTimezone || _availableCollections
-    || _availableDocuments || _forceNoFolding || _creative
-    || isVariableUsed();
+  return GET(_flags, USED_EXCEPT_CONTEXT) || isVariableUsed();
 }
 
 void StaticAnalysis::creative(bool value)
 {
-  _creative = value;
+  SET(_flags, CREATIVE, value);
 }
 
 bool StaticAnalysis::isCreative() const
 {
-  return _creative;
+  return GET(_flags, CREATIVE);
 }
 
 void StaticAnalysis::updating(bool value)
 {
-  _updating = value;
+  SET(_flags, UPDATING, value);
 }
 
 bool StaticAnalysis::isUpdating() const
 {
-  return _updating;
+  return GET(_flags, UPDATING);
 }
 
 void StaticAnalysis::possiblyUpdating(bool value)
 {
-  _possiblyUpdating = value;
+  SET(_flags, VACUOUS, value);
 }
 
 bool StaticAnalysis::isPossiblyUpdating() const
 {
-  return _possiblyUpdating;
+  return GET(_flags, VACUOUS);
 }
 
 unsigned int StaticAnalysis::getProperties() const
@@ -415,33 +271,30 @@ std::string StaticAnalysis::toString() const
 {
   std::ostringstream s;
 
-  s << "Context Item:          " << (_contextItem ? "true" : "false") << std::endl;
-  s << "Context Position:      " << (_contextPosition ? "true" : "false") << std::endl;
-  s << "Context Size:          " << (_contextSize ? "true" : "false") << std::endl;
-  s << "Current Time:          " << (_currentTime ? "true" : "false") << std::endl;
-  s << "Implicit Timezone:     " << (_implicitTimezone ? "true" : "false") << std::endl;
-  s << "Available Documents:   " << (_availableDocuments ? "true" : "false") << std::endl;
-  s << "Available Collections: " << (_availableCollections ? "true" : "false") << std::endl;
-  s << "Force No Folding:      " << (_forceNoFolding ? "true" : "false") << std::endl;
-  s << "Creative:              " << (_creative ? "true" : "false") << std::endl;
-  s << "Updating:              " << (_updating ? "true" : "false") << std::endl;
-  s << "Possibly Updating:     " << (_possiblyUpdating ? "true" : "false") << std::endl;
+  s << "Context Item:          " << (GET(_flags, CONTEXT_ITEM) ? "true" : "false") << std::endl;
+  s << "Context Position:      " << (GET(_flags, CONTEXT_POSITION) ? "true" : "false") << std::endl;
+  s << "Context Size:          " << (GET(_flags, CONTEXT_SIZE) ? "true" : "false") << std::endl;
+  s << "Current Time:          " << (GET(_flags, CURRENT_TIME) ? "true" : "false") << std::endl;
+  s << "Implicit Timezone:     " << (GET(_flags, TIMEZONE) ? "true" : "false") << std::endl;
+  s << "Available Documents:   " << (GET(_flags, AVAILABLE_DOCUMENTS) ? "true" : "false") << std::endl;
+  s << "Available Collections: " << (GET(_flags, AVAILABLE_COLLECTIONS) ? "true" : "false") << std::endl;
+  s << "Force No Folding:      " << (GET(_flags, FORCE_NO_FOLDING) ? "true" : "false") << std::endl;
+  s << "Creative:              " << (GET(_flags, CREATIVE) ? "true" : "false") << std::endl;
+  s << "Updating:              " << (GET(_flags, UPDATING) ? "true" : "false") << std::endl;
+  s << "Possibly Updating:     " << (GET(_flags, VACUOUS) ? "true" : "false") << std::endl;
 
   s << "Variables Used:        [";
   bool first = true;
-  for(int i = 0; i < HASH_SIZE; ++i) {
-    VarEntry *entry = _dynamicVariables[i];
-    while(entry) {
-      if(first) {
-        first = false;
-      }
-      else {
-        s << ", ";
-      }
-
-      s << "{" << UTF8(entry->uri) << "}" << UTF8(entry->name);
-      entry = entry->prev;
+  VarIterator i = const_cast<StaticAnalysis*>(this)->_dynamicVariables.begin();
+  VarIterator end = const_cast<StaticAnalysis*>(this)->_dynamicVariables.begin();
+  for(; i != end; ++i) {
+    if(first) {
+      first = false;
     }
+    else {
+      s << ", ";
+    }
+    s << "{" << UTF8(i.getValue().uri) << "}" << UTF8(i.getValue().name);
   }
   s << "]" << std::endl;
 
@@ -453,29 +306,3 @@ std::string StaticAnalysis::toString() const
   return s.str();
 }
 
-void StaticAnalysis::VarEntry::set(const XMLCh *u, const XMLCh *n)
-{
-  uri = u;
-  name = n;
-  hash = 5381;
-  prev = 0;
-
-  if(u) {
-    while(*u++)
-      hash = ((hash << 5) + hash) + *u;
-  }
-  if(n) {
-    while(*n++)
-      hash = ((hash << 5) + hash) + *n;
-  }
-
-  hash %= HASH_SIZE;
-}
-
-void StaticAnalysis::VarEntry::set(const XMLCh *u, const XMLCh *n, size_t h)
-{
-  uri = u;
-  name = n;
-  hash = h;
-  prev = 0;
-}

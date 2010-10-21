@@ -107,13 +107,12 @@ void VarStoreImpl::clear()
 
 void VarStoreImpl::cacheVariableStore(const StaticAnalysis &src, const VariableStore *toCache)
 {
-  for(int i = 0; i < StaticAnalysis::HASH_SIZE; ++i) {
-    StaticAnalysis::VarEntry *entry = src.variablesUsed()[i];
-    while(entry) {
-      store_ = new VarEntry(entry->uri, entry->name, toCache->getVar(entry->uri, entry->name),
-                            ResultBufferImpl::UNLIMITED_COUNT, store_);
-      entry = entry->prev;
-    }
+  StaticAnalysis::VarIterator i, end;
+  src.variablesUsed(i, end);
+
+  for(; i != end; ++i) {
+    store_ = new VarEntry(i.getValue().uri, i.getValue().name, toCache->getVar(i.getValue().uri, i.getValue().name),
+                          ResultBufferImpl::UNLIMITED_COUNT, store_);
   }
 }
 
