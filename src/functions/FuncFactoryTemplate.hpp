@@ -27,13 +27,13 @@ class FuncFactoryTemplate : public FuncFactory
 {
 public:
 
-  FuncFactoryTemplate(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *memMgr)
+  FuncFactoryTemplate(XPath2MemoryManager *memMgr)
     : FuncFactory(TYPE::XMLChFunctionURI, TYPE::name, TYPE::minArgs, TYPE::maxArgs, memMgr)
   {
   }
 
   FuncFactoryTemplate(const XMLCh *uri, const XMLCh *name, size_t minArgs, size_t maxArgs,
-                      XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *mm)
+                      XPath2MemoryManager *mm)
     : FuncFactory(uri, name, minArgs, maxArgs, mm)
   {
   }

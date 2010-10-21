@@ -28,8 +28,7 @@
 #include <xqilla/runtime/ResultImpl.hpp>
 #include <xqilla/runtime/LazySequenceResult.hpp>
 #include <xqilla/context/StaticContext.hpp>
-
-#include <xercesc/util/RefHashTableOf.hpp>
+#include <xqilla/utils/HashMap.hpp>
 
 class DynamicContext;
 class XQUserFunction;
@@ -43,12 +42,13 @@ typedef std::vector<XQGlobalVariable*, XQillaAllocator<XQGlobalVariable*> > Glob
 typedef std::vector<XQQuery*, XQillaAllocator<XQQuery*> > ImportedModules;
 typedef std::vector<DelayedFuncFactory*, XQillaAllocator<DelayedFuncFactory*> > DelayedFunctions;
 
-typedef XERCES_CPP_NAMESPACE_QUALIFIER RefHashTableOf<XQQuery> ModuleMap;
+typedef HashMap<const XMLCh *, XQQuery*> ModuleMap;
 
 class XQILLA_API ModuleCache : public XERCES_CPP_NAMESPACE_QUALIFIER XMemory
 {
 public:
   ModuleCache(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *mm);
+  ~ModuleCache();
 
   void put(XQQuery *module);
   XQQuery *getByURI(const XMLCh *uri) const;
@@ -57,6 +57,10 @@ public:
   ModuleMap byURI_;
   ModuleMap byNamespace_;
   ImportedModules ordered_;
+
+private:
+  ModuleCache(const ModuleCache&);
+  ModuleCache &operator=(const ModuleCache&);
 };
 
 /**

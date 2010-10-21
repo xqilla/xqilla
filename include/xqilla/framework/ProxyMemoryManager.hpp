@@ -37,5 +37,5 @@ private:
   XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *parent_;
 };
 
-#endif //__PROXYMEMORYMANAGER_HPP
+#endif
 

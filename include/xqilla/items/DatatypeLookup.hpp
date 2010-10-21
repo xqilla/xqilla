@@ -22,9 +22,9 @@
 
 #include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/items/AnyAtomicType.hpp>
+#include <xqilla/utils/HashMap.hpp>
 
 #include <xercesc/util/XercesDefs.hpp>
-#include <xercesc/util/RefHashTableOf.hpp>
 #include <xercesc/util/XMemory.hpp>
 
 class DatatypeFactory;
@@ -98,7 +98,7 @@ private:
   DatatypeFactory *yearMonthDuration_;
   DatatypeFactory *untypedAtomic_;
 
-  XERCES_CPP_NAMESPACE_QUALIFIER RefHashTableOf< DatatypeFactory > fDatatypeTable;
+  HashMap<const XMLCh*, DatatypeFactory*> fDatatypeTable;
     
   const DocumentCache *fDocumentCache;
 

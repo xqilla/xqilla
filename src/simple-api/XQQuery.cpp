@@ -65,37 +65,49 @@ XERCES_CPP_NAMESPACE_USE
 
 ModuleCache::ModuleCache(MemoryManager *mm)
   : byURI_(11, true, mm),
-    byNamespace_(11, false, mm),
+    byNamespace_(11, true, mm),
     ordered_(XQillaAllocator<XQQuery*>(mm))
 {
+}
+
+ModuleCache::~ModuleCache()
+{
+  // Delete from byURI_
+  ModuleMap::iterator en = byURI_.begin();
+  for(; en != byURI_.end(); ++en) {
+    delete en.getValue();
+  }
 }
 
 void ModuleCache::put(XQQuery *module)
 {
   assert(!byURI_.get(module->getFile()));
 
-  byURI_.put((void*)module->getFile(), module);
+  byURI_.put(module->getFile(), module);
 
-  XQQuery *cached = byNamespace_.get(module->getModuleTargetNamespace());
-  if(cached) {
+  XQQuery * const *found = byNamespace_.get(module->getModuleTargetNamespace());
+  if(found) {
+    XQQuery *cached = *found;
     while(cached->getNext() != 0) {
       cached = cached->getNext();
     }
     cached->setNext(module);
   }
   else {
-    byNamespace_.put((void*)module->getModuleTargetNamespace(), module);
+    byNamespace_.put(module->getModuleTargetNamespace(), module);
   }
 }
 
 XQQuery *ModuleCache::getByURI(const XMLCh *uri) const
 {
-  return (XQQuery*)byURI_.get(uri);
+  XQQuery * const *found = byURI_.get(uri);
+  return found ? *found : 0;
 }
 
 XQQuery *ModuleCache::getByNamespace(const XMLCh *ns) const
 {
-  return (XQQuery*)byNamespace_.get(ns);
+  XQQuery * const *found = byNamespace_.get(ns);
+  return found ? *found : 0;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -290,12 +302,10 @@ void XQQuery::staticResolution()
 
   // Statically resolve all the modules
   if(m_moduleCacheOwned) {
-
-    RefHashTableOfEnumerator<XQQuery> en(&m_moduleCache->byURI_);
-    while(en.hasMoreElements()) {
-      XQQuery *module = &en.nextElement();
-      if(module != this)
-        module->staticResolution();
+    ModuleMap::iterator en = m_moduleCache->byURI_.begin();
+    for(; en != m_moduleCache->byURI_.end(); ++en) {
+      if(en.getValue() != this)
+        en.getValue()->staticResolution();
     }
   }
 

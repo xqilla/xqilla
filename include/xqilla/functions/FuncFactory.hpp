@@ -23,14 +23,12 @@
 #include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/ast/ASTNode.hpp>
 
-#include <xercesc/framework/XMLBuffer.hpp>
-
 class XQILLA_API FuncFactory
 {
 public:
   FuncFactory(const XMLCh *uri, const XMLCh *name, size_t minArgs, size_t maxArgs,
-              XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *mm);
-  FuncFactory(size_t numArgs, XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *mm);
+              XPath2MemoryManager *mm);
+  FuncFactory(size_t numArgs, XPath2MemoryManager *mm);
   virtual ~FuncFactory() {}
 
   ///Create instance of a function, using FuncFactoryTemplate to determine type
@@ -38,15 +36,15 @@ public:
 
   const XMLCh *getURI() const { return uri_; }
   const XMLCh *getName() const { return name_; }
-  const XMLCh *getURINameHash() const { return uriname_.getRawBuffer(); }
-  void setURINameHash(const XMLCh *uri, const XMLCh *name);
+  const XMLCh *getURIName() const { return uriname_; }
+  void setURIName(const XMLCh *uri, const XMLCh *name, XPath2MemoryManager *mm);
   size_t getMinArgs() const { return minArgs_; }
   size_t getMaxArgs() const { return maxArgs_; }
 
 protected:
   const XMLCh *uri_, *name_;
   size_t minArgs_, maxArgs_;
-  XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer uriname_;
+  const XMLCh *uriname_;
 };
 
 #endif

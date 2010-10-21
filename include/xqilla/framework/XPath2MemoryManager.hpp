@@ -46,9 +46,6 @@ class XQILLA_API XPath2MemoryManager : public XERCES_CPP_NAMESPACE_QUALIFIER Mem
 public:
   virtual ~XPath2MemoryManager() {}
 
-  /** Use with extreme caution! */
-  virtual void reset() = 0;
-  
   /** Returns a copy of the given string */ 
   virtual const XMLCh* getPooledString(const XMLCh *src) = 0;
   virtual const XMLCh* getPooledString(const XMLCh *src, unsigned int length) = 0;
@@ -401,5 +398,5 @@ private:
   XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *mmgr_;
 };
 
-#endif //__XPATH2MEMORYMANAGER_HPP
+#endif
 

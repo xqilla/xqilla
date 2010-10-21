@@ -214,7 +214,7 @@ void XQUserFunction::resolveName(StaticContext *context)
   }
 
   if(name_ != 0) {
-    setURINameHash(uri_, name_);
+    setURIName(uri_, name_, mm);
   }
 }
 

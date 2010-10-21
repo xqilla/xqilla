@@ -372,6 +372,7 @@ xqilla/update/UInsertInto.hpp \
 xqilla/update/UInsertAfter.hpp \
 xqilla/update/UInsertBefore.hpp \
 xqilla/update/UTransform.hpp \
+xqilla/utils/HashMap.hpp \
 xqilla/utils/NumUtils.hpp \
 xqilla/utils/XPath2NSUtils.hpp \
 xqilla/utils/XPath2Utils.hpp \

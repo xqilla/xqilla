@@ -516,7 +516,7 @@ void XQContextImpl::setContextItem(const Item::Ptr &item)
 void XQContextImpl::addTemplate(XQUserFunction *tp)
 {
   if(tp->getName() != 0) {
-    if(_templateNameMap.containsKey((void*)tp->getURINameHash())) {
+    if(_templateNameMap.containsKey((void*)tp->getURIName())) {
       // [ERR XTSE0660] It is a static error if a stylesheet contains more than one template with
       // the same name and the same import precedence, unless it also contains a template with the
       // same name and higher import precedence.
@@ -528,7 +528,7 @@ void XQContextImpl::addTemplate(XQUserFunction *tp)
       buf.append(X(" [err:XTSE0660]."));
       XQThrow3(StaticErrorException,X("XQContextImpl::addNamedTemplate"), buf.getRawBuffer(), tp);
     }
-    _templateNameMap.put((void*)tp->getURINameHash(), tp);
+    _templateNameMap.put((void*)tp->getURIName(), tp);
   }
   _templates.push_back(tp);
 }

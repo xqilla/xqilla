@@ -25,7 +25,6 @@
 #include <xqilla/runtime/ResultBuffer.hpp>
 
 #include <xercesc/util/StringPool.hpp>
-#include <xercesc/util/RefHash2KeysTableOf.hpp>
 
 class DynamicContext;
 class StaticAnalysis;

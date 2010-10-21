@@ -186,7 +186,7 @@ DatatypeLookup::~DatatypeLookup()
 
 void DatatypeLookup::insertDatatype(DatatypeFactory *datatype)
 {
-  fDatatypeTable.put((void*)datatype->getPrimitiveTypeName(),datatype);
+  fDatatypeTable.put(datatype->getPrimitiveTypeName(),datatype);
 }
 
 const DatatypeFactory* DatatypeLookup::lookupDatatype(AnyAtomicType::AtomicObjectType typeIndex) const
@@ -223,13 +223,13 @@ const DatatypeFactory* DatatypeLookup::lookupDatatype(AnyAtomicType::AtomicObjec
 
 const DatatypeFactory* DatatypeLookup::lookupDatatype(const XMLCh* typeURI, const XMLCh* typeName, bool &isPrimitive) const
 {
-  const DatatypeFactory* pFactory=fDatatypeTable.get((void*)typeName);
+  const DatatypeFactory * const *pFactory=fDatatypeTable.get(typeName);
   
   // in case we're lucky and we were given a primitive type
   if (pFactory) {
     if(XPath2Utils::equals(typeURI, SchemaSymbols::fgURI_SCHEMAFORSCHEMA)) {
       isPrimitive = true;
-      return pFactory;
+      return *pFactory;
     }
   }
   isPrimitive = false;
@@ -246,16 +246,16 @@ const DatatypeFactory* DatatypeLookup::lookupDatatype(const XMLCh* typeURI, cons
   }
 
   if(validator) {
-    pFactory = fDatatypeTable.get((void*)validator->getTypeLocalName());
+    pFactory = fDatatypeTable.get(validator->getTypeLocalName());
 
     if(pFactory) {
-      if(pFactory->getPrimitiveTypeIndex() == AnyAtomicType::DURATION && previousValidator != 0) {
+      if((*pFactory)->getPrimitiveTypeIndex() == AnyAtomicType::DURATION && previousValidator != 0) {
         // Find a more specific type for duration, if possible
-        const DatatypeFactory *tmp = fDatatypeTable.get((void*)previousValidator->getTypeLocalName());
+        const DatatypeFactory * const *tmp = fDatatypeTable.get(previousValidator->getTypeLocalName());
         if(tmp) pFactory = tmp;
       }
 
-      return pFactory;
+      return *pFactory;
     }
   }
 

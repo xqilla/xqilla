@@ -23,15 +23,7 @@
 #include <xercesc/util/XMLString.hpp>
 #include <xercesc/util/RuntimeException.hpp>
 #include <xercesc/util/XMLUni.hpp>
-#if _XERCES_VERSION < 30000
-#include <xercesc/util/HashPtr.hpp>
-#endif
 
-#if defined(XERCES_HAS_CPP_NAMESPACE)
-XERCES_CPP_NAMESPACE_USE
-#endif
-
-#include <xqilla/framework/StringPool.hpp>
 #include <xqilla/exceptions/XQillaException.hpp>
 #include <xqilla/utils/XStr.hpp>
 #include <xqilla/context/impl/CollationImpl.hpp>
@@ -40,6 +32,8 @@ XERCES_CPP_NAMESPACE_USE
 #include <xqilla/items/impl/ATDecimalOrDerivedImpl.hpp>
 
 #include <iostream>
+
+XERCES_CPP_NAMESPACE_USE;
 
 static const unsigned int CHUNK_SIZE = 32 * 1024;
 #if (defined(__HP_aCC) && defined(__ia64)) || defined(__sparcv9)
@@ -52,29 +46,33 @@ static const unsigned int CHUNK_SIZE = 32 * 1024;
 
 #define PAD ((sizeof(MemList) + ALLOC_ALIGN - 1)&~(ALLOC_ALIGN-1))
 
+BaseMemoryManager::BaseMemoryManager()
+  : fCurrentBlock(0),
+    objectsAllocated_(0),
+    totalMemoryAllocated_(0),
+    fStringPool(0),
+    fIntegerPool(0)
+{
+}
+
 BaseMemoryManager::~BaseMemoryManager() 
 {
 }
 
-void BaseMemoryManager::reset()
-{
-  releaseAll();
-  initialise();
-}
-
 void BaseMemoryManager::initialise()
 {
-  fCurrentBlock = 0;
-  objectsAllocated_ = 0;
-  totalMemoryAllocated_ = 0;
   fStringPool = new (this) StringPool(this);
-  fIntegerPool = 0;
 }
 
 void BaseMemoryManager::releaseAll()
 {
-  if (fIntegerPool)
-    fIntegerPool->cleanup();
+  if(fIntegerPool) {
+    HashMap<int,ATDecimalOrDerived*>::iterator i = fIntegerPool->begin();
+    for(; i != fIntegerPool->end(); ++i) {
+      delete i.getValue();
+    }
+  }
+
   // Run backwards through the linked list, deleting the blocks of memory
   while(fCurrentBlock) {
     MemList *prev = fCurrentBlock->prev;
@@ -300,19 +298,18 @@ VariableTypeStore* BaseMemoryManager::createVariableTypeStore() {
 } 
 
 /** create a ATDecimalOrDerived for the given integer */
-ATDecimalOrDerived* BaseMemoryManager::createInteger(int value) {
-  if (!fIntegerPool)
-#if _XERCES_VERSION >= 30000
-    fIntegerPool = new (this) RefHashTableOf<ATDecimalOrDerived, PtrHasher>(53, true, this);
-#else
-    fIntegerPool = new (this) RefHashTableOf<ATDecimalOrDerived>(53,true, new (this) HashPtr(),this);
-#endif
+ATDecimalOrDerived* BaseMemoryManager::createInteger(int value)
+{
+  if(!fIntegerPool)
+    fIntegerPool = new (this) HashMap<int,ATDecimalOrDerived*>(true, this);
 
-  ATDecimalOrDerived* itemValue=fIntegerPool->get((const void*)((size_t)value));
-  if(itemValue!=NULL)
-      return itemValue;
-  itemValue=new ATDecimalOrDerivedImpl(value);
-  itemValue->incrementRefCount();
-  fIntegerPool->put((void*)((size_t)value), itemValue);
-  return itemValue;
+  size_t hash = fIntegerPool->getHash(value);
+  HashMap<int,ATDecimalOrDerived*>::iterator i =
+    fIntegerPool->find(value, hash);
+  if(i != fIntegerPool->end()) return i.getValue();
+
+  ATDecimalOrDerived *item = new ATDecimalOrDerivedImpl(value);
+  item->incrementRefCount();
+  fIntegerPool->put(value, hash, item);
+  return item;
 }

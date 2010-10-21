@@ -65,6 +65,20 @@ const XMLCh* XPath2NSUtils::qualifyName(const XMLCh* prefix, const XMLCh* name, 
   }
 }
 
+void XPath2NSUtils::makeURIName(const XMLCh *uri, const XMLCh *name, XMLBuffer &buf)
+{
+  buf.set(name);
+  buf.append(':');
+  buf.append(uri);
+}
+
+const XMLCh *XPath2NSUtils::makeURIName(const XMLCh *uri, const XMLCh *name, XPath2MemoryManager *mm)
+{
+  XMLBuffer buf;
+  makeURIName(uri, name, buf);
+  return mm->getPooledString(buf.getRawBuffer());
+}
+
 DOMNode *XPath2NSUtils::getParent(const DOMNode *node)
 {
   if(node->getNodeType() == DOMNode::ATTRIBUTE_NODE) {

@@ -23,6 +23,7 @@
 #include <xqilla/framework/XQillaExport.hpp>
 
 #include <xercesc/dom/DOMNode.hpp>
+#include <xercesc/framework/XMLBuffer.hpp>
 
 class XPath2MemoryManager;
 
@@ -38,6 +39,10 @@ public:
 
   ///form a qualified name from a namespace and a name
   static const XMLCh* qualifyName(const XMLCh* prefix, const XMLCh* name, XPath2MemoryManager* memMgr);
+
+  /// Returns the URI and localname combined as a single string
+  static void makeURIName(const XMLCh *uri, const XMLCh *name, XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer &buf);
+  static const XMLCh *makeURIName(const XMLCh *uri, const XMLCh *name, XPath2MemoryManager *mm);
 
   ///gets the owner element of an attribute, and the parent of any other node
   static XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *getParent(const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *node);

@@ -21,10 +21,10 @@
 #define _FLOOKUP_HPP
 
 #include <xqilla/framework/XQillaExport.hpp>
+#include <xqilla/utils/HashMap.hpp>
 
 #include <vector>
 #include <xercesc/util/XercesDefs.hpp>
-#include <xercesc/util/RefHash2KeysTableOf.hpp>
 #include <xqilla/ast/ASTNode.hpp>
 
 class FuncFactory;
@@ -58,8 +58,10 @@ public:
   void insertUpdateFunctions(XPath2MemoryManager *memMgr);
 
 private:
-  XERCES_CPP_NAMESPACE_QUALIFIER RefHash2KeysTableOf< FuncFactory > _funcTable;
-  XERCES_CPP_NAMESPACE_QUALIFIER RefHash2KeysTableOf< const ExternalFunction > _exFuncTable;
+  typedef HashMap<const XMLCh*, FuncFactory*> FuncMap;
+  typedef HashMap<const XMLCh*, const ExternalFunction*> ExFuncMap;
+  FuncMap _funcTable;
+  ExFuncMap _exFuncTable;
 
 public:
   // static (global table interfaces)

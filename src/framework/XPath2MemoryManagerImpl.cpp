@@ -21,6 +21,9 @@
 #include <xqilla/framework/XPath2MemoryManagerImpl.hpp>
 
 XPath2MemoryManagerImpl::XPath2MemoryManagerImpl()
+#ifdef WIN_USE_HEAP
+  : fHeap(HeapCreate(HEAP_NO_SERIALIZE,128*1024,0))
+#endif
 {
   initialise();
 }
@@ -28,6 +31,9 @@ XPath2MemoryManagerImpl::XPath2MemoryManagerImpl()
 XPath2MemoryManagerImpl::~XPath2MemoryManagerImpl() 
 {
   releaseAll();
+#ifdef WIN_USE_HEAP
+  HeapDestroy(fHeap);
+#endif
 }
 
 #ifdef WIN_USE_HEAP
@@ -52,18 +58,6 @@ void XPath2MemoryManagerImpl::deallocate(void* p)
   --objectsAllocated_;
   totalMemoryAllocated_ -= HeapSize(fHeap,HEAP_NO_SERIALIZE,p);
   HeapFree(fHeap,HEAP_NO_SERIALIZE,p);
-}
-
-void XPath2MemoryManagerImpl::initialise()
-{
-  fHeap=HeapCreate(HEAP_NO_SERIALIZE,128*1024,0);
-  BaseMemoryManager::initialise();
-}
-
-void XPath2MemoryManagerImpl::releaseAll()
-{
-  BaseMemoryManager::releaseAll();
-  HeapDestroy(fHeap);
 }
 
 #else

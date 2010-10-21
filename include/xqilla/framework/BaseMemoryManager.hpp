@@ -22,8 +22,7 @@
 
 #include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/framework/XPath2MemoryManager.hpp>
-
-#include <xercesc/util/RefHashTableOf.hpp>
+#include <xqilla/utils/HashMap.hpp>
 
 // Define ALLOCATE_IN_CHUNKS to 1 to allocate
 // CHUNK_SIZE blocks of memory at a time, and
@@ -48,6 +47,7 @@ class StringPool;
 class XQILLA_API BaseMemoryManager : public XPath2MemoryManager
 {
 public:
+  BaseMemoryManager();
   virtual ~BaseMemoryManager();
 
   // from MemoryManager
@@ -65,9 +65,6 @@ public:
   virtual const XMLCh* getPooledString(const XMLCh *src, unsigned int length);
   /** Returns a copy of the transcoding of the given string */
   virtual const XMLCh* getPooledString(const char *src);
-
-  /** Use with extreme caution! */
-  virtual void reset();
 
   virtual void dumpStatistics() const;
   virtual size_t getAllocatedObjectCount() const { return objectsAllocated_; }
@@ -120,12 +117,7 @@ protected:
   size_t totalMemoryAllocated_;
 
   StringPool *fStringPool;
-
-#if _XERCES_VERSION >= 30000
-  XERCES_CPP_NAMESPACE_QUALIFIER RefHashTableOf<ATDecimalOrDerived, XERCES_CPP_NAMESPACE_QUALIFIER PtrHasher>* fIntegerPool;
-#else
-  XERCES_CPP_NAMESPACE_QUALIFIER RefHashTableOf<ATDecimalOrDerived>* fIntegerPool;
-#endif
+  HashMap<int,ATDecimalOrDerived*> *fIntegerPool;
 };
 
 #endif

@@ -19,35 +19,33 @@
 
 #include "../config/xqilla_config.h"
 #include <xqilla/functions/FuncFactory.hpp>
+#include <xqilla/utils/XPath2NSUtils.hpp>
 
 XERCES_CPP_NAMESPACE_USE;
 
 FuncFactory::FuncFactory(const XMLCh *uri, const XMLCh *name, size_t minArgs, size_t maxArgs,
-                         MemoryManager *mm)
+                         XPath2MemoryManager *mm)
   : uri_(uri),
     name_(name),
     minArgs_(minArgs),
     maxArgs_(maxArgs),
-    uriname_(1023, mm)
+    uriname_(0)
 {
-  setURINameHash(uri, name);
+  setURIName(uri, name, mm);
 }
 
-FuncFactory::FuncFactory(size_t numArgs, MemoryManager *mm)
+FuncFactory::FuncFactory(size_t numArgs, XPath2MemoryManager *mm)
   : uri_(0),
     name_(0),
     minArgs_(numArgs),
     maxArgs_(numArgs),
-    uriname_(1023, mm)
+    uriname_(0)
 {
 }
 
-void FuncFactory::setURINameHash(const XMLCh *uri, const XMLCh *name)
+void FuncFactory::setURIName(const XMLCh *uri, const XMLCh *name, XPath2MemoryManager *mm)
 {
   uri_ = uri;
   name_ = name;
-
-  uriname_.set(name);
-  uriname_.append(':');
-  uriname_.append(uri);
+  uriname_ = XPath2NSUtils::makeURIName(uri, name, mm);
 }

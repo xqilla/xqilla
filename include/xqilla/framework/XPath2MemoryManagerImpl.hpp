@@ -49,9 +49,6 @@ public:
 
 protected:
 #if defined(WIN_USE_HEAP)
-  virtual void initialise();
-  virtual void releaseAll();
-
   virtual void *internal_allocate(size_t size) { return 0; }
   virtual void internal_deallocate(void *p) {}
 #else
@@ -65,5 +62,5 @@ private:
 #endif
 };
 
-#endif //__XPATH2MEMORYMANAGERIMPL_HPP
+#endif
 

@@ -25,17 +25,18 @@
 #include <xqilla/exceptions/StaticErrorException.hpp>
 #include <xqilla/framework/XPath2MemoryManagerImpl.hpp>
 #include <xqilla/utils/XPath2Utils.hpp>
+#include <xqilla/utils/XPath2NSUtils.hpp>
 
 XERCES_CPP_NAMESPACE_USE
 
-#define SECONDARY_KEY(func)(((func)->getMinArgs() << 16) | (func)->getMaxArgs())
+// #define SECONDARY_KEY(func)(((func)->getMinArgs() << 16) | (func)->getMaxArgs())
 
 FunctionLookup *FunctionLookup::g_globalFunctionTable = 0;
 XPath2MemoryManager *FunctionLookup::g_memMgr = 0;
 
 FunctionLookup::FunctionLookup(XPath2MemoryManager* memMgr)
-  : _funcTable(197, false, memMgr),
-    _exFuncTable(7, false, memMgr)
+  : _funcTable(193, true, memMgr),
+    _exFuncTable(7, true, memMgr)
 {
 }
 
@@ -47,42 +48,46 @@ void FunctionLookup::insertFunction(FuncFactory *func)
 {
   // Use similar algorithm to lookup in order to detect overlaps
   // in argument numbers
-  RefHash2KeysTableOfEnumerator<FuncFactory> iterator(const_cast<RefHash2KeysTableOf< FuncFactory >* >(&_funcTable));
   //
   // Walk the matches for the primary key (name) looking for overlaps:
   //   ensure func->max < min OR func->min > max
   //
-  iterator.setPrimaryKey(func->getURINameHash());
-  while(iterator.hasMoreElements())
-    {
-      FuncFactory *entry= &(iterator.nextElement());
-      if ((func->getMaxArgs() < entry->getMinArgs()) ||
-          (func->getMinArgs() > entry->getMaxArgs()))
-        continue;
-      // overlap -- throw exception
-      XMLBuffer buf;
-      buf.set(X("Multiple functions have the same expanded QName and number of arguments {"));
-      buf.append(func->getURI());
-      buf.append(X("}"));
-      buf.append(func->getName());
-      buf.append(X("#"));
-      if(func->getMinArgs() >= entry->getMinArgs() &&
-         func->getMinArgs() <= entry->getMaxArgs())
-        XPath2Utils::numToBuf((unsigned int)func->getMinArgs(), buf);
-      else
-        XPath2Utils::numToBuf((unsigned int)entry->getMinArgs(), buf);
-      buf.append(X(" [err:XQST0034]."));
-      XQThrow2(StaticErrorException,X("FunctionLookup::insertFunction"), buf.getRawBuffer());
-    }
+  size_t hash = _funcTable.getHash(func->getURIName());
+  FuncMap::iterator iterator = _funcTable.find(func->getURIName(), hash);
+  FuncMap::iterator end = _funcTable.end();
+  for(; iterator != end; ++iterator) {
+    if ((func->getMaxArgs() < iterator.getValue()->getMinArgs()) ||
+      (func->getMinArgs() > iterator.getValue()->getMaxArgs()))
+      continue;
+    // overlap -- throw exception
+    XMLBuffer buf;
+    buf.set(X("Multiple functions have the same expanded QName and number of arguments {"));
+    buf.append(func->getURI());
+    buf.append(X("}"));
+    buf.append(func->getName());
+    buf.append(X("#"));
+    if(func->getMinArgs() >= iterator.getValue()->getMinArgs() &&
+      func->getMinArgs() <= iterator.getValue()->getMaxArgs())
+      XPath2Utils::numToBuf((unsigned int)func->getMinArgs(), buf);
+    else
+      XPath2Utils::numToBuf((unsigned int)iterator.getValue()->getMinArgs(), buf);
+    buf.append(X(" [err:XQST0034]."));
+    XQThrow2(StaticErrorException,X("FunctionLookup::insertFunction"), buf.getRawBuffer());
+  }
   // Ok to add function
-  size_t secondaryKey = SECONDARY_KEY(func);
-  _funcTable.put((void*)func->getURINameHash(), (int)secondaryKey, func);
+  _funcTable.add(func->getURIName(), hash, func);
 }
 
 void FunctionLookup::removeFunction(FuncFactory *func)
 {
-  size_t secondaryKey = SECONDARY_KEY(func);
-  _funcTable.removeKey((void*)func->getURINameHash(), (int)secondaryKey);
+  FuncMap::iterator iterator = _funcTable.find(func->getURIName());
+  for(; iterator != _funcTable.end(); ++iterator) {
+    if ((func->getMaxArgs() == iterator.getValue()->getMinArgs()) &&
+      (func->getMinArgs() == iterator.getValue()->getMaxArgs())) {
+      _funcTable.remove(iterator);
+      break;
+    }
+  }
 }
 
 ASTNode* FunctionLookup::lookUpFunction(const XMLCh* URI, const XMLCh* fname,
@@ -95,24 +100,21 @@ ASTNode* FunctionLookup::lookUpFunction(const XMLCh* URI, const XMLCh* fname,
       return ret;
   }
 
-  RefHash2KeysTableOfEnumerator<FuncFactory> iterator(const_cast<RefHash2KeysTableOf< FuncFactory >* >(&_funcTable));
   //
   // Walk the matches for the primary key (name) looking for matches
   // based on allowable parameters
   //
   XMLBuffer key;
-  key.set(fname);
-  key.append(':');
-  key.append(URI);
-  iterator.setPrimaryKey(key.getRawBuffer());
+  XPath2NSUtils::makeURIName(URI, fname, key);
+  FuncMap::iterator iterator = const_cast<FuncMap&>(_funcTable).find(key.getRawBuffer());
+  FuncMap::iterator end = const_cast<FuncMap&>(_funcTable).end();
   size_t nargs = args.size();
-  while(iterator.hasMoreElements()) {
-    FuncFactory *entry= &(iterator.nextElement());
-    if (entry->getMinArgs() <= nargs &&
-        entry->getMaxArgs() >= nargs)
-      return entry->createInstance(args, memMgr);
+  for(; iterator != end; ++iterator) {
+    if (iterator.getValue()->getMinArgs() <= nargs &&
+      iterator.getValue()->getMaxArgs() >= nargs)
+      return iterator.getValue()->createInstance(args, memMgr);
   }
-  return NULL;
+  return 0;
 }
 
 //
@@ -120,33 +122,36 @@ ASTNode* FunctionLookup::lookUpFunction(const XMLCh* URI, const XMLCh* fname,
 //
 void FunctionLookup::insertExternalFunction(const ExternalFunction *func)
 {
-  size_t secondaryKey = func->getNumberOfArguments();
-  _exFuncTable.put((void*)func->getURINameHash(), (int)secondaryKey, func);
+  _exFuncTable.add(func->getURINameHash(), func);
 }
 
 const ExternalFunction *FunctionLookup::lookUpExternalFunction(
   const XMLCh* URI, const XMLCh* fname, size_t numArgs) const
 {
-  size_t secondaryKey = numArgs;
   XMLBuffer key;
-  key.set(fname);
-  key.append(':');
-  key.append(URI);
-  return _exFuncTable.get(key.getRawBuffer(), (int)secondaryKey);
+  XPath2NSUtils::makeURIName(URI, fname, key);
+  ExFuncMap::iterator iterator = const_cast<ExFuncMap&>(_exFuncTable).find(key.getRawBuffer());
+  ExFuncMap::iterator end = const_cast<ExFuncMap&>(_exFuncTable).end();
+  for(; iterator != end; ++iterator) {
+    if (iterator.getValue()->getNumberOfArguments() == numArgs)
+      return iterator.getValue();
+  }
+  return 0;
 }
 
 void FunctionLookup::copyExternalFunctionsTo(DynamicContext *context) const
 {
-  RefHash2KeysTableOfEnumerator<const ExternalFunction> en(const_cast<RefHash2KeysTableOf<const ExternalFunction>*>(&_exFuncTable));
-  while(en.hasMoreElements()) {
-    context->addExternalFunction(&en.nextElement());
+  ExFuncMap::iterator iterator = const_cast<ExFuncMap&>(_exFuncTable).begin();
+  ExFuncMap::iterator end = const_cast<ExFuncMap&>(_exFuncTable).end();
+  for(; iterator != end; ++iterator) {
+    context->addExternalFunction(iterator.getValue());
   }
 }
 
 /*
  * Global initialization and access
  */
-static void initGlobalTable(FunctionLookup *t, MemoryManager *memMgr);
+static void initGlobalTable(FunctionLookup *t, XPath2MemoryManager *memMgr);
 
 // static
 void FunctionLookup::initialize()
@@ -341,7 +346,7 @@ void FunctionLookup::insertUpdateFunctions(XPath2MemoryManager *memMgr)
   insertFunction(new (memMgr) FuncFactoryTemplate<FunctionPut>(memMgr));
 }
 
-static void initGlobalTable(FunctionLookup *t, MemoryManager *memMgr)
+static void initGlobalTable(FunctionLookup *t, XPath2MemoryManager *memMgr)
 {
   // From the XPath2 Function & Operators list
 
