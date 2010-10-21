@@ -74,7 +74,7 @@ Result XQEffectiveBooleanValue::createResult(DynamicContext* context, int flags)
 static inline bool getEffectiveBooleanValueInternal(const Item::Ptr &first, const Item::Ptr &second, DynamicContext* context, const LocationInfo *info)
 {
   // If its operand is a singleton value ...
-  if(second.isNull() && first->isAtomicValue()) {
+  if(second.isNull() && first->getType() == Item::ATOMIC) {
     const AnyAtomicType::Ptr atom=first;
     // ... of type xs:boolean or derived from xs:boolean, fn:boolean returns the value of its operand unchanged.
     if(atom->getPrimitiveTypeIndex() == AnyAtomicType::BOOLEAN)
@@ -110,7 +110,7 @@ bool XQEffectiveBooleanValue::get(const Item::Ptr &first, const Item::Ptr &secon
   }
 
   // If its operand is a sequence whose first item is a node, fn:boolean returns true.
-  if(first->isNode())
+  if(first->getType() == Item::NODE)
     return true;
 
   return getEffectiveBooleanValueInternal(first, second, context, info);
@@ -123,7 +123,7 @@ Item::Ptr EffectiveBooleanValueResult::nextOrTail(Result &tail, DynamicContext *
   if(first.isNull()) {
     result = false;
   }
-  else if(first->isNode()) {
+  else if(first->getType() == Item::NODE) {
     result = true;
   }
   else {

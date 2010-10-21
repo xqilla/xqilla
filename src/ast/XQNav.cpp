@@ -392,7 +392,7 @@ Item::Ptr IntermediateStepCheckResult::next(DynamicContext *context)
   Item::Ptr result = parent_->next(context);
 
   // Check it's a node
-  if(!result.isNull() && !result->isNode()) {
+  if(!result.isNull() && result->getType() != Item::NODE) {
     XQThrow(TypeErrorException,X("NavStepResult::next"),
              X("The result of a step expression (StepExpr) is not a sequence of nodes [err:XPTY0019]"));
   }
@@ -414,12 +414,12 @@ Item::Ptr LastStepCheckResult::next(DynamicContext *context)
   if(result != NULLRCP) {
     // the last step allows either nodes or atomic items
     switch(_nTypeOfItemsInLastStep) {
-    case 0: _nTypeOfItemsInLastStep=result->isNode()?1:2; break;
-    case 1: if(!result->isNode()) 
+    case 0: _nTypeOfItemsInLastStep=result->getType() == Item::NODE?1:2; break;
+    case 1: if(!result->getType() == Item::NODE) 
       XQThrow(TypeErrorException,X("LastStepCheckResult::next"),
                X("The result of the last step in a path expression contains both nodes and atomic values [err:XPTY0018]"));
       break;
-    case 2: if(result->isNode()) 
+    case 2: if(result->getType() == Item::NODE) 
       XQThrow(TypeErrorException,X("LastStepCheckResult::next"),
                X("The result of the last step in a path expression contains both nodes and atomic values [err:XPTY0018]"));
       break;

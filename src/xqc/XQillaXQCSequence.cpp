@@ -85,7 +85,7 @@ XQC_ItemType typeOfItem(const Item::Ptr &item)
 {
   if(item.isNull()) return XQC_EMPTY_TYPE;
 
-  if(item->isNode()) {
+  if(item->getType() == Item::NODE) {
     const XMLCh *nodekind = ((const Node*)item.get())->dmNodeKind();
     if(nodekind == Node::document_string) {
       return XQC_DOCUMENT_TYPE;
@@ -109,7 +109,7 @@ XQC_ItemType typeOfItem(const Item::Ptr &item)
       return XQC_NAMESPACE_TYPE;
     }
   }
-  else if(item->isAtomicValue()) {
+  else if(item->getType() == Item::ATOMIC) {
     switch(((AnyAtomicType*)item.get())->getPrimitiveTypeIndex()) {
     case AnyAtomicType::ANY_SIMPLE_TYPE:
       return XQC_ANY_SIMPLE_TYPE;
@@ -266,7 +266,7 @@ XQC_Error XQillaXQCSequence::node_name(const XQC_Sequence *sequence, const char 
       return XQC_NO_CURRENT_ITEM;
     }
 
-    if(!me->item_->isNode()) {
+    if(me->item_->getType() != Item::NODE) {
       return XQC_NOT_NODE;
     }
 

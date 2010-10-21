@@ -1460,7 +1460,7 @@ ASTNode *PartialEvaluator::optimizePredicate(XQPredicate *item)
       second = pred_result->next(context_);
     }
 
-    if(first.isNull() || second.notNull() || !first->isAtomicValue() ||
+    if(first.isNull() || second.notNull() || first->getType() != Item::ATOMIC ||
        !((AnyAtomicType*)first.get())->isNumericValue()) {
       // It's not a single numeric item
       if(XQEffectiveBooleanValue::get(first, second, context_, item)) {

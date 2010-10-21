@@ -99,7 +99,7 @@ public:
   {
     Item::Ptr toBeCopied = ast_->getExpression()->createResult(context)->next(context);
 
-    if(!toBeCopied->isNode()) {
+    if(!toBeCopied->getType() == Item::NODE) {
       tail = 0;
       return toBeCopied;
     }
@@ -131,7 +131,7 @@ EventGenerator::Ptr XQCopy::generateEvents(EventHandler *events, DynamicContext 
 EventGenerator::Ptr XQCopy::generateEventsImpl(const Item::Ptr &toBeCopied, EventHandler *events, DynamicContext *context,
                                                bool preserveNS, bool preserveType) const
 {
-  if(!toBeCopied->isNode()) {
+  if(!toBeCopied->getType() == Item::NODE) {
     toBeCopied->generateEvents(events, context, preserveNS, preserveType);
     return 0;
   }

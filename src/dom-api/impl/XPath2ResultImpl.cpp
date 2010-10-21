@@ -107,7 +107,7 @@ const DOMTypeInfo *XPath2ResultImpl::getTypeInfo() const
 }
 
 bool XPath2ResultImpl::isNode() const {
-  return !_currentItem.isNull() && _currentItem->isNode();
+  return !_currentItem.isNull() && _currentItem->getType() == Item::NODE;
 }
 
 /// DOMTypeInfo methods
@@ -178,7 +178,7 @@ bool XPath2ResultImpl::getBooleanValue() const
     throw XQillaException(DOMException::INVALID_STATE_ERR, XMLString::transcode("There is no current result in the result"));
   }
 
-  if(!_currentItem->isAtomicValue()) {
+  if(_currentItem->getType() != Item::ATOMIC) {
     throw XQillaException(DOMXPathException::TYPE_ERR, X("Cannot convert result to a boolean"));
   }
 
@@ -198,7 +198,7 @@ DOMNode* XPath2ResultImpl::getNodeValue() const
     throw XQillaException(DOMException::INVALID_STATE_ERR, XMLString::transcode("There is no current result in the result"));
   }
 
-  if(!_currentItem->isNode()) {
+  if(_currentItem->getType() != Item::NODE) {
     throw XQillaException(DOMXPathException::TYPE_ERR, X("The requested result is not a node"));
   }
 

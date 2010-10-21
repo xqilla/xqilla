@@ -81,10 +81,10 @@ const XMLCh *FunctionString::string(const Item::Ptr &item, DynamicContext *conte
   if(item.isNull()) {
     // Do nothing
   }
-  else if(item->isNode()) {
+  else if(item->getType() == Item::NODE) {
     return ((Node*)item.get())->dmStringValue(context);
   }
-  else if(item->isAtomicValue()) {
+  else if(item->getType() == Item::ATOMIC) {
     return ((AnyAtomicType*)item.get())->asString(context);
   }
   return XMLUni::fgZeroLenString;

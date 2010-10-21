@@ -193,7 +193,7 @@ void Sequence::sortIntoDocumentOrder(const DynamicContext *context)
   // we just check the first item.
   // Note that it is OK that we are asked to sort a sequence made of atomic values, as a path expression
   // can now return it, so we should not complain
-  if(isEmpty() || !first()->isNode()) return;
+  if(isEmpty() || first()->getType() != Item::NODE) return;
 
   // Sort
   std::sort(_itemList.begin(), _itemList.end(), lessThanCompareFn(context));

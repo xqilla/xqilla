@@ -158,7 +158,7 @@ public:
   {
     Item::Ptr item = parent_->next(context);
 
-    if(item.notNull() && item->isFunction() &&
+    if(item.notNull() && item->getType() == Item::FUNCTION &&
        !itemType_->matches((FunctionRef::Ptr)item, context)) {
       XPath2MemoryManager *mm = context->getMemoryManager();
 

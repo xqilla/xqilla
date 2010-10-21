@@ -61,7 +61,7 @@ ASTNode *XQAtomize::staticTypingImpl(StaticContext *context)
               "to be an updating expression [err:XUST0001]"));
   }
 
-  if(_src.getStaticType().isType(StaticType::FUNCTION_TYPE) &&
+  if(!_src.getStaticType().containsType(StaticType::NODE_TYPE|StaticType::ANY_ATOMIC_TYPE) &&
      _src.getStaticType().getMin() > 0) {
     XMLBuffer buf;
     buf.set(X("Sequence does not match type (xs:anyAtomicType | node())*"));
@@ -115,11 +115,11 @@ Item::Ptr AtomizeResult::next(DynamicContext *context)
       _parent = 0;
       return 0;
     }
-    if(result->isNode()) {
+    if(result->getType() == Item::NODE) {
       _sub = ((Node*)result.get())->dmTypedValue(context);
       result = _sub->next(context);
     }
-    else if(result->isFunction()) {
+    else if(result->getType() != Item::ATOMIC) {
       XMLBuffer buf;
       buf.set(X("Sequence does not match type (xs:anyAtomicType | node())*"));
       buf.append(X(" - found item of type "));

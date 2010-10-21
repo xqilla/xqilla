@@ -91,7 +91,7 @@ Item::Ptr FTContains::FTContainsResult::getSingleResult(DynamicContext *context)
   Item::Ptr item;
   AllMatches *matches = 0;
   while((item = argNodes->next(context)).notNull()) {
-    if(!item->isNode())
+    if(item->getType() != Item::NODE)
       XQThrow(XPath2TypeMatchException, X("FTContains::FTContainsResult::getSingleResult"),
               X("The argument to ftcontains contains non nodes [err:XPTY0004]"));
 

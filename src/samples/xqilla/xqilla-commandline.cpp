@@ -352,7 +352,7 @@ int main(int argc, char *argv[])
             seq = dynamic_context->resolveDocument(X(args.inputFile), 0);
           }
 
-          if(!seq.isEmpty() && seq.first()->isNode()) {
+          if(!seq.isEmpty() && seq.first()->getType() == Item::NODE) {
             dynamic_context->setContextItem(seq.first());
             dynamic_context->setContextPosition(1);
             dynamic_context->setContextSize(1);

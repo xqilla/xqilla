@@ -37,9 +37,7 @@ class XQILLA_API FunctionRef : public Item
 public:
   typedef RefCountPointer<const FunctionRef> Ptr;
 
-  virtual bool isNode() const { return false; }
-  virtual bool isAtomicValue() const { return false; }
-  virtual bool isFunction() const { return true; }
+  virtual Type getType() const { return FUNCTION; }
 
   virtual const XMLCh *getTypeURI() const { return 0; }
   virtual const XMLCh *getTypeName() const { return 0; }

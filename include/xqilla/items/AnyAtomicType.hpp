@@ -60,13 +60,7 @@ public:
 
   typedef RefCountPointer<const AnyAtomicType> Ptr;
 
-  /* isAtomicValue from Item */
-  virtual bool isAtomicValue() const;
-
-  /* isNode from Item */
-  virtual bool isNode() const;
-
-  virtual bool isFunction() const;
+  virtual Type getType() const { return ATOMIC; }
 
   /* is this type numeric?  Return false by default */
   virtual bool isNumericValue() const;

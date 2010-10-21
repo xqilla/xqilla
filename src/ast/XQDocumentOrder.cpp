@@ -95,7 +95,7 @@ Item::Ptr UniqueNodesResult::next(DynamicContext *context)
   Item::Ptr result = parent_->next(context);
 
   if(nTypeOfItemsInLastStep_ == 0 && result.notNull())
-	  nTypeOfItemsInLastStep_ = result->isNode() ? 1 : 2;
+	  nTypeOfItemsInLastStep_ = result->getType() == Item::NODE ? 1 : 2;
 
   if(nTypeOfItemsInLastStep_ == 1) {
 	  while(result.notNull()) {

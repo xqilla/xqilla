@@ -39,7 +39,7 @@ Equals::Equals(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
 
 /*static*/ bool Equals::equals(const Item::Ptr &arg1, const Item::Ptr &arg2, Collation* collation, DynamicContext* context, const LocationInfo *info)
 {
-  assert(arg1->isAtomicValue() && arg2->isAtomicValue());
+  assert(arg1->getType() == Item::ATOMIC && arg2->getType() == Item::ATOMIC);
   return equals((const AnyAtomicType::Ptr)arg1, (const AnyAtomicType::Ptr)arg2, collation, context, info);
 }
 

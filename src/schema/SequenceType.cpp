@@ -665,7 +665,7 @@ bool SequenceType::ItemType::matchesNameType(const Item::Ptr &toBeTested, const 
 {
   // Check name constraint
   if(m_pName) {
-    if(toBeTested->isNode()) {
+    if(toBeTested->getType() == Item::NODE) {
       ATQNameOrDerived::Ptr name = ((const Node*)(const Item*)toBeTested)->dmNodeName(context);
       if(name.isNull()) return false;
 
@@ -688,9 +688,9 @@ bool SequenceType::ItemType::matchesNameType(const Item::Ptr &toBeTested, const 
   //atomic type derived from xs:decimal.
 
   if(m_pType) {
-    if(toBeTested->isAtomicValue()) {
+    if(toBeTested->getType() == Item::ATOMIC) {
       return ((AnyAtomicType*)toBeTested.get())->isInstanceOfType(m_TypeURI, m_pType->getName(), context);
-    } else if (toBeTested->isNode()) {
+    } else if (toBeTested->getType() == Item::NODE) {
       return ((Node*)toBeTested.get())->hasInstanceOfType(m_TypeURI, m_pType->getName(), context);
     }
     return false;
@@ -943,9 +943,9 @@ bool SequenceType::ItemType::matches(const FunctionSignature *sig, DynamicContex
 
 bool SequenceType::ItemType::matches(const Item::Ptr &toBeTested, DynamicContext* context) const
 {
-  if(toBeTested->isNode())
+  if(toBeTested->getType() == Item::NODE)
     return matches((Node::Ptr)toBeTested, context);
-  if(toBeTested->isFunction())
+  if(toBeTested->getType() == Item::FUNCTION)
     return matches((FunctionRef::Ptr)toBeTested, context);
     
   switch(m_nTestType) {
@@ -972,7 +972,7 @@ bool SequenceType::ItemType::matches(const Item::Ptr &toBeTested, DynamicContext
 
     case TEST_ATOMIC_TYPE:
     {
-      if(!toBeTested->isAtomicValue()) return false;
+      if(toBeTested->getType() != Item::ATOMIC) return false;
       return matchesNameType(toBeTested, context);
     }
   }

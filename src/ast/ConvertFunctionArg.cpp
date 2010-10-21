@@ -115,7 +115,7 @@ Item::Ptr PromoteUntypedResult::next(DynamicContext *context)
 {
   Item::Ptr item = parent_->next(context);
   if(item.notNull()) {
-    assert(item->isAtomicValue());
+    assert(item->getType() == Item::ATOMIC);
     const AnyAtomicType *atomic = (const AnyAtomicType *)item.get();
 
     // 2. Each item in the atomic sequence that is of type xdt:untypedAtomic is cast to the expected atomic
@@ -213,7 +213,7 @@ Item::Ptr PromoteNumericResult::next(DynamicContext *context)
 {
   Item::Ptr item = parent_->next(context);
   if(item.notNull()) {
-    assert(item->isAtomicValue());
+    assert(item->getType() == Item::ATOMIC);
     const AnyAtomicType *atomic = (const AnyAtomicType *)item.get();
 
     // 3. For each numeric item in the atomic sequence that can be promoted to the expected atomic type using
@@ -288,7 +288,7 @@ Item::Ptr PromoteAnyURIResult::next(DynamicContext *context)
 {
   Item::Ptr item = parent_->next(context);
   if(item.notNull()) {
-    assert(item->isAtomicValue());
+    assert(item->getType() == Item::ATOMIC);
     const AnyAtomicType *atomic = (const AnyAtomicType *)item.get();
 
     // 4. For each item of type xs:anyURI in the atomic sequence that can be promoted to the expected atomic

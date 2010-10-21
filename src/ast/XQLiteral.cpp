@@ -38,7 +38,7 @@ XERCES_CPP_NAMESPACE_USE;
 ASTNode *XQLiteral::create(const Item::Ptr &item, DynamicContext *context, XPath2MemoryManager* memMgr,
                            const LocationInfo *location)
 {
-  if(item->isAtomicValue()) {
+  if(item->getType() == Item::ATOMIC) {
     ASTNode *result = 0;
 
     const AnyAtomicType *atom = (const AnyAtomicType*)item.get();

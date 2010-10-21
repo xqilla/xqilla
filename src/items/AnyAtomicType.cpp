@@ -51,20 +51,6 @@ const XMLCh AnyAtomicType::fgDT_ANYATOMICTYPE[]=
 
 const AnyAtomicType::CastTable AnyAtomicType::staticCastTable;
 
-/* isAtomicValue from Item */
-bool AnyAtomicType::isAtomicValue() const {
-  return true;
-}
-
-/* isNode from Item */
-bool AnyAtomicType::isNode() const {
-  return false;
-}
-
-bool AnyAtomicType::isFunction() const {
-  return false;
-}
-
 /* is this type numeric?  Return false by default */
 bool AnyAtomicType::isNumericValue() const {
   return false;

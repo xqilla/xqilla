@@ -93,7 +93,7 @@ Numeric::Ptr FunctionNumber::number(const Item::Ptr &item, DynamicContext *conte
   if(item.isNull()) {
     // Do nothing
   }
-  else if(item->isNode()) {
+  else if(item->getType() == Item::NODE) {
     // Atomize first
     Result atomized = ((Node*)item.get())->dmTypedValue(context);
     tmp = atomized->next(context);
@@ -103,7 +103,7 @@ Numeric::Ptr FunctionNumber::number(const Item::Ptr &item, DynamicContext *conte
                X("Sequence does not match type xs:anyAtomicType? - found more than one item [err:XPTY0004]"), location);
     }
   }
-  else if(item->isFunction()) {
+  else if(item->getType() != Item::ATOMIC) {
     XMLBuffer buf;
     buf.set(X("Sequence does not match type (xs:anyAtomicType | node())*"));
     buf.append(X(" - found item of type "));

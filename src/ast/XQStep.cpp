@@ -195,7 +195,7 @@ public:
       if(item.isNull()) {
         return 0;
       }
-      if(!item->isNode()) {
+      if(item->getType() != Item::NODE) {
         XQThrow(TypeErrorException,X("StepResult::next"), X("An attempt was made to perform an axis step when the Context Item was not a node [err:XPTY0020]"));
       }
 

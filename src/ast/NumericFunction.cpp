@@ -56,7 +56,7 @@ Numeric::Ptr NumericFunction::getNumericParam(unsigned int number, DynamicContex
 {
   Item::Ptr item = XQFunction::getParamNumber(number, context, flags)->next(context);
 
-  if(item.notNull() && (!item->isAtomicValue() || !((const AnyAtomicType *)item.get())->isNumericValue()))
+  if(item.notNull() && (item->getType() != Item::ATOMIC || !((const AnyAtomicType *)item.get())->isNumericValue()))
     XQThrow(FunctionException,X("NumericFunction::getParamNumber"), X("Non-numeric argument in numeric function [err:XPTY0004]"));
 
   return (const Numeric *)item.get();

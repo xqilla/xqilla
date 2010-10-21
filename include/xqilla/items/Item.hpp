@@ -41,11 +41,13 @@ public:
   /** The "XQilla" item interface */
   static const XMLCh gXQilla[];
 
-  virtual bool isNode() const = 0;
+  enum Type {
+    NODE,
+    ATOMIC,
+    FUNCTION
+  };
 
-  virtual bool isAtomicValue() const = 0;
-
-  virtual bool isFunction() const = 0;
+  virtual Type getType() const = 0;
 
   virtual const XMLCh* asString(const DynamicContext* context) const = 0;
 

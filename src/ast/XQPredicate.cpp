@@ -197,7 +197,7 @@ Item::Ptr PredicateFilterResult::next(DynamicContext *context)
     // The predicate truth value is derived by applying the following rules, in order:
     // 1) If the value of the predicate expression is an atomic value of a numeric type, the predicate truth
     // value is true if and only if the value of the predicate expression is equal to the context position.
-    if(first_.notNull() && second_.isNull() && first_->isAtomicValue() &&
+    if(first_.notNull() && second_.isNull() && first_->getType() == Item::ATOMIC &&
        ((const AnyAtomicType::Ptr)first_)->isNumericValue()) {
       const Numeric::Ptr num = (const Numeric::Ptr)first_;
       if(!num->equals((const AnyAtomicType::Ptr)context->getItemFactory()->createInteger((long)contextPos_, context), context)) {

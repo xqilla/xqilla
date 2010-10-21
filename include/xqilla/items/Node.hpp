@@ -35,13 +35,7 @@ class XQILLA_API Node : public Item
 public:
   typedef RefCountPointer<const Node> Ptr;
 
-  /** Returns true, since this Item is a Node */
-  virtual bool isNode() const;
-
-  /** Returns false, since this Item is a Node */
-  virtual bool isAtomicValue() const;
-
-  virtual bool isFunction() const;
+  virtual Type getType() const { return NODE; }
 
   virtual void typeToBuffer(DynamicContext *context, XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer &buffer) const;
 
