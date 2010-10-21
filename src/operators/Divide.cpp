@@ -27,10 +27,12 @@
 #include <xqilla/items/AnyAtomicType.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 
+#include <xercesc/util/XMLUniDefs.hpp>
+
 /*static*/ const XMLCh Divide::name[]={ XERCES_CPP_NAMESPACE_QUALIFIER chLatin_D, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_i, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_v, XERCES_CPP_NAMESPACE_QUALIFIER chNull };
 
 Divide::Divide(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
-  : ArithmeticOperator(name, args, memMgr)
+  : ArithmeticOperator(DIVIDE, name, args, memMgr)
 {
   // Nothing to do
 }

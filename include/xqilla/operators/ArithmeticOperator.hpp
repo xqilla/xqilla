@@ -28,7 +28,7 @@ class AnyAtomicType;
 class XQILLA_API ArithmeticOperator : public XQOperator
 {
 public:
-  ArithmeticOperator(const XMLCh* opName, const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
+  ArithmeticOperator(whichType type, const XMLCh *opName, const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
 
   virtual ASTNode* staticResolution(StaticContext *context);
   virtual ASTNode *staticTypingImpl(StaticContext *context);

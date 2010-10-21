@@ -30,10 +30,12 @@
 #include <xqilla/schema/SequenceType.hpp>
 #include <xqilla/exceptions/StaticErrorException.hpp>
 
+#include <xercesc/util/XMLUniDefs.hpp>
+
 /*static*/ const XMLCh NodeComparison::name[]={ XERCES_CPP_NAMESPACE_QUALIFIER chLatin_I, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_s, XERCES_CPP_NAMESPACE_QUALIFIER chNull };
 
 NodeComparison::NodeComparison(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
-  : XQOperator(name, args, memMgr)
+  : XQOperator(NODE_COMPARISON, name, args, memMgr)
 {
 }
 

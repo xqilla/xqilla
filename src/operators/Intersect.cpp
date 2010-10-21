@@ -28,12 +28,14 @@
 #include <xqilla/schema/SequenceType.hpp>
 #include <xqilla/exceptions/StaticErrorException.hpp>
 
+#include <xercesc/util/XMLUniDefs.hpp>
+
 XERCES_CPP_NAMESPACE_USE;
 
 const XMLCh Intersect::name[]={ chLatin_i, chLatin_n, chLatin_t, chLatin_e, chLatin_r, chLatin_s, chLatin_e, chLatin_c, chLatin_t, chNull };
 
 Intersect::Intersect(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
-  : XQOperator(name, args, memMgr),
+  : XQOperator(INTERSECT, name, args, memMgr),
     sortAdded_(false)
 {
 }

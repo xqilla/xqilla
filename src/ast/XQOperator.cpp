@@ -28,11 +28,11 @@
 #include <xqilla/items/Node.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
 
-XQOperator::XQOperator(const XMLCh* opName, const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
-  : ASTNodeImpl(OPERATOR, memMgr),
-  _args(args)
+XQOperator::XQOperator(whichType type, const XMLCh *opName, const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
+  : ASTNodeImpl(type, memMgr),
+    _args(args),
+    _opName(opName)
 {
-  _opName=opName;
 }
 
 void XQOperator::addArgument(ASTNode* arg)
@@ -63,11 +63,36 @@ unsigned int XQOperator::getNumArgs() const
   return (unsigned int)_args.size();
 }
 
-const XMLCh* XQOperator::getOperatorName() const
-{
-  return _opName;
-}
-
 const VectorOfASTNodes &XQOperator::getArguments() const {
   return _args;
+}
+
+bool XQOperator::isInstance(ASTNode *ast)
+{
+  switch(ast->getType()) {
+  case AND:
+  case DIVIDE:
+  case EQUALS:
+  case EXCEPT:
+  case GENERAL_COMP:
+  case GREATER_THAN:
+  case GREATER_THAN_EQUAL:
+  case INTEGER_DIVIDE:
+  case INTERSECT:
+  case LESS_THAN:
+  case LESS_THAN_EQUAL:
+  case MINUS:
+  case MOD:
+  case MULTIPLY:
+  case NODE_COMPARISON:
+  case NOT_EQUALS:
+  case ORDER_COMPARISON:
+  case OR:
+  case PLUS:
+  case UNARY_MINUS:
+  case UNION:
+    return true;
+  default:
+    return false;
+  }
 }

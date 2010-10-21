@@ -39,7 +39,7 @@ TupleNode *WhereTuple::staticResolution(StaticContext *context)
 
   parent_ = parent_->staticResolution(context);
 
-  if(expr_->getType() != ASTNode::OPERATOR || ((XQOperator*)expr_)->getOperatorName() != And::name) {
+  if(expr_->getType() != ASTNode::AND) {
     expr_ = new (mm) XQEffectiveBooleanValue(expr_, mm);
     expr_->setLocationInfo(this);
   }
@@ -86,7 +86,7 @@ TupleNode *WhereTuple::staticTypingImpl(StaticContext *context)
   }
 
   // Split if expr_ is the And operator
-  if(context && expr_->getType() == ASTNode::OPERATOR && ((XQOperator*)expr_)->getOperatorName() == And::name) {
+  if(context && expr_->getType() == ASTNode::AND) {
     XPath2MemoryManager *mm = context->getMemoryManager();
 
     And *andOp = (And*)expr_;

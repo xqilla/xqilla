@@ -31,10 +31,12 @@
 #include <xqilla/schema/SequenceType.hpp>
 #include <xqilla/exceptions/StaticErrorException.hpp>
 
+#include <xercesc/util/XMLUniDefs.hpp>
+
 /*static*/ const XMLCh Union::name[]={ XERCES_CPP_NAMESPACE_QUALIFIER chLatin_U, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_n, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_i, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_o, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_n, XERCES_CPP_NAMESPACE_QUALIFIER chNull };
 
 Union::Union(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
-  : XQOperator(name, args, memMgr),
+  : XQOperator(UNION, name, args, memMgr),
     sortAdded_(false)
 {
 }

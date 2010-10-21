@@ -38,10 +38,12 @@
 #include <xqilla/context/Collation.hpp>
 #include <xqilla/context/impl/CodepointCollation.hpp>
 
+#include <xercesc/util/XMLUniDefs.hpp>
+
 /*static*/ const XMLCh GreaterThan::name[]={ XERCES_CPP_NAMESPACE_QUALIFIER chLatin_G, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_T, XERCES_CPP_NAMESPACE_QUALIFIER chNull };
 
 GreaterThan::GreaterThan(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
-  : ComparisonOperator(name, args, memMgr)
+  : ComparisonOperator(GREATER_THAN, name, args, memMgr)
 {
 }
 

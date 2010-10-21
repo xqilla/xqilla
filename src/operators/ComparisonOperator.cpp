@@ -41,8 +41,8 @@
 XERCES_CPP_NAMESPACE_USE
 #endif
 
-ComparisonOperator::ComparisonOperator(const XMLCh* opName, const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
-  : XQOperator(opName, args, memMgr)
+ComparisonOperator::ComparisonOperator(whichType type, const XMLCh* opName, const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
+  : XQOperator(type, opName, args, memMgr)
 {
 }
 

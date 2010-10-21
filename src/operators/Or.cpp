@@ -32,12 +32,14 @@
 #include <xqilla/ast/XQEffectiveBooleanValue.hpp>
 #include <xqilla/runtime/ClosureResult.hpp>
 
+#include <xercesc/util/XMLUniDefs.hpp>
+
 XERCES_CPP_NAMESPACE_USE;
 
 /*static*/ const XMLCh Or::name[]={ chLatin_O, chLatin_r, chNull };
 
 Or::Or(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
-  : XQOperator(name, args, memMgr)
+  : XQOperator(OR, name, args, memMgr)
 {
   // Nothing to do
 }

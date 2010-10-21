@@ -26,10 +26,12 @@
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/exceptions/XPath2ErrorException.hpp>
 
+#include <xercesc/util/XMLUniDefs.hpp>
+
 /*static*/ const XMLCh LessThanEqual::name[]={ XERCES_CPP_NAMESPACE_QUALIFIER chLatin_L, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_E, XERCES_CPP_NAMESPACE_QUALIFIER chNull };
 
 LessThanEqual::LessThanEqual(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
-  : ComparisonOperator(name, args, memMgr)
+  : ComparisonOperator(LESS_THAN_EQUAL, name, args, memMgr)
 {
 }
 

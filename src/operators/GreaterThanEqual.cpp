@@ -26,10 +26,12 @@
 #include <xqilla/context/impl/CodepointCollation.hpp>
 #include <xqilla/exceptions/XPath2ErrorException.hpp>
 
+#include <xercesc/util/XMLUniDefs.hpp>
+
 /*static*/ const XMLCh GreaterThanEqual::name[]={ XERCES_CPP_NAMESPACE_QUALIFIER chLatin_G, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_E, XERCES_CPP_NAMESPACE_QUALIFIER chNull };
 
 GreaterThanEqual::GreaterThanEqual(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
-  : ComparisonOperator(name, args, memMgr)
+  : ComparisonOperator(GREATER_THAN_EQUAL, name, args, memMgr)
 {
 }
 

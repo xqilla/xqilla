@@ -108,7 +108,27 @@ ASTNode *ASTVisitor::optimize(ASTNode *item)
     return optimizeTreatAs((XQTreatAs *)item);
   case ASTNode::FUNCTION_COERCION:
     return optimizeFunctionCoercion((XQFunctionCoercion *)item);
-  case ASTNode::OPERATOR:
+  case ASTNode::AND:
+  case ASTNode::DIVIDE:
+  case ASTNode::EQUALS:
+  case ASTNode::EXCEPT:
+  case ASTNode::GENERAL_COMP:
+  case ASTNode::GREATER_THAN:
+  case ASTNode::GREATER_THAN_EQUAL:
+  case ASTNode::INTEGER_DIVIDE:
+  case ASTNode::INTERSECT:
+  case ASTNode::LESS_THAN:
+  case ASTNode::LESS_THAN_EQUAL:
+  case ASTNode::MINUS:
+  case ASTNode::MOD:
+  case ASTNode::MULTIPLY:
+  case ASTNode::NODE_COMPARISON:
+  case ASTNode::NOT_EQUALS:
+  case ASTNode::ORDER_COMPARISON:
+  case ASTNode::OR:
+  case ASTNode::PLUS:
+  case ASTNode::UNARY_MINUS:
+  case ASTNode::UNION:
     return optimizeOperator((XQOperator *)item);
   case ASTNode::CONTEXT_ITEM:
     return optimizeContextItem((XQContextItem *)item);

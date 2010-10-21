@@ -31,10 +31,12 @@
 #include <xqilla/schema/SequenceType.hpp>
 #include <xqilla/exceptions/StaticErrorException.hpp>
 
+#include <xercesc/util/XMLUniDefs.hpp>
+
 /*static*/ const XMLCh OrderComparison::name[]={ 'O', 'r', 'd', 'e', 'r', 'C', 'o', 'm', 'p', 'a', 'r', 'i', 's', 'o', 'n', 0 };
 
 OrderComparison::OrderComparison(const VectorOfASTNodes &args, bool testBefore, XPath2MemoryManager* memMgr)
-  : XQOperator(name, args, memMgr)
+  : XQOperator(ORDER_COMPARISON, name, args, memMgr)
 {
 	_testBefore = testBefore;
 }

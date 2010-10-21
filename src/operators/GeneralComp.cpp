@@ -43,7 +43,7 @@ XERCES_CPP_NAMESPACE_USE;
 /*static*/ const XMLCh GeneralComp::name[]={ 'G', 'e', 'n', 'e', 'r', 'a', 'l', 'C', 'o', 'm', 'p', 'a', 'r', 'i', 's', 'o', 'n', 0 };
 
 GeneralComp::GeneralComp(ComparisonOperation operation, const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
-  : XQOperator(name, args, memMgr),
+  : XQOperator(GENERAL_COMP, name, args, memMgr),
     operation_(operation),
     collation_(0),
     xpath1compat_(false)
@@ -51,7 +51,7 @@ GeneralComp::GeneralComp(ComparisonOperation operation, const VectorOfASTNodes &
 }
 
 GeneralComp::GeneralComp(ComparisonOperation operation, const VectorOfASTNodes &args, Collation *collation, bool xpath1Compat, XPath2MemoryManager* memMgr)
-  : XQOperator(name, args, memMgr),
+  : XQOperator(GENERAL_COMP, name, args, memMgr),
     operation_(operation),
     collation_(collation),
     xpath1compat_(xpath1Compat)

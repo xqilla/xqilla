@@ -28,7 +28,7 @@ class AnyAtomicType;
 class XQILLA_API ComparisonOperator : public XQOperator
 {
 public:
-  ComparisonOperator(const XMLCh* opName, const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
+  ComparisonOperator(whichType type, const XMLCh* opName, const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
 
   ASTNode* staticResolution(StaticContext *context);
   virtual ASTNode *staticTypingImpl(StaticContext *context);

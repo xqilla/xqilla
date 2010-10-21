@@ -33,7 +33,7 @@
 /*static*/ const XMLCh Equals::name[]={ XERCES_CPP_NAMESPACE_QUALIFIER chLatin_E, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_Q, XERCES_CPP_NAMESPACE_QUALIFIER chNull };
 
 Equals::Equals(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
-  : ComparisonOperator(name, args, memMgr)
+  : ComparisonOperator(EQUALS, name, args, memMgr)
 {
 }
 

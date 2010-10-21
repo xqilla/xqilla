@@ -24,10 +24,12 @@
 #include <xqilla/context/impl/CodepointCollation.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 
+#include <xercesc/util/XMLUniDefs.hpp>
+
 /*static*/ const XMLCh NotEquals::name[]={ XERCES_CPP_NAMESPACE_QUALIFIER chLatin_N, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_E, XERCES_CPP_NAMESPACE_QUALIFIER chNull };
 
 NotEquals::NotEquals(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
-  : ComparisonOperator(name, args, memMgr)
+  : ComparisonOperator(NOT_EQUALS, name, args, memMgr)
 {
 }
 

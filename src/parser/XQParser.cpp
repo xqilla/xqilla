@@ -8835,7 +8835,7 @@ yyreduce:
 /* Line 1455 of yacc.c  */
 #line 3513 "../src/parser/XQParser.y"
     {
-    if((yyvsp[(1) - (3)].astNode)->getType() == ASTNode::OPERATOR && ((XQOperator*)(yyvsp[(1) - (3)].astNode))->getOperatorName() == Or::name) {
+    if((yyvsp[(1) - (3)].astNode)->getType() == ASTNode::OR) {
       ((Or*)(yyvsp[(1) - (3)].astNode))->addArgument((yyvsp[(3) - (3)].astNode));
       (yyval.astNode) = (yyvsp[(1) - (3)].astNode);
     }
@@ -8849,7 +8849,7 @@ yyreduce:
 /* Line 1455 of yacc.c  */
 #line 3527 "../src/parser/XQParser.y"
     {
-    if((yyvsp[(1) - (3)].astNode)->getType()==ASTNode::OPERATOR && ((XQOperator*)(yyvsp[(1) - (3)].astNode))->getOperatorName() == And::name) {
+    if((yyvsp[(1) - (3)].astNode)->getType()==ASTNode::AND) {
       ((And*)(yyvsp[(1) - (3)].astNode))->addArgument((yyvsp[(3) - (3)].astNode));
       (yyval.astNode) = (yyvsp[(1) - (3)].astNode);
     }

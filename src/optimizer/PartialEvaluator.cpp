@@ -1723,52 +1723,50 @@ ASTNode *PartialEvaluator::optimizePlus(Plus *item)
   if(!item->getStaticAnalysis().getStaticType().isType(StaticType::NUMERIC_TYPE))
     return foldEmptyArgument(item, context_);
 
-  if(args[1]->isConstant() && args[0]->getType() == ASTNode::OPERATOR) {
+  if(args[1]->isConstant() && (args[0]->getType() == ASTNode::PLUS ||
+      args[0]->getType() == ASTNode::MINUS)) {
     XQOperator *op = (XQOperator*)args[0];
-    if(op->getOperatorName() == Minus::name || op->getOperatorName() == Plus::name) {
-      if(op->getArguments()[0]->isConstant()) {
-        // (A (+/-) B) + C = (A + C) (+/-) B
-        args[0] = op->getArguments()[0];
-        const_cast<VectorOfASTNodes&>(op->getArguments())[0] = item;
-        redoTyping_ = true;
-        return optimize(op->staticTyping(0, 0));
-      }
-      else if(op->getArguments()[1]->isConstant()) {
-        // (A - B) + C = A - (B - C)
-        // (A + B) + C = A + (B + C)
-        args[0] = op->getArguments()[1];
+    if(op->getArguments()[0]->isConstant()) {
+      // (A (+/-) B) + C = (A + C) (+/-) B
+      args[0] = op->getArguments()[0];
+      const_cast<VectorOfASTNodes&>(op->getArguments())[0] = item;
+      redoTyping_ = true;
+      return optimize(op->staticTyping(0, 0));
+    }
+    else if(op->getArguments()[1]->isConstant()) {
+      // (A - B) + C = A - (B - C)
+      // (A + B) + C = A + (B + C)
+      args[0] = op->getArguments()[1];
 
-        if(op->getOperatorName() == Minus::name) {
-          const_cast<VectorOfASTNodes&>(op->getArguments())[1] = new (mm) Minus(args, mm);
-          const_cast<VectorOfASTNodes&>(op->getArguments())[1]->setLocationInfo(item);
-        }
-        else {
-          const_cast<VectorOfASTNodes&>(op->getArguments())[1] = item;
-        }
-        redoTyping_ = true;
-        return optimize(op->staticTyping(0, 0));
+      if(op->getOperatorName() == Minus::name) {
+        const_cast<VectorOfASTNodes&>(op->getArguments())[1] = new (mm) Minus(args, mm);
+        const_cast<VectorOfASTNodes&>(op->getArguments())[1]->setLocationInfo(item);
       }
+      else {
+        const_cast<VectorOfASTNodes&>(op->getArguments())[1] = item;
+      }
+      redoTyping_ = true;
+      return optimize(op->staticTyping(0, 0));
     }
   }
 
-  if(args[0]->isConstant() && args[1]->getType() == ASTNode::OPERATOR) {
+  if(args[0]->isConstant() && (args[1]->getType() == ASTNode::PLUS ||
+      args[1]->getType() == ASTNode::MINUS)) {
     XQOperator *op = (XQOperator*)args[1];
-    if(op->getOperatorName() == Minus::name || op->getOperatorName() == Plus::name) {
-      if(op->getArguments()[0]->isConstant()) {
-        // A + (B (+/-) C) = (A + B) (+/-) C
-        args[1] = op->getArguments()[0];
-        const_cast<VectorOfASTNodes&>(op->getArguments())[0] = item;
-        redoTyping_ = true;
-        return optimize(op->staticTyping(0, 0));
-      }
-      else if(op->getArguments()[1]->isConstant()) {
-        // A + (B + C) = (A + C) + B
-        // A + (B - C) = (A - C) + B
-        args[1] = op->getArguments()[0];
-        const_cast<VectorOfASTNodes&>(op->getArguments())[0] = args[0];
-        redoTyping_ = true;
-        return optimize(item->staticTyping(0, 0));
-      }
+    if(op->getArguments()[0]->isConstant()) {
+      // A + (B (+/-) C) = (A + B) (+/-) C
+      args[1] = op->getArguments()[0];
+      const_cast<VectorOfASTNodes&>(op->getArguments())[0] = item;
+      redoTyping_ = true;
+      return optimize(op->staticTyping(0, 0));
+    }
+    else if(op->getArguments()[1]->isConstant()) {
+      // A + (B + C) = (A + C) + B
+      // A + (B - C) = (A - C) + B
+      args[1] = op->getArguments()[0];
+      const_cast<VectorOfASTNodes&>(op->getArguments())[0] = args[0];
+      redoTyping_ = true;
+      return optimize(item->staticTyping(0, 0));
     }
   }
 
@@ -1817,61 +1815,59 @@ ASTNode *PartialEvaluator::optimizeMinus(Minus *item)
   if(!item->getStaticAnalysis().getStaticType().isType(StaticType::NUMERIC_TYPE))
     return foldEmptyArgument(item, context_);
 
-  if(args[1]->isConstant() && args[0]->getType() == ASTNode::OPERATOR) {
+  if(args[1]->isConstant() && (args[0]->getType() == ASTNode::PLUS ||
+      args[0]->getType() == ASTNode::MINUS)) {
     XQOperator *op = (XQOperator*)args[0];
-    if(op->getOperatorName() == Minus::name || op->getOperatorName() == Plus::name) {
-      if(op->getArguments()[0]->isConstant()) {
-        // (A (+/-) B) - C = (A - C) (+/-) B
-        args[0] = op->getArguments()[0];
-        const_cast<VectorOfASTNodes&>(op->getArguments())[0] = item;
-        redoTyping_ = true;
-        return optimize(op->staticTyping(0, 0));
-      }
-      else if(op->getArguments()[1]->isConstant()) {
-        // (A - B) - C = A - (B + C)
-        // (A + B) - C = A + (B - C)
-        args[0] = op->getArguments()[1];
+    if(op->getArguments()[0]->isConstant()) {
+      // (A (+/-) B) - C = (A - C) (+/-) B
+      args[0] = op->getArguments()[0];
+      const_cast<VectorOfASTNodes&>(op->getArguments())[0] = item;
+      redoTyping_ = true;
+      return optimize(op->staticTyping(0, 0));
+    }
+    else if(op->getArguments()[1]->isConstant()) {
+      // (A - B) - C = A - (B + C)
+      // (A + B) - C = A + (B - C)
+      args[0] = op->getArguments()[1];
 
-        if(op->getOperatorName() == Minus::name) {
-          const_cast<VectorOfASTNodes&>(op->getArguments())[1] = new (mm) Plus(args, mm);
-          const_cast<VectorOfASTNodes&>(op->getArguments())[1]->setLocationInfo(item);
-        }
-        else {
-          const_cast<VectorOfASTNodes&>(op->getArguments())[1] = item;
-        }
-        redoTyping_ = true;
-        return optimize(op->staticTyping(0, 0));
+      if(op->getOperatorName() == Minus::name) {
+        const_cast<VectorOfASTNodes&>(op->getArguments())[1] = new (mm) Plus(args, mm);
+        const_cast<VectorOfASTNodes&>(op->getArguments())[1]->setLocationInfo(item);
       }
+      else {
+        const_cast<VectorOfASTNodes&>(op->getArguments())[1] = item;
+      }
+      redoTyping_ = true;
+      return optimize(op->staticTyping(0, 0));
     }
   }
 
-  if(args[0]->isConstant() && args[1]->getType() == ASTNode::OPERATOR) {
+  if(args[0]->isConstant() && (args[1]->getType() == ASTNode::PLUS ||
+      args[1]->getType() == ASTNode::MINUS)) {
     XQOperator *op = (XQOperator*)args[1];
-    if(op->getOperatorName() == Minus::name || op->getOperatorName() == Plus::name) {
-      if(op->getArguments()[0]->isConstant()) {
-        // A - (B (+/-) C) = (A - B) (+/-) C
-        args[1] = op->getArguments()[0];
-        const_cast<VectorOfASTNodes&>(op->getArguments())[0] = item;
-        redoTyping_ = true;
-        return optimize(op->staticTyping(0, 0));
-      }
-      else if(op->getArguments()[1]->isConstant()) {
-        // A - (B + C) = (A - C) - B
-        // A - (B - C) = (A + C) - B
-        args[1] = op->getArguments()[0];
-        const_cast<VectorOfASTNodes&>(op->getArguments())[0] = args[0];
+    if(op->getArguments()[0]->isConstant()) {
+      // A - (B (+/-) C) = (A - B) (+/-) C
+      args[1] = op->getArguments()[0];
+      const_cast<VectorOfASTNodes&>(op->getArguments())[0] = item;
+      redoTyping_ = true;
+      return optimize(op->staticTyping(0, 0));
+    }
+    else if(op->getArguments()[1]->isConstant()) {
+      // A - (B + C) = (A - C) - B
+      // A - (B - C) = (A + C) - B
+      args[1] = op->getArguments()[0];
+      const_cast<VectorOfASTNodes&>(op->getArguments())[0] = args[0];
 
-        if(op->getOperatorName() == Minus::name) {
-          args[0] = new (mm) Plus(op->getArguments(), mm);
-          args[0]->setLocationInfo(op);
-        }
-        else {
-          args[0] = new (mm) Minus(op->getArguments(), mm);
-          args[0]->setLocationInfo(op);
-        }
-        redoTyping_ = true;
-        return optimize(item->staticTyping(0, 0));
+      if(op->getOperatorName() == Minus::name) {
+        args[0] = new (mm) Plus(op->getArguments(), mm);
+        args[0]->setLocationInfo(op);
       }
+      else {
+        args[0] = new (mm) Minus(op->getArguments(), mm);
+        args[0]->setLocationInfo(op);
+      }
+      redoTyping_ = true;
+      return optimize(item->staticTyping(0, 0));
     }
   }
 
@@ -1922,49 +1918,47 @@ ASTNode *PartialEvaluator::optimizeMultiply(Multiply *item)
   if(!item->getStaticAnalysis().getStaticType().isType(StaticType::NUMERIC_TYPE))
     return foldEmptyArgument(item, context_);
 
-  if(args[1]->isConstant() && args[0]->getType() == ASTNode::OPERATOR) {
+  if(args[1]->isConstant() && (args[0]->getType() == ASTNode::MULTIPLY ||
+      args[0]->getType() == ASTNode::DIVIDE)) {
     XQOperator *op = (XQOperator*)args[0];
-    if(op->getOperatorName() == Multiply::name || op->getOperatorName() == Divide::name) {
-      if(op->getArguments()[0]->isConstant()) {
-        // (A * B) * C = (A * C) * B
-        // (A / B) * C = (A * C) / B
-        args[0] = op->getArguments()[0];
-        const_cast<VectorOfASTNodes&>(op->getArguments())[0] = item;
-        redoTyping_ = true;
-        return optimize(op->staticTyping(0, 0));
-      }
-      else if(op->getArguments()[1]->isConstant()) {
-        // (A * B) * C = A * (C * B)
-        // (A / B) * C = A * (C / B)
-        args[0] = op->getArguments()[0];
-        const_cast<VectorOfASTNodes&>(op->getArguments())[0] = args[1];
-        const_cast<VectorOfASTNodes&>(op->getArguments())[1] = op->getArguments()[1];
-        args[1] = op;
-        redoTyping_ = true;
-        return optimize(item->staticTyping(0, 0));
-      }
+    if(op->getArguments()[0]->isConstant()) {
+      // (A * B) * C = (A * C) * B
+      // (A / B) * C = (A * C) / B
+      args[0] = op->getArguments()[0];
+      const_cast<VectorOfASTNodes&>(op->getArguments())[0] = item;
+      redoTyping_ = true;
+      return optimize(op->staticTyping(0, 0));
+    }
+    else if(op->getArguments()[1]->isConstant()) {
+      // (A * B) * C = A * (C * B)
+      // (A / B) * C = A * (C / B)
+      args[0] = op->getArguments()[0];
+      const_cast<VectorOfASTNodes&>(op->getArguments())[0] = args[1];
+      const_cast<VectorOfASTNodes&>(op->getArguments())[1] = op->getArguments()[1];
+      args[1] = op;
+      redoTyping_ = true;
+      return optimize(item->staticTyping(0, 0));
     }
   }
 
-  if(args[0]->isConstant() && args[1]->getType() == ASTNode::OPERATOR) {
+  if(args[0]->isConstant() && (args[1]->getType() == ASTNode::MULTIPLY ||
+      args[1]->getType() == ASTNode::DIVIDE)) {
     XQOperator *op = (XQOperator*)args[1];
-    if(op->getOperatorName() == Multiply::name || op->getOperatorName() == Divide::name) {
-      if(op->getArguments()[0]->isConstant()) {
-        // A * (B * C) = (A * B) * C
-        // A * (B / C) = (A * B) / C
-        args[1] = op->getArguments()[0];
-        const_cast<VectorOfASTNodes&>(op->getArguments())[0] = item;
-        redoTyping_ = true;
-        return optimize(op->staticTyping(0, 0));
-      }
-      else if(op->getArguments()[1]->isConstant()) {
-        // A * (B * C) = (A * C) * B
-        // A * (B / C) = (A / C) * B
-        args[1] = op->getArguments()[0];
-        const_cast<VectorOfASTNodes&>(op->getArguments())[0] = args[0];
-        redoTyping_ = true;
-        return optimize(item->staticTyping(0, 0));
-      }
+    if(op->getArguments()[0]->isConstant()) {
+      // A * (B * C) = (A * B) * C
+      // A * (B / C) = (A * B) / C
+      args[1] = op->getArguments()[0];
+      const_cast<VectorOfASTNodes&>(op->getArguments())[0] = item;
+      redoTyping_ = true;
+      return optimize(op->staticTyping(0, 0));
+    }
+    else if(op->getArguments()[1]->isConstant()) {
+      // A * (B * C) = (A * C) * B
+      // A * (B / C) = (A / C) * B
+      args[1] = op->getArguments()[0];
+      const_cast<VectorOfASTNodes&>(op->getArguments())[0] = args[0];
+      redoTyping_ = true;
+      return optimize(item->staticTyping(0, 0));
     }
   }
 
@@ -2036,72 +2030,70 @@ ASTNode *PartialEvaluator::optimizeDivide(Divide *item)
      args[1]->getStaticAnalysis().getStaticType().containsType(StaticType::DAY_TIME_DURATION_TYPE | StaticType::YEAR_MONTH_DURATION_TYPE))
     return foldEmptyArgument(item, context_);
 
-  if(args[1]->isConstant() && args[0]->getType() == ASTNode::OPERATOR) {
+  if(args[1]->isConstant() && (args[0]->getType() == ASTNode::MULTIPLY ||
+      args[0]->getType() == ASTNode::DIVIDE)) {
     XQOperator *op = (XQOperator*)args[0];
-    if(op->getOperatorName() == Multiply::name || op->getOperatorName() == Divide::name) {
-      if(op->getArguments()[0]->isConstant()) {
-        // (A / B) / C = (A / C) / B
-        // (A * B) / C = (A / C) * B
-        args[0] = op->getArguments()[0];
-        const_cast<VectorOfASTNodes&>(op->getArguments())[0] = item;
-        redoTyping_ = true;
-        return optimize(op->staticTyping(0, 0));
-      }
-      else if(op->getArguments()[1]->isConstant()) {
-        // (A / B) / C = A / (B * C)
-        // (A * B) / C = A * (B / C)
-        args[0] = op->getArguments()[1];
+    if(op->getArguments()[0]->isConstant()) {
+      // (A / B) / C = (A / C) / B
+      // (A * B) / C = (A / C) * B
+      args[0] = op->getArguments()[0];
+      const_cast<VectorOfASTNodes&>(op->getArguments())[0] = item;
+      redoTyping_ = true;
+      return optimize(op->staticTyping(0, 0));
+    }
+    else if(op->getArguments()[1]->isConstant()) {
+      // (A / B) / C = A / (B * C)
+      // (A * B) / C = A * (B / C)
+      args[0] = op->getArguments()[1];
 
-        if(op->getOperatorName() == Divide::name) {
-          const_cast<VectorOfASTNodes&>(op->getArguments())[1] = new (mm) Multiply(args, mm);
-          const_cast<VectorOfASTNodes&>(op->getArguments())[1]->setLocationInfo(item);
-        }
-        else {
-          const_cast<VectorOfASTNodes&>(op->getArguments())[1] = item;
-        }
-        redoTyping_ = true;
-        return optimize(op->staticTyping(0, 0));
+      if(op->getOperatorName() == Divide::name) {
+        const_cast<VectorOfASTNodes&>(op->getArguments())[1] = new (mm) Multiply(args, mm);
+        const_cast<VectorOfASTNodes&>(op->getArguments())[1]->setLocationInfo(item);
       }
+      else {
+        const_cast<VectorOfASTNodes&>(op->getArguments())[1] = item;
+      }
+      redoTyping_ = true;
+      return optimize(op->staticTyping(0, 0));
     }
   }
 
-  if(args[0]->isConstant() && args[1]->getType() == ASTNode::OPERATOR) {
+  if(args[0]->isConstant() && (args[1]->getType() == ASTNode::MULTIPLY ||
+      args[1]->getType() == ASTNode::DIVIDE)) {
     XQOperator *op = (XQOperator*)args[1];
-    if(op->getOperatorName() == Multiply::name || op->getOperatorName() == Divide::name) {
-      if(op->getArguments()[0]->isConstant()) {
-        // A / (B / C) = (A / B) * C
-        // A / (B * C) = (A / B) / C
-        args[1] = op->getArguments()[0];
-        const_cast<VectorOfASTNodes&>(op->getArguments())[0] = item;
+    if(op->getArguments()[0]->isConstant()) {
+      // A / (B / C) = (A / B) * C
+      // A / (B * C) = (A / B) / C
+      args[1] = op->getArguments()[0];
+      const_cast<VectorOfASTNodes&>(op->getArguments())[0] = item;
 
-        if(op->getOperatorName() == Divide::name) {
-          op = new (mm) Multiply(op->getArguments(), mm);
-          op->setLocationInfo(op);
-        }
-        else {
-          op = new (mm) Divide(op->getArguments(), mm);
-          op->setLocationInfo(op);
-        }
-        redoTyping_ = true;
-        return optimize(op->staticTyping(0, 0));
+      if(op->getOperatorName() == Divide::name) {
+        op = new (mm) Multiply(op->getArguments(), mm);
+        op->setLocationInfo(op);
       }
-      else if(op->getArguments()[1]->isConstant()) {
-        // A / (B / C) = (A * C) / B
-        // A / (B * C) = (A / C) / B
-        args[1] = op->getArguments()[0];
-        const_cast<VectorOfASTNodes&>(op->getArguments())[0] = args[0];
+      else {
+        op = new (mm) Divide(op->getArguments(), mm);
+        op->setLocationInfo(op);
+      }
+      redoTyping_ = true;
+      return optimize(op->staticTyping(0, 0));
+    }
+    else if(op->getArguments()[1]->isConstant()) {
+      // A / (B / C) = (A * C) / B
+      // A / (B * C) = (A / C) / B
+      args[1] = op->getArguments()[0];
+      const_cast<VectorOfASTNodes&>(op->getArguments())[0] = args[0];
 
-        if(op->getOperatorName() == Divide::name) {
-          args[0] = new (mm) Multiply(op->getArguments(), mm);
-          args[0]->setLocationInfo(op);
-        }
-        else {
-          args[0] = new (mm) Divide(op->getArguments(), mm);
-          args[0]->setLocationInfo(op);
-        }
-        redoTyping_ = true;
-        return optimize(item->staticTyping(0, 0));
+      if(op->getOperatorName() == Divide::name) {
+        args[0] = new (mm) Multiply(op->getArguments(), mm);
+        args[0]->setLocationInfo(op);
       }
+      else {
+        args[0] = new (mm) Divide(op->getArguments(), mm);
+        args[0]->setLocationInfo(op);
+      }
+      redoTyping_ = true;
+      return optimize(item->staticTyping(0, 0));
     }
   }
 

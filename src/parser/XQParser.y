@@ -3511,7 +3511,7 @@ IfExpr:
 OrExpr:
   OrExpr _OR_ AndExpr
   {
-    if($1->getType() == ASTNode::OPERATOR && ((XQOperator*)$1)->getOperatorName() == Or::name) {
+    if($1->getType() == ASTNode::OR) {
       ((Or*)$1)->addArgument($3);
       $$ = $1;
     }
@@ -3525,7 +3525,7 @@ OrExpr:
 AndExpr:
   AndExpr _AND_ ComparisonExpr
   {
-    if($1->getType()==ASTNode::OPERATOR && ((XQOperator*)$1)->getOperatorName() == And::name) {
+    if($1->getType()==ASTNode::AND) {
       ((And*)$1)->addArgument($3);
       $$ = $1;
     }

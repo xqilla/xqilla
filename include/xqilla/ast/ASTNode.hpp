@@ -52,7 +52,6 @@ public:
     CASTABLE_AS,
     CAST_AS,
     TREAT_AS,
-    OPERATOR,
     CONTEXT_ITEM,
     DOM_CONSTRUCTOR,
     QUANTIFIED,
@@ -98,6 +97,30 @@ public:
     COPY_OF,
     COPY,
     MAP,
+
+    // Operators
+    AND,
+    DIVIDE,
+    EQUALS,
+    EXCEPT,
+    GENERAL_COMP,
+    GREATER_THAN,
+    GREATER_THAN_EQUAL,
+    INTEGER_DIVIDE,
+    INTERSECT,
+    LESS_THAN,
+    LESS_THAN_EQUAL,
+    MINUS,
+    MOD,
+    MULTIPLY,
+    NODE_COMPARISON,
+    NOT_EQUALS,
+    ORDER_COMPARISON,
+    OR,
+    PLUS,
+    UNARY_MINUS,
+    UNION,
+
     DEBUG_HOOK
   } whichType;
 

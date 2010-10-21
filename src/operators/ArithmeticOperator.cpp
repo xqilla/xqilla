@@ -40,8 +40,8 @@
 XERCES_CPP_NAMESPACE_USE
 #endif
 
-ArithmeticOperator::ArithmeticOperator(const XMLCh* opName, const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
-  : XQOperator(opName, args, memMgr)
+ArithmeticOperator::ArithmeticOperator(whichType type, const XMLCh *opName, const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
+  : XQOperator(type, opName, args, memMgr)
 {
 }
 
