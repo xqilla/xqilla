@@ -20,10 +20,10 @@
 
 #include <ostream>
 #include <assert.h>
-#include <stdlib.h>
 
 #include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/utils/XPath2Utils.hpp>
+#include <xqilla/utils/lookup3.hpp>
 
 #include <xercesc/util/XMemory.hpp>
 #include <xercesc/framework/MemoryManager.hpp>
@@ -36,7 +36,7 @@ struct Primes
 template<class T>
 struct DefaultEqualsFunctor
 {
-  bool operator()(const T &a, const T &b) const
+  inline bool operator()(const T &a, const T &b) const
   {
     return a == b;
   }
@@ -45,7 +45,7 @@ struct DefaultEqualsFunctor
 template<>
 struct DefaultEqualsFunctor<const XMLCh*>
 {
-  bool operator()(const XMLCh *a, const XMLCh *b) const
+  inline bool operator()(const XMLCh *a, const XMLCh *b) const
   {
     return XPath2Utils::equals(a, b);
   };
@@ -54,7 +54,7 @@ struct DefaultEqualsFunctor<const XMLCh*>
 template<class T>
 struct DefaultHashFunctor
 {
-  size_t operator()(const T &a) const
+  inline size_t operator()(const T &a) const
   {
     return a.hash();
   }
@@ -63,33 +63,34 @@ struct DefaultHashFunctor
 template<>
 struct DefaultHashFunctor<const XMLCh*>
 {
-  size_t operator()(const XMLCh *a) const
+  inline size_t operator()(const XMLCh *a) const
   {
     if(a == 0) return 0;
-
-    size_t hashVal = 0;
-    for(; *a; ++a)
-      hashVal = (hashVal * 38) + (hashVal >> 24) + (size_t)*a;
-
-    return hashVal;
+    uint32_t pc = 0xF00BAA56, pb = 0xBADFACE2;
+    hashlittle2((void*)a, XPath2Utils::uintStrlen(a) * sizeof(XMLCh), &pc, &pb);
+    return pc + (((size_t)pb)<<32);
   }
 };
 
 template<>
 struct DefaultHashFunctor<int>
 {
-  size_t operator()(int a) const
+  inline size_t operator()(int a) const
   {
-    return (size_t)rand_r((unsigned*)&a);
+    uint32_t pc = 0xF00BAA56, pb = 0xBADFACE2;
+    hashword2((uint32_t*)&a, sizeof(int) / sizeof(uint32_t), &pc, &pb);
+    return pc + (((size_t)pb)<<32);
   }
 };
 
 template<typename TYPE>
 struct DefaultHashFunctor<TYPE*>
 {
-  size_t operator()(TYPE *a) const
+  inline size_t operator()(TYPE *a) const
   {
-    return (size_t)a;
+    uint32_t pc = 0xF00BAA56, pb = 0xBADFACE2;
+    hashword2((uint32_t*)&a, sizeof(TYPE*) / sizeof(uint32_t), &pc, &pb);
+    return pc + (((size_t)pb)<<32);
   }
 };
 
@@ -101,7 +102,7 @@ private:
   {
     Bucket() : key(), value(), state(EMPTY), hash(0), next(0) {}
 
-    void *operator new(long unsigned int, Bucket *p) { return (void*)p; }
+    void *operator new(size_t, Bucket *p) { return (void*)p; }
 
     void set(KEY k, VALUE v, size_t h)
     {
@@ -147,11 +148,10 @@ public:
       if(map_) {
         ptr_ = map_->findNextDuplicate(ptr_);
       }
-      else {
+      else if(ptr_ != end_) {
         do {
-          if(ptr_ == end_) break;
           ++ptr_;
-        } while(ptr_->state != Bucket::OCCUPIED);
+        } while(ptr_ != end_ && ptr_->state != Bucket::OCCUPIED);
       }
 
       return *this;
@@ -302,7 +302,7 @@ public:
   }
   inline void putAll(const HashMap &o)
   {
-    if(resizable_ && (count_ * 4) >= (capacity_ * 3))
+    if(resizable_ && (count_ + o.size() * 4) >= (capacity_ * 3))
       resize(Primes::next(capacity_ + o.size()));
 
     insert(o.buckets_, o.buckets_ + o.capacity_, /*overwrite*/true);
@@ -527,6 +527,7 @@ private:
     char space[sizeof(inlineBuckets_)];
 
     b = buckets_; buckets_ = o.buckets_; o.buckets_ = b;
+    b = lastKnownEmpty_; lastKnownEmpty_ = o.lastKnownEmpty_; o.lastKnownEmpty_ = b;
 
     if(buckets_ == (Bucket*)o.inlineBuckets_ ||
        o.buckets_ == (Bucket*)inlineBuckets_) {
@@ -535,16 +536,20 @@ private:
       if(buckets_ == (Bucket*)o.inlineBuckets_) {
         memcpy(inlineBuckets_, o.inlineBuckets_, sizeof(inlineBuckets_));
         buckets_ = (Bucket*)inlineBuckets_;
+        lastKnownEmpty_ = lastKnownEmpty_ -
+          ((Bucket*)o.inlineBuckets_) + (Bucket*)inlineBuckets_;
       }
       if(o.buckets_ == (Bucket*)inlineBuckets_) {
         memcpy(o.inlineBuckets_, space, sizeof(inlineBuckets_));
         o.buckets_ = (Bucket*)o.inlineBuckets_;
+        o.lastKnownEmpty_ = o.lastKnownEmpty_ -
+          ((Bucket*)inlineBuckets_) + (Bucket*)o.inlineBuckets_;
       }
+
     }
 
     s = capacity_; capacity_ = o.capacity_; o.capacity_ = s;
     s = attic_; attic_ = o.attic_; o.attic_ = s;
-    b = lastKnownEmpty_; lastKnownEmpty_ = o.lastKnownEmpty_; o.lastKnownEmpty_ = b;
     s = count_; count_ = o.count_; o.count_ = s;
     s = deleted_; deleted_ = o.deleted_; o.deleted_ = s;
     bl = resizable_; resizable_ = o.resizable_; o.resizable_ = bl;
