@@ -302,7 +302,7 @@ public:
   }
   inline void putAll(const HashMap &o)
   {
-    if(resizable_ && (count_ + o.size() * 4) >= (capacity_ * 3))
+    if(resizable_ && ((count_ + o.size()) * 4) >= (capacity_ * 3))
       resize(Primes::next(capacity_ + o.size()));
 
     insert(o.buckets_, o.buckets_ + o.capacity_, /*overwrite*/true);
