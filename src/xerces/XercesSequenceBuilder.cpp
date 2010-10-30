@@ -119,7 +119,10 @@ void XercesSequenceBuilder::endElementEvent(const XMLCh *prefix, const XMLCh *ur
   currentNode_ = currentParent_;
   currentParent_ = currentParent_->getParentNode();
 
-  setElementTypeInfo((DOMElement*)currentNode_, typeURI, typeName);
+  if(typeName)
+    setElementTypeInfo((DOMElement*)currentNode_, typeURI, typeName);
+  else
+    setElementTypeInfo((DOMElement*)currentNode_, SchemaSymbols::fgURI_SCHEMAFORSCHEMA, DocumentCache::g_szUntyped);
 
   if(currentParent_ == 0) {
     seq_.addItem(new XercesNodeImpl(currentNode_, (XercesURIResolver*)context_->getDefaultURIResolver()));
@@ -249,7 +252,10 @@ void XercesSequenceBuilder::attributeEvent(const XMLCh *prefix, const XMLCh *uri
     attr->setPrefix(prefix);
   attr->setValue(value);
 
-  setAttributeTypeInfo(attr, typeURI, typeName);
+  if(typeName)
+    setAttributeTypeInfo(attr, typeURI, typeName);
+  else
+    setAttributeTypeInfo(attr, SchemaSymbols::fgURI_SCHEMAFORSCHEMA, ATUntypedAtomic::fgDT_UNTYPEDATOMIC);
 
   if(currentParent_ != 0)
     currentParent_->getAttributes()->setNamedItemNS(attr);
