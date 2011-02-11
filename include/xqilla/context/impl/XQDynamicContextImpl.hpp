@@ -424,7 +424,6 @@ inline void XQDynamicContextImpl::addTypeAlias(XQTypeAlias *alias)
 
 
 inline const StaticType &XQDynamicContextImpl::getContextItemType() const { XQThrow2(ContextException,X("XQDynamicContextImpl"), X("The static context is not available from a proxying dynamic context")); }
-inline const XMLCh* XQDynamicContextImpl::getDefaultFuncNS() const { XQThrow2(ContextException,X("XQDynamicContextImpl"), X("The static context is not available from a proxying dynamic context")); }
 inline StaticContext::NodeSetOrdering XQDynamicContextImpl::getNodeSetOrdering() const { XQThrow2(ContextException,X("XQDynamicContextImpl"), X("The static context is not available from a proxying dynamic context")); }
 inline ModuleResolver * XQDynamicContextImpl::getModuleResolver() const { XQThrow2(ContextException,X("XQDynamicContextImpl"), X("The static context is not available from a proxying dynamic context")); }
 inline ExternalFunctionResolver * XQDynamicContextImpl::getExternalFunctionResolver() const { XQThrow2(ContextException,X("XQDynamicContextImpl"), X("The static context is not available from a proxying dynamic context")); }
@@ -450,5 +449,6 @@ inline bool XQDynamicContextImpl::getPreserveNamespaces() const { return _static
 inline StaticContext::ConstructionMode XQDynamicContextImpl::getConstructionMode() const { return _staticContext->getConstructionMode(); }
 inline const UserFunctions &XQDynamicContextImpl::getTemplateRules() const { return _staticContext->getTemplateRules(); }
 inline const XQUserFunction *XQDynamicContextImpl::lookUpNamedTemplate(const XMLCh *uri, const XMLCh *name) const { return _staticContext->lookUpNamedTemplate(uri, name); }
+inline const XMLCh* XQDynamicContextImpl::getDefaultFuncNS() const { return _staticContext->getDefaultFuncNS(); }
 
 #endif

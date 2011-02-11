@@ -56,6 +56,7 @@ public:
   typedef RefCountPointer<TupleImpl> Ptr;
   typedef IHashMap<AnyAtomicType::Ptr, ResultBuffer, AtomicHashFunctor, AtomicEqualsFunctor> ValueMap;
 
+  TupleImpl(DynamicContext *context);
   TupleImpl(size_t capacity, const Collation *collation, DynamicContext *context);
   TupleImpl(const TupleImpl *o);
   ~TupleImpl();

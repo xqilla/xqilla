@@ -50,6 +50,11 @@ XQGlobalVariable *ASTReleaser::optimizeGlobalVar(XQGlobalVariable *item)
   return ASTVisitor::optimizeGlobalVar(item);
 }
 
+XQRewriteRule *ASTReleaser::optimizeRewriteRule(XQRewriteRule *item)
+{
+  return ASTVisitor::optimizeRewriteRule(item);
+}
+
 XQUserFunction *ASTReleaser::optimizeFunctionDef(XQUserFunction *item)
 {
   if(item) {
@@ -123,6 +128,7 @@ RELEASE_XQ(QNameLiteral)
 RELEASE_XQ(NumericLiteral)
 RELEASE_XQ(Step)
 RELEASE_XQ(Variable)
+RELEASE_XQ(ExprSubstitution)
 RELEASE_XQ(If)
 RELEASE_XQ(CastableAs)
 RELEASE_XQ(CastAs)

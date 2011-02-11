@@ -36,6 +36,14 @@
 XERCES_CPP_NAMESPACE_USE;
 using namespace std;
 
+TupleImpl::TupleImpl(DynamicContext *context)
+  : values_(17, AtomicHashFunctor(context->getDefaultCollation(0), context),
+            AtomicEqualsFunctor(context->getDefaultCollation(0), context)),
+    signature_(0),
+    mm_(context->getMemoryManager())
+{
+}
+
 TupleImpl::TupleImpl(size_t capacity, const Collation *collation, DynamicContext *context)
   : values_(capacity, AtomicHashFunctor(collation, context),
             AtomicEqualsFunctor(collation, context)),

@@ -102,6 +102,9 @@ class LetTuple;
 class XQGlobalVariable;
 class XQTypeAlias;
 class Annotation;
+class RewritePattern;
+class RewriteCase;
+class XQRewriteRule;
 
 typedef union {
   XMLCh* str;
@@ -143,6 +146,9 @@ typedef union {
   FTOption::FTUnit ftunit;
   bool boolean;
   int integer;
+  RewritePattern *rwpattern;
+  RewriteCase *rwcase;
+  XQRewriteRule *rwrule;
 } yystype;
 #define YYSTYPE yystype
 #define YYSTYPE_IS_DECLARED 1
@@ -159,7 +165,7 @@ public:
 
   virtual int yylex(YYSTYPE* pYYLVAL, YYLTYPE* pYYLOC) = 0;
 
-  int error(const char* message)
+  virtual int error(const char* message)
   {
     Error(message, m_lineno, m_columnno);
     return 0;
@@ -267,6 +273,11 @@ protected:
   virtual void LexerError(const char* msg);
   virtual void yy_pop_state();
 
+  virtual int error(const char* message)
+  {
+    return Lexer::error(yyloc, message);
+  }
+
   void userAction(YY_CHAR* text, int length);
   void undoUserAction();
 
@@ -307,9 +318,13 @@ public:
       _context((DynamicContext*)query->getStaticContext()),
       _query(query),
       _function(0),
+      _signature(0),
+      _rwpattern(0),
+      _seqType(0),
       _moduleName(0),
       _flags(32),
-      _namespaceDecls(13)
+      _namespaceDecls(13),
+      _rewriteRule(false)
   {
   }
 
@@ -318,9 +333,13 @@ public:
       _context(0),
       _query(0),
       _function(0),
+      _signature(0),
+      _rwpattern(0),
+      _seqType(0),
       _moduleName(0),
       _flags(32),
-      _namespaceDecls(13)
+      _namespaceDecls(13),
+      _rewriteRule(false)
   {
   }
 
@@ -329,9 +348,12 @@ public:
   XQQuery* _query;
   XQUserFunction *_function;
   FunctionSignature *_signature;
+  RewritePattern *_rwpattern;
+  SequenceType *_seqType;
   const XMLCh *_moduleName;
   XERCES_CPP_NAMESPACE_QUALIFIER BitSet _flags;
   XERCES_CPP_NAMESPACE_QUALIFIER RefHashTableOf<XMLCh> _namespaceDecls;
+  bool _rewriteRule;
 };
 
 namespace XQParser {

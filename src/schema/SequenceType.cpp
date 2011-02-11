@@ -49,6 +49,7 @@
 #include <xqilla/schema/DocumentCacheImpl.hpp>
 #include <xqilla/framework/BasicMemoryManager.hpp>
 #include <xqilla/ast/XQTypeAlias.hpp>
+#include <xqilla/ast/XQRewriteRule.hpp>
 
 #include <xercesc/validators/schema/SchemaAttDef.hpp>
 #include <xercesc/validators/schema/SchemaElementDecl.hpp>
@@ -102,6 +103,7 @@ const ItemType ItemType::NAMESPACE(ItemType::TEST_NAMESPACE, staticDocumentCache
 const ItemType ItemType::FUNCTION(ItemType::TEST_FUNCTION, staticDocumentCache());
 const ItemType ItemType::TUPLE(ItemType::TEST_TUPLE, staticDocumentCache());
 const ItemType ItemType::MAP(ItemType::TEST_MAP, staticDocumentCache());
+const ItemType ItemType::EXPRESSION(ItemType::TEST_EXPRESSION, staticDocumentCache());
 
 const SequenceType SequenceType::ANY_ATOMIC_TYPE((ItemType*)&ItemType::ANY_ATOMIC_TYPE);
 const SequenceType SequenceType::ITEM_STAR((ItemType*)&ItemType::ITEM, SequenceType::STAR);
@@ -274,11 +276,21 @@ ItemType *ItemType::staticResolution(StaticContext *context, const LocationInfo 
   }
 
   if(m_TypeName) {
-    if(m_nTestType == ItemType::TEST_ATOMIC_TYPE) {
+    if(m_nTestType == ItemType::TEST_EXPRESSION) {
+      // skip
+    }
+    else if(m_nTestType == ItemType::TEST_ATOMIC_TYPE) {
       // Check if this is actually a type alias
       alias_ = context->getTypeAlias(m_TypeURI, m_TypeName);
       // if(alias_) return alias_->isResolved() ? alias_->getType() : this;
       if(alias_) return this;
+
+      // Check if this is actually an expression SequenceType
+      if(XPath2Utils::equals(m_TypeURI, XQRewriteRule::URI) &&
+         XPath2Utils::equals(m_TypeName, XQRewriteRule::TypeName)) {
+        m_nTestType = TEST_EXPRESSION;
+        return this;
+      }
 
       if((XPath2Utils::equals(m_TypeName, AnyAtomicType::fgDT_ANYATOMICTYPE) ||
           XPath2Utils::equals(m_TypeName, SchemaSymbols::fgDT_ANYSIMPLETYPE)) &&
@@ -621,6 +633,7 @@ void ItemType::toBuffer(XMLBuffer &buffer, bool forStaticType, bool addBrackets)
     buffer.append(X("item()"));
     break;
   }
+  case TEST_EXPRESSION:
   case TEST_ATOMIC_TYPE: {
     if(m_TypeName) {
       outputPrefixOrURI(m_TypePrefix, m_TypeURI, buffer);
@@ -1023,6 +1036,7 @@ bool ItemType::matches(const Node::Ptr &toBeTested, DynamicContext* context) con
       return true;
     }
 
+    case TEST_EXPRESSION:
     case TEST_ATOMIC_TYPE:
     case TEST_FUNCTION:
     case TEST_TUPLE:
@@ -1056,6 +1070,7 @@ bool ItemType::matches(const FunctionSignature *sig) const
     case TEST_DOCUMENT:
     case TEST_SCHEMA_DOCUMENT:
     case TEST_NAMESPACE:
+    case TEST_EXPRESSION:
     case TEST_ATOMIC_TYPE:
     case TEST_TUPLE:
     case TEST_MAP:
@@ -1121,6 +1136,7 @@ bool ItemType::matches(const Tuple::Ptr &tuple, DynamicContext* context) const
     }
 
     case TEST_FUNCTION:
+    case TEST_EXPRESSION:
     {
       if(signature_ == 0) return true;
       if(signature_->numArgs() != 1) return false;
@@ -1169,6 +1185,10 @@ bool ItemType::matches(const Item::Ptr &toBeTested, DynamicContext* context) con
      return matches((FunctionRef::Ptr)toBeTested);
   case Item::TUPLE:
     return matches((Tuple::Ptr)toBeTested, context);
+  case Item::EXPRESSION:
+    if(!alias_)
+      return m_nTestType == TEST_EXPRESSION;
+    break;
   case Item::ATOMIC:
     break;
   }
@@ -1197,6 +1217,11 @@ bool ItemType::matches(const Item::Ptr &toBeTested, DynamicContext* context) con
     case TEST_ANYTHING:
     {
       return true;
+    }
+
+    case TEST_EXPRESSION:
+    {
+      return toBeTested->getType() == Item::EXPRESSION;
     }
 
     case TEST_ATOMIC_TYPE:
@@ -1278,6 +1303,10 @@ bool ItemType::isSubtypeOf(const ItemType *b, bool forStaticType) const
   case TEST_ANYTHING: {
     // Bi is item().
     return true;
+  }
+
+  case TEST_EXPRESSION: {
+    return a->m_nTestType == TEST_EXPRESSION;
   }
 
   case TEST_NODE: {

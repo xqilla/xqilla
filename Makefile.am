@@ -67,12 +67,14 @@ src/ast/XQPIConstructor.cpp \
 src/ast/XQCommentConstructor.cpp \
 src/ast/XQTextConstructor.cpp \
 src/ast/XQFunctionCall.cpp \
+src/ast/XQExprSubstitution.cpp \
 src/ast/XQFunctionConversion.cpp \
 src/ast/XQFunctionDeref.cpp \
 src/ast/XQPartialApply.cpp \
 src/ast/XQFunctionRef.cpp \
 src/ast/XQGlobalVariable.cpp \
 src/ast/XQTypeAlias.cpp \
+src/ast/XQRewriteRule.cpp \
 src/ast/XQOrderingChange.cpp \
 src/ast/XQQuantified.cpp \
 src/ast/XQValidate.cpp \
@@ -286,6 +288,7 @@ src/items/ATUntypedAtomic.cpp \
 src/items/DateOrTimeType.cpp \
 src/items/Item.cpp \
 src/items/Node.cpp \
+src/items/ExpressionItem.cpp \
 src/items/Numeric.cpp \
 src/items/Timezone.cpp \
 src/parser/QName.cpp \

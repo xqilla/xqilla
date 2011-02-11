@@ -44,6 +44,7 @@
 #include <xqilla/ast/XQQuantified.hpp>
 #include <xqilla/ast/XQFunctionCall.hpp>
 #include <xqilla/ast/XQGlobalVariable.hpp>
+#include <xqilla/ast/XQRewriteRule.hpp>
 #include <xqilla/ast/XQTypeswitch.hpp>
 #include <xqilla/ast/XQValidate.hpp>
 #include <xqilla/ast/XQOrderingChange.hpp>
@@ -65,6 +66,7 @@
 #include <xqilla/ast/XQFunctionDeref.hpp>
 #include <xqilla/ast/XQPartialApply.hpp>
 #include <xqilla/ast/XQMap.hpp>
+#include <xqilla/ast/XQExprSubstitution.hpp>
 
 #include <xqilla/ast/ContextTuple.hpp>
 #include <xqilla/ast/ForTuple.hpp>
@@ -105,6 +107,7 @@
 #define ALL_ASTVISITOR_METHODS() \
   virtual XQGlobalVariable *optimizeGlobalVar(XQGlobalVariable *item); \
   virtual XQUserFunction *optimizeFunctionDef(XQUserFunction *item); \
+  virtual XQRewriteRule *optimizeRewriteRule(XQRewriteRule *item); \
 \
   virtual ASTNode *optimizeUnknown(ASTNode *item); \
   virtual ASTNode *optimizeFunction(XQFunction *item); \
@@ -156,6 +159,7 @@
   virtual ASTNode *optimizeFunctionDeref(XQFunctionDeref *item); \
   virtual ASTNode *optimizePartialApply(XQPartialApply *item); \
   virtual ASTNode *optimizeMap(XQMap *item); \
+  virtual ASTNode *optimizeExprSubstitution(XQExprSubstitution *item); \
 \
   virtual ASTNode *optimizeUDelete(UDelete *item); \
   virtual ASTNode *optimizeURename(URename *item); \

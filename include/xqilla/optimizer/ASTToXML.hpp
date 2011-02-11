@@ -46,6 +46,7 @@ protected:
   virtual ASTNode *optimize(ASTNode *item);
   virtual XQGlobalVariable *optimizeGlobalVar(XQGlobalVariable *item);
   virtual XQUserFunction *optimizeFunctionDef(XQUserFunction *item);
+  virtual XQRewriteRule *optimizeRewriteRule(XQRewriteRule *item);
   virtual ASTNode *optimizeFunction(XQFunction *item);
   virtual ASTNode *optimizeOperator(XQOperator *item);
   virtual ASTNode *optimizeLiteral(XQLiteral *item);
@@ -55,6 +56,7 @@ protected:
   virtual ASTNode *optimizeInlineFunction(XQInlineFunction *item);
   virtual ASTNode *optimizePromoteUntyped(XQPromoteUntyped *item);
   virtual ASTNode *optimizeVariable(XQVariable *item);
+  virtual ASTNode *optimizeExprSubstitution(XQExprSubstitution *item);
   virtual ASTNode *optimizeTreatAs(XQTreatAs *item);
   virtual ASTNode *optimizePromoteNumeric(XQPromoteNumeric *item);
   virtual ASTNode *optimizePromoteAnyURI(XQPromoteAnyURI *item);

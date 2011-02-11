@@ -283,6 +283,9 @@ void XQLexer::undoLessThan()
 <INITIAL>"["                      RECOGNIZE(_LSQUARE_);
 <INITIAL>"]"                      RECOGNIZE(_RSQUARE_);
 <INITIAL>"?"                      RECOGNIZE(_QUESTION_MARK_);
+<INITIAL>":"                      RECOGNIZE(_COLON_);
+<INITIAL>"~"                      RECOGNIZE(_TILDE_);
+<INITIAL>"->"                     RECOGNIZE(_MINUS_GREATER_THAN_);
 
 <INITIAL>"external"               RECOGNIZE_VALUE(_EXTERNAL_, yytext);
 <INITIAL>"ascending"              RECOGNIZE_VALUE(_ASCENDING_, yytext);

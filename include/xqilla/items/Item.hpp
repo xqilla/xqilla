@@ -45,7 +45,8 @@ public:
     NODE,
     ATOMIC,
     FUNCTION,
-    TUPLE
+    TUPLE,
+    EXPRESSION
   };
 
   virtual Type getType() const = 0;

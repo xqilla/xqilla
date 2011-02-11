@@ -246,12 +246,14 @@ xqilla/ast/XQPIConstructor.hpp \
 xqilla/ast/XQCommentConstructor.hpp \
 xqilla/ast/XQTextConstructor.hpp \
 xqilla/ast/XQFunctionCall.hpp \
+xqilla/ast/XQExprSubstitution.hpp \
 xqilla/ast/XQFunctionConversion.hpp \
 xqilla/ast/XQFunctionDeref.hpp \
 xqilla/ast/XQPartialApply.hpp \
 xqilla/ast/XQFunctionRef.hpp \
 xqilla/ast/XQGlobalVariable.hpp \
 xqilla/ast/XQTypeAlias.hpp \
+xqilla/ast/XQRewriteRule.hpp \
 xqilla/ast/XQOrderingChange.hpp \
 xqilla/ast/XQQuantified.hpp \
 xqilla/ast/XQTypeswitch.hpp \
@@ -467,6 +469,8 @@ xqilla/items/AnyAtomicType.hpp \
 xqilla/items/DateOrTimeType.hpp \
 xqilla/items/FunctionRef.hpp \
 xqilla/items/Item.hpp \
+xqilla/items/Tuple.hpp \
+xqilla/items/ExpressionItem.hpp \
 xqilla/items/Node.hpp \
 xqilla/items/Numeric.hpp \
 xqilla/items/Timezone.hpp \

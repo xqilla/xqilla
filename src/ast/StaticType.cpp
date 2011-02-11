@@ -133,6 +133,8 @@ static inline TypeFlags::Enum flagsForItemType(const ItemType *type)
   case ItemType::TEST_TUPLE:
   case ItemType::TEST_MAP:
     return (TypeFlags::Enum)TypeFlags::TUPLE|TypeFlags::FUNCTION;
+  case ItemType::TEST_EXPRESSION:
+    return TypeFlags::EXPRESSION;
   }
 
   return TypeFlags::EMPTY;
@@ -214,6 +216,7 @@ static void addItemTypesFromFlags(TypeFlags::Enum tflags, StaticType::ItemTypes 
   ADD_ITEMTYPE_FOR(YEAR_MONTH_DURATION);
   ADD_ITEMTYPE_FOR(FUNCTION);
   ADD_ITEMTYPE_FOR(TUPLE);
+  ADD_ITEMTYPE_FOR(EXPRESSION);
 }
 
 static inline bool intersectItemType(const ItemType *type, TypeFlags::Enum flags,

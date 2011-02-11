@@ -98,22 +98,23 @@ am_libxqilla_la_OBJECTS = ReferenceCounted.lo BaseMemoryManager.lo \
 	XQDocumentConstructor.lo XQElementConstructor.lo \
 	XQAttributeConstructor.lo XQNamespaceConstructor.lo \
 	XQPIConstructor.lo XQCommentConstructor.lo \
-	XQTextConstructor.lo XQFunctionCall.lo XQFunctionConversion.lo \
-	XQFunctionDeref.lo XQPartialApply.lo XQFunctionRef.lo \
-	XQGlobalVariable.lo XQTypeAlias.lo XQOrderingChange.lo \
-	XQQuantified.lo XQValidate.lo XQTypeswitch.lo \
-	ConvertFunctionArg.lo XQDocumentOrder.lo XQPredicate.lo \
-	XQReturn.lo XQTupleConstructor.lo XQTupleMember.lo \
-	TupleNode.lo ContextTuple.lo ForTuple.lo LetTuple.lo \
-	WhereTuple.lo CountTuple.lo OrderByTuple.lo \
-	XQNamespaceBinding.lo XQCallTemplate.lo XQApplyTemplates.lo \
-	ASTDebugHook.lo DebugHookDecorator.lo TupleDebugHook.lo \
-	InputParser.lo InteractiveDebugger.lo StackFrame.lo \
-	ContentSequenceFilter.lo EventGenerator.lo EventSerializer.lo \
-	NoInheritFilter.lo NSFixupFilter.lo QueryPathTreeFilter.lo \
-	FTContains.lo FTWords.lo FTOr.lo FTAnd.lo FTMildnot.lo \
-	FTUnaryNot.lo DefaultTokenizer.lo DefaultTokenStore.lo \
-	FTOrder.lo FTDistance.lo FTScope.lo FTContent.lo FTWindow.lo \
+	XQTextConstructor.lo XQFunctionCall.lo XQExprSubstitution.lo \
+	XQFunctionConversion.lo XQFunctionDeref.lo XQPartialApply.lo \
+	XQFunctionRef.lo XQGlobalVariable.lo XQTypeAlias.lo \
+	XQRewriteRule.lo XQOrderingChange.lo XQQuantified.lo \
+	XQValidate.lo XQTypeswitch.lo ConvertFunctionArg.lo \
+	XQDocumentOrder.lo XQPredicate.lo XQReturn.lo \
+	XQTupleConstructor.lo XQTupleMember.lo TupleNode.lo \
+	ContextTuple.lo ForTuple.lo LetTuple.lo WhereTuple.lo \
+	CountTuple.lo OrderByTuple.lo XQNamespaceBinding.lo \
+	XQCallTemplate.lo XQApplyTemplates.lo ASTDebugHook.lo \
+	DebugHookDecorator.lo TupleDebugHook.lo InputParser.lo \
+	InteractiveDebugger.lo StackFrame.lo ContentSequenceFilter.lo \
+	EventGenerator.lo EventSerializer.lo NoInheritFilter.lo \
+	NSFixupFilter.lo QueryPathTreeFilter.lo FTContains.lo \
+	FTWords.lo FTOr.lo FTAnd.lo FTMildnot.lo FTUnaryNot.lo \
+	DefaultTokenizer.lo DefaultTokenStore.lo FTOrder.lo \
+	FTDistance.lo FTScope.lo FTContent.lo FTWindow.lo \
 	XQillaBuilderImpl.lo XQillaDocumentImpl.lo \
 	XQillaExpressionImpl.lo XQillaNSResolverImpl.lo \
 	XQillaXMLGrammarPoolImpl.lo XPathDocumentImpl.lo \
@@ -167,22 +168,22 @@ am_libxqilla_la_OBJECTS = ReferenceCounted.lo BaseMemoryManager.lo \
 	FunctionRefImpl.lo TupleImpl.lo DatatypeFactory.lo \
 	DatatypeLookup.lo AnyAtomicType.lo ATDurationOrDerived.lo \
 	ATUntypedAtomic.lo DateOrTimeType.lo Item.lo Node.lo \
-	Numeric.lo Timezone.lo QName.lo XQParser.lo XQLexer.lo \
-	XQLexer2.lo XSLT2Lexer.lo mapm5sin.lo mapm_add.lo mapmasin.lo \
-	mapmasn0.lo mapmcbrt.lo mapmcnst.lo mapm_cpi.lo m_apm.lo \
-	mapm_div.lo mapm_exp.lo mapmfact.lo mapm_fam.lo mapm_fft.lo \
-	mapm_flr.lo mapmfmul.lo mapm_fpf.lo mapm_gcd.lo mapmgues.lo \
-	mapmhasn.lo mapmhsin.lo mapmipwr.lo mapmistr.lo mapm_lg2.lo \
-	mapm_lg3.lo mapm_log.lo mapm_mt.lo mapm_mul.lo mapm_pow.lo \
-	mapmpwr2.lo mapm_rcp.lo mapm_rnd.lo mapmrsin.lo mapm_set.lo \
-	mapm_sin.lo mapmsqrt.lo mapmstck.lo mapmutil.lo mapmutl2.lo \
-	NodeTest.lo SelfAxis.lo And.lo ArithmeticOperator.lo \
-	ComparisonOperator.lo Divide.lo Equals.lo Except.lo \
-	GeneralComp.lo GreaterThan.lo GreaterThanEqual.lo \
-	IntegerDivide.lo Intersect.lo LessThan.lo LessThanEqual.lo \
-	Minus.lo Mod.lo Multiply.lo NodeComparison.lo NotEquals.lo \
-	Or.lo OrderComparison.lo Plus.lo UnaryMinus.lo Union.lo \
-	DocumentCacheImpl.lo SequenceType.lo \
+	ExpressionItem.lo Numeric.lo Timezone.lo QName.lo XQParser.lo \
+	XQLexer.lo XQLexer2.lo XSLT2Lexer.lo mapm5sin.lo mapm_add.lo \
+	mapmasin.lo mapmasn0.lo mapmcbrt.lo mapmcnst.lo mapm_cpi.lo \
+	m_apm.lo mapm_div.lo mapm_exp.lo mapmfact.lo mapm_fam.lo \
+	mapm_fft.lo mapm_flr.lo mapmfmul.lo mapm_fpf.lo mapm_gcd.lo \
+	mapmgues.lo mapmhasn.lo mapmhsin.lo mapmipwr.lo mapmistr.lo \
+	mapm_lg2.lo mapm_lg3.lo mapm_log.lo mapm_mt.lo mapm_mul.lo \
+	mapm_pow.lo mapmpwr2.lo mapm_rcp.lo mapm_rnd.lo mapmrsin.lo \
+	mapm_set.lo mapm_sin.lo mapmsqrt.lo mapmstck.lo mapmutil.lo \
+	mapmutl2.lo NodeTest.lo SelfAxis.lo And.lo \
+	ArithmeticOperator.lo ComparisonOperator.lo Divide.lo \
+	Equals.lo Except.lo GeneralComp.lo GreaterThan.lo \
+	GreaterThanEqual.lo IntegerDivide.lo Intersect.lo LessThan.lo \
+	LessThanEqual.lo Minus.lo Mod.lo Multiply.lo NodeComparison.lo \
+	NotEquals.lo Or.lo OrderComparison.lo Plus.lo UnaryMinus.lo \
+	Union.lo DocumentCacheImpl.lo SequenceType.lo \
 	AnyAtomicTypeDatatypeValidator.lo SchemaValidatorFilter.lo \
 	FaxppDocumentCacheImpl.lo ClosureResult.lo EmptyResult.lo \
 	LazySequenceResult.lo ResultBuffer.lo ResultBufferImpl.lo \
@@ -539,12 +540,14 @@ src/ast/XQPIConstructor.cpp \
 src/ast/XQCommentConstructor.cpp \
 src/ast/XQTextConstructor.cpp \
 src/ast/XQFunctionCall.cpp \
+src/ast/XQExprSubstitution.cpp \
 src/ast/XQFunctionConversion.cpp \
 src/ast/XQFunctionDeref.cpp \
 src/ast/XQPartialApply.cpp \
 src/ast/XQFunctionRef.cpp \
 src/ast/XQGlobalVariable.cpp \
 src/ast/XQTypeAlias.cpp \
+src/ast/XQRewriteRule.cpp \
 src/ast/XQOrderingChange.cpp \
 src/ast/XQQuantified.cpp \
 src/ast/XQValidate.cpp \
@@ -758,6 +761,7 @@ src/items/ATUntypedAtomic.cpp \
 src/items/DateOrTimeType.cpp \
 src/items/Item.cpp \
 src/items/Node.cpp \
+src/items/ExpressionItem.cpp \
 src/items/Numeric.cpp \
 src/items/Timezone.cpp \
 src/parser/QName.cpp \
@@ -1306,6 +1310,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/EventGenerator.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/EventSerializer.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Except.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ExpressionItem.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ExternalFunction.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FTAnd.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FTContains.Plo@am__quote@
@@ -1521,6 +1526,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQEffectiveBooleanValue.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQElementConstructor.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQException.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQExprSubstitution.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQFunction.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQFunctionCall.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQFunctionCoercion.Plo@am__quote@
@@ -1546,6 +1552,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQQuantified.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQQuery.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQReturn.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQRewriteRule.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQSequence.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQStep.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XQTextConstructor.Plo@am__quote@
@@ -2331,6 +2338,13 @@ XQFunctionCall.lo: src/ast/XQFunctionCall.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQFunctionCall.lo `test -f 'src/ast/XQFunctionCall.cpp' || echo '$(srcdir)/'`src/ast/XQFunctionCall.cpp
 
+XQExprSubstitution.lo: src/ast/XQExprSubstitution.cpp
+@am__fastdepCXX_TRUE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT XQExprSubstitution.lo -MD -MP -MF $(DEPDIR)/XQExprSubstitution.Tpo -c -o XQExprSubstitution.lo `test -f 'src/ast/XQExprSubstitution.cpp' || echo '$(srcdir)/'`src/ast/XQExprSubstitution.cpp
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/XQExprSubstitution.Tpo $(DEPDIR)/XQExprSubstitution.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/ast/XQExprSubstitution.cpp' object='XQExprSubstitution.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQExprSubstitution.lo `test -f 'src/ast/XQExprSubstitution.cpp' || echo '$(srcdir)/'`src/ast/XQExprSubstitution.cpp
+
 XQFunctionConversion.lo: src/ast/XQFunctionConversion.cpp
 @am__fastdepCXX_TRUE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT XQFunctionConversion.lo -MD -MP -MF $(DEPDIR)/XQFunctionConversion.Tpo -c -o XQFunctionConversion.lo `test -f 'src/ast/XQFunctionConversion.cpp' || echo '$(srcdir)/'`src/ast/XQFunctionConversion.cpp
 @am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/XQFunctionConversion.Tpo $(DEPDIR)/XQFunctionConversion.Plo
@@ -2372,6 +2386,13 @@ XQTypeAlias.lo: src/ast/XQTypeAlias.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/ast/XQTypeAlias.cpp' object='XQTypeAlias.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQTypeAlias.lo `test -f 'src/ast/XQTypeAlias.cpp' || echo '$(srcdir)/'`src/ast/XQTypeAlias.cpp
+
+XQRewriteRule.lo: src/ast/XQRewriteRule.cpp
+@am__fastdepCXX_TRUE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT XQRewriteRule.lo -MD -MP -MF $(DEPDIR)/XQRewriteRule.Tpo -c -o XQRewriteRule.lo `test -f 'src/ast/XQRewriteRule.cpp' || echo '$(srcdir)/'`src/ast/XQRewriteRule.cpp
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/XQRewriteRule.Tpo $(DEPDIR)/XQRewriteRule.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/ast/XQRewriteRule.cpp' object='XQRewriteRule.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XQRewriteRule.lo `test -f 'src/ast/XQRewriteRule.cpp' || echo '$(srcdir)/'`src/ast/XQRewriteRule.cpp
 
 XQOrderingChange.lo: src/ast/XQOrderingChange.cpp
 @am__fastdepCXX_TRUE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT XQOrderingChange.lo -MD -MP -MF $(DEPDIR)/XQOrderingChange.Tpo -c -o XQOrderingChange.lo `test -f 'src/ast/XQOrderingChange.cpp' || echo '$(srcdir)/'`src/ast/XQOrderingChange.cpp
@@ -3681,6 +3702,13 @@ Node.lo: src/items/Node.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/items/Node.cpp' object='Node.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o Node.lo `test -f 'src/items/Node.cpp' || echo '$(srcdir)/'`src/items/Node.cpp
+
+ExpressionItem.lo: src/items/ExpressionItem.cpp
+@am__fastdepCXX_TRUE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ExpressionItem.lo -MD -MP -MF $(DEPDIR)/ExpressionItem.Tpo -c -o ExpressionItem.lo `test -f 'src/items/ExpressionItem.cpp' || echo '$(srcdir)/'`src/items/ExpressionItem.cpp
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/ExpressionItem.Tpo $(DEPDIR)/ExpressionItem.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/items/ExpressionItem.cpp' object='ExpressionItem.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ExpressionItem.lo `test -f 'src/items/ExpressionItem.cpp' || echo '$(srcdir)/'`src/items/ExpressionItem.cpp
 
 Numeric.lo: src/items/Numeric.cpp
 @am__fastdepCXX_TRUE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT Numeric.lo -MD -MP -MF $(DEPDIR)/Numeric.Tpo -c -o Numeric.lo `test -f 'src/items/Numeric.cpp' || echo '$(srcdir)/'`src/items/Numeric.cpp

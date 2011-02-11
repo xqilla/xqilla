@@ -52,6 +52,11 @@ void ASTVisitor::optimize(XQQuery *query)
   if(query->getQueryBody() != 0) {
     query->setQueryBody(optimize(query->getQueryBody()));
   }
+
+  RewriteRules &rules = const_cast<RewriteRules&>(query->getRewriteRules());
+  for(RewriteRules::iterator it3 = rules.begin(); it3 != rules.end(); ++it3) {
+    (*it3) = optimizeRewriteRule(*it3);
+  }
 }
 
 XQGlobalVariable *ASTVisitor::optimizeGlobalVar(XQGlobalVariable *item)
@@ -59,6 +64,20 @@ XQGlobalVariable *ASTVisitor::optimizeGlobalVar(XQGlobalVariable *item)
   if(item->getVariableExpr()) {
     item->setVariableExpr(optimize(const_cast<ASTNode *>(item->getVariableExpr())));
   }
+  return item;
+}
+
+XQRewriteRule *ASTVisitor::optimizeRewriteRule(XQRewriteRule *item)
+{
+  if(item->getWhere())
+    item->setWhere(optimize(item->getWhere()));
+
+  RewriteCase::Vector::iterator i = item->getCases().begin();
+  for(; i != item->getCases().end(); ++i) {
+    (*i)->result = optimize((*i)->result);
+    if((*i)->where) (*i)->where = optimize((*i)->where);
+  }
+
   return item;
 }
 
@@ -158,6 +177,8 @@ ASTNode *ASTVisitor::optimize(ASTNode *item)
     return optimizeEffectiveBooleanValue((XQEffectiveBooleanValue *)item);
   case ASTNode::MAP:
     return optimizeMap((XQMap *)item);
+  case ASTNode::EXPR_SUBSTITUTION:
+    return optimizeExprSubstitution((XQExprSubstitution *)item);
   case ASTNode::PROMOTE_UNTYPED:
     return optimizePromoteUntyped((XQPromoteUntyped *)item);
   case ASTNode::PROMOTE_NUMERIC:
@@ -477,6 +498,11 @@ ASTNode *ASTVisitor::optimizeMap(XQMap *item)
 {
   item->setArg1(optimize(item->getArg1()));
   item->setArg2(optimize(item->getArg2()));
+  return item;
+}
+
+ASTNode *ASTVisitor::optimizeExprSubstitution(XQExprSubstitution *item)
+{
   return item;
 }
 

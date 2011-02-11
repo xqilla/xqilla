@@ -64,18 +64,10 @@ ASTNode* FunctionRoot::staticResolution(StaticContext *context)
 ASTNode *FunctionRoot::staticTypingImpl(StaticContext *context)
 {
   _src.clear();
+  calculateSRCForArguments(context);
 
   _src.setProperties(StaticAnalysis::DOCORDER | StaticAnalysis::GROUPED |
                      StaticAnalysis::PEER | StaticAnalysis::SAMEDOC | StaticAnalysis::ONENODE);
-  _src.getStaticType() = StaticType::NODE_QUESTION;
-
-  _src.add(_args[0]->getStaticAnalysis());
-
-  if(_args[0]->getStaticAnalysis().isUpdating()) {
-    XQThrow(StaticErrorException,X("FunctionRoot::staticTyping"),
-            X("It is a static error for an argument to a function "
-              "to be an updating expression [err:XUST0001]"));
-  }
 
   if(_args[0]->getStaticAnalysis().getStaticType().isType(TypeFlags::DOCUMENT)) {
     return _args[0];

@@ -186,6 +186,11 @@ void ASTToXML::optimize(XQQuery *query)
   hasChildren_ = true;
 }
 
+XQRewriteRule *ASTToXML::optimizeRewriteRule(XQRewriteRule *item)
+{
+  return item;
+}
+
 XQGlobalVariable *ASTToXML::optimizeGlobalVar(XQGlobalVariable *item)
 {
   static const XMLCh s_GlobalParam[] = { 'G', 'l', 'o', 'b', 'a', 'l', 'P', 'a', 'r', 'a', 'm', 0 };
@@ -492,6 +497,9 @@ void ASTToXML::getElementName(ASTNode *item, XMLBuffer &buf)
   case ASTNode::TUPLE_MEMBER:
     buf.append(X("TupleMember"));
     break;
+  case ASTNode::EXPR_SUBSTITUTION:
+    buf.append(X("ExprSubstitution"));
+    break;
   default:
     buf.append(X("Unknown"));
     break;
@@ -519,6 +527,11 @@ ASTNode *ASTToXML::optimize(ASTNode *item)
   events_->attributeEvent(0, 0, s_static_type, type_buf.getRawBuffer(), 0, 0);
   // events_->attributeEvent(0, 0, s_static_analysis, X(item->getStaticAnalysis().toString().c_str()), 0, 0);
 #endif
+
+  // static XMLCh s_static_type[] = { 's', 't', 'a', 't', 'i', 'c', '-', 't', 'y', 'p', 'e', 0 };
+  // XMLBuffer type_buf;
+  // item->getStaticAnalysis().getStaticType().typeToBuf(type_buf);
+  // events_->attributeEvent(0, 0, s_static_type, type_buf.getRawBuffer(), 0, 0);
 
   if(item) {
     AutoReset<unsigned int> resetIndent(indent_);
@@ -686,6 +699,14 @@ ASTNode *ASTToXML::optimizeVariable(XQVariable *item)
   qname(0, item->getPrefix(), item->getURI(), item->getName(), buf);
   events_->attributeEvent(0, 0, s_name, buf.getRawBuffer(), 0, 0);
   return ASTVisitor::optimizeVariable(item);
+}
+
+ASTNode *ASTToXML::optimizeExprSubstitution(XQExprSubstitution *item)
+{
+  XMLBuffer buf;
+  qname(item->getQName(), 0, item->getURI(), item->getName(), buf);
+  events_->attributeEvent(0, 0, s_name, buf.getRawBuffer(), 0, 0);
+  return ASTVisitor::optimizeExprSubstitution(item);
 }
 
 ASTNode *ASTToXML::optimizeCastableAs(XQCastableAs *item)

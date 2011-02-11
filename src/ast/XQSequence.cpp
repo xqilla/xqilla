@@ -27,9 +27,11 @@
 #include <xqilla/exceptions/StaticErrorException.hpp>
 #include <xqilla/runtime/ClosureResult.hpp>
 
+using namespace std;
+
 static const unsigned int CONSTANT_FOLD_LIMIT = 4;
 
-XQSequence *XQSequence::constantFold(Result &result, DynamicContext *context, XPath2MemoryManager* memMgr,
+ASTNode *XQSequence::constantFold(Result &result, DynamicContext *context, XPath2MemoryManager* memMgr,
                                      const LocationInfo *location)
 {
   XQSequence *seq = new (memMgr) XQSequence(memMgr);
@@ -115,9 +117,8 @@ ASTNode *XQSequence::staticTypingImpl(StaticContext *context)
     _src.add((*i)->getStaticAnalysis());
   }
 
-  if(context && nestedSeq) {
-    XPath2MemoryManager *mm = context->getMemoryManager();
-    VectorOfASTNodes newArgs = VectorOfASTNodes(XQillaAllocator<ASTNode*>(mm));
+  if(nestedSeq) {
+    vector<ASTNode*> newArgs;
     for(i = _astNodes.begin(); i != _astNodes.end(); ++i) {
       if((*i)->getType() == SEQUENCE) {
         XQSequence *arg = (XQSequence*)*i;
@@ -129,11 +130,12 @@ ASTNode *XQSequence::staticTypingImpl(StaticContext *context)
         newArgs.push_back(*i);
       }
     }
-    _astNodes = newArgs;
+    _astNodes.clear();
+    std::copy(newArgs.begin(), newArgs.end(), back_inserter(_astNodes));
   }
 
   // Dissolve ourselves if we have only one child
-  if(context && _astNodes.size() == 1) {
+  if(_astNodes.size() == 1) {
     return _astNodes.front();
   }
   return this;

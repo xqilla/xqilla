@@ -34,6 +34,7 @@
 #include <xqilla/items/Node.hpp>
 #include <xqilla/ast/XQGlobalVariable.hpp>
 #include <xqilla/ast/XQTypeAlias.hpp>
+#include <xqilla/ast/XQRewriteRule.hpp>
 #include <xqilla/ast/XQSequence.hpp>
 #include <xqilla/ast/StaticAnalysis.hpp>
 #include <xqilla/runtime/Result.hpp>
@@ -127,6 +128,7 @@ XQQuery::XQQuery(DynamicContext *context, bool contextOwned, ModuleCache *module
     m_delayedFunctions(XQillaAllocator<DelayedFuncFactory*>(memMgr)),
     m_userDefVars(XQillaAllocator<XQGlobalVariable*>(memMgr)),
     m_aliases(XQillaAllocator<XQTypeAlias*>(memMgr)),
+    m_rwrules(XQillaAllocator<XQRewriteRule*>(memMgr)),
     m_importedModules(XQillaAllocator<XQQuery*>(memMgr)),
     m_moduleCache(moduleCache ? moduleCache : new (memMgr) ModuleCache(memMgr)),
     m_moduleCacheOwned(moduleCache == 0),
@@ -421,6 +423,12 @@ void XQQuery::staticResolution()
 
   // Run static resolution on the query body
   if(m_query) m_query = m_query->staticResolution(m_context);
+
+  // Run static resolution on the rewrite rules
+  RewriteRules::iterator itRule;
+  for(itRule = m_rwrules.begin(); itRule != m_rwrules.end(); ++itRule) {
+    (*itRule)->staticResolution(m_context);
+  }
 }
 
 bool XQQuery::staticTypingOnce(StaticTyper *styper)
@@ -516,6 +524,18 @@ void XQQuery::staticTyping(StaticTyper *styper)
 
   // Run staticTyping on the query body
   if(m_query) m_query = m_query->staticTyping(m_context, styper);
+
+  // Run staticTyping on the rewrite rules
+  RewriteRules::iterator itRule;
+  for(itRule = m_rwrules.begin(); itRule != m_rwrules.end(); ++itRule) {
+    (*itRule)->staticTyping(m_context, styper);
+  }
+
+  // Run staticTyping on any imported modules not already done
+  for(modIt = m_importedModules.begin(); modIt != m_importedModules.end(); ++modIt) {
+    if((*modIt)->m_staticTyped == BEFORE)
+      (*modIt)->staticTypingOnce(styper);
+  }
 }
 
 std::string XQQuery::getQueryPlan() const
@@ -567,6 +587,11 @@ void XQQuery::addVariable(XQGlobalVariable* varDef)
 void XQQuery::addTypeAlias(XQTypeAlias *alias)
 {
   m_aliases.push_back(alias);
+}
+
+void XQQuery::addRewriteRule(XQRewriteRule *rule)
+{
+  m_rwrules.push_back(rule);
 }
 
 void XQQuery::setIsLibraryModule(bool bIsModule/*=true*/)

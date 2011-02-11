@@ -197,6 +197,11 @@ XQGlobalVariable *QueryPathTreeGenerator::optimizeGlobalVar(XQGlobalVariable *it
   return item;
 }
 
+XQRewriteRule *QueryPathTreeGenerator::optimizeRewriteRule(XQRewriteRule *item)
+{
+  return item;
+}
+
 static QueryPathNode::Type getTypeFromAxis(Node::Axis axis)
 {
   QueryPathNode::Type result = (QueryPathNode::Type)-1;
@@ -915,6 +920,12 @@ ASTNode *QueryPathTreeGenerator::optimizeVariable(XQVariable *item)
   }
 
   push(result);
+  return item;
+}
+
+ASTNode *QueryPathTreeGenerator::optimizeExprSubstitution(XQExprSubstitution *item)
+{
+  push(PathResult());
   return item;
 }
 

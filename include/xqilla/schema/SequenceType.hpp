@@ -85,6 +85,7 @@ public:
   static const ItemType FUNCTION;
   static const ItemType TUPLE;
   static const ItemType MAP;
+  static const ItemType EXPRESSION;
 
   /**
    * The type of item that this sequence can hold.
@@ -105,7 +106,8 @@ public:
     TEST_ATOMIC_TYPE,  ///< the named atomic type
     TEST_FUNCTION,     ///< function
     TEST_TUPLE,        ///< tuple
-    TEST_MAP           ///< map
+    TEST_MAP,          ///< map
+    TEST_EXPRESSION    ///< expression
   } ItemTestType;
 
   // Normal constructor

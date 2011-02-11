@@ -41,8 +41,8 @@ public:
 
   const VectorOfASTNodes &getChildren() const { return _astNodes; }
 
-  static XQSequence *constantFold(Result &result, DynamicContext *context, XPath2MemoryManager* memMgr,
-                                  const LocationInfo *location);
+  static ASTNode *constantFold(Result &result, DynamicContext *context, XPath2MemoryManager* memMgr,
+                               const LocationInfo *location);
 
 private:
   VectorOfASTNodes _astNodes;

@@ -99,6 +99,7 @@ public:
     MAP,
     TUPLE_CONSTRUCTOR,
     TUPLE_MEMBER,
+    EXPR_SUBSTITUTION,
 
     // Operators
     AND,

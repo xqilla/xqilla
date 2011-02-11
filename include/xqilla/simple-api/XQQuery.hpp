@@ -34,6 +34,7 @@ class DynamicContext;
 class XQUserFunction;
 class XQGlobalVariable;
 class XQTypeAlias;
+class XQRewriteRule;
 class XQQuery;
 class DelayedModule;
 class DelayedFuncFactory;
@@ -41,6 +42,7 @@ class StaticTyper;
 
 typedef std::vector<XQGlobalVariable*, XQillaAllocator<XQGlobalVariable*> > GlobalVariables;
 typedef std::vector<XQTypeAlias*, XQillaAllocator<XQTypeAlias*> > TypeAliases;
+typedef std::vector<XQRewriteRule*, XQillaAllocator<XQRewriteRule*> > RewriteRules;
 typedef std::vector<XQQuery*, XQillaAllocator<XQQuery*> > ImportedModules;
 typedef std::vector<DelayedFuncFactory*, XQillaAllocator<DelayedFuncFactory*> > DelayedFunctions;
 
@@ -268,6 +270,9 @@ public:
   void addTypeAlias(XQTypeAlias *alias);
   const TypeAliases &getTypeAliases() const { return m_aliases; }
 
+  void addRewriteRule(XQRewriteRule *rule);
+  const RewriteRules &getRewriteRules() const { return m_rwrules; }
+
   /// Returns a vector of all XQGlobalVariable objects from the query
   const ImportedModules &getImportedModules() const { return m_importedModules; }
 
@@ -353,6 +358,7 @@ private:
   DelayedFunctions m_delayedFunctions;
   GlobalVariables m_userDefVars;
   TypeAliases m_aliases;
+  RewriteRules m_rwrules;
   ImportedModules m_importedModules;
 
   ModuleCache *m_moduleCache;

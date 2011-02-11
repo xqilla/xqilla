@@ -59,6 +59,7 @@ using namespace std;
 
 PartialEvaluator::PartialEvaluator(DynamicContext *context, Optimizer *parent)
   : ASTVisitor(parent),
+    rules_(0),
     context_(context),
     functionInlineLimit_(0),
     sizeLimit_(0),
@@ -202,18 +203,47 @@ protected:
   size_t count_;
 };
 
+typedef HashMap<int, XQRewriteRule*> RulesMap;
+typedef HashMap<XQQuery*, XQQuery*> SeenModuleSet;
+
+static void addRewriteRules(XQQuery *module, RulesMap &rulesMap, SeenModuleSet &modulesSeen)
+{
+  if(modulesSeen.contains(module)) return;
+  modulesSeen.put(module, module);
+
+  RewriteRules &rules = const_cast<RewriteRules&>(module->getRewriteRules());
+  for(RewriteRules::iterator it3 = rules.begin(); it3 != rules.end(); ++it3) {
+    vector<ASTNode::whichType> types;
+    (*it3)->getPattern()->typesMatched(types);
+    for(vector<ASTNode::whichType>::iterator i = types.begin(); i != types.end(); ++i) {
+      rulesMap.add(*i, *it3);
+    }
+  }
+
+  ImportedModules &modules = const_cast<ImportedModules&>(module->getImportedModules());
+  for(ImportedModules::iterator it2 = modules.begin(); it2 != modules.end(); ++it2) {
+    addRewriteRules(*it2, rulesMap, modulesSeen);
+  }
+}
+
 void PartialEvaluator::optimize(XQQuery *query)
 {
+  AutoReset<RulesMap*> reset(rules_);
+
   redoTyping_ = false;
+
+  // Construct the rewrite rules map for this module
+  RulesMap rules(true, context_->getMemoryManager());
+  {
+    SeenModuleSet modulesSeen(true, context_->getMemoryManager());
+    addRewriteRules(query, rules, modulesSeen);
+  }
+  rules_ = &rules;
 
   if(query->getQueryBody() == 0) {
     ASTVisitor::optimize(query);
     return;
   }
-
-  // Find and remove all the unused user defined functions
-  removeUnusedFunctions(query, FunctionReferenceFinder().find(query),
-                        context_->getMemoryManager());
 
   // Calculate a size limit on the partially evaluated AST
   sizeLimit_ = ASTCounter().count(query) * BODY_SIZE_RATIO;
@@ -228,6 +258,11 @@ void PartialEvaluator::optimize(XQQuery *query)
   // Find and remove all the unused user defined functions
   removeUnusedFunctions(query, FunctionReferenceFinder().find(query),
                         context_->getMemoryManager());
+}
+
+XQRewriteRule *PartialEvaluator::optimizeRewriteRule(XQRewriteRule *item)
+{
+  return item;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -300,6 +335,20 @@ ASTNode *PartialEvaluator::optimize(ASTNode *item)
       }
     }
     break;
+  }
+
+  // Apply rewrite rules
+  if(rules_) {
+    RulesMap::iterator i = rules_->find(item->getType());
+    for(; i != rules_->end(); ++i) {
+      ASTNode *apply = i.getValue()->apply(item, context_);
+      if(apply) {
+        redoTyping_ = true;
+        apply = optimize(apply);
+        item->release();
+        return apply;
+      }
+    }
   }
 
   return item;

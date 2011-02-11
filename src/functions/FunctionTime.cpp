@@ -46,16 +46,10 @@ FunctionTime::FunctionTime(const VectorOfASTNodes &args, XPath2MemoryManager* me
 ASTNode *FunctionTime::staticTypingImpl(StaticContext *context)
 {
   _src.clear();
+  calculateSRCForArguments(context);
 
-  _src.copy(_args[0]->getStaticAnalysis());
-  _src.add(_args[1]->getStaticAnalysis());
-
-  if(_args[1]->getStaticAnalysis().isUpdating()) {
-    XQThrow(StaticErrorException,X("XQFunction::staticTyping"),
-            X("It is a static error for an argument to a function "
-              "to be an updating expression [err:XUST0001]"));
-  }
-
+  _src.getStaticType() = _args[0]->getStaticAnalysis().getStaticType();
+  _src.setProperties(_args[0]->getStaticAnalysis().getProperties());
   _src.forceNoFolding(true);
   return this;
 }

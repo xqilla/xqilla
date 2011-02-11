@@ -170,6 +170,7 @@ void FunctionSignature::staticResolution(StaticContext *context)
     (*ait)->staticResolution(context);
   }
   // Check for duplicate annotations
+  annotationMap.removeAll();
   for(ait = annotations.begin(); ait != annotations.end(); ++ait) {
     if(annotationMap.contains((*ait)->getURIName())) {
       XMLBuffer buf;

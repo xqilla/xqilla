@@ -28,6 +28,7 @@ class Multiply;
 class Divide;
 class And;
 class Or;
+class XQRewriteRule;
 
 class XQILLA_API PartialEvaluator : public ASTVisitor
 {
@@ -40,6 +41,7 @@ protected:
   virtual void optimize(XQQuery *query);
   virtual ASTNode *optimize(ASTNode *item);
   virtual XQUserFunction *optimizeFunctionDef(XQUserFunction *item);
+  virtual XQRewriteRule *optimizeRewriteRule(XQRewriteRule *item);
   virtual ASTNode *optimizeUserFunction(XQUserFunctionInstance *item);
   virtual ASTNode *optimizeFunctionDeref(XQFunctionDeref *item);
   virtual ASTNode *optimizePartialApply(XQPartialApply *item);
@@ -64,6 +66,8 @@ protected:
   ASTNode *optimizeOr(Or *item);
 
   bool checkSizeLimit(const ASTNode *oldAST, const ASTNode *newAST);
+
+  HashMap<int, XQRewriteRule*> *rules_;
 
   DynamicContext *context_;
   size_t functionInlineLimit_;

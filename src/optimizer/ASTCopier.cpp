@@ -83,6 +83,11 @@ XQGlobalVariable *ASTCopier::optimizeGlobalVar(XQGlobalVariable *item)
   return ASTVisitor::optimizeGlobalVar(item);
 }
 
+XQRewriteRule *ASTCopier::optimizeRewriteRule(XQRewriteRule *item)
+{
+  return ASTVisitor::optimizeRewriteRule(item);
+}
+
 class UpdateInstance : public ASTVisitor
 {
 public:
@@ -264,6 +269,7 @@ COPY_XQ2(NumericLiteral, ItemType, Value)
 COPY_XQ1(Sequence, Children)
 COPY_XQ2(Step, Axis, NodeTest)
 COPY_XQ4(Variable, Prefix, URI, Name, Global)
+COPY_XQ3(ExprSubstitution, QName, URI, Name)
 COPY_XQ3(If, Test, WhenTrue, WhenFalse)
 COPY_XQ2(CastableAs, Expression, SequenceType)
 COPY_XQ2(CastAs, Expression, SequenceType)

@@ -220,7 +220,7 @@ public:
   }
   void set(TYPE *p)
   {
-    if(p_ != 0)
+    if(p_ != 0 && p_ != p)
       p_->release();
     p_ = p;
   }
@@ -230,6 +230,61 @@ private:
   AutoRelease<TYPE> &operator=(const AutoRelease<TYPE> &);
 
   TYPE *p_;
+};
+
+template<class TYPE>
+class AutoRelease2
+{
+public:
+  AutoRelease2(TYPE *p, XPath2MemoryManager *mm)
+    : p_(p), mm_(mm) {}
+  ~AutoRelease2()
+  {
+    if(p_ != 0)
+      p_->release(mm_);
+  }
+
+  TYPE &operator*() const
+  {
+    return *p_;
+  }
+  TYPE *operator->() const
+  {
+    return p_;
+  }
+  operator TYPE*() const
+  {
+    return p_;
+  }
+  TYPE *get() const
+  {
+    return p_;
+  }
+  TYPE *adopt()
+  {
+    TYPE *tmp = p_;
+    p_ = 0;
+    return tmp;
+  }
+  TYPE *swap(TYPE *p)
+  {
+    TYPE *tmp = p_;
+    p_ = p;
+    return tmp;
+  }
+  void set(TYPE *p)
+  {
+    if(p_ != 0 && p_ != p)
+      p_->release(mm_);
+    p_ = p;
+  }
+
+private:
+  AutoRelease2(const AutoRelease<TYPE> &);
+  AutoRelease2<TYPE> &operator=(const AutoRelease2<TYPE> &);
+
+  TYPE *p_;
+  XPath2MemoryManager *mm_;
 };
 
 template<class TYPE>
@@ -273,7 +328,8 @@ public:
   }
   void set(TYPE *p)
   {
-    delete p_;
+    if(p_ != p)
+      delete p_;
     p_ = p;
   }
 
@@ -325,7 +381,8 @@ public:
   }
   void set(TYPE *p)
   {
-    delete [] p_;
+    if(p_ != p)
+      delete [] p_;
     p_ = p;
   }
 
@@ -382,7 +439,7 @@ public:
   }
   void set(TYPE *p)
   {
-    if(p_ != 0)
+    if(p_ != 0 && p_ != p)
       mmgr_->deallocate((void*)p_);
     p_ = p;
   }

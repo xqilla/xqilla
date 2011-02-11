@@ -47,7 +47,9 @@
 #include <xqilla/ast/XQValidate.hpp>
 #include <xqilla/ast/XQGlobalVariable.hpp>
 #include <xqilla/ast/XQTypeAlias.hpp>
+#include <xqilla/ast/XQRewriteRule.hpp>
 #include <xqilla/ast/XQFunctionCall.hpp>
+#include <xqilla/ast/XQExprSubstitution.hpp>
 #include <xqilla/ast/XQOrderingChange.hpp>
 #include <xqilla/ast/XQDocumentOrder.hpp>
 #include <xqilla/ast/XQReturn.hpp>
@@ -185,8 +187,8 @@ void *alloca (size_t);
 #define LANGUAGE (QP->_lexer->getLanguage())
 #define MEMMGR   (QP->_lexer->getMemoryManager())
 
-#define REJECT_NOT_XQUERY(where,pos)      if(!QP->_lexer->isXQuery()) { yyerror(LANGUAGE, #where, (pos).first_line, (pos).first_column); }
-#define REJECT_NOT_VERSION11(where,pos)   if(!QP->_lexer->isVersion11()) { yyerror(LANGUAGE, #where, (pos).first_line, (pos).first_column); }
+#define REJECT_NOT_XQUERY(where,pos)    if(!QP->_lexer->isXQuery()) { yyerror(LANGUAGE, #where, (pos).first_line, (pos).first_column); }
+#define REJECT_NOT_VERSION11(where,pos) if(!QP->_lexer->isVersion11()) { yyerror(LANGUAGE, #where, (pos).first_line, (pos).first_column); }
 
 #define WRAP(pos,object)        (wrapForDebug((QP), (object), (pos).first_line, (pos).first_column))
 
@@ -246,6 +248,7 @@ static const XMLCh option_projection[] = { 'p', 'r', 'o', 'j', 'e', 'c', 't', 'i
 static const XMLCh option_psvi[] = { 'p', 's', 'v', 'i', 0 };
 static const XMLCh option_lint[] = { 'l', 'i', 'n', 't', 0 };
 static const XMLCh option_extensions[] = { 'e', 'x', 't', 'e', 'n', 's', 'i', 'o', 'n', 's', 0 };
+static const XMLCh option_rule[] = { 'r', 'u', 'l', 'e', 0 };
 static const XMLCh var_name[] = { 'n', 'a', 'm', 'e', 0 };
 
 static const XMLCh XMLChXS[]    = { chLatin_x, chLatin_s, chNull };
@@ -353,6 +356,9 @@ namespace XQParser {
 %token _LANG_FUNCDECL_                 "<Language: Function Declaration>"
 %token _LANG_DELAYEDMODULE_            "<Language: Delayed Module>"
 %token _LANG_FUNCTION_SIGNATURE_       "<Language: Function Signature>"
+%token _LANG_REWRITE_RULE_             "<Language: Rewrite Rule>"
+%token _LANG_REWRITE_PATTERN_          "<Language: Rewrite Pattern>"
+%token _LANG_SEQUENCE_TYPE_            "<Language: SequenceType>"
 
 %token _DOLLAR_ "$"
 %token _COLON_EQUALS_ ":="
@@ -398,6 +404,9 @@ namespace XQParser {
 %token _SEMICOLON_             ";"
 %token _HASH_                  "#"
 %token _PERCENT_               "%"
+%token _COLON_                 ":"
+%token _TILDE_                 "~"
+%token _MINUS_GREATER_THAN_    "->"
 
 %token <str> _INTEGER_LITERAL_ "<integer literal>"
 %token <str> _DECIMAL_LITERAL_ "<decimal literal>"
@@ -748,6 +757,12 @@ namespace XQParser {
 %type <annotation>      Annotation CompatibilityAnnotation AnnotatedDeclAnnotation
 %type <boolean>         PreserveMode InheritMode
 
+%type <rwpattern>       RW_Pattern RW_OptionalCommaList RW_CommaList RW_OrExpr RW_AndExpr RW_ComparisonExpr RW_AdditiveExpr
+%type <rwpattern>       RW_MultiplicativeExpr RW_UnaryExpr RW_PostfixExpr RW_PrimaryExpr
+%type <rwcase>          RW_Case
+%type <rwrule>          RW_Rule
+%type <astNode>         RW_WhereCondition RW_Result
+
 %start SelectLanguage
 
 %pure_parser
@@ -773,6 +788,14 @@ SelectLanguage:
 
   | _LANG_DELAYEDMODULE_ Start_DelayedModule
   | _LANG_FUNCTION_SIGNATURE_ Start_FunctionSignature
+
+  | _LANG_REWRITE_RULE_ RewriteRule
+  | _LANG_REWRITE_PATTERN_ RewritePattern
+
+  | _LANG_SEQUENCE_TYPE_ SequenceType
+  {
+    QP->_seqType = $2;
+  }
   ;
 
 XPath2Namespaces:
@@ -2788,6 +2811,18 @@ OptionDecl:
       }
       else {
         yyerror(@3, "Unknown option name in the xqilla namespace [err:XQILLA]");
+      }
+    }
+    else if(XPath2Utils::equals(uri, XQRewriteRule::URI)) {
+      if(XPath2Utils::equals(qName.getName(), option_rule)) {
+        XQLexer rwlexer(MEMMGR, _LANG_REWRITE_RULE_, QP->_lexer->getFile(),
+          @4.first_line, @4.first_column + 1, $4);
+        XQParserArgs args(&rwlexer, QP->_query);
+        args._rewriteRule = true;
+        XQParser::yyparse(&args);
+      }
+      else {
+        yyerror(@3, "Unknown option name in the xqilla rewrite namespace [err:XQILLA]");
       }
     }
   }
@@ -5997,6 +6032,240 @@ TypeAlias:
     QP->_query->addTypeAlias(WRAP(@1, new (MEMMGR) XQTypeAlias($3, $5, MEMMGR)));
   }
   ;
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// Rewrite rules
+
+RewriteRule:
+  RW_Rule
+  {
+    QP->_query->addRewriteRule($1);
+  }
+;
+
+RewritePattern:
+  RW_Pattern
+  {
+    QP->_rwpattern = $1;
+  }
+;
+
+RW_Rule:
+  QNameValue _COLON_ RW_Pattern RW_WhereCondition RW_Case
+  {
+    $$ = WRAP(@1, new (MEMMGR) XQRewriteRule($1, $3, $4, MEMMGR));
+    $$->addCase($5);
+  }
+| RW_Rule RW_Case
+  {
+    $$ = $1;
+    $$->addCase($2);
+  }
+;
+
+RW_WhereCondition:
+  /* empty */
+  {
+    $$ = 0;
+  }
+| _WHERE_ ExprSingle
+  {
+    $$ = $2;
+  }
+;
+
+RW_Case:
+  _MINUS_GREATER_THAN_ RW_Result RW_WhereCondition
+  {
+    $$ = new (MEMMGR) RewriteCase($2, $3);
+  }
+;
+
+RW_Pattern:
+  _IF_ _LPAR_ RW_Pattern _RPAR_ _THEN_ RW_Pattern _ELSE_ RW_Pattern
+  {
+    $$ = WRAP(@1, new (MEMMGR) RewritePattern(ASTNode::IF, $3, $6, $8, MEMMGR));
+  }
+| RW_OrExpr
+;
+
+RW_OrExpr:
+  RW_OrExpr _OR_ RW_AndExpr
+  {
+    if($1->type == ASTNode::OR) {
+      $$ = $1;
+      $$->children.push_back($3);
+    }
+    else {
+      $$ = WRAP(@2, new (MEMMGR) RewritePattern(ASTNode::OR, $1, $3, MEMMGR));
+    }
+  }
+| RW_AndExpr
+;
+
+RW_AndExpr:
+  RW_AndExpr _AND_ RW_ComparisonExpr
+  {
+    if($1->type == ASTNode::AND) {
+      $$ = $1;
+      $$->children.push_back($3);
+    }
+    else {
+      $$ = WRAP(@2, new (MEMMGR) RewritePattern(ASTNode::AND, $1, $3, MEMMGR));
+    }
+  }
+| RW_ComparisonExpr
+;
+
+RW_ComparisonExpr:
+  RW_AdditiveExpr _EQ_ RW_AdditiveExpr
+  {
+    $$ = WRAP(@2, new (MEMMGR) RewritePattern(ASTNode::EQUALS, $1, $3, MEMMGR));
+  }
+| RW_AdditiveExpr _NE_ RW_AdditiveExpr
+  {
+    $$ = WRAP(@2, new (MEMMGR) RewritePattern(ASTNode::NOT_EQUALS, $1, $3, MEMMGR));
+  }
+| RW_AdditiveExpr _GT_ RW_AdditiveExpr
+  {
+    $$ = WRAP(@2, new (MEMMGR) RewritePattern(ASTNode::GREATER_THAN, $1, $3, MEMMGR));
+  }
+| RW_AdditiveExpr _GE_ RW_AdditiveExpr
+  {
+    $$ = WRAP(@2, new (MEMMGR) RewritePattern(ASTNode::GREATER_THAN_EQUAL, $1, $3, MEMMGR));
+  }
+| RW_AdditiveExpr _LT_ RW_AdditiveExpr
+  {
+    $$ = WRAP(@2, new (MEMMGR) RewritePattern(ASTNode::LESS_THAN, $1, $3, MEMMGR));
+  }
+| RW_AdditiveExpr _LE_ RW_AdditiveExpr
+  {
+    $$ = WRAP(@2, new (MEMMGR) RewritePattern(ASTNode::LESS_THAN_EQUAL, $1, $3, MEMMGR));
+  }
+| RW_AdditiveExpr
+;
+
+RW_AdditiveExpr:
+  RW_AdditiveExpr _PLUS_ RW_MultiplicativeExpr
+  {
+    $$ = WRAP(@2, new (MEMMGR) RewritePattern(ASTNode::PLUS, $1, $3, MEMMGR));
+  }
+| RW_AdditiveExpr _MINUS_ RW_MultiplicativeExpr
+  {
+    $$ = WRAP(@2, new (MEMMGR) RewritePattern(ASTNode::MINUS, $1, $3, MEMMGR));
+  }
+| RW_MultiplicativeExpr
+;
+
+RW_MultiplicativeExpr:
+  RW_MultiplicativeExpr _ASTERISK_ RW_UnaryExpr
+  {
+    $$ = WRAP(@2, new (MEMMGR) RewritePattern(ASTNode::MULTIPLY, $1, $3, MEMMGR));
+  }
+| RW_MultiplicativeExpr _DIV_ RW_UnaryExpr
+  {
+    $$ = WRAP(@2, new (MEMMGR) RewritePattern(ASTNode::DIVIDE, $1, $3, MEMMGR));
+  }
+| RW_MultiplicativeExpr _IDIV_ RW_UnaryExpr
+  {
+    $$ = WRAP(@2, new (MEMMGR) RewritePattern(ASTNode::INTEGER_DIVIDE, $1, $3, MEMMGR));
+  }
+| RW_MultiplicativeExpr _MOD_ RW_UnaryExpr
+  {
+    $$ = WRAP(@2, new (MEMMGR) RewritePattern(ASTNode::MOD, $1, $3, MEMMGR));
+  }
+| RW_UnaryExpr
+;
+
+RW_UnaryExpr:
+  _PLUS_ RW_UnaryExpr
+  {
+    $$ = $2;
+  }
+| _MINUS_ RW_UnaryExpr
+  {
+    $$ = WRAP(@1, new (MEMMGR) RewritePattern(ASTNode::UNARY_MINUS, $2, MEMMGR));
+  }
+| RW_PostfixExpr
+;
+
+RW_PostfixExpr:
+  RW_PostfixExpr _LSQUARE_ RW_Pattern _RSQUARE_
+  {
+    $$ = WRAP(@1, new (MEMMGR) RewritePattern(ASTNode::PREDICATE, $1, $3, MEMMGR));
+  }
+| RW_PrimaryExpr
+;
+
+RW_PrimaryExpr:
+  FunctionName _LPAR_ RW_OptionalCommaList _RPAR_
+  {
+    $$ = $3;
+    $$->type = ASTNode::FUNCTION;
+    $$->value = $1;
+    LOCATION(@1, loc);
+    $$->setLocationInfo(&loc);
+  }
+| _LPAR_ RW_OptionalCommaList _RPAR_
+  {
+    $$ = $2;
+    LOCATION(@1, loc);
+    $$->setLocationInfo(&loc);
+  }
+| _TILDE_ QNameValue
+  {
+    $$ = WRAP(@1, new (MEMMGR) RewritePattern(ASTNode::EXPR_SUBSTITUTION, $2, MEMMGR));
+  }
+| _INTEGER_LITERAL_
+  {
+    $$ = WRAP(@1, new (MEMMGR) RewritePattern(AnyAtomicType::DECIMAL, $1, MEMMGR));
+  }
+| _DECIMAL_LITERAL_
+  {
+    $$ = WRAP(@1, new (MEMMGR) RewritePattern(AnyAtomicType::DECIMAL, $1, MEMMGR));
+  }
+| _DOUBLE_LITERAL_
+  {
+    $$ = WRAP(@1, new (MEMMGR) RewritePattern(AnyAtomicType::DOUBLE, $1, MEMMGR));
+  }
+| _STRING_LITERAL_
+  {
+    $$ = WRAP(@1, new (MEMMGR) RewritePattern(AnyAtomicType::STRING, $1, MEMMGR));
+  }
+;
+
+RW_OptionalCommaList:
+  /* empty */
+  {
+    $$ = WRAP(@$, new (MEMMGR) RewritePattern(ASTNode::SEQUENCE, MEMMGR));
+  }
+| RW_CommaList
+;
+
+RW_CommaList:
+  RW_Pattern
+  {
+    $$ = WRAP(@1, new (MEMMGR) RewritePattern(ASTNode::SEQUENCE, $1, MEMMGR));
+  }
+| RW_CommaList _COMMA_ RW_Pattern
+  {
+    $$ = $1;
+    $$->children.push_back($3);
+  }
+;
+
+
+RW_Result: ExprSingle;
+
+/* Extend PrimaryExpr with rewrite expression substitution */
+PrimaryExpr:
+  _TILDE_ QNameValue
+  {
+    if(!QP->_rewriteRule)
+      yyerror(@1, "Expression substitutions are only allowed in rewrite rules");
+    $$ = WRAP(@1, new (MEMMGR) XQExprSubstitution($2, MEMMGR));
+  }
+;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
