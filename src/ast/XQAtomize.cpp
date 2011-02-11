@@ -61,7 +61,7 @@ ASTNode *XQAtomize::staticTypingImpl(StaticContext *context)
               "to be an updating expression [err:XUST0001]"));
   }
 
-  if(!_src.getStaticType().containsType(StaticType::NODE_TYPE|StaticType::ANY_ATOMIC_TYPE) &&
+  if(!_src.getStaticType().containsType(TypeFlags::NODE|TypeFlags::ANY_ATOMIC_TYPE) &&
      _src.getStaticType().getMin() > 0) {
     XMLBuffer buf;
     buf.set(X("Sequence does not match type (xs:anyAtomicType | node())*"));
@@ -71,26 +71,27 @@ ASTNode *XQAtomize::staticTypingImpl(StaticContext *context)
     XQThrow(XPath2TypeMatchException, X("XQAtomize::staticTyping"), buf.getRawBuffer());
   }
 
-  if(!_src.getStaticType().containsType(StaticType::NODE_TYPE|StaticType::FUNCTION_TYPE)) {
+  if(!_src.getStaticType().containsType(TypeFlags::NODE|TypeFlags::FUNCTION)) {
     // If the expression has no nodes, this function does nothing
     return substitute(expr_);
   }
 
+  // Remove function types
+  _src.getStaticType().typeExcept(TypeFlags::FUNCTION);
+
   if(doPSVI_) {
-    _src.getStaticType().substitute(StaticType::ELEMENT_TYPE | StaticType::ATTRIBUTE_TYPE,
-                                    StaticType(StaticType::ANY_ATOMIC_TYPE, 0, StaticType::UNLIMITED));
+    if(_src.getStaticType().substitute(TypeFlags::ELEMENT | TypeFlags::ATTRIBUTE,
+                                       StaticType::ANY_ATOMIC_TYPE))
+      _src.getStaticType().setCardinality(0, StaticType::UNLIMITED);
   } else {
-    _src.getStaticType().substitute(StaticType::ELEMENT_TYPE | StaticType::ATTRIBUTE_TYPE,
-                                    StaticType::UNTYPED_ATOMIC_TYPE);
+    _src.getStaticType().substitute(TypeFlags::ELEMENT | TypeFlags::ATTRIBUTE,
+                                    StaticType::UNTYPED_ATOMIC);
   }
 
-  _src.getStaticType().substitute(StaticType::DOCUMENT_TYPE | StaticType::TEXT_TYPE,
-                                  StaticType::UNTYPED_ATOMIC_TYPE);
-  _src.getStaticType().substitute(StaticType::NAMESPACE_TYPE | StaticType::COMMENT_TYPE |
-                                  StaticType::PI_TYPE, StaticType::STRING_TYPE);
-
-  // Remove function types
-  _src.getStaticType() &= StaticType(StaticType::NODE_TYPE | StaticType::ANY_ATOMIC_TYPE, 0, StaticType::UNLIMITED);
+  _src.getStaticType().substitute(TypeFlags::DOCUMENT | TypeFlags::TEXT,
+                                  StaticType::UNTYPED_ATOMIC);
+  _src.getStaticType().substitute(TypeFlags::NAMESPACE | TypeFlags::COMMENT |
+                                  TypeFlags::PI, StaticType::STRING);
 
   return this;
 }

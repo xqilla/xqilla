@@ -56,6 +56,7 @@ private:
 };
 
 typedef std::vector<ArgumentSpec*,XQillaAllocator<ArgumentSpec*> > ArgumentSpecs;
+typedef std::vector<ASTNode*,XQillaAllocator<ASTNode*> > VectorOfASTNodes;
 
 class XQILLA_API FunctionSignature
 {
@@ -65,10 +66,13 @@ public:
   FunctionSignature(ArgumentSpecs *a, SequenceType *r, XPath2MemoryManager *mm);
   FunctionSignature(const FunctionSignature *o, XPath2MemoryManager *mm);
   FunctionSignature(const FunctionSignature *o, unsigned int skipArg, XPath2MemoryManager *mm);
+  FunctionSignature(const FunctionSignature *o, const VectorOfASTNodes *args, XPath2MemoryManager *mm);
 
   void release();
 
   void staticResolution(StaticContext *context);
+
+  size_t numArgs() const { return argSpecs ? argSpecs->size() : 0; }
 
   void toBuffer(XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer &buffer, bool typeSyntax) const;
 

@@ -34,12 +34,12 @@ Mod::Mod(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
 {
 }
 
-void Mod::calculateStaticType()
+void Mod::calculateStaticType(StaticContext *context)
 {
   const StaticType &arg0 = _args[0]->getStaticAnalysis().getStaticType();
   const StaticType &arg1 = _args[1]->getStaticAnalysis().getStaticType();
 
-  calculateStaticTypeForNumerics(arg0, arg1);
+  calculateStaticTypeForNumerics(arg0, arg1, context);
 }
 
 Item::Ptr Mod::execute(const AnyAtomicType::Ptr &atom1, const AnyAtomicType::Ptr &atom2, DynamicContext *context) const

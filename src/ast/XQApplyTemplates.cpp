@@ -163,7 +163,7 @@ ASTNode *XQApplyTemplates::staticTypingImpl(StaticContext *context)
       _src.getStaticType() = (*inIt)->getBodyStaticAnalysis().getStaticType();
       _src.setProperties((*inIt)->getBodyStaticAnalysis().getProperties());
     } else {
-      _src.getStaticType() |= (*inIt)->getBodyStaticAnalysis().getStaticType();
+      _src.getStaticType().typeUnion((*inIt)->getBodyStaticAnalysis().getStaticType());
       _src.setProperties(_src.getProperties() & (*inIt)->getBodyStaticAnalysis().getProperties());
     }
     _src.add((*inIt)->getBodyStaticAnalysis());
@@ -266,7 +266,7 @@ public:
     : ResultImpl(parent),
       ast_(parent->ast_),
       templates_(context->getTemplateRules()),
-      input_(node->getAxisResult(XQStep::CHILD, 0, context, parent)),
+      input_(node->getAxisResult(Node::CHILD, 0, context, parent)),
       node_(0),
       scope_(context->getMemoryManager(), &parent->scope_),
       result_(0)

@@ -25,6 +25,8 @@
 #include <xqilla/runtime/ClosureResult.hpp>
 #include <xqilla/schema/SequenceType.hpp>
 #include <xqilla/ast/XQTreatAs.hpp>
+#include <xqilla/functions/FunctionSignature.hpp>
+#include <xqilla/framework/BasicMemoryManager.hpp>
 
 XERCES_CPP_NAMESPACE_USE;
 using namespace std;
@@ -64,17 +66,33 @@ ASTNode *XQFunctionDeref::staticTypingImpl(StaticContext *context)
 
   _src.add(expr_->getStaticAnalysis());
 
+  size_t numArgs = 0;
   if(args_) {
+    numArgs = args_->size();
     for(VectorOfASTNodes::iterator i = args_->begin(); i != args_->end(); ++i) {
       _src.add((*i)->getStaticAnalysis());
     }
   }
 
-  if(expr_->getStaticAnalysis().getStaticType().getReturnType()) {
-    _src.getStaticType() = *expr_->getStaticAnalysis().getStaticType().getReturnType();
-  }
-  else {
-    _src.getStaticType() = StaticType(StaticType::ITEM_TYPE, 0, StaticType::UNLIMITED);
+  _src.getStaticType() = StaticType::EMPTY;
+
+  const StaticType::ItemTypes &types = expr_->getStaticAnalysis().getStaticType().getTypes();
+  StaticType::ItemTypes::const_iterator i = types.begin();
+  for(; i != types.end(); ++i) {
+    if((*i)->getItemTestType() == ItemType::TEST_FUNCTION) {
+      if((*i)->getFunctionSignature()) {
+        if((*i)->getFunctionSignature()->numArgs() == numArgs) {
+          StaticType tmp((*i)->getFunctionSignature()->returnType, BasicMemoryManager::get());
+          _src.getStaticType().typeUnion(tmp);
+        }
+      } else {
+        _src.getStaticType() = StaticType::ITEM_STAR;
+        break;
+      }
+    } else if(ItemType::FUNCTION.isSubtypeOf(*i)) {
+      _src.getStaticType() = StaticType::ITEM_STAR;
+      break;
+    }
   }
 
   return this;

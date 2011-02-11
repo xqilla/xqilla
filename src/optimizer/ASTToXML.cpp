@@ -504,6 +504,11 @@ ASTNode *ASTToXML::optimize(ASTNode *item)
   indent();
   events_->startElementEvent(0, 0, elementName.getRawBuffer());
 
+  // static XMLCh s_static_type[] = { 's', 't', 'a', 't', 'i', 'c', '-', 't', 'y', 'p', 'e', 0 };
+  // XMLBuffer type_buf;
+  // item->getStaticAnalysis().getStaticType().typeToBuf(type_buf);
+  // events_->attributeEvent(0, 0, s_static_type, type_buf.getRawBuffer(), 0, 0);
+
   if(item) {
     AutoReset<unsigned int> resetIndent(indent_);
     ++indent_;
@@ -584,7 +589,7 @@ ASTNode *ASTToXML::optimizeLiteral(XQLiteral *item)
 {
   events_->attributeEvent(0, 0, s_value, item->getValue(), 0, 0);
   XMLBuffer buf;
-  qname(0, 0, item->getTypeURI(), item->getTypeName(), buf);
+  item->getItemType()->toBuffer(buf);
   events_->attributeEvent(0, 0, s_type, buf.getRawBuffer(), 0, 0);
 
   return ASTVisitor::optimizeLiteral(item);
@@ -597,7 +602,7 @@ ASTNode *ASTToXML::optimizeQNameLiteral(XQQNameLiteral *item)
   events_->attributeEvent(0, 0, s_localname, item->getLocalname(), 0, 0);
 
   XMLBuffer buf;
-  qname(0, 0, item->getTypeURI(), item->getTypeName(), buf);
+  item->getItemType()->toBuffer(buf);
   events_->attributeEvent(0, 0, s_type, buf.getRawBuffer(), 0, 0);
 
   return ASTVisitor::optimizeQNameLiteral(item);
@@ -610,7 +615,7 @@ ASTNode *ASTToXML::optimizeNumericLiteral(XQNumericLiteral *item)
 
   events_->attributeEvent(0, 0, s_value, X(obuf), 0, 0);
   XMLBuffer buf;
-  qname(0, 0, item->getTypeURI(), item->getTypeName(), buf);
+  item->getItemType()->toBuffer(buf);
   events_->attributeEvent(0, 0, s_type, buf.getRawBuffer(), 0, 0);
 
   return ASTVisitor::optimizeNumericLiteral(item);
@@ -1038,7 +1043,7 @@ ASTNode *ASTToXML::optimizeMap(XQMap *item)
 ASTNode *ASTToXML::optimizePromoteUntyped(XQPromoteUntyped *item)
 {
   XMLBuffer buf;
-  qname(0, 0, item->getTypeURI(), item->getTypeName(), buf);
+  item->getItemType()->toBuffer(buf);
   events_->attributeEvent(0, 0, s_type, buf.getRawBuffer(), 0, 0);
   return ASTVisitor::optimizePromoteUntyped(item);
 }
@@ -1046,7 +1051,7 @@ ASTNode *ASTToXML::optimizePromoteUntyped(XQPromoteUntyped *item)
 ASTNode *ASTToXML::optimizePromoteNumeric(XQPromoteNumeric *item)
 {
   XMLBuffer buf;
-  qname(0, 0, item->getTypeURI(), item->getTypeName(), buf);
+  item->getItemType()->toBuffer(buf);
   events_->attributeEvent(0, 0, s_type, buf.getRawBuffer(), 0, 0);
   return ASTVisitor::optimizePromoteNumeric(item);
 }
@@ -1054,7 +1059,7 @@ ASTNode *ASTToXML::optimizePromoteNumeric(XQPromoteNumeric *item)
 ASTNode *ASTToXML::optimizePromoteAnyURI(XQPromoteAnyURI *item)
 {
   XMLBuffer buf;
-  qname(0, 0, item->getTypeURI(), item->getTypeName(), buf);
+  item->getItemType()->toBuffer(buf);
   events_->attributeEvent(0, 0, s_type, buf.getRawBuffer(), 0, 0);
   return ASTVisitor::optimizePromoteAnyURI(item);
 }
@@ -1188,7 +1193,7 @@ ASTNode *ASTToXML::optimizeInlineFunction(XQInlineFunction *item)
     qname(0, item->getPrefix(), item->getURI(), item->getName(), buf);
     events_->attributeEvent(0, 0, s_name, buf.getRawBuffer(), 0, 0);
   }
-  optimizeFunctionSignature(item->getSignature());
+  optimizeFunctionSignature(item->getItemType()->getFunctionSignature());
 
   if(item->getUserFunction())
     optimizeFunctionDef(item->getUserFunction());
@@ -1401,7 +1406,7 @@ void ASTToXML::optimizeFunctionSignature(const FunctionSignature *signature)
   }
 }
 
-const XMLCh *ASTToXML::getAxisName(XQStep::Axis axis)
+const XMLCh *ASTToXML::getAxisName(Node::Axis axis)
 {
   static const XMLCh s_ancestor[] = { 'a', 'n', 'c', 'e', 's', 't', 'o', 'r', 0 };
   static const XMLCh s_ancestor_or_self[] = { 'a', 'n', 'c', 'e', 's', 't', 'o', 'r', '-', 'o', 'r', '-', 's', 'e', 'l', 'f', 0 };
@@ -1418,31 +1423,31 @@ const XMLCh *ASTToXML::getAxisName(XQStep::Axis axis)
   static const XMLCh s_self[] = { 's', 'e', 'l', 'f', 0 };
 
   switch(axis) {
-  case XQStep::ANCESTOR:
+  case Node::ANCESTOR:
     return s_ancestor;
-  case XQStep::ANCESTOR_OR_SELF:
+  case Node::ANCESTOR_OR_SELF:
     return s_ancestor_or_self;
-  case XQStep::ATTRIBUTE:
+  case Node::ATTRIBUTE:
     return s_attribute;
-  case XQStep::CHILD:
+  case Node::CHILD:
     return s_child;
-  case XQStep::DESCENDANT:
+  case Node::DESCENDANT:
     return s_descendant;
-  case XQStep::DESCENDANT_OR_SELF:
+  case Node::DESCENDANT_OR_SELF:
     return s_descendant_or_self;
-  case XQStep::FOLLOWING:
+  case Node::FOLLOWING:
     return s_following;
-  case XQStep::FOLLOWING_SIBLING:
+  case Node::FOLLOWING_SIBLING:
     return s_following_sibling;
-  case XQStep::NAMESPACE:
+  case Node::NAMESPACE:
     return s_namespace;
-  case XQStep::PARENT:
+  case Node::PARENT:
     return s_parent;
-  case XQStep::PRECEDING:
+  case Node::PRECEDING:
     return s_preceding;
-  case XQStep::PRECEDING_SIBLING:
+  case Node::PRECEDING_SIBLING:
     return s_preceding_sibling;
-  case XQStep::SELF:
+  case Node::SELF:
     return s_self;
   }
 

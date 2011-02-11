@@ -62,7 +62,7 @@ ASTNode *NodeComparison::staticTypingImpl(StaticContext *context)
 {
   _src.clear();
 
-  _src.getStaticType() = StaticType(StaticType::BOOLEAN_TYPE, 0, 1);
+  _src.getStaticType() = StaticType::BOOLEAN_QUESTION;
 
   for(VectorOfASTNodes::iterator i = _args.begin(); i != _args.end(); ++i) {
     _src.add((*i)->getStaticAnalysis());

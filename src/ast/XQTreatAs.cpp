@@ -45,22 +45,19 @@ XQTreatAs::XQTreatAs(ASTNode* expr, SequenceType* exprType, XPath2MemoryManager*
     _exprType(exprType),
     _errorCode(errorCode),
     _doTypeCheck(true),
-    _doCardinalityCheck(true),
-    _isExact(false)
+    _doCardinalityCheck(true)
 {
   if(_errorCode == 0) _errorCode = err_XPTY0004;
 }
 
 XQTreatAs::XQTreatAs(ASTNode* expr, SequenceType *exprType, const XMLCh *errorCode, bool doTypeCheck, bool doCardinalityCheck,
-                     const StaticType &treatType, bool isExact, XPath2MemoryManager* memMgr)
+                     XPath2MemoryManager* memMgr)
   : ASTNodeImpl(TREAT_AS, memMgr),
     _expr(expr),
     _exprType(exprType),
     _errorCode(errorCode),
     _doTypeCheck(doTypeCheck),
-    _doCardinalityCheck(doCardinalityCheck),
-    _treatType(treatType),
-    _isExact(isExact)
+    _doCardinalityCheck(doCardinalityCheck)
 {
 }
 
@@ -77,8 +74,6 @@ ASTNode* XQTreatAs::staticResolution(StaticContext *context)
     _expr = _expr->staticResolution(context);
   }
 
-  _exprType->getStaticType(_treatType, context, _isExact, this);
-
   return this;
 }
 
@@ -89,18 +84,19 @@ ASTNode *XQTreatAs::staticTypingImpl(StaticContext *context)
   // Do as much static time type checking as we can, given the
   // limited static typing that we implement
   const StaticType &actualType = _expr->getStaticAnalysis().getStaticType();
+  _src.getStaticType() = actualType;
 
-  // Get a better static type by looking at our expression's type too
-  _src.getStaticType() = _treatType;
-  _src.getStaticType() &= actualType;
+  // Get a better static type by intersecting the actual and expected types
+  StaticType eType(_exprType, BasicMemoryManager::get());
+  _src.getStaticType().typeIntersect(eType);
 
   _src.setProperties(_expr->getStaticAnalysis().getProperties());
   _src.add(_expr->getStaticAnalysis());
 
-  StaticType::TypeMatch match = _treatType.matches(actualType);
+  SequenceType::TypeMatch match = _exprType->matches(actualType);
 
   if(!_expr->getStaticAnalysis().isUpdating()) {
-    if((match.type == StaticType::NEVER || match.cardinality == StaticType::NEVER) &&
+    if((match.type == SequenceType::NEVER || match.cardinality == SequenceType::NEVER) &&
        _errorCode != err_XPDY0050) {
       // It never matches
       XMLBuffer buf;
@@ -116,7 +112,7 @@ ASTNode *XQTreatAs::staticTypingImpl(StaticContext *context)
 
     MessageListener *mlistener = context ? context->getMessageListener() : 0;
     if(mlistener && context->getDoLintWarnings() && _errorCode != err_XPDY0050) {
-      if(match.type == StaticType::PROBABLY_NOT || match.cardinality == StaticType::PROBABLY_NOT) {
+      if(match.type == SequenceType::PROBABLY_NOT || match.cardinality == SequenceType::PROBABLY_NOT) {
         // It might not match
         XMLBuffer buf;
         buf.set(X("The expression might not match type "));
@@ -127,10 +123,10 @@ ASTNode *XQTreatAs::staticTypingImpl(StaticContext *context)
       }
     }
 
-    if(_isExact && match.type == StaticType::ALWAYS) {
+    if(match.type == SequenceType::ALWAYS) {
       _doTypeCheck = false;
     }
-    if(match.cardinality == StaticType::ALWAYS) {
+    if(match.cardinality == SequenceType::ALWAYS) {
       _doCardinalityCheck = false;
     }
 

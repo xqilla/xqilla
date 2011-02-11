@@ -35,7 +35,7 @@ public:
   public:
     Case(const XMLCh *qname, SequenceType *seqType, ASTNode *expr);
     Case(const XMLCh *qname, const XMLCh *uri, const XMLCh *name, SequenceType *seqType,
-         const StaticType &treatType, bool isExact, ASTNode *expr);
+         ASTNode *expr);
 
     void staticResolution(StaticContext* context);
     void staticTyping(const StaticAnalysis &var_src, StaticContext* context,
@@ -51,9 +51,6 @@ public:
     SequenceType *getSequenceType() const { return seqType_; }
     void setSequenceType(SequenceType *s) { seqType_ = s; }
 
-    const StaticType &getTreatType() const { return treatType_; }
-    bool getIsExact() const { return isExact_; }
-
     ASTNode *getExpression() const { return expr_; }
     void setExpression(ASTNode *expr) { expr_ = expr; }
 
@@ -62,8 +59,6 @@ public:
     const XMLCh *uri_;
     const XMLCh *name_;
     SequenceType *seqType_;
-    StaticType treatType_;
-    bool isExact_;
     ASTNode *expr_;
   };
 

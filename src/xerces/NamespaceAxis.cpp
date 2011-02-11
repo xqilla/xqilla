@@ -136,8 +136,3 @@ const DOMNode *NamespaceAxis::nextNode(DynamicContext *context)
   return result;
 }
 
-std::string NamespaceAxis::asString(DynamicContext *context, int indent) const
-{
-  return "NamespaceNodesResult";
-}
-

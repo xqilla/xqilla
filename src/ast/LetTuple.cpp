@@ -17,6 +17,7 @@
  * limitations under the License.
  */
 
+#include <xqilla/ast/ASTNode.hpp>
 #include <xqilla/ast/ForTuple.hpp>
 #include <xqilla/ast/LetTuple.hpp>
 #include <xqilla/ast/CountTuple.hpp>

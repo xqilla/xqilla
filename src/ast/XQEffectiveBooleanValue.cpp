@@ -49,7 +49,7 @@ ASTNode *XQEffectiveBooleanValue::staticTypingImpl(StaticContext *context)
   _src.clear();
 
   _src.add(expr_->getStaticAnalysis());
-  _src.getStaticType() = StaticType::BOOLEAN_TYPE;
+  _src.getStaticType() = &ItemType::BOOLEAN;
 
   if(expr_->getStaticAnalysis().isUpdating()) {
     XQThrow(StaticErrorException,X("XQEffectiveBooleanValue::staticTyping"),
@@ -58,7 +58,7 @@ ASTNode *XQEffectiveBooleanValue::staticTypingImpl(StaticContext *context)
   }
 
   if(expr_->getStaticAnalysis().getStaticType().getMin() >= 2 &&
-     !expr_->getStaticAnalysis().getStaticType().containsType(StaticType::NODE_TYPE)) {
+     !expr_->getStaticAnalysis().getStaticType().containsType(TypeFlags::NODE)) {
     XQThrow(XPath2TypeMatchException, X("XQEffectiveBooleanValue::staticTyping"),
             X("Effective Boolean Value cannot be extracted from this type [err:FORG0006]"));
   }

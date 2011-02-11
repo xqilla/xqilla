@@ -17,17 +17,12 @@
  * limitations under the License.
  */
 
-/*
-   Mod operator function
-*/
-
 #ifndef _MOD_HPP
 #define _MOD_HPP
 
 #include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/operators/ArithmeticOperator.hpp>
 
-/** OpMod operator function*/
 class XQILLA_API Mod : public ArithmeticOperator
 {
 public:
@@ -35,9 +30,9 @@ public:
 
   Mod(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
   
-  void calculateStaticType();
+  void calculateStaticType(StaticContext *context);
   Item::Ptr execute(const AnyAtomicType::Ptr &atom1, const AnyAtomicType::Ptr &atom2, DynamicContext *context) const;
 };
 
-#endif // _FUNCTIONOPMOD_HPP
+#endif
 

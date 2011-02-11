@@ -327,11 +327,8 @@ static ASTNode *variableValueXSLT(const yyltype &pos, XQParserArgs *qp, ASTNode 
   }
 
   if(seqType == 0) {
-    return WRAP(pos, new (MEMMGR) XQLiteral(
-                  SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-                  SchemaSymbols::fgDT_STRING,
-                  XMLUni::fgZeroLenString, AnyAtomicType::STRING,
-                  MEMMGR));
+    return WRAP(pos, new (MEMMGR) XQLiteral((ItemType*)&ItemType::STRING,
+        XMLUni::fgZeroLenString, MEMMGR));
   }
 
   return WRAP(pos, new (MEMMGR) XQFunctionConversion(WRAP(pos, new (MEMMGR) XQSequence(MEMMGR)), seqType, MEMMGR));
@@ -678,7 +675,7 @@ namespace XQParser {
 %type <functDecl>    FunctionDecl TemplateDecl FunctionAttrs_XSLT TemplateAttrs_XSLT
 %type <globalVar>    GlobalVariableAttrs_XSLT GlobalParamAttrs_XSLT
 %type <argSpec>      Param Param_XSLT ParamAttrs_XSLT
-%type <argSpecs>     ParamList FunctionParamList TemplateParamList ParamList_XSLT
+%type <argSpecs>     ParamList FunctionParamList TemplateParamList ParamList_XSLT FunctionTypeArguments
 %type <astNode>      Expr ExprSingle OrExpr AndExpr EnclosedExpr FLWORExpr IfExpr ComparisonExpr DecimalLiteral VarRef
 %type <astNode>      RangeExpr AdditiveExpr MultiplicativeExpr UnionExpr QuantifiedExpr StringLiteral Literal ContextItemExpr
 %type <astNode>      UnaryExpr ValidateExpr CastExpr TreatExpr IntersectExceptExpr ParenthesizedExpr PrimaryExpr FunctionCall
@@ -718,7 +715,6 @@ namespace XQParser {
 %type <nodeTest>        NodeTest NameTest Wildcard PatternAxis_XSLT
 %type <qName>           QName AtomicType TypeName ElementName AttributeName ElementNameOrWildcard AttribNameOrWildcard AttributeDeclaration ElementDeclaration
 %type <sequenceType>    SequenceType TypeDeclaration SingleType TemplateSequenceType FunctionDeclReturnType
-%type <sequenceTypes>   FunctionTypeArguments
 %type <occurrence>      OccurrenceIndicator SingleTypeOccurrence
 %type <itemType>        ItemType KindTest AttributeTest SchemaAttributeTest PITest CommentTest TextTest AnyKindTest ElementTest DocumentTest SchemaElementTest
 %type <itemType>        FunctionTest AnyFunctionTest TypedFunctionTest ParenthesizedItemType NamespaceNodeTest
@@ -904,10 +900,8 @@ DM_FunctionDecl:
 Start_XSLT:
     Stylesheet_XSLT
   {
-    ItemType *itemType = WRAP(@1, new (MEMMGR) ItemType(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-        AnyAtomicType::fgDT_ANYATOMICTYPE));
     SequenceType *optionalString =
-      WRAP(@1, new (MEMMGR) SequenceType(itemType, SequenceType::QUESTION_MARK));
+      WRAP(@1, new (MEMMGR) SequenceType((ItemType*)&ItemType::ANY_ATOMIC_TYPE, SequenceType::QUESTION_MARK));
 
     XQGlobalVariable *nameVar =
       WRAP(@1, new (MEMMGR) XQGlobalVariable(0, optionalString,
@@ -945,7 +939,7 @@ Stylesheet_XSLT:
     nt->setNamespaceWildcard();
 
     VectorOfASTNodes *pattern = new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR));
-    pattern->push_back(WRAP(@1, new (MEMMGR) XQStep(XQStep::SELF, nt, MEMMGR)));
+    pattern->push_back(WRAP(@1, new (MEMMGR) XQStep(Node::SELF, nt, MEMMGR)));
 
     XQUserFunction::ModeList *modelist = new (MEMMGR) XQUserFunction::ModeList(XQillaAllocator<XQUserFunction::Mode*>(MEMMGR));
     modelist->push_back(WRAP(@1, new (MEMMGR) XQUserFunction::Mode(XQUserFunction::Mode::DEFAULT)));
@@ -1465,9 +1459,7 @@ AttrValueTemplate_XSLT:
   | AttrValueTemplate_XSLT _QUOT_ATTR_CONTENT_
   {
     $$ = $1;
-    $$->push_back(WRAP(@2, new (MEMMGR) XQLiteral(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-                               SchemaSymbols::fgDT_STRING,
-                               $2, AnyAtomicType::STRING, MEMMGR)));
+    $$->push_back(WRAP(@2, new (MEMMGR) XQLiteral((ItemType*)&ItemType::STRING, $2, MEMMGR)));
   }
   ;
 
@@ -1574,7 +1566,7 @@ ApplyTemplates_XSLT:
       nt->setNameWildcard();
       nt->setNamespaceWildcard();
 
-      apply->setExpression(WRAP(@1, new (MEMMGR) XQStep(XQStep::CHILD, nt, MEMMGR)));
+      apply->setExpression(WRAP(@1, new (MEMMGR) XQStep(Node::CHILD, nt, MEMMGR)));
     }
   }
   ;
@@ -2301,7 +2293,7 @@ PathPattern_XSLT:
     nt->setNodeType(Node::document_string);
     nt->setNameWildcard();
     nt->setNamespaceWildcard();
-    $$ = WRAP(@1, new (MEMMGR) XQStep(XQStep::SELF, nt, MEMMGR));
+    $$ = WRAP(@1, new (MEMMGR) XQStep(Node::SELF, nt, MEMMGR));
   }
   | IdKeyPattern_XSLT
   {
@@ -2322,7 +2314,7 @@ PathPatternStart_XSLT:
     nt->setNodeType(Node::document_string);
     nt->setNameWildcard();
     nt->setNamespaceWildcard();
-    $$ = WRAP(@1, new (MEMMGR) XQStep(XQStep::PARENT, nt, MEMMGR));
+    $$ = WRAP(@1, new (MEMMGR) XQStep(Node::PARENT, nt, MEMMGR));
   }
   | _SLASH_SLASH_
   {
@@ -2330,7 +2322,7 @@ PathPatternStart_XSLT:
     nt->setNodeType(Node::document_string);
     nt->setNameWildcard();
     nt->setNamespaceWildcard();
-    $$ = WRAP(@1, new (MEMMGR) XQStep(XQStep::ANCESTOR, nt, MEMMGR));
+    $$ = WRAP(@1, new (MEMMGR) XQStep(Node::ANCESTOR, nt, MEMMGR));
   }
   ;
 
@@ -2399,7 +2391,7 @@ RelativePathPattern_XSLT:
     nt->setTypeWildcard();
     nt->setNameWildcard();
     nt->setNamespaceWildcard();
-    XQStep *step = WRAP(@1, new (MEMMGR) XQStep(XQStep::PARENT, nt, MEMMGR));
+    XQStep *step = WRAP(@1, new (MEMMGR) XQStep(Node::PARENT, nt, MEMMGR));
 
     VectorOfASTNodes oargs(XQillaAllocator<ASTNode*>(MEMMGR));
     oargs.push_back(step);
@@ -2417,7 +2409,7 @@ RelativePathPattern_XSLT:
     nt->setTypeWildcard();
     nt->setNameWildcard();
     nt->setNamespaceWildcard();
-    XQStep *step = WRAP(@1, new (MEMMGR) XQStep(XQStep::ANCESTOR, nt, MEMMGR));
+    XQStep *step = WRAP(@1, new (MEMMGR) XQStep(Node::ANCESTOR, nt, MEMMGR));
 
     VectorOfASTNodes oargs(XQillaAllocator<ASTNode*>(MEMMGR));
     oargs.push_back(step);
@@ -2433,7 +2425,7 @@ RelativePathPattern_XSLT:
     while(step->getType() == ASTNode::PREDICATE)
       step = (ASTNode*)((XQPredicate*)step)->getExpression();
 
-    ((XQStep*)step)->setAxis(XQStep::PARENT);
+    ((XQStep*)step)->setAxis(Node::PARENT);
 
     $$ = WRAP(@2, new (MEMMGR) XQPredicate($3, $1, MEMMGR));
   }
@@ -2443,7 +2435,7 @@ RelativePathPattern_XSLT:
     while(step->getType() == ASTNode::PREDICATE)
       step = (ASTNode*)((XQPredicate*)step)->getExpression();
 
-    ((XQStep*)step)->setAxis(XQStep::ANCESTOR);
+    ((XQStep*)step)->setAxis(Node::ANCESTOR);
 
     $$ = WRAP(@2, new (MEMMGR) XQPredicate($3, $1, MEMMGR));
   }
@@ -2453,7 +2445,7 @@ RelativePathPattern_XSLT:
 PatternStep_XSLT:
     PatternAxis_XSLT PatternStepPredicateList_XSLT
   {
-    $$ = XQPredicate::addPredicates(WRAP(@1, new (MEMMGR) XQStep(XQStep::SELF, $1, MEMMGR)), $2);
+    $$ = XQPredicate::addPredicates(WRAP(@1, new (MEMMGR) XQStep(Node::SELF, $1, MEMMGR)), $2);
   }
   ;
 
@@ -3263,11 +3255,7 @@ LetBinding:
   }
   | _SCORE_ _DOLLAR_ VarName _COLON_EQUALS_ ExprSingle
   {
-    ASTNode *literal = WRAP(@1, new (MEMMGR) XQLiteral(
-                  SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-                  SchemaSymbols::fgDT_INTEGER,
-                  X("0"), AnyAtomicType::DECIMAL,
-                  MEMMGR));
+    ASTNode *literal = WRAP(@1, new (MEMMGR) XQLiteral((ItemType*)&ItemType::INTEGER, X("0"), MEMMGR));
     $$ = WRAP(@1, new (MEMMGR) LetTuple(0, $3, literal, MEMMGR));
   }
   ;
@@ -3338,13 +3326,11 @@ OrderExpr:
   ExprSingle
   {
     SequenceType *zero_or_one = WRAP(@1, new (MEMMGR)
-      SequenceType(WRAP(@1, new (MEMMGR) ItemType(ItemType::TEST_ANYTHING)),
-                   SequenceType::QUESTION_MARK));
+      SequenceType((ItemType*)&ItemType::ITEM, SequenceType::QUESTION_MARK));
 
     $$ = $1;
     $$ = WRAP(@1, new (MEMMGR) XQAtomize($$, MEMMGR));
-    $$ = WRAP(@1, new (MEMMGR) XQPromoteUntyped($$, SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-                                                SchemaSymbols::fgDT_STRING, MEMMGR));
+    $$ = WRAP(@1, new (MEMMGR) XQPromoteUntyped($$, (ItemType*)&ItemType::STRING, MEMMGR));
     $$ = WRAP(@1, new (MEMMGR) XQTreatAs($$, zero_or_one, MEMMGR));
   }
 ;
@@ -3858,7 +3844,7 @@ PathExpr:
     step->setTypeWildcard();
     step->setNameWildcard();
     step->setNamespaceWildcard();
-    nav->addStep(WRAP(@1, new (MEMMGR) XQStep(XQStep::DESCENDANT_OR_SELF, step, MEMMGR)));
+    nav->addStep(WRAP(@1, new (MEMMGR) XQStep(Node::DESCENDANT_OR_SELF, step, MEMMGR)));
 
     nav->addStep($2);
     $$ = nav;
@@ -3895,7 +3881,7 @@ RelativePathExpr:
     step->setTypeWildcard();
     step->setNameWildcard();
     step->setNamespaceWildcard();
-    nav->addStep(WRAP(@2, new (MEMMGR) XQStep(XQStep::DESCENDANT_OR_SELF, step, MEMMGR)));
+    nav->addStep(WRAP(@2, new (MEMMGR) XQStep(Node::DESCENDANT_OR_SELF, step, MEMMGR)));
     nav->addStep($3);
 
     $$ = nav;
@@ -3939,8 +3925,8 @@ ForwardStep:
   {
     if(!$2->isNodeTypeSet()) {
       switch($1) {
-      case XQStep::NAMESPACE: $2->setNodeType(Node::namespace_string); break;
-      case XQStep::ATTRIBUTE: $2->setNodeType(Node::attribute_string); break;
+      case Node::NAMESPACE: $2->setNodeType(Node::namespace_string); break;
+      case Node::ATTRIBUTE: $2->setNodeType(Node::attribute_string); break;
       default: $2->setNodeType(Node::element_string); break;
       }
     }
@@ -3960,35 +3946,35 @@ ForwardStep:
 ForwardAxis:
   _CHILD_ _COLON_COLON_
   {
-    $$ = XQStep::CHILD;
+    $$ = Node::CHILD;
   }
   | _DESCENDANT_ _COLON_COLON_
   {
-    $$ = XQStep::DESCENDANT;
+    $$ = Node::DESCENDANT;
   }
   | _ATTRIBUTE_ _COLON_COLON_
   {
-    $$ = XQStep::ATTRIBUTE;
+    $$ = Node::ATTRIBUTE;
   }
   | _SELF_ _COLON_COLON_
   {
-    $$ = XQStep::SELF;
+    $$ = Node::SELF;
   }
   | _DESCENDANT_OR_SELF_ _COLON_COLON_
   {
-    $$ = XQStep::DESCENDANT_OR_SELF;
+    $$ = Node::DESCENDANT_OR_SELF;
   }
   | _FOLLOWING_SIBLING_ _COLON_COLON_
   {
-    $$ = XQStep::FOLLOWING_SIBLING;
+    $$ = Node::FOLLOWING_SIBLING;
   }
   | _FOLLOWING_ _COLON_COLON_
   {
-    $$ = XQStep::FOLLOWING;
+    $$ = Node::FOLLOWING;
   }
   | _NAMESPACE_ _COLON_COLON_
   {
-    $$ = XQStep::NAMESPACE;
+    $$ = Node::NAMESPACE;
   }
   ;
 
@@ -4000,14 +3986,14 @@ AbbrevForwardStep:
       $2->setNodeType(Node::attribute_string);
     }
 
-    $$ = WRAP(@1, new (MEMMGR) XQStep(XQStep::ATTRIBUTE, $2, MEMMGR));
+    $$ = WRAP(@1, new (MEMMGR) XQStep(Node::ATTRIBUTE, $2, MEMMGR));
   }
   | NodeTest
   {
-    XQStep::Axis axis = XQStep::CHILD;
+    Node::Axis axis = Node::CHILD;
     ItemType *itemtype = $1->getItemType();
     if(itemtype != 0 && itemtype->getItemTestType() == ItemType::TEST_ATTRIBUTE) {
-      axis = XQStep::ATTRIBUTE;
+      axis = Node::ATTRIBUTE;
     }
     else if(!$1->isNodeTypeSet()) {
       $1->setNodeType(Node::element_string);
@@ -4038,23 +4024,23 @@ ReverseStep:
 ReverseAxis:
   _PARENT_ _COLON_COLON_
   {
-    $$ = XQStep::PARENT;
+    $$ = Node::PARENT;
   }
   | _ANCESTOR_ _COLON_COLON_
   {
-    $$ = XQStep::ANCESTOR;
+    $$ = Node::ANCESTOR;
   }
   | _PRECEDING_SIBLING_ _COLON_COLON_
   {
-    $$ = XQStep::PRECEDING_SIBLING;
+    $$ = Node::PRECEDING_SIBLING;
   }
   | _PRECEDING_ _COLON_COLON_
   {
-    $$ = XQStep::PRECEDING;
+    $$ = Node::PRECEDING;
   }
   | _ANCESTOR_OR_SELF_ _COLON_COLON_
   {
-    $$ = XQStep::ANCESTOR_OR_SELF;
+    $$ = Node::ANCESTOR_OR_SELF;
   }
   ;
 
@@ -4066,7 +4052,7 @@ AbbrevReverseStep:
     step->setNameWildcard();
     step->setNamespaceWildcard();
     step->setTypeWildcard();
-    $$ = WRAP(@1, new (MEMMGR) XQStep(XQStep::PARENT, step, MEMMGR));
+    $$ = WRAP(@1, new (MEMMGR) XQStep(Node::PARENT, step, MEMMGR));
   }  
   ;
 
@@ -4355,9 +4341,7 @@ QuotAttrValueContent:
   | QuotAttrValueContent _QUOT_ATTR_CONTENT_
   {
     $$ = $1;
-    $$->push_back(WRAP(@2, new (MEMMGR) XQLiteral(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-                               SchemaSymbols::fgDT_STRING,
-                               $2, AnyAtomicType::STRING, MEMMGR)));
+    $$->push_back(WRAP(@2, new (MEMMGR) XQLiteral((ItemType*)&ItemType::STRING, $2, MEMMGR)));
   }
   ;
 
@@ -4373,9 +4357,7 @@ LiteralQuotAttrValueContent:
   | LiteralQuotAttrValueContent _QUOT_ATTR_CONTENT_
   {
     $$ = $1;
-    $$->push_back(WRAP(@2, new (MEMMGR) XQLiteral(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-                               SchemaSymbols::fgDT_STRING,
-                               $2, AnyAtomicType::STRING, MEMMGR)));
+    $$->push_back(WRAP(@2, new (MEMMGR) XQLiteral((ItemType*)&ItemType::STRING, $2, MEMMGR)));
   }
   ;
 
@@ -4395,9 +4377,7 @@ AposAttrValueContent:
   | AposAttrValueContent _APOS_ATTR_CONTENT_
   {
     $$ = $1;
-    $$->push_back(WRAP(@2, new (MEMMGR) XQLiteral(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-                               SchemaSymbols::fgDT_STRING,
-                               $2, AnyAtomicType::STRING, MEMMGR)));
+    $$->push_back(WRAP(@2, new (MEMMGR) XQLiteral((ItemType*)&ItemType::STRING, $2, MEMMGR)));
   }
   ;
 
@@ -4413,9 +4393,7 @@ LiteralAposAttrValueContent:
   | LiteralAposAttrValueContent _APOS_ATTR_CONTENT_
   {
     $$ = $1;
-    $$->push_back(WRAP(@2, new (MEMMGR) XQLiteral(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-                               SchemaSymbols::fgDT_STRING,
-                               $2, AnyAtomicType::STRING, MEMMGR)));
+    $$->push_back(WRAP(@2, new (MEMMGR) XQLiteral((ItemType*)&ItemType::STRING, $2, MEMMGR)));
   }
   ;
 
@@ -4444,17 +4422,13 @@ DirElementContent:
   | DirElementContent _ELEMENT_CONTENT_
   {
     $$ = $1;
-    $$->push_back(WRAP(@2, new (MEMMGR) XQLiteral(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-                               SchemaSymbols::fgDT_STRING,
-                               $2, AnyAtomicType::STRING, MEMMGR)));
+    $$->push_back(WRAP(@2, new (MEMMGR) XQLiteral((ItemType*)&ItemType::STRING, $2, MEMMGR)));
   }
   | DirElementContent _WHITESPACE_ELEMENT_CONTENT_
   {
     $$ = $1;
     if(CONTEXT->getPreserveBoundarySpace()) {
-      $$->push_back(WRAP(@2, new (MEMMGR) XQLiteral(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-                                 SchemaSymbols::fgDT_STRING,
-                                 $2, AnyAtomicType::STRING, MEMMGR)));
+      $$->push_back(WRAP(@2, new (MEMMGR) XQLiteral((ItemType*)&ItemType::STRING, $2, MEMMGR)));
     }
   }
   ;
@@ -4463,11 +4437,7 @@ DirElementContent:
 DirCommentConstructor:
   _XML_COMMENT_START_ DirCommentContents _XML_COMMENT_END_
   {
-    ASTNode *value = WRAP(@1, new (MEMMGR) XQLiteral(
-                  SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-                  SchemaSymbols::fgDT_STRING,
-                  $2, AnyAtomicType::STRING,
-                  MEMMGR));
+    ASTNode *value = WRAP(@1, new (MEMMGR) XQLiteral((ItemType*)&ItemType::STRING, $2, MEMMGR));
     $$ = WRAP(@1, new (MEMMGR) XQCommentConstructor(value, MEMMGR));
   }
   ;
@@ -4485,18 +4455,9 @@ DirCommentContents:
 DirPIConstructor:
   _PI_START_ _PI_TARGET_ DirPIContents
   {
-    ASTNode *value = WRAP(@3, new (MEMMGR) XQLiteral(
-                  SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-                  SchemaSymbols::fgDT_STRING,
-                  $3, AnyAtomicType::STRING,
-                  MEMMGR));
-    $$ = WRAP(@1, new (MEMMGR) XQPIConstructor(
-                    WRAP(@2, new (MEMMGR) XQLiteral(
-                  SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-                  SchemaSymbols::fgDT_STRING,
-                  $2, AnyAtomicType::STRING,
-                  MEMMGR)), 
-                  value, MEMMGR));
+    ASTNode *value = WRAP(@3, new (MEMMGR) XQLiteral((ItemType*)&ItemType::STRING, $3, MEMMGR));
+    $$ = WRAP(@1, new (MEMMGR) XQPIConstructor(WRAP(@2, new (MEMMGR)
+          XQLiteral((ItemType*)&ItemType::STRING, $2, MEMMGR)), value, MEMMGR));
   }
   ;
 
@@ -4627,9 +4588,7 @@ CompPINCName:
     for(XMLCh *tmp = $1; *tmp; ++tmp)
       if(*tmp == ':') yyerror(@1, "Expecting an NCName, found a QName");
 
-    $$ = WRAP(@1, new (MEMMGR) XQLiteral(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-                               SchemaSymbols::fgDT_STRING,
-                               $1, AnyAtomicType::STRING, MEMMGR));
+    $$ = WRAP(@1, new (MEMMGR) XQLiteral((ItemType*)&ItemType::STRING, $1, MEMMGR));
   }
   | _LBRACE_ Expr _RBRACE_
   {
@@ -5543,11 +5502,7 @@ TransformBinding:
 IntegerLiteral:
   _INTEGER_LITERAL_
   {
-    $$ = WRAP(@1, new (MEMMGR) XQLiteral(
-                  SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-                  SchemaSymbols::fgDT_INTEGER,
-                  $1, AnyAtomicType::DECIMAL,
-                  MEMMGR));
+    $$ = WRAP(@1, new (MEMMGR) XQLiteral((ItemType*)&ItemType::INTEGER, $1, MEMMGR));
   }
   ;
 
@@ -5555,11 +5510,7 @@ IntegerLiteral:
 DecimalLiteral:
   _DECIMAL_LITERAL_
   {
-    $$ = WRAP(@1, new (MEMMGR) XQLiteral(
-                  SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-                  SchemaSymbols::fgDT_DECIMAL,
-                  $1, AnyAtomicType::DECIMAL,
-                  MEMMGR));
+    $$ = WRAP(@1, new (MEMMGR) XQLiteral((ItemType*)&ItemType::DECIMAL, $1, MEMMGR));
   }
   ;
 
@@ -5567,11 +5518,7 @@ DecimalLiteral:
 DoubleLiteral:
   _DOUBLE_LITERAL_
   {
-    $$ = WRAP(@1, new (MEMMGR) XQLiteral(
-                  SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-                  SchemaSymbols::fgDT_DOUBLE,
-                  $1, AnyAtomicType::DOUBLE,
-                  MEMMGR));
+    $$ = WRAP(@1, new (MEMMGR) XQLiteral((ItemType*)&ItemType::DOUBLE, $1, MEMMGR));
   }
   ;
 
@@ -5580,11 +5527,7 @@ DoubleLiteral:
 StringLiteral:
   _STRING_LITERAL_
   {
-    $$ = WRAP(@1, new (MEMMGR) XQLiteral(
-                  SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-                  SchemaSymbols::fgDT_STRING,
-                  $1, AnyAtomicType::STRING,
-                  MEMMGR));
+    $$ = WRAP(@1, new (MEMMGR) XQLiteral((ItemType*)&ItemType::STRING, $1, MEMMGR));
   }
   ;
 
@@ -5855,24 +5798,24 @@ AnyFunctionTest:
 TypedFunctionTest:
     _FUNCTION_EXT_ _LPAR_ _RPAR_ _AS_ SequenceType
   {
-    $$ = WRAP(@1, new (MEMMGR) ItemType(new (MEMMGR) VectorOfSequenceTypes(XQillaAllocator<SequenceType*>(MEMMGR)), $5));
+    $$ = WRAP(@1, new (MEMMGR) ItemType(new (MEMMGR) FunctionSignature(0, $5, MEMMGR), 0));
   }
   | _FUNCTION_EXT_ _LPAR_ FunctionTypeArguments _RPAR_ _AS_ SequenceType
   {
-    $$ = WRAP(@1, new (MEMMGR) ItemType($3, $6));
+    $$ = WRAP(@1, new (MEMMGR) ItemType(new (MEMMGR) FunctionSignature($3, $6, MEMMGR), 0));
   }
   ;
 
 FunctionTypeArguments:
     SequenceType
   {
-    $$ = new (MEMMGR) VectorOfSequenceTypes(XQillaAllocator<SequenceType*>(MEMMGR));
-    $$->push_back($1);
+    $$ = new (MEMMGR) ArgumentSpecs(XQillaAllocator<ArgumentSpec*>(MEMMGR));
+    $$->push_back(WRAP(@1, new (MEMMGR) ArgumentSpec(0, $1, MEMMGR)));
   }
   | FunctionTypeArguments _COMMA_ SequenceType
   {
     $$ = $1;
-    $$->push_back($3);
+    $$->push_back(WRAP(@1, new (MEMMGR) ArgumentSpec(0, $3, MEMMGR)));
   }
   ;
 

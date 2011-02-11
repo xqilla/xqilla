@@ -46,6 +46,8 @@
 #include <xqilla/ast/XQTreatAs.hpp>
 #include <xqilla/ast/ConvertFunctionArg.hpp>
 #include <xqilla/ast/XQFunctionCoercion.hpp>
+#include <xqilla/schema/DocumentCacheImpl.hpp>
+#include <xqilla/framework/BasicMemoryManager.hpp>
 
 #include <xercesc/validators/schema/SchemaAttDef.hpp>
 #include <xercesc/validators/schema/SchemaElementDecl.hpp>
@@ -53,6 +55,51 @@
 #if defined(XERCES_HAS_CPP_NAMESPACE)
 XERCES_CPP_NAMESPACE_USE
 #endif
+
+static const DocumentCache *staticDocumentCache()
+{
+  static const DocumentCacheImpl dc(BasicMemoryManager::get());
+  return &dc;
+}
+
+const ItemType ItemType::ITEM(ItemType::TEST_ANYTHING, staticDocumentCache());
+
+const ItemType ItemType::ANY_ATOMIC_TYPE(ItemType::TEST_ATOMIC_TYPE, staticDocumentCache());
+const ItemType ItemType::ANY_SIMPLE_TYPE(AnyAtomicType::ANY_SIMPLE_TYPE, true, SchemaSymbols::fgURI_SCHEMAFORSCHEMA, SchemaSymbols::fgDT_ANYSIMPLETYPE, staticDocumentCache());
+const ItemType ItemType::UNTYPED_ATOMIC(AnyAtomicType::UNTYPED_ATOMIC, true, SchemaSymbols::fgURI_SCHEMAFORSCHEMA, ATUntypedAtomic::fgDT_UNTYPEDATOMIC, staticDocumentCache());
+const ItemType ItemType::BOOLEAN(AnyAtomicType::BOOLEAN, true, SchemaSymbols::fgURI_SCHEMAFORSCHEMA, SchemaSymbols::fgDT_BOOLEAN, staticDocumentCache());
+const ItemType ItemType::DECIMAL(AnyAtomicType::DECIMAL, true, SchemaSymbols::fgURI_SCHEMAFORSCHEMA, SchemaSymbols::fgDT_DECIMAL, staticDocumentCache());
+const ItemType ItemType::FLOAT(AnyAtomicType::FLOAT, true, SchemaSymbols::fgURI_SCHEMAFORSCHEMA, SchemaSymbols::fgDT_FLOAT, staticDocumentCache());
+const ItemType ItemType::DOUBLE(AnyAtomicType::DOUBLE, true, SchemaSymbols::fgURI_SCHEMAFORSCHEMA, SchemaSymbols::fgDT_DOUBLE, staticDocumentCache());
+const ItemType ItemType::STRING(AnyAtomicType::STRING, true, SchemaSymbols::fgURI_SCHEMAFORSCHEMA, SchemaSymbols::fgDT_STRING, staticDocumentCache());
+const ItemType ItemType::QNAME(AnyAtomicType::QNAME, true, SchemaSymbols::fgURI_SCHEMAFORSCHEMA, SchemaSymbols::fgDT_QNAME, staticDocumentCache());
+const ItemType ItemType::DAY_TIME_DURATION(AnyAtomicType::DAY_TIME_DURATION, true, SchemaSymbols::fgURI_SCHEMAFORSCHEMA, ATDurationOrDerived::fgDT_DAYTIMEDURATION, staticDocumentCache());
+const ItemType ItemType::ANY_URI(AnyAtomicType::ANY_URI, true, SchemaSymbols::fgURI_SCHEMAFORSCHEMA, SchemaSymbols::fgDT_ANYURI, staticDocumentCache());
+const ItemType ItemType::BASE_64_BINARY(AnyAtomicType::BASE_64_BINARY, true, SchemaSymbols::fgURI_SCHEMAFORSCHEMA, SchemaSymbols::fgDT_BASE64BINARY, staticDocumentCache());
+const ItemType ItemType::DATE(AnyAtomicType::DATE, true, SchemaSymbols::fgURI_SCHEMAFORSCHEMA, SchemaSymbols::fgDT_DATE, staticDocumentCache());
+const ItemType ItemType::DATE_TIME(AnyAtomicType::DATE_TIME, true, SchemaSymbols::fgURI_SCHEMAFORSCHEMA, SchemaSymbols::fgDT_DATETIME, staticDocumentCache());
+const ItemType ItemType::DURATION(AnyAtomicType::DURATION, true, SchemaSymbols::fgURI_SCHEMAFORSCHEMA, SchemaSymbols::fgDT_DURATION, staticDocumentCache());
+const ItemType ItemType::G_DAY(AnyAtomicType::G_DAY, true, SchemaSymbols::fgURI_SCHEMAFORSCHEMA, SchemaSymbols::fgDT_DAY, staticDocumentCache());
+const ItemType ItemType::G_MONTH(AnyAtomicType::G_MONTH, true, SchemaSymbols::fgURI_SCHEMAFORSCHEMA, SchemaSymbols::fgDT_MONTH, staticDocumentCache());
+const ItemType ItemType::G_MONTH_DAY(AnyAtomicType::G_MONTH_DAY, true, SchemaSymbols::fgURI_SCHEMAFORSCHEMA, SchemaSymbols::fgDT_MONTHDAY, staticDocumentCache());
+const ItemType ItemType::G_YEAR(AnyAtomicType::G_YEAR, true, SchemaSymbols::fgURI_SCHEMAFORSCHEMA, SchemaSymbols::fgDT_YEAR, staticDocumentCache());
+const ItemType ItemType::G_YEAR_MONTH(AnyAtomicType::G_YEAR_MONTH, true, SchemaSymbols::fgURI_SCHEMAFORSCHEMA, SchemaSymbols::fgDT_YEARMONTH, staticDocumentCache());
+const ItemType ItemType::HEX_BINARY(AnyAtomicType::HEX_BINARY, true, SchemaSymbols::fgURI_SCHEMAFORSCHEMA, SchemaSymbols::fgDT_HEXBINARY, staticDocumentCache());
+const ItemType ItemType::NOTATION(AnyAtomicType::NOTATION, true, SchemaSymbols::fgURI_SCHEMAFORSCHEMA, SchemaSymbols::fgELT_NOTATION, staticDocumentCache());
+const ItemType ItemType::TIME(AnyAtomicType::TIME, true, SchemaSymbols::fgURI_SCHEMAFORSCHEMA, SchemaSymbols::fgDT_TIME, staticDocumentCache());
+const ItemType ItemType::YEAR_MONTH_DURATION(AnyAtomicType::YEAR_MONTH_DURATION, true, SchemaSymbols::fgURI_SCHEMAFORSCHEMA, ATDurationOrDerived::fgDT_YEARMONTHDURATION, staticDocumentCache());
+const ItemType ItemType::INTEGER(AnyAtomicType::DECIMAL, false, SchemaSymbols::fgURI_SCHEMAFORSCHEMA, SchemaSymbols::fgDT_INTEGER, staticDocumentCache());
+
+const ItemType ItemType::NODE(ItemType::TEST_NODE, staticDocumentCache());
+const ItemType ItemType::DOCUMENT(ItemType::TEST_DOCUMENT, staticDocumentCache());
+const ItemType ItemType::ELEMENT(ItemType::TEST_ELEMENT, staticDocumentCache());
+const ItemType ItemType::ATTRIBUTE(ItemType::TEST_ATTRIBUTE, staticDocumentCache());
+const ItemType ItemType::TEXT(ItemType::TEST_TEXT, staticDocumentCache());
+const ItemType ItemType::PI(ItemType::TEST_PI, staticDocumentCache());
+const ItemType ItemType::COMMENT(ItemType::TEST_COMMENT, staticDocumentCache());
+const ItemType ItemType::NAMESPACE(ItemType::TEST_NAMESPACE, staticDocumentCache());
+
+const ItemType ItemType::FUNCTION(ItemType::TEST_FUNCTION, staticDocumentCache());
 
 SequenceType::SequenceType(ItemType* test, OccurrenceIndicator occur)
   : m_pItemType(test),
@@ -87,6 +134,64 @@ Result SequenceType::matches(const Result &toBeTested, const LocationInfo *locat
   return typeMatches(occurrenceMatches(toBeTested, location, errorCode), location, errorCode);
 }
 
+SequenceType::TypeMatch SequenceType::matches(const StaticType &actual) const
+{
+  TypeMatch result = { ALWAYS, ALWAYS };
+
+  unsigned int min = 0, max = 0;
+
+  if(m_pItemType) {
+    switch(m_nOccurrence) {
+    case SequenceType::EXACTLY_ONE:
+      min = 1; max = 1; break;
+    case SequenceType::STAR:
+      min = 0; max = StaticType::UNLIMITED; break;
+    case SequenceType::PLUS:
+      min = 1; max = StaticType::UNLIMITED; break;
+    case SequenceType::QUESTION_MARK:
+      min = 0; max = 1; break;
+    }
+  }
+
+  if(min > actual.getMax() ||
+     max < actual.getMin()) {
+    result.cardinality = NEVER;
+  }
+  else if(min > actual.getMin() ||
+          max < actual.getMax()) {
+    if(actual.getMax() != StaticType::UNLIMITED)
+      result.cardinality = PROBABLY_NOT;
+    else
+      result.cardinality = MAYBE;
+  }
+
+  if(m_pItemType == 0) {
+    result.type = (actual.getMax() == 0 ? ALWAYS : (actual.getMin() == 0 ? MAYBE : NEVER));
+    return result;
+  }
+
+  bool foundMatch = false;
+  StaticType::ItemTypes::const_iterator i = actual.getTypes().begin();
+  for(; i != actual.getTypes().end(); ++i) {
+    if((*i)->isSubtypeOf(m_pItemType)) {
+      // Good to go
+      foundMatch = true;
+    }
+    else if((*i)->intersects(m_pItemType)) {
+      foundMatch = true;
+      result.type = MAYBE;
+    }
+    else {
+      result.type = MAYBE;
+    }
+  }
+
+  if(!foundMatch)
+    result.type = (min > 0 || actual.getMin() > 0) ? NEVER : PROBABLY_NOT;
+
+  return result;
+}
+
 void SequenceType::setItemType(ItemType* itemType)
 {
   if(m_pItemType)
@@ -119,54 +224,42 @@ void ItemType::staticResolution(StaticContext *context, const LocationInfo *loca
 {
   // Prefix resolution should only happen once
   // (since SequenceType objects can be multiple times in the AST)
-  if(!staticallyResolved_) {
-    staticallyResolved_ = true;
+  if(staticallyResolved_) return;
+  staticallyResolved_ = true;
 
-    if(m_TypeName && m_TypeURI == 0) {
-      // an empty prefix means the default element and type namespace
-      if(m_TypePrefix == 0 || *m_TypePrefix == 0) {
-        m_TypeURI = context->getDefaultElementAndTypeNS();
-      }
-      else {
-        m_TypeURI = context->getUriBoundToPrefix(m_TypePrefix, location);
-      }
+  dc_ = context->getDocumentCache();
+
+  if(m_TypeName && m_TypeURI == 0) {
+    // an empty prefix means the default element and type namespace
+    if(m_TypePrefix == 0 || *m_TypePrefix == 0) {
+      m_TypeURI = context->getDefaultElementAndTypeNS();
     }
+    else {
+      m_TypeURI = context->getUriBoundToPrefix(m_TypePrefix, location);
+    }
+  }
   
-    if(m_NameName && m_NameURI == 0) {
-      // if we are testing for an attribute, an empty prefix means empty namespace; if we are testing an element, it means 
-      // the default element and type namespace
-      if(m_NamePrefix == 0 || *m_NamePrefix == 0) {
-        if(m_nTestType == TEST_ELEMENT || m_nTestType == TEST_SCHEMA_ELEMENT ||
-           m_nTestType == TEST_DOCUMENT || m_nTestType == TEST_SCHEMA_DOCUMENT)
-          m_NameURI = context->getDefaultElementAndTypeNS();
-      } else {
-        m_NameURI = context->getUriBoundToPrefix(m_NamePrefix, location);
-      }
+  if(m_NameName && m_NameURI == 0) {
+    // if we are testing for an attribute, an empty prefix means empty namespace; if we are testing an element, it means 
+    // the default element and type namespace
+    if(m_NamePrefix == 0 || *m_NamePrefix == 0) {
+      if(m_nTestType == TEST_ELEMENT || m_nTestType == TEST_SCHEMA_ELEMENT ||
+         m_nTestType == TEST_DOCUMENT || m_nTestType == TEST_SCHEMA_DOCUMENT)
+        m_NameURI = context->getDefaultElementAndTypeNS();
+    } else {
+      m_NameURI = context->getUriBoundToPrefix(m_NamePrefix, location);
     }
   }
 
   if(m_TypeName) {
     if(m_nTestType == ItemType::TEST_ATOMIC_TYPE) {
-      // check if the type to be tested is defined and is really an atomic one
-      if(!context->getDocumentCache()->isTypeDefined(m_TypeURI, m_TypeName)) {
-        XMLBuffer buf;
-        buf.set(X("Type {"));
-        buf.append(m_TypeURI);
-        buf.append(X("}:"));
-        buf.append(m_TypeName);
-        buf.append(X(" is not defined [err:XPST0051]"));
-        XQThrow3(StaticErrorException, X("ItemType::staticResolution"), buf.getRawBuffer(), location);
-      }
-      if(!context->getDocumentCache()->isTypeOrDerivedFromType(m_TypeURI, m_TypeName,
-                                                               SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-                                                               AnyAtomicType::fgDT_ANYATOMICTYPE)) {
-        XMLBuffer buf;
-        buf.set(X("Type {"));
-        buf.append(m_TypeURI);
-        buf.append(X("}:"));
-        buf.append(m_TypeName);
-        buf.append(X(" is not an atomic type [err:XPST0051]"));
-        XQThrow3(StaticErrorException, X("ItemType::staticResolution"), buf.getRawBuffer(), location);
+      if(XPath2Utils::equals(m_TypeName, AnyAtomicType::fgDT_ANYATOMICTYPE) &&
+         XPath2Utils::equals(m_TypeURI, SchemaSymbols::fgURI_SCHEMAFORSCHEMA)) {
+        m_TypePrefix = m_TypeURI = m_TypeName = 0;
+        m_primitiveType = AnyAtomicType::NumAtomicObjectTypes;
+        m_primitive = false;
+      } else {
+        m_primitiveType = context->getItemFactory()->getPrimitiveTypeIndex(m_TypeURI, m_TypeName, m_primitive);
       }
     }
     else if(XPath2Utils::equals(m_TypeName, SchemaSymbols::fgATTVAL_ANYTYPE) &&
@@ -218,12 +311,14 @@ void ItemType::staticResolution(StaticContext *context, const LocationInfo *loca
   default: break;
   }
 
-  if(returnType_)
-    returnType_->staticResolution(context);
+  if(signature_)
+    signature_->staticResolution(context);
 }
 
 ItemType::ItemType(ItemTestType test, QualifiedName* name, QualifiedName* type)
   : m_nTestType(test),
+    m_primitiveType(AnyAtomicType::NumAtomicObjectTypes),
+    m_primitive(false),
     m_NamePrefix(name ? name->getPrefix() : 0),
     m_NameURI(0),
     m_NameName(name ? name->getName() : 0),
@@ -231,29 +326,16 @@ ItemType::ItemType(ItemTestType test, QualifiedName* name, QualifiedName* type)
     m_TypeURI(0),
     m_TypeName(type ? type->getName() : 0),
     m_bAllowNil(false),
-    argTypes_(0),
-    returnType_(0),
+    signature_(0),
+    dc_(0),
     staticallyResolved_(false)
 {
 }
 
-ItemType::ItemType(const XMLCh *typeURI, const XMLCh *typeName)
-  : m_nTestType(TEST_ATOMIC_TYPE),
-    m_NamePrefix(0),
-    m_NameURI(0),
-    m_NameName(0),
-    m_TypePrefix(0),
-    m_TypeURI(typeURI),
-    m_TypeName(typeName),
-    m_bAllowNil(false),
-    argTypes_(0),
-    returnType_(0),
-    staticallyResolved_(true)
-{
-}
-
-ItemType::ItemType(VectorOfSequenceTypes *argTypes, SequenceType *returnType)
-  : m_nTestType(TEST_FUNCTION),
+ItemType::ItemType(ItemTestType test, const DocumentCache *dc)
+  : m_nTestType(test),
+    m_primitiveType(AnyAtomicType::NumAtomicObjectTypes),
+    m_primitive(false),
     m_NamePrefix(0),
     m_NameURI(0),
     m_NameName(0),
@@ -261,15 +343,50 @@ ItemType::ItemType(VectorOfSequenceTypes *argTypes, SequenceType *returnType)
     m_TypeURI(0),
     m_TypeName(0),
     m_bAllowNil(false),
-    argTypes_(argTypes),
-    returnType_(returnType),
+    signature_(0),
+    dc_(dc),
     staticallyResolved_(true)
+{
+}
+
+ItemType::ItemType(AnyAtomicType::AtomicObjectType primitiveType, bool primitive,
+  const XMLCh *typeURI, const XMLCh *typeName, const DocumentCache *dc)
+  : m_nTestType(TEST_ATOMIC_TYPE),
+    m_primitiveType(primitiveType),
+    m_primitive(primitive),
+    m_NamePrefix(0),
+    m_NameURI(0),
+    m_NameName(0),
+    m_TypePrefix(0),
+    m_TypeURI(typeURI),
+    m_TypeName(typeName),
+    m_bAllowNil(false),
+    signature_(0),
+    dc_(dc),
+    staticallyResolved_(primitiveType != AnyAtomicType::NumAtomicObjectTypes)
+{
+}
+
+ItemType::ItemType(FunctionSignature *sig, const DocumentCache *dc)
+  : m_nTestType(TEST_FUNCTION),
+    m_primitiveType(AnyAtomicType::NumAtomicObjectTypes),
+    m_primitive(false),
+    m_NamePrefix(0),
+    m_NameURI(0),
+    m_NameName(0),
+    m_TypePrefix(0),
+    m_TypeURI(0),
+    m_TypeName(0),
+    m_bAllowNil(false),
+    signature_(sig),
+    dc_(dc),
+    staticallyResolved_(dc != 0)
 {
 }
 
 ItemType::~ItemType()
 {
-    delete returnType_;
+  if(signature_) signature_->release();
 }
 
 ItemType::ItemTestType ItemType::getItemTestType() const
@@ -290,124 +407,6 @@ void ItemType::setAllowNilled(bool value)
 bool ItemType::getAllowNilled() const
 {
   return m_bAllowNil;
-}
-
-void SequenceType::getStaticType(StaticType &st, const StaticContext *context,
-                                 bool &isExact, const LocationInfo *location) const
-{
-  if(m_pItemType == 0) {
-    st = StaticType();
-    isExact = true;
-  }
-  else {
-    m_pItemType->getStaticType(st, context, isExact, location);
-
-    switch(m_nOccurrence) {
-    case EXACTLY_ONE: break;
-    case STAR: st.multiply(0, StaticType::UNLIMITED); break;
-    case PLUS: st.multiply(1, StaticType::UNLIMITED); break;
-    case QUESTION_MARK: st.multiply(0, 1); break;
-    }
-  }
-}
-
-void ItemType::getStaticType(StaticType &st, const StaticContext *context, bool &isExact, const LocationInfo *location) const
-{
-  if(this == NULL) {
-    st = StaticType();
-    isExact = true;
-    return;
-  }
-
-  switch(m_nTestType) {
-  case TEST_ANYTHING: {
-    st = StaticType::ITEM_TYPE;
-    isExact = true;
-    break;
-  }
-  case TEST_ATOMIC_TYPE: {
-    st = StaticType::create(m_TypeURI, m_TypeName, context, isExact);
-    break;
-  }
-  case TEST_DOCUMENT: {
-    st = StaticType::DOCUMENT_TYPE;
-    if(m_NameName == NULL && m_TypeName == NULL)
-      isExact = true;
-    else isExact = false;
-    break;
-  }
-  case TEST_ELEMENT: {
-    st = StaticType::ELEMENT_TYPE;
-    if(m_NameName == NULL && m_TypeName == NULL)
-      isExact = true;
-    else isExact = false;
-    break;
-  }
-  case TEST_ATTRIBUTE: {
-    st = StaticType::ATTRIBUTE_TYPE;
-    if(m_NameName == NULL && m_TypeName == NULL)
-      isExact = true;
-    else isExact = false;
-    break;
-  }
-  case TEST_PI: {
-    st = StaticType::PI_TYPE;
-    if(m_NameName == NULL && m_TypeName == NULL)
-      isExact = true;
-    else isExact = false;
-    break;
-  }
-  case TEST_SCHEMA_ELEMENT: {
-    st = StaticType::ELEMENT_TYPE;
-    isExact = false;
-    break;
-  }
-  case TEST_SCHEMA_ATTRIBUTE: {
-    st = StaticType::ATTRIBUTE_TYPE;
-    isExact = false;
-    break;
-  }
-  case TEST_SCHEMA_DOCUMENT: {
-    st = StaticType::DOCUMENT_TYPE;
-    isExact = false;
-    break;
-  }
-  case TEST_COMMENT: {
-    st = StaticType::COMMENT_TYPE;
-    isExact = true;
-    break;
-  }
-  case TEST_TEXT: {
-    st = StaticType::TEXT_TYPE;
-    isExact = true;
-    break;
-  }
-  case TEST_NAMESPACE: {
-    st = StaticType::NAMESPACE_TYPE;
-    isExact = true;
-    break;
-  }
-  case TEST_NODE: {
-    st = StaticType::NODE_TYPE;
-    isExact = true;
-    break;
-  }
-  case TEST_FUNCTION: {
-    if(returnType_ == 0) {
-      st = StaticType::FUNCTION_TYPE;
-      isExact = true;
-    }
-    else {
-      StaticType ret;
-      returnType_->getStaticType(ret, context, isExact, location);
-
-      isExact = isExact && argTypes_->size() == 0;
-
-      st = StaticType(context->getMemoryManager(), (unsigned int)argTypes_->size(), ret);
-    }
-    break;
-  }
-  }
 }
 
 void SequenceType::toBuffer(XMLBuffer &buffer) const
@@ -445,14 +444,21 @@ inline void outputPrefixOrURI(const XMLCh *prefix, const XMLCh *uri, XMLBuffer &
 
 void ItemType::toBuffer(XMLBuffer &buffer, bool addBrackets) const
 {
+  static const XMLCh XMLChXS[] = { chLatin_x, chLatin_s, chNull };
+
   switch(m_nTestType) {
   case TEST_ANYTHING: {
     buffer.append(X("item()"));
     break;
   }
   case TEST_ATOMIC_TYPE: {
-    outputPrefixOrURI(m_TypePrefix, m_TypeURI, buffer);
-    buffer.append(m_TypeName);
+    if(m_TypeName) {
+      outputPrefixOrURI(m_TypePrefix, m_TypeURI, buffer);
+      buffer.append(m_TypeName);
+    } else {
+      outputPrefixOrURI(XMLChXS, SchemaSymbols::fgURI_SCHEMAFORSCHEMA, buffer);
+      buffer.append(AnyAtomicType::fgDT_ANYATOMICTYPE);
+    }
     break;
   }
   case TEST_SCHEMA_DOCUMENT:
@@ -576,25 +582,13 @@ void ItemType::toBuffer(XMLBuffer &buffer, bool addBrackets) const
     break;
   }
   case TEST_FUNCTION: {
-    if(returnType_ == 0) {
+    if(signature_ == 0) {
       buffer.append(X("function(*)"));
     }
     else {
-      addBrackets = addBrackets && returnType_->getOccurrenceIndicator() == SequenceType::EXACTLY_ONE;
+      addBrackets = addBrackets && signature_->returnType->getOccurrenceIndicator() == SequenceType::EXACTLY_ONE;
       if(addBrackets) buffer.append('(');
-
-      buffer.append(X("function("));
-
-      bool doneOne = false;
-      for(VectorOfSequenceTypes::const_iterator i = argTypes_->begin();
-          i != argTypes_->end(); ++i) {
-        if(doneOne) buffer.append(',');
-        doneOne = true;
-        (*i)->toBuffer(buffer);
-      }
-      buffer.append(X(") as "));
-      returnType_->toBuffer(buffer);
-
+      signature_->toBuffer(buffer, /*typeSyntax*/true);
       if(addBrackets) buffer.append(')');
     }
     break;
@@ -630,7 +624,8 @@ bool ItemType::matchesNameType(const Item::Ptr &toBeTested, const DynamicContext
 
   if(m_TypeName) {
     if(toBeTested->getType() == Item::ATOMIC) {
-      return ((AnyAtomicType*)toBeTested.get())->isInstanceOfType(m_TypeURI, m_TypeName, context);
+      return m_primitiveType == ((AnyAtomicType*)toBeTested.get())->getPrimitiveTypeIndex() &&
+        ((AnyAtomicType*)toBeTested.get())->isInstanceOfType(m_TypeURI, m_TypeName, context);
     } else if (toBeTested->getType() == Item::NODE) {
       return ((Node*)toBeTested.get())->hasInstanceOfType(m_TypeURI, m_TypeName, context);
     }
@@ -825,12 +820,12 @@ bool ItemType::matches(const Node::Ptr &toBeTested, DynamicContext* context) con
   return true;
 }
 
-bool ItemType::matches(const FunctionRef::Ptr &toBeTested, DynamicContext* context) const
+bool ItemType::matches(const FunctionRef::Ptr &toBeTested) const
 {
-  return matches(toBeTested->getSignature(), context);
+  return matches(toBeTested->getSignature());
 }
 
-bool ItemType::matches(const FunctionSignature *sig, DynamicContext* context) const
+bool ItemType::matches(const FunctionSignature *sig) const
 {
   switch(m_nTestType) {
     case TEST_ELEMENT:
@@ -857,27 +852,21 @@ bool ItemType::matches(const FunctionSignature *sig, DynamicContext* context) co
     case TEST_FUNCTION:
     {
       // function(*) matches any function item.
-      if(returnType_ == 0) return true;
+      if(signature_ == 0) return true;
 
       // A TypedFunctionTest matches an item if it is a function item, and the function
       // item's type signature is a subtype of the TypedFunctionTest.
-      size_t numArgs = sig->argSpecs ? sig->argSpecs->size() : 0;
-      if(numArgs != argTypes_->size()) return false;
+      if(sig->numArgs() != signature_->numArgs()) return false;
 
-      if(sig->argSpecs) {
+      if(sig->argSpecs && signature_->argSpecs) {
         ArgumentSpecs::const_iterator aa_i = sig->argSpecs->begin();
-        VectorOfSequenceTypes::const_iterator ba_i = argTypes_->begin();
-        for(; aa_i != sig->argSpecs->end() && ba_i != argTypes_->end(); ++aa_i, ++ba_i) {
-          if(!(*ba_i)->isSubtypeOf((*aa_i)->getType(), context)) return false;
+        ArgumentSpecs::const_iterator ba_i = signature_->argSpecs->begin();
+        for(; aa_i != sig->argSpecs->end() && ba_i != signature_->argSpecs->end(); ++aa_i, ++ba_i) {
+          if(!(*ba_i)->getType()->isSubtypeOf((*aa_i)->getType())) return false;
         }
       }
 
-      if(sig->returnType)
-        return sig->returnType->isSubtypeOf(returnType_, context);
-
-      return returnType_->getOccurrenceIndicator() == SequenceType::STAR &&
-        returnType_->getItemType() &&
-        returnType_->getItemType()->getItemTestType() == TEST_ANYTHING;
+      return sig->returnType->isSubtypeOf(signature_->returnType);
     }
   }
   return true;
@@ -888,7 +877,7 @@ bool ItemType::matches(const Item::Ptr &toBeTested, DynamicContext* context) con
   if(toBeTested->getType() == Item::NODE)
     return matches((Node::Ptr)toBeTested, context);
   if(toBeTested->getType() == Item::FUNCTION)
-    return matches((FunctionRef::Ptr)toBeTested, context);
+    return matches((FunctionRef::Ptr)toBeTested);
     
   switch(m_nTestType) {
     case TEST_ELEMENT:
@@ -915,15 +904,22 @@ bool ItemType::matches(const Item::Ptr &toBeTested, DynamicContext* context) con
     case TEST_ATOMIC_TYPE:
     {
       if(toBeTested->getType() != Item::ATOMIC) return false;
+      if(m_TypeName == 0) return true;
       return matchesNameType(toBeTested, context);
     }
   }
   return true;
 }
 
-bool SequenceType::isSubtypeOf(const SequenceType *b, const StaticContext* context) const
+bool SequenceType::isSubtypeOf(const SequenceType *b) const
 {
   const SequenceType *a = this;
+
+  if(b == 0) return true;
+
+  if(a == 0)
+    return b->m_nOccurrence == SequenceType::STAR && b->m_pItemType &&
+      b->m_pItemType->getItemTestType() == ItemType::TEST_ANYTHING;
 
   if(b->m_pItemType == 0)
     return a->m_pItemType == 0;
@@ -944,30 +940,30 @@ bool SequenceType::isSubtypeOf(const SequenceType *b, const StaticContext* conte
     break;
   }
 
-  return a->m_pItemType->isSubtypeOf(b->m_pItemType, context);
+  return a->m_pItemType->isSubtypeOf(b->m_pItemType);
 }
 
-bool ItemType::isSubtypeOfNameType(const ItemType *b, const StaticContext* context) const
+bool ItemType::isSubtypeOfNameType(const ItemType *b) const
 {
   const ItemType *a = this;
 
-  if(a->m_NameName) {
-    if(b->m_NameName == 0) return false;
+  if(b->m_NameName) {
+    if(a->m_NameName == 0) return false;
     if(!XPath2Utils::equals(a->m_NameName, b->m_NameName) ||
        !XPath2Utils::equals(a->m_NameURI, b->m_NameURI))
       return false;
   }
 
-  if(a->m_TypeName) {
-    if(b->m_TypeName == 0) return false;
-    if(!context->isTypeOrDerivedFromType(a->m_TypeURI, a->m_TypeName, b->m_TypeURI, b->m_TypeName))
+  if(b->m_TypeName) {
+    if(a->m_TypeName == 0) return false;
+    if(!b->dc_->isTypeOrDerivedFromType(a->m_TypeURI, a->m_TypeName, b->m_TypeURI, b->m_TypeName))
       return false;
   }
 
   return true;
 }
 
-bool ItemType::isSubtypeOf(const ItemType *b, const StaticContext* context) const
+bool ItemType::isSubtypeOf(const ItemType *b) const
 {
   const ItemType *a = this;
 
@@ -975,8 +971,8 @@ bool ItemType::isSubtypeOf(const ItemType *b, const StaticContext* context) cons
 
   case TEST_ATOMIC_TYPE: {
     // Ai and Bi are AtomicTypes, and derives-from(Ai, Bi) returns true.
-    if(b->m_nTestType != TEST_ATOMIC_TYPE) return false;
-    return a->isSubtypeOfNameType(b, context);
+    if(a->m_nTestType != TEST_ATOMIC_TYPE) return false;
+    return a->isSubtypeOfNameType(b);
   }
 
   case TEST_ANYTHING: {
@@ -1005,7 +1001,7 @@ bool ItemType::isSubtypeOf(const ItemType *b, const StaticContext* context) cons
 
   case TEST_TEXT: {
     // Bi is text() and Ai is also text().
-    return b->m_nTestType == TEST_TEXT;
+    return a->m_nTestType == TEST_TEXT;
   }
 
   case TEST_COMMENT: {
@@ -1022,7 +1018,7 @@ bool ItemType::isSubtypeOf(const ItemType *b, const StaticContext* context) cons
     // Bi is processing-instruction() and Ai is either processing-instruction() or processing-instruction(N) for any name N..
     // Bi is processing-instruction(Bn), and Ai is also processing-instruction(Bn).
     if(a->m_nTestType != TEST_PI) return false;
-    return a->isSubtypeOfNameType(b, context);
+    return a->isSubtypeOfNameType(b);
   }
 
   case TEST_DOCUMENT:
@@ -1036,7 +1032,7 @@ bool ItemType::isSubtypeOf(const ItemType *b, const StaticContext* context) cons
     // Bi is element(*, Bt), Ai is either element(*, At), or element(N, At) for any name N, and derives-from(At, Bt) returns true.
     // Bi is element(*, Bt?), Ai is either element(*, At), element(*, At?), element(N, At), or element(N, At?) for any name N, and derives-from(At, Bt) returns true.
     if(a->m_nTestType != b->m_nTestType) return false;
-    if(!a->isSubtypeOfNameType(b, context)) return false;
+    if(!a->isSubtypeOfNameType(b)) return false;
     return !a->m_bAllowNil || b->m_bAllowNil;
   }
 
@@ -1047,13 +1043,13 @@ bool ItemType::isSubtypeOf(const ItemType *b, const StaticContext* context) cons
     // Bi is schema-element(Bn), Ai is schema-element(An), and either the expanded QName An equals the expanded QName Bn or
     // the element declaration named An is in the substitution group of the element declaration named Bn.
     if(a->m_nTestType != b->m_nTestType) return false;
-    if(a->isSubtypeOfNameType(b, context)) return true;
+    if(a->isSubtypeOfNameType(b)) return true;
 
     // Check substitution groups
-    SchemaElementDecl* aElemDecl = context->getDocumentCache()->getElementDecl(a->m_NameURI, a->m_NameName);
+    SchemaElementDecl* aElemDecl = a->dc_->getElementDecl(a->m_NameURI, a->m_NameName);
     while(aElemDecl) {
       if(XPath2Utils::equals(aElemDecl->getBaseName(), b->m_NameName) &&
-         XPath2Utils::equals(context->getDocumentCache()->getSchemaUri(aElemDecl->getURI()), b->m_NameURI))
+         XPath2Utils::equals(a->dc_->getSchemaUri(aElemDecl->getURI()), b->m_NameURI))
         return true;
       aElemDecl = aElemDecl->getSubstitutionGroupElem();
     }
@@ -1066,33 +1062,35 @@ bool ItemType::isSubtypeOf(const ItemType *b, const StaticContext* context) cons
     // Bi is attribute(Bn, Bt), Ai is attribute(Bn, At), and derives-from(At, Bt) returns true.
     // Bi is attribute(*, Bt), Ai is either attribute(*, At), or attribute(N, At) for any name N, and derives-from(At, Bt) returns true.
     if(a->m_nTestType != TEST_ATTRIBUTE) return false;
-    if(!a->isSubtypeOfNameType(b, context)) return false;
+    if(!a->isSubtypeOfNameType(b)) return false;
     return true;
   }
 
   case TEST_SCHEMA_ATTRIBUTE: {
     // Bi is schema-attribute(Bn) and Ai is also schema-attribute(Bn).
     if(a->m_nTestType != TEST_SCHEMA_ATTRIBUTE) return false;
-    return a->isSubtypeOfNameType(b, context);
+    return a->isSubtypeOfNameType(b);
   }
 
   case TEST_FUNCTION: {
     // Bi is function(*), and Ai is a FunctionTest.
     if(a->m_nTestType != TEST_FUNCTION) return false;
-    if(b->returnType_ == 0) return true;
-    if(a->returnType_ == 0) return false;
+    if(b->signature_ == 0) return true;
+    if(a->signature_ == 0) return false;
 
     // Bi is function(Ba_1, Ba_2, ... Ba_N) as Br, Ai is function(Aa_1, Aa_2, ... Aa_M) as Ar, N (arity of Bi) equals M (arity of Ai),
     // subtype(Ar, Br), and for values of I between 1 and N, subtype(Ba_I, Aa_I).
-    if(a->argTypes_->size() != b->argTypes_->size()) return false;
+    if(a->signature_->numArgs() != b->signature_->numArgs()) return false;
 
-    VectorOfSequenceTypes::const_iterator aa_i = a->argTypes_->begin();
-    VectorOfSequenceTypes::const_iterator ba_i = b->argTypes_->begin();
-    for(; aa_i != a->argTypes_->end() && ba_i != b->argTypes_->end(); ++aa_i, ++ba_i) {
-      if(!(*ba_i)->isSubtypeOf(*aa_i, context)) return false;
+    if(a->signature_->numArgs() != 0) {
+      ArgumentSpecs::const_iterator aa_i = a->signature_->argSpecs->begin();
+      ArgumentSpecs::const_iterator ba_i = b->signature_->argSpecs->begin();
+      for(; aa_i != a->signature_->argSpecs->end() && ba_i != b->signature_->argSpecs->end(); ++aa_i, ++ba_i) {
+        if(!(*ba_i)->getType()->isSubtypeOf((*aa_i)->getType())) return false;
+      }
     }
 
-    return a->returnType_->isSubtypeOf(b->returnType_, context);
+    return a->signature_->returnType->isSubtypeOf(b->signature_->returnType);
   }
   }
   return true;
@@ -1150,17 +1148,13 @@ Result SequenceType::convertFunctionArg(const Result &input, DynamicContext *con
     }
     // If the expected type is a sequence of an atomic type (possibly with an occurrence indicator *, +, or ?),
     // the following conversions are applied:
-    else if(testType == ItemType::TEST_ATOMIC_TYPE) {
+    else if(testType == ItemType::TEST_ATOMIC_TYPE && m_pItemType->getTypeName() != 0) {
       const XMLCh *uri = m_pItemType->getTypeURI();
       const XMLCh *name = m_pItemType->getTypeName();
+      bool isPrimitive = m_pItemType->isPrimitive();
+      AnyAtomicType::AtomicObjectType typeIndex = m_pItemType->getPrimitiveType();;
 
-      bool isPrimitive = false;
-      AnyAtomicType::AtomicObjectType typeIndex = context->getItemFactory()->getPrimitiveTypeIndex(uri, name, isPrimitive);
-
-      if(!XPath2Utils::equals(name, AnyAtomicType::fgDT_ANYATOMICTYPE) ||
-         !XPath2Utils::equals(uri, SchemaSymbols::fgURI_SCHEMAFORSCHEMA)) {
-        result = new PromoteUntypedResult(location, result, isPrimitive, typeIndex, uri, name);
-      }
+      result = new PromoteUntypedResult(location, result, isPrimitive, typeIndex, uri, name);
 
       if(XPath2Utils::equals(uri, SchemaSymbols::fgURI_SCHEMAFORSCHEMA)) {
         if(XPath2Utils::equals(name, SchemaSymbols::fgDT_DOUBLE) ||
@@ -1239,29 +1233,21 @@ ASTNode *SequenceType::convertFunctionArg(ASTNode *arg, StaticContext *context, 
       arg = new (mm) XQAtomize(arg, mm);
       arg->setLocationInfo(location);
 
-      const XMLCh *uri = m_pItemType->getTypeURI();
-      const XMLCh *name = m_pItemType->getTypeName();
-
-      if(numericFunction &&
-         XPath2Utils::equals(uri, SchemaSymbols::fgURI_SCHEMAFORSCHEMA) &&
-         XPath2Utils::equals(name, AnyAtomicType::fgDT_ANYATOMICTYPE)) {
-        arg = new (mm) XQPromoteUntyped(arg, 
-                                        SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-                                        SchemaSymbols::fgDT_DOUBLE, 
-                                        mm);
+      if(numericFunction && m_pItemType->getTypeName() == 0) {
+        arg = new (mm) XQPromoteUntyped(arg, (ItemType*)&ItemType::DOUBLE, mm);
         arg->setLocationInfo(location);
       }
       else {
-        arg = new (mm) XQPromoteUntyped(arg, uri, name, mm);
+        arg = new (mm) XQPromoteUntyped(arg, m_pItemType, mm);
         arg->setLocationInfo(location);
       }
 
-      arg = new (mm) XQPromoteNumeric(arg, uri, name, mm);
+      arg = new (mm) XQPromoteNumeric(arg, m_pItemType, mm);
       arg->setLocationInfo(location);
-      arg = new (mm) XQPromoteAnyURI(arg, uri, name, mm);
+      arg = new (mm) XQPromoteAnyURI(arg, m_pItemType, mm);
       arg->setLocationInfo(location);
     }
-    else if(testType == ItemType::TEST_FUNCTION && m_pItemType->getReturnType() != 0) {
+    else if(testType == ItemType::TEST_FUNCTION && m_pItemType->getFunctionSignature() != 0) {
       arg = new (mm) XQFunctionCoercion(arg, this, mm);
     }
   }

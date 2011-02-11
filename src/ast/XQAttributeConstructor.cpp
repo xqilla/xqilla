@@ -128,7 +128,7 @@ ASTNode *XQAttributeConstructor::staticTypingImpl(StaticContext *context)
     }
   }
 
-  _src.getStaticType() = StaticType::ATTRIBUTE_TYPE;
+  _src.getStaticType() = &ItemType::ATTRIBUTE;
   _src.creative(true);
   _src.setProperties(StaticAnalysis::DOCORDER | StaticAnalysis::GROUPED |
                      StaticAnalysis::PEER | StaticAnalysis::SUBTREE | StaticAnalysis::SAMEDOC |

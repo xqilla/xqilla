@@ -35,19 +35,24 @@
 
 XERCES_CPP_NAMESPACE_USE;
 
-ASTNode *XQLiteral::create(const Item::Ptr &item, DynamicContext *context, XPath2MemoryManager* memMgr,
+ASTNode *XQLiteral::create(const Item::Ptr &item, DynamicContext *context, XPath2MemoryManager* mm,
                            const LocationInfo *location)
 {
   if(item->getType() == Item::ATOMIC) {
+    const AnyAtomicType *atom = (const AnyAtomicType*)item.get();
+
+    const XMLCh *puri, *pname;
+    context->getItemFactory()->getPrimitiveTypeName(atom->getPrimitiveTypeIndex(), puri, pname);
+    bool isPrimitive = XPath2Utils::equals(atom->getTypeName(), pname) && XPath2Utils::equals(atom->getTypeURI(), puri);
+
+    ItemType *type = new (mm) ItemType(atom->getPrimitiveTypeIndex(), isPrimitive, atom->getTypeURI(), atom->getTypeName(), context->getDocumentCache());
     ASTNode *result = 0;
 
-    const AnyAtomicType *atom = (const AnyAtomicType*)item.get();
     switch(atom->getPrimitiveTypeIndex()) {
     case AnyAtomicType::QNAME: {
       const ATQNameOrDerived *qname = (const ATQNameOrDerived*)atom;
-      result = new (memMgr) XQQNameLiteral(atom->getTypeURI(), atom->getTypeName(),
-                                           qname->getURI(), qname->getPrefix(),
-                                           qname->getName(), memMgr);
+      result = new (mm) XQQNameLiteral(type, qname->getURI(), qname->getPrefix(),
+                                       qname->getName(), mm);
       break;
     }
     case AnyAtomicType::DECIMAL:
@@ -55,15 +60,13 @@ ASTNode *XQLiteral::create(const Item::Ptr &item, DynamicContext *context, XPath
     case AnyAtomicType::FLOAT: {
       const Numeric *number = (const Numeric*)atom;
       if(number->getState() == Numeric::NUM || (number->getState() == Numeric::NEG_NUM && !number->isZero())) {
-        result = new (memMgr) XQNumericLiteral(number->getTypeURI(), number->getTypeName(), number->asMAPM(),
-                                               number->getPrimitiveTypeIndex(), memMgr);
+        result = new (mm) XQNumericLiteral(type, number->asMAPM(), mm);
         break;
       }
       // Fall through
     }
     default:
-      result = new (memMgr) XQLiteral(atom->getTypeURI(), atom->getTypeName(), atom->asString(context),
-                                      atom->getPrimitiveTypeIndex(), memMgr);
+      result = new (mm) XQLiteral(type, atom->asString(context), mm);
       break;
     }
 
@@ -77,28 +80,23 @@ ASTNode *XQLiteral::create(const Item::Ptr &item, DynamicContext *context, XPath
 
 ASTNode *XQLiteral::create(bool value, XPath2MemoryManager* mm, const LocationInfo *location)
 {
-  ASTNode *result = new (mm) XQLiteral(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-                                       SchemaSymbols::fgDT_BOOLEAN,
-                                       value ? SchemaSymbols::fgATTVAL_TRUE : SchemaSymbols::fgATTVAL_FALSE,
-                                       AnyAtomicType::BOOLEAN, mm);
+  ASTNode *result = new (mm) XQLiteral((ItemType*)&ItemType::BOOLEAN, value ? SchemaSymbols::fgATTVAL_TRUE : SchemaSymbols::fgATTVAL_FALSE, mm);
   result->setLocationInfo(location);
   return result;
 }
 
-XQLiteral::XQLiteral(const XMLCh* typeURI, const XMLCh* typeName, const XMLCh* value,
-                     AnyAtomicType::AtomicObjectType primitiveType, XPath2MemoryManager* memMgr)
+XQLiteral::XQLiteral(ItemType *type, const XMLCh* value,
+                     XPath2MemoryManager* memMgr)
   : ASTNodeImpl(LITERAL, memMgr),
-    typeURI_(typeURI),
-    typeName_(typeName),
-    primitiveType_(primitiveType),
+    type_(type),
     value_(value)
 {
-  _src.getStaticType() = StaticType::create(primitiveType_);
+  _src.getStaticType() = type_;
 }
 
 bool XQLiteral::isDateOrTimeAndHasNoTimezone(StaticContext *context) const
 {
-  switch(primitiveType_) {
+  switch(type_->getPrimitiveType()) {
   case AnyAtomicType::DATE:
   case AnyAtomicType::DATE_TIME:
   case AnyAtomicType::TIME:
@@ -110,7 +108,7 @@ bool XQLiteral::isDateOrTimeAndHasNoTimezone(StaticContext *context) const
     if(context == 0) return true;
     AutoDelete<DynamicContext> dContext(context->createDynamicContext());
     dContext->setMemoryManager(context->getMemoryManager());
-    Item::Ptr item = dContext->getItemFactory()->createDerivedFromAtomicType(primitiveType_, typeURI_, typeName_, value_, dContext);
+    Item::Ptr item = dContext->getItemFactory()->createDerivedFromAtomicType(type_->getPrimitiveType(), type_->getTypeURI(), type_->getTypeName(), value_, dContext);
     return !((const DateOrTimeType*)item.get())->hasTimezone();
   }
   default: break;
@@ -121,7 +119,9 @@ bool XQLiteral::isDateOrTimeAndHasNoTimezone(StaticContext *context) const
 
 ASTNode* XQLiteral::staticResolution(StaticContext *context)
 {
-  switch(primitiveType_) {
+  type_->staticResolution(context, this);
+
+  switch(type_->getPrimitiveType()) {
   case AnyAtomicType::DECIMAL:
   case AnyAtomicType::FLOAT:
   case AnyAtomicType::DOUBLE: {
@@ -148,28 +148,34 @@ ASTNode *XQLiteral::staticTypingImpl(StaticContext *context)
 
 Result XQLiteral::createResult(DynamicContext* context, int flags) const
 {
-  return (Item::Ptr)context->getItemFactory()->createDerivedFromAtomicType(primitiveType_, typeURI_, typeName_, value_, context).get();
+  if(type_->isPrimitive()) {
+    return (Item::Ptr)context->getItemFactory()->
+      createDerivedFromAtomicType(type_->getPrimitiveType(), value_, context).get();
+  }
+  else {
+    return (Item::Ptr)context->getItemFactory()->
+      createDerivedFromAtomicType(type_->getPrimitiveType(), type_->getTypeURI(), type_->getTypeName(), value_, context).get();
+  }
 }
 
 EventGenerator::Ptr XQLiteral::generateEvents(EventHandler *events, DynamicContext *context,
                                               bool preserveNS, bool preserveType) const
 {
-  events->atomicItemEvent(primitiveType_, value_, typeURI_, typeName_);
+  events->atomicItemEvent(type_->getPrimitiveType(), value_, type_->getTypeURI(), type_->getTypeName());
   return 0;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-XQQNameLiteral::XQQNameLiteral(const XMLCh* typeURI, const XMLCh* typeName, const XMLCh* uri,
+XQQNameLiteral::XQQNameLiteral(ItemType *type, const XMLCh* uri,
                                const XMLCh* prefix, const XMLCh* localname, XPath2MemoryManager* memMgr)
   : ASTNodeImpl(QNAME_LITERAL, memMgr),
-    typeURI_(typeURI),
-    typeName_(typeName),
+    type_(type),
     uri_(uri),
     prefix_(prefix),
     localname_(localname)
 {
-  _src.getStaticType() = StaticType::QNAME_TYPE;
+  _src.getStaticType() = type_;
 }
 
 bool XQQNameLiteral::isDateOrTimeAndHasNoTimezone(StaticContext *context) const
@@ -189,7 +195,7 @@ ASTNode *XQQNameLiteral::staticTypingImpl(StaticContext *context)
 
 Result XQQNameLiteral::createResult(DynamicContext* context, int flags) const
 {
-  return Item::Ptr(new ATQNameOrDerivedImpl(typeURI_, typeName_, uri_, prefix_, localname_, context));
+  return Item::Ptr(new ATQNameOrDerivedImpl(type_->getTypeURI(), type_->getTypeName(), uri_, prefix_, localname_, context));
 }
 
 EventGenerator::Ptr XQQNameLiteral::generateEvents(EventHandler *events, DynamicContext *context,
@@ -201,20 +207,17 @@ EventGenerator::Ptr XQQNameLiteral::generateEvents(EventHandler *events, Dynamic
     buf.append(':');
   }
   buf.append(localname_);
-  events->atomicItemEvent(AnyAtomicType::QNAME, buf.getRawBuffer(), typeURI_, typeName_);
+  events->atomicItemEvent(AnyAtomicType::QNAME, buf.getRawBuffer(), type_->getTypeURI(), type_->getTypeName());
   return 0;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-XQNumericLiteral::XQNumericLiteral(const XMLCh* typeURI, const XMLCh* typeName, const MAPM &value,
-                                   AnyAtomicType::AtomicObjectType primitiveType, XPath2MemoryManager* memMgr)
+XQNumericLiteral::XQNumericLiteral(ItemType *type, const MAPM &value, XPath2MemoryManager* memMgr)
   : ASTNodeImpl(NUMERIC_LITERAL, memMgr),
-    typeURI_(typeURI),
-    typeName_(typeName),
-    primitiveType_(primitiveType)
+    type_(type)
 {
-  _src.getStaticType() = StaticType::create(primitiveType_);
+  _src.getStaticType() = type_;
 
   memset(&value_, 0, sizeof(value_));
 
@@ -255,13 +258,13 @@ MAPM XQNumericLiteral::getValue() const
 
 Result XQNumericLiteral::createResult(DynamicContext* context, int flags) const
 {
-  switch(primitiveType_) {
+  switch(type_->getPrimitiveType()) {
   case AnyAtomicType::DECIMAL:
-    return (Item::Ptr)context->getItemFactory()->createDecimalOrDerived(typeURI_, typeName_, getValue(), context);
+    return (Item::Ptr)context->getItemFactory()->createDecimalOrDerived(type_->getTypeURI(), type_->getTypeName(), getValue(), context);
   case AnyAtomicType::FLOAT:
-    return (Item::Ptr)context->getItemFactory()->createFloatOrDerived(typeURI_, typeName_, getValue(), context);
+    return (Item::Ptr)context->getItemFactory()->createFloatOrDerived(type_->getTypeURI(), type_->getTypeName(), getValue(), context);
   case AnyAtomicType::DOUBLE:
-    return (Item::Ptr)context->getItemFactory()->createDoubleOrDerived(typeURI_, typeName_, getValue(), context);
+    return (Item::Ptr)context->getItemFactory()->createDoubleOrDerived(type_->getTypeURI(), type_->getTypeName(), getValue(), context);
   default: break;
   }
   return 0;
@@ -270,20 +273,20 @@ Result XQNumericLiteral::createResult(DynamicContext* context, int flags) const
 EventGenerator::Ptr XQNumericLiteral::generateEvents(EventHandler *events, DynamicContext *context,
                                               bool preserveNS, bool preserveType) const
 {
-  switch(primitiveType_) {
+  switch(type_->getPrimitiveType()) {
   case AnyAtomicType::DECIMAL:
-    events->atomicItemEvent(primitiveType_, Numeric::asDecimalString(getValue(), ATDecimalOrDerivedImpl::g_nSignificantDigits,
-                                                                     context), typeURI_, typeName_);
+    events->atomicItemEvent(type_->getPrimitiveType(), Numeric::asDecimalString(getValue(), ATDecimalOrDerivedImpl::g_nSignificantDigits,
+                                                                                context), type_->getTypeURI(), type_->getTypeName());
     break;
   case AnyAtomicType::FLOAT:
-    events->atomicItemEvent(primitiveType_, Numeric::asDoubleString(Numeric::NUM, getValue(),
-                                                                    ATFloatOrDerivedImpl::g_nSignificantDigits, context),
-                            typeURI_, typeName_);
+    events->atomicItemEvent(type_->getPrimitiveType(), Numeric::asDoubleString(Numeric::NUM, getValue(),
+                                                                               ATFloatOrDerivedImpl::g_nSignificantDigits, context),
+                            type_->getTypeURI(), type_->getTypeName());
     break;
   case AnyAtomicType::DOUBLE:
-    events->atomicItemEvent(primitiveType_, Numeric::asDoubleString(Numeric::NUM, getValue(),
-                                                                    ATDoubleOrDerivedImpl::g_nSignificantDigits, context),
-                            typeURI_, typeName_);
+    events->atomicItemEvent(type_->getPrimitiveType(), Numeric::asDoubleString(Numeric::NUM, getValue(),
+                                                                               ATDoubleOrDerivedImpl::g_nSignificantDigits, context),
+                            type_->getTypeURI(), type_->getTypeName());
     break;
   default: break;
   }

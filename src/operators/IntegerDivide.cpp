@@ -35,12 +35,12 @@ IntegerDivide::IntegerDivide(const VectorOfASTNodes &args, XPath2MemoryManager* 
   // Nothing to do
 }
 
-void IntegerDivide::calculateStaticType()
+void IntegerDivide::calculateStaticType(StaticContext *context)
 {
   const StaticType &arg0 = _args[0]->getStaticAnalysis().getStaticType();
   // untypedAtomic will be promoted to xs:double
-  if(arg0.containsType(StaticType::NUMERIC_TYPE|StaticType::UNTYPED_ATOMIC_TYPE)) {
-    _src.getStaticType() = StaticType(StaticType::DECIMAL_TYPE, 0, 1);
+  if(arg0.containsType(TypeFlags::NUMERIC|TypeFlags::UNTYPED_ATOMIC)) {
+    _src.getStaticType() = StaticType::DECIMAL_QUESTION;
   }
 }
 

@@ -33,6 +33,7 @@
 #include <xqilla/exceptions/StaticErrorException.hpp>
 #include <xqilla/exceptions/ContextException.hpp>
 #include <xqilla/context/ItemFactory.hpp>
+#include <xqilla/runtime/Sequence.hpp>
 
 #include <xercesc/util/regx/RegularExpression.hpp>
 #include <xercesc/util/regx/Match.hpp>

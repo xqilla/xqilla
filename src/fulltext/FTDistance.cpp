@@ -39,10 +39,7 @@ FTSelection *FTDistance::staticResolution(StaticContext *context)
 {
   XPath2MemoryManager *mm = context->getMemoryManager();
 
-  ItemType *itemType = new (mm) ItemType(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-                                         SchemaSymbols::fgDT_INTEGER);
-  itemType->setLocationInfo(this);
-  SequenceType *seqType = new (mm) SequenceType(itemType, SequenceType::EXACTLY_ONE);
+  SequenceType *seqType = new (mm) SequenceType((ItemType*)&ItemType::INTEGER, SequenceType::EXACTLY_ONE);
   seqType->setLocationInfo(this);
 
   arg_ = arg_->staticResolution(context);

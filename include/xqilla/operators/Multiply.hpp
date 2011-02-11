@@ -17,10 +17,6 @@
  * limitations under the License.
  */
 
-/*
-   Multiply operator function
-*/
-
 #ifndef _MULTIPLY_HPP
 #define _MULTIPLY_HPP
 
@@ -28,7 +24,6 @@
 
 #include <xqilla/operators/ArithmeticOperator.hpp>
 
-/** OpTimes operator function*/
 class XQILLA_API Multiply : public ArithmeticOperator
 {
 public:
@@ -36,9 +31,9 @@ public:
 
   Multiply(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
   
-  void calculateStaticType();
+  void calculateStaticType(StaticContext *context);
   Item::Ptr execute(const AnyAtomicType::Ptr &atom1, const AnyAtomicType::Ptr &atom2, DynamicContext *context) const;
 };
 
-#endif // _FUNCTIONOPTIMES_HPP
+#endif
 

@@ -34,11 +34,11 @@ public:
   virtual ASTNode *staticTypingImpl(StaticContext *context);
   Result createResult(DynamicContext* context, int flags=0) const;
 
-  virtual void calculateStaticType() = 0;
+  virtual void calculateStaticType(StaticContext *context) = 0;
   virtual Item::Ptr execute(const AnyAtomicType::Ptr &arg1, const AnyAtomicType::Ptr &arg2, DynamicContext *context) const = 0;
 
 protected:
-  void calculateStaticTypeForNumerics(const StaticType &arg0, const StaticType &arg1);
+  void calculateStaticTypeForNumerics(const StaticType &arg0, const StaticType &arg1, const StaticContext *context);
 };
 
 #endif

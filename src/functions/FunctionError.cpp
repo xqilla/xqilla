@@ -61,7 +61,7 @@ ASTNode *FunctionError::staticTypingImpl(StaticContext *context)
   calculateSRCForArguments(context);
 
   // we need to specify item()*, or we get constant folded away all the time
-  _src.getStaticType() = StaticType(StaticType::ITEM_TYPE, 0, StaticType::UNLIMITED);
+  _src.getStaticType() = StaticType::ITEM_STAR;
 
   return this;
 }

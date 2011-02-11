@@ -28,6 +28,7 @@
 #include <xqilla/utils/UTF8Str.hpp>
 #include <xqilla/exceptions/ASTException.hpp>
 #include <xqilla/xerces/XercesConfiguration.hpp>
+#include <xqilla/runtime/Sequence.hpp>
 
 #include "../dom-api/XQillaImplementation.hpp"
 
@@ -41,6 +42,8 @@
 #include <xercesc/framework/LocalFileFormatTarget.hpp>
 #include <xercesc/util/XMLUniDefs.hpp>
 #include <xercesc/framework/XMLBuffer.hpp>
+
+#include <string>
 
 XERCES_CPP_NAMESPACE_USE;
 using namespace std;

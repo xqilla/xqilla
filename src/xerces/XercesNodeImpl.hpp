@@ -74,7 +74,7 @@ public:
   virtual Result dmNamespaceNodes(const DynamicContext* context, const LocationInfo *info) const;
   virtual Result dmChildren(const DynamicContext *context, const LocationInfo *info) const;
 
-  virtual Result getAxisResult(XQStep::Axis axis, const NodeTest *nodeTest, const DynamicContext *context, const LocationInfo *info) const;
+  virtual Result getAxisResult(Node::Axis axis, const NodeTest *nodeTest, const DynamicContext *context, const LocationInfo *info) const;
 
   virtual ATBooleanOrDerived::Ptr dmIsId(const DynamicContext* context) const;
   virtual ATBooleanOrDerived::Ptr dmIsIdRefs(const DynamicContext* context) const;

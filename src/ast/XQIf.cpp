@@ -97,7 +97,7 @@ ASTNode *XQIf::staticTypingImpl(StaticContext *context)
               X("Mixed updating and non-updating operands [err:XUST0001]"));
   }
 
-  _src.getStaticType() |= _whenFalse->getStaticAnalysis().getStaticType();
+  _src.getStaticType().typeUnion(_whenFalse->getStaticAnalysis().getStaticType());
   _src.setProperties(_src.getProperties() & _whenFalse->getStaticAnalysis().getProperties());
   _src.add(_whenFalse->getStaticAnalysis());
 

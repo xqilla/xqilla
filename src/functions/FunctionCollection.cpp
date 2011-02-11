@@ -53,7 +53,7 @@ ASTNode *FunctionCollection::staticTypingImpl(StaticContext *context)
 
   _src.setProperties(StaticAnalysis::DOCORDER | StaticAnalysis::GROUPED |
                      StaticAnalysis::SUBTREE);
-  _src.getStaticType() = StaticType(StaticType::NODE_TYPE, 0, StaticType::UNLIMITED);
+  _src.getStaticType() = StaticType::NODE_STAR;
   _src.availableCollectionsUsed(true);
   calculateSRCForArguments(context);
 

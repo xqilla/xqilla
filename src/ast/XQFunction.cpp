@@ -177,12 +177,11 @@ void XQFunction::calculateSRCForArguments(StaticContext *context)
 
   if(context) {
     if(signature_ && signature_->returnType) {
-      bool isPrimitive;
-      signature_->returnType->getStaticType(_src.getStaticType(), context, isPrimitive, this);
+      _src.getStaticType() = signature_->returnType;
     }
     else {
       // Default type is item()*
-      _src.getStaticType() = StaticType(StaticType::ITEM_TYPE, 0, StaticType::UNLIMITED);
+      _src.getStaticType() = StaticType::ITEM_STAR;
     }
   }
 }

@@ -24,6 +24,7 @@
 #include <xqilla/exceptions/XPath2TypeMatchException.hpp>
 #include <xqilla/items/FunctionRef.hpp>
 #include <xqilla/ast/XQLiteral.hpp>
+#include <xqilla/functions/FunctionSignature.hpp>
 
 XERCES_CPP_NAMESPACE_USE;
 using namespace std;
@@ -48,20 +49,28 @@ ASTNode *FunctionFunctionArity::staticTypingImpl(StaticContext *context)
   calculateSRCForArguments(context);
 
   if(context) {
+    int arity = -1;
     const StaticAnalysis &sa = _args[0]->getStaticAnalysis();
-    const StaticType &sType = sa.getStaticType();
-    if(sType.getReturnType() && sType.getMinArgs() == sType.getMaxArgs() && !sa.areDocsOrCollectionsUsed() && !sa.isNoFoldingForced()) {
-      XPath2MemoryManager* mm = context->getMemoryManager();
-
-      try {
-        AutoDelete<DynamicContext> dContext(context->createDynamicContext());
-        dContext->setMemoryManager(mm);
-        return XQLiteral::create(mm->createInteger(sType.getMinArgs()), dContext, mm, this);
-      }
-      catch(XQException &ex) {
-        // Constant folding failed
+    const StaticType::ItemTypes &types = sa.getStaticType().getTypes();
+    StaticType::ItemTypes::const_iterator i = types.begin();
+    for(; i != types.end(); ++i) {
+      if((*i)->getItemTestType() == ItemType::TEST_FUNCTION) {
+        if((*i)->getFunctionSignature() &&
+           (arity == -1 || arity == (int)(*i)->getFunctionSignature()->numArgs())) {
+          arity = (*i)->getFunctionSignature()->numArgs();
+        } else {
+          arity = -1;
+          break;
+        }
       }
     }
+
+    if(arity != -1 && !sa.areDocsOrCollectionsUsed() && !sa.isNoFoldingForced()) {
+      XPath2MemoryManager* mm = context->getMemoryManager();
+      ASTNode *result = new (mm) XQNumericLiteral((ItemType*)&ItemType::INTEGER, MAPM(arity), mm);
+      result->setLocationInfo(this);
+      return result;
+    }    
   }
 
   return this;

@@ -228,7 +228,7 @@ ASTNode *XQCallTemplate::staticTypingImpl(StaticContext *context)
       _src.getStaticType() = (*inIt)->getBodyStaticAnalysis().getStaticType();
       _src.setProperties((*inIt)->getBodyStaticAnalysis().getProperties());
     } else {
-      _src.getStaticType() |= (*inIt)->getBodyStaticAnalysis().getStaticType();
+      _src.getStaticType().typeUnion((*inIt)->getBodyStaticAnalysis().getStaticType());
       _src.setProperties(_src.getProperties() & (*inIt)->getBodyStaticAnalysis().getProperties());
     }
     _src.add((*inIt)->getBodyStaticAnalysis());

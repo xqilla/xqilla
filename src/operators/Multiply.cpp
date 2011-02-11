@@ -26,6 +26,7 @@
 #include <xqilla/items/ATDurationOrDerived.hpp>
 #include <xqilla/items/ATDecimalOrDerived.hpp>
 #include <xqilla/items/AnyAtomicType.hpp>
+#include <xqilla/framework/BasicMemoryManager.hpp>
 
 #include <xercesc/util/XMLUniDefs.hpp>
 
@@ -37,18 +38,24 @@ Multiply::Multiply(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
   // Nothing to do
 }
 
-void Multiply::calculateStaticType()
+void Multiply::calculateStaticType(StaticContext *context)
 {
   const StaticType &arg0 = _args[0]->getStaticAnalysis().getStaticType();
   const StaticType &arg1 = _args[1]->getStaticAnalysis().getStaticType();
 
-  calculateStaticTypeForNumerics(arg0, arg1);
+  calculateStaticTypeForNumerics(arg0, arg1, context);
 
   // Multiplying a duration by a number
-  if(arg0.containsType(StaticType::DAY_TIME_DURATION_TYPE|StaticType::YEAR_MONTH_DURATION_TYPE) && arg1.containsType(StaticType::NUMERIC_TYPE))
-    _src.getStaticType() |= arg0 & (StaticType::DAY_TIME_DURATION_TYPE|StaticType::YEAR_MONTH_DURATION_TYPE);
-  if(arg0.containsType(StaticType::NUMERIC_TYPE) && arg1.containsType(StaticType::DAY_TIME_DURATION_TYPE|StaticType::YEAR_MONTH_DURATION_TYPE))
-    _src.getStaticType() |= arg1 & (StaticType::DAY_TIME_DURATION_TYPE|StaticType::YEAR_MONTH_DURATION_TYPE);
+  if(arg0.containsType(TypeFlags::DAY_TIME_DURATION|TypeFlags::YEAR_MONTH_DURATION) && arg1.containsType(TypeFlags::NUMERIC)) {
+    StaticType tmp(BasicMemoryManager::get()); tmp = arg0;
+    tmp.typeIntersect(TypeFlags::DAY_TIME_DURATION|TypeFlags::YEAR_MONTH_DURATION);
+    _src.getStaticType().typeUnion(tmp);
+  }
+  if(arg0.containsType(TypeFlags::NUMERIC) && arg1.containsType(TypeFlags::DAY_TIME_DURATION|TypeFlags::YEAR_MONTH_DURATION)) {
+    StaticType tmp(BasicMemoryManager::get()); tmp = arg1;
+    tmp.typeIntersect(TypeFlags::DAY_TIME_DURATION|TypeFlags::YEAR_MONTH_DURATION);
+    _src.getStaticType().typeUnion(tmp);
+  }
 }
 
 Item::Ptr Multiply::execute(const AnyAtomicType::Ptr &atom1, const AnyAtomicType::Ptr &atom2, DynamicContext *context) const

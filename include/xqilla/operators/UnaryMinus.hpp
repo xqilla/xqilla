@@ -33,7 +33,7 @@ public:
   virtual ASTNode* staticResolution(StaticContext *context);
   virtual ASTNode *staticTypingImpl(StaticContext *context);
 
-  void calculateStaticType();
+  void calculateStaticType(StaticContext *context);
   Item::Ptr execute(const AnyAtomicType::Ptr &atom1, const AnyAtomicType::Ptr &atom2, DynamicContext *context) const;
 
   bool getIsPositive() const { return positive_; }

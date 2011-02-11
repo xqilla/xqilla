@@ -17,17 +17,12 @@
  * limitations under the License.
  */
 
-/*
-   Integer divide operator function
-*/
-
 #ifndef _INTEGER_DIVIDE_HPP
 #define _INTEGER_DIVIDE_HPP
 
 #include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/operators/ArithmeticOperator.hpp>
 
-/** OpIntegerDivide operator function*/
 class XQILLA_API IntegerDivide : public ArithmeticOperator
 {
 public:
@@ -35,9 +30,9 @@ public:
 
   IntegerDivide(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
   
-  void calculateStaticType();
+  void calculateStaticType(StaticContext *context);
   Item::Ptr execute(const AnyAtomicType::Ptr &atom1, const AnyAtomicType::Ptr &atom2, DynamicContext *context) const;
 };
 
-#endif // _INTEGER_DIVIDE_HPP
+#endif
 

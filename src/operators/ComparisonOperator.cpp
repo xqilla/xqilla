@@ -72,8 +72,7 @@ ASTNode* ComparisonOperator::staticResolution(StaticContext *context)
     (*i)->setLocationInfo(this);
 
     // 4. Any atomized operand that has the dynamic type xdt:untypedAtomic is cast to the type xs:string.
-    *i = new (mm) XQPromoteUntyped(*i, SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-                                   SchemaSymbols::fgDT_STRING, mm);
+    *i = new (mm) XQPromoteUntyped(*i, (ItemType*)&ItemType::STRING, mm);
     (*i)->setLocationInfo(this);
 
     *i = (*i)->staticResolution(context);
@@ -112,8 +111,8 @@ ASTNode *ComparisonOperator::staticTypingImpl(StaticContext *context)
   }
 
   if(emptyArgument)
-    _src.getStaticType() = StaticType(StaticType::BOOLEAN_TYPE, 0, 1);
-  else _src.getStaticType() = StaticType(StaticType::BOOLEAN_TYPE, 1, 1);
+    _src.getStaticType() = StaticType::BOOLEAN_QUESTION;
+  else _src.getStaticType() = StaticType::BOOLEAN;
 
   return this;
 }

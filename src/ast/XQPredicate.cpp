@@ -88,7 +88,7 @@ Result XQPredicate::createResult(DynamicContext* context, int flags) const
     contextSize = seq.getLength();
     parent = new SequenceResult(this, seq);
   }
-  if(src.getStaticType().isType(StaticType::NUMERIC_TYPE) &&
+  if(src.getStaticType().isType(TypeFlags::NUMERIC) &&
      src.getStaticType().getMin() <= 1 &&
      src.getStaticType().getMax() >= 1 &&
      !src.isContextItemUsed() && !src.isContextPositionUsed()) {
@@ -96,7 +96,7 @@ Result XQPredicate::createResult(DynamicContext* context, int flags) const
     // item or position
     return new NumericPredicateFilterResult(parent, predicate_, contextSize);
   }
-  else if(!src.getStaticType().containsType(StaticType::NUMERIC_TYPE) ||
+  else if(!src.getStaticType().containsType(TypeFlags::NUMERIC) ||
           src.getStaticType().getMin() > 1 ||
           src.getStaticType().getMax() < 1) {
     // It only contains non-numeric results
@@ -111,7 +111,7 @@ Result XQPredicate::iterateResult(const Result &contextItems, DynamicContext *co
 {
   const StaticAnalysis &src = predicate_->getStaticAnalysis();
 
-  if((src.getStaticType().containsType(StaticType::NUMERIC_TYPE) &&
+  if((src.getStaticType().containsType(TypeFlags::NUMERIC) &&
       src.getStaticType().getMin() <= 1 &&
       src.getStaticType().getMax() >= 1)
      || src.isContextPositionUsed() || src.isContextSizeUsed()) {

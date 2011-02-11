@@ -94,7 +94,7 @@ bool ASTNodeImpl::isDateOrTimeAndHasNoTimezone(StaticContext *context) const
 {
   // To be safe, assume any value that contains a timezone might
   // not have one specified.
-  return _src.getStaticType().containsType(StaticType::TIMEZONE_TYPE);
+  return _src.getStaticType().containsType(TypeFlags::TIMEZONE);
 }
 
 ASTNode::whichType ASTNodeImpl::getType() const

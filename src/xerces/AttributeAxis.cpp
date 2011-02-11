@@ -21,7 +21,7 @@
 #include "AttributeAxis.hpp"
 #include <xqilla/axis/NodeTest.hpp>
 
-#include <xercesc/util/XMLUniDefs.hpp>
+#include <xercesc/util/XMLUni.hpp>
 
 #if defined(XERCES_HAS_CPP_NAMESPACE)
 XERCES_CPP_NAMESPACE_USE
@@ -61,16 +61,11 @@ const DOMNode *AttributeAxis::nextNode(DynamicContext *context)
         if(*name++!=*xmlns++)
           break;
       }
-      if(*xmlns==0 && (*name==0 || *name==chColon))
+      if(*xmlns==0 && (*name==0 || *name==':'))
         result = 0;
     }
   }
 
   return result;
-}
-
-std::string AttributeAxis::asString(DynamicContext *context, int indent) const
-{
-  return "AttributeAxis";
 }
 

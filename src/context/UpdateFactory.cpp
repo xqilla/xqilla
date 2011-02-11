@@ -28,6 +28,7 @@
 #include <xqilla/update/PendingUpdateList.hpp>
 #include <xqilla/exceptions/DynamicErrorException.hpp>
 #include <xqilla/utils/XPath2Utils.hpp>
+#include <xqilla/runtime/Result.hpp>
 
 #include <xercesc/framework/XMLBuffer.hpp>
 

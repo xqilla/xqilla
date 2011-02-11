@@ -57,7 +57,7 @@ ASTNode *XQCopyOf::staticTypingImpl(StaticContext *context)
 
   _src.setProperties(0);
 
-  if(!_src.getStaticType().containsType(StaticType::NODE_TYPE)) {
+  if(!_src.getStaticType().containsType(TypeFlags::NODE)) {
     return expr_;
   }
 

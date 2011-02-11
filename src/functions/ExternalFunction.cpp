@@ -23,6 +23,8 @@
 #include <xqilla/runtime/Result.hpp>
 #include <xqilla/update/PendingUpdateList.hpp>
 
+#include <xercesc/framework/XMLBuffer.hpp>
+
 XERCES_CPP_NAMESPACE_USE;
 
 ExternalFunction::ExternalFunction(const XMLCh *uri, const XMLCh *name, unsigned int numberOfArgs, XPath2MemoryManager *mm)

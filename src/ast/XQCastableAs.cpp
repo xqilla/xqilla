@@ -44,18 +44,7 @@ XERCES_CPP_NAMESPACE_USE;
 XQCastableAs::XQCastableAs(ASTNode* expr, SequenceType* exprType, XPath2MemoryManager* memMgr)
   : ASTNodeImpl(CASTABLE_AS, memMgr),
     _expr(expr),
-    _exprType(exprType),
-    _isPrimitive(false),
-    _typeIndex((AnyAtomicType::AtomicObjectType)-1)
-{
-}
-
-XQCastableAs::XQCastableAs(ASTNode* expr, SequenceType* exprType, bool isPrimitive, AnyAtomicType::AtomicObjectType typeIndex, XPath2MemoryManager* memMgr)
-  : ASTNodeImpl(CASTABLE_AS, memMgr),
-    _expr(expr),
-    _exprType(exprType),
-    _isPrimitive(isPrimitive),
-    _typeIndex(typeIndex)
+    _exprType(exprType)
 {
 }
 
@@ -71,9 +60,10 @@ ASTNode* XQCastableAs::staticResolution(StaticContext *context)
   _exprType->staticResolution(context);
 
   const ItemType* itemType = _exprType->getItemType();
-  if(XPath2Utils::equals(itemType->getTypeURI(), SchemaSymbols::fgURI_SCHEMAFORSCHEMA) &&
-     (XPath2Utils::equals(itemType->getTypeName(), XMLUni::fgNotationString) ||
-      XPath2Utils::equals(itemType->getTypeName(), AnyAtomicType::fgDT_ANYATOMICTYPE)))
+  if(itemType->getTypeName() == 0 ||
+     (XPath2Utils::equals(itemType->getTypeURI(), SchemaSymbols::fgURI_SCHEMAFORSCHEMA) &&
+      (XPath2Utils::equals(itemType->getTypeName(), XMLUni::fgNotationString) ||
+       XPath2Utils::equals(itemType->getTypeName(), AnyAtomicType::fgDT_ANYATOMICTYPE))))
     XQThrow(TypeErrorException,X("XQCastableAs::staticResolution"),
             X("The target type of a castable expression must be an atomic type that is in the in-scope schema types "
               "and is not xs:NOTATION or xdt:anyAtomicType [err:XPST0080]"));
@@ -81,28 +71,24 @@ ASTNode* XQCastableAs::staticResolution(StaticContext *context)
   if(_exprType->getItemTestType() != ItemType::TEST_ATOMIC_TYPE)
     XQThrow(TypeErrorException,X("XQCastableAs::staticResolution"),X("Cannot cast to a non atomic type"));
 
-  _typeIndex = context->getItemFactory()->
-    getPrimitiveTypeIndex(_exprType->getItemType()->getTypeURI(),
-                          _exprType->getItemType()->getTypeName(), _isPrimitive);
-
   // If this is a cast to xs:QName or xs:NOTATION and the argument is a string literal
   // evaluate immediately, since they aren't allowed otherwise
-  if((_typeIndex == AnyAtomicType::QNAME || _typeIndex == AnyAtomicType::NOTATION) &&
+  if((itemType->getPrimitiveType() == AnyAtomicType::QNAME || itemType->getPrimitiveType() == AnyAtomicType::NOTATION) &&
      _expr->getType() == LITERAL &&
-     ((XQLiteral*)_expr)->getPrimitiveType() == AnyAtomicType::STRING) {
+     ((XQLiteral*)_expr)->getItemType()->getPrimitiveType() == AnyAtomicType::STRING) {
 
     AutoDelete<DynamicContext> dContext(context->createDynamicContext());
     dContext->setMemoryManager(mm);
 
     bool result = false;
     try {
-      if(_isPrimitive) {
+      if(itemType->isPrimitive()) {
         ((AnyAtomicType*)_expr->createResult(dContext)->next(dContext).get())->
-          castAsNoCheck(_typeIndex, 0, 0, dContext);
+          castAsNoCheck(itemType->getPrimitiveType(), 0, 0, dContext);
       }
       else {
         ((AnyAtomicType*)_expr->createResult(dContext)->next(dContext).get())->
-          castAsNoCheck(_typeIndex, _exprType->getItemType()->getTypeURI(),
+          castAsNoCheck(itemType->getPrimitiveType(), _exprType->getItemType()->getTypeURI(),
                         _exprType->getItemType()->getTypeName(), dContext);
       }
       result = true;
@@ -127,7 +113,7 @@ ASTNode *XQCastableAs::staticTypingImpl(StaticContext *context)
 {
   _src.clear();
 
-  _src.getStaticType() = StaticType::BOOLEAN_TYPE;
+  _src.getStaticType() = &ItemType::BOOLEAN;
   _src.add(_expr->getStaticAnalysis());
 
   return this;
@@ -176,11 +162,11 @@ Item::Ptr XQCastableAs::CastableAsResult::getSingleResult(DynamicContext *contex
     else {
       //    4. If the result of atomization is a single atomic value, the result of the cast expression depends on the input type and the target type.
       //       The normative definition of these rules is given in [XQuery 1.0 and XPath 2.0 Functions and Operators].
-      if(_di->getIsPrimitive()) {
-        result = ((const AnyAtomicType::Ptr)first)->castable(_di->getTypeIndex(), 0, 0, context);
+      if(_di->getSequenceType()->getItemType()->isPrimitive()) {
+        result = ((const AnyAtomicType::Ptr)first)->castable(_di->getSequenceType()->getItemType()->getPrimitiveType(), 0, 0, context);
       }
       else {
-        result = ((const AnyAtomicType::Ptr)first)->castable(_di->getTypeIndex(),
+        result = ((const AnyAtomicType::Ptr)first)->castable(_di->getSequenceType()->getItemType()->getPrimitiveType(),
                                                              _di->getSequenceType()->getItemType()->getTypeURI(),
                                                              _di->getSequenceType()->getItemType()->getTypeName(),
                                                              context);

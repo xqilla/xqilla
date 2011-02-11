@@ -33,24 +33,10 @@
 XERCES_CPP_NAMESPACE_USE
 #endif
 
-XQPromoteUntyped::XQPromoteUntyped(ASTNode* expr, const XMLCh *uri, const XMLCh *name, XPath2MemoryManager* memMgr)
+XQPromoteUntyped::XQPromoteUntyped(ASTNode* expr, const ItemType *type, XPath2MemoryManager* memMgr)
   : ASTNodeImpl(PROMOTE_UNTYPED, memMgr),
     expr_(expr),
-    uri_(uri),
-    name_(name),
-    isPrimitive_(false),
-    typeIndex_((AnyAtomicType::AtomicObjectType)-1)
-{
-}
-
-XQPromoteUntyped::XQPromoteUntyped(ASTNode* expr, const XMLCh *uri, const XMLCh *name, bool isPrimitive,
-                                   AnyAtomicType::AtomicObjectType typeIndex, XPath2MemoryManager* memMgr)
-  : ASTNodeImpl(PROMOTE_UNTYPED, memMgr),
-    expr_(expr),
-    uri_(uri),
-    name_(name),
-    isPrimitive_(isPrimitive),
-    typeIndex_(typeIndex)
+    type_(type)
 {
 }
 
@@ -59,12 +45,10 @@ ASTNode* XQPromoteUntyped::staticResolution(StaticContext *context)
   expr_ = expr_->staticResolution(context);
 
   // crioux thinks this should also add: unless the target type is anyAtomicType!
-  if(XPath2Utils::equals(name_, AnyAtomicType::fgDT_ANYATOMICTYPE) && 
-     XPath2Utils::equals(uri_, SchemaSymbols::fgURI_SCHEMAFORSCHEMA)) {
+  if(type_->getTypeName() == 0) {
     return substitute(expr_);
   }
 
-  typeIndex_ = context->getItemFactory()->getPrimitiveTypeIndex(uri_, name_, isPrimitive_);
   return this;
 }
 
@@ -75,11 +59,11 @@ ASTNode *XQPromoteUntyped::staticTypingImpl(StaticContext *context)
   _src.getStaticType() = expr_->getStaticAnalysis().getStaticType();
   _src.add(expr_->getStaticAnalysis());
 
-  if(!_src.getStaticType().containsType(StaticType::UNTYPED_ATOMIC_TYPE)) {
+  if(!_src.getStaticType().containsType(TypeFlags::UNTYPED_ATOMIC)) {
     return substitute(expr_);
   }
 
-  _src.getStaticType().substitute(StaticType::UNTYPED_ATOMIC_TYPE, StaticType::create(typeIndex_));
+  _src.getStaticType().substitute(TypeFlags::UNTYPED_ATOMIC, type_);
 
   return this;
 }
@@ -92,10 +76,10 @@ Result XQPromoteUntyped::createResult(DynamicContext* context, int flags) const
 PromoteUntypedResult::PromoteUntypedResult(const XQPromoteUntyped *di, const Result &parent)
   : ResultImpl(di),
     parent_(parent),
-    isPrimitive_(di->getIsPrimitive()),
-    typeIndex_(di->getTypeIndex()),
-    uri_(di->getTypeURI()),
-    name_(di->getTypeName())
+    isPrimitive_(di->getItemType()->isPrimitive()),
+    typeIndex_(di->getItemType()->getPrimitiveType()),
+    uri_(di->getItemType()->getTypeURI()),
+    name_(di->getItemType()->getTypeName())
 {
 }
 
@@ -146,22 +130,10 @@ Item::Ptr PromoteUntypedResult::next(DynamicContext *context)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-XQPromoteNumeric::XQPromoteNumeric(ASTNode* expr, const XMLCh *uri, const XMLCh *name, XPath2MemoryManager* memMgr)
+XQPromoteNumeric::XQPromoteNumeric(ASTNode* expr, const ItemType *type, XPath2MemoryManager* memMgr)
   : ASTNodeImpl(PROMOTE_NUMERIC, memMgr),
     expr_(expr),
-    uri_(uri),
-    name_(name),
-    typeIndex_((AnyAtomicType::AtomicObjectType)-1)
-{
-}
-
-XQPromoteNumeric::XQPromoteNumeric(ASTNode* expr, const XMLCh *uri, const XMLCh *name,
-                                   AnyAtomicType::AtomicObjectType typeIndex, XPath2MemoryManager* memMgr)
-  : ASTNodeImpl(PROMOTE_NUMERIC, memMgr),
-    expr_(expr),
-    uri_(uri),
-    name_(name),
-    typeIndex_(typeIndex)
+    type_(type)
 {
 }
 
@@ -169,14 +141,12 @@ ASTNode* XQPromoteNumeric::staticResolution(StaticContext *context)
 {
   expr_ = expr_->staticResolution(context);
 
-  if(!((XPath2Utils::equals(name_, SchemaSymbols::fgDT_DOUBLE) ||
-        XPath2Utils::equals(name_, SchemaSymbols::fgDT_FLOAT)) &&
-       XPath2Utils::equals(uri_, SchemaSymbols::fgURI_SCHEMAFORSCHEMA))) {
+  if(!((XPath2Utils::equals(type_->getTypeName(), SchemaSymbols::fgDT_DOUBLE) ||
+        XPath2Utils::equals(type_->getTypeName(), SchemaSymbols::fgDT_FLOAT)) &&
+       XPath2Utils::equals(type_->getTypeURI(), SchemaSymbols::fgURI_SCHEMAFORSCHEMA))) {
     return substitute(expr_);
   }
 
-  bool isPrimitive;
-  typeIndex_ = context->getItemFactory()->getPrimitiveTypeIndex(uri_, name_, isPrimitive);
   return this;
 }
 
@@ -187,15 +157,15 @@ ASTNode *XQPromoteNumeric::staticTypingImpl(StaticContext *context)
   _src.getStaticType() = expr_->getStaticAnalysis().getStaticType();
   _src.add(expr_->getStaticAnalysis());
 
-  if(typeIndex_ == AnyAtomicType::DOUBLE) {
-    if(!_src.getStaticType().containsType(StaticType::DECIMAL_TYPE | StaticType::FLOAT_TYPE))
+  if(type_->getPrimitiveType() == AnyAtomicType::DOUBLE) {
+    if(!_src.getStaticType().containsType(TypeFlags::DECIMAL | TypeFlags::FLOAT))
       return substitute(expr_);
-    _src.getStaticType().substitute(StaticType::DECIMAL_TYPE | StaticType::FLOAT_TYPE, StaticType::DOUBLE_TYPE);
+    _src.getStaticType().substitute(TypeFlags::DECIMAL | TypeFlags::FLOAT, StaticType::DOUBLE);
   }
-  else if(typeIndex_ == AnyAtomicType::FLOAT) {
-    if(!_src.getStaticType().containsType(StaticType::DECIMAL_TYPE))
+  else if(type_->getPrimitiveType() == AnyAtomicType::FLOAT) {
+    if(!_src.getStaticType().containsType(TypeFlags::DECIMAL))
       return substitute(expr_);
-    _src.getStaticType().substitute(StaticType::DECIMAL_TYPE, StaticType::FLOAT_TYPE);
+    _src.getStaticType().substitute(TypeFlags::DECIMAL | TypeFlags::FLOAT, StaticType::FLOAT);
   }
   else {
     return substitute(expr_);
@@ -206,7 +176,7 @@ ASTNode *XQPromoteNumeric::staticTypingImpl(StaticContext *context)
 
 Result XQPromoteNumeric::createResult(DynamicContext* context, int flags) const
 {
-  return new PromoteNumericResult(this, expr_->createResult(context, flags), typeIndex_);
+  return new PromoteNumericResult(this, expr_->createResult(context, flags), type_->getPrimitiveType());
 }
 
 Item::Ptr PromoteNumericResult::next(DynamicContext *context)
@@ -243,11 +213,10 @@ Item::Ptr PromoteNumericResult::next(DynamicContext *context)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-XQPromoteAnyURI::XQPromoteAnyURI(ASTNode* expr, const XMLCh *uri, const XMLCh *name, XPath2MemoryManager* memMgr)
+XQPromoteAnyURI::XQPromoteAnyURI(ASTNode* expr, const ItemType *type, XPath2MemoryManager* memMgr)
   : ASTNodeImpl(PROMOTE_ANY_URI, memMgr),
     expr_(expr),
-    uri_(uri),
-    name_(name)
+    type_(type)
 {
 }
 
@@ -255,8 +224,8 @@ ASTNode* XQPromoteAnyURI::staticResolution(StaticContext *context)
 {
   expr_ = expr_->staticResolution(context);
 
-  if(!XPath2Utils::equals(name_, SchemaSymbols::fgDT_STRING) ||
-     !XPath2Utils::equals(uri_, SchemaSymbols::fgURI_SCHEMAFORSCHEMA)) {
+  if(!XPath2Utils::equals(type_->getTypeName(), SchemaSymbols::fgDT_STRING) ||
+     !XPath2Utils::equals(type_->getTypeURI(), SchemaSymbols::fgURI_SCHEMAFORSCHEMA)) {
     return substitute(expr_);
   }
 
@@ -270,11 +239,11 @@ ASTNode *XQPromoteAnyURI::staticTypingImpl(StaticContext *context)
   _src.getStaticType() = expr_->getStaticAnalysis().getStaticType();
   _src.add(expr_->getStaticAnalysis());
 
-  if(!_src.getStaticType().containsType(StaticType::ANY_URI_TYPE)) {
+  if(!_src.getStaticType().containsType(TypeFlags::ANY_URI)) {
     return substitute(expr_);
   }
 
-  _src.getStaticType().substitute(StaticType::ANY_URI_TYPE, StaticType::STRING_TYPE);
+  _src.getStaticType().substitute(TypeFlags::ANY_URI, StaticType::STRING);
 
   return this;
 }

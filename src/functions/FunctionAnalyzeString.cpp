@@ -25,6 +25,8 @@
 #include <xqilla/ast/XQAnalyzeString.hpp>
 #include <xqilla/schema/SequenceType.hpp>
 #include <xqilla/items/FunctionRef.hpp>
+#include <xqilla/functions/FunctionSignature.hpp>
+#include <xqilla/framework/BasicMemoryManager.hpp>
 
 #include <xercesc/validators/schema/SchemaSymbols.hpp>
 
@@ -56,13 +58,25 @@ ASTNode *FunctionAnalyzeString::staticTypingImpl(StaticContext *context)
 
   // TBD Precompile the regex - jpcs
 
-  if(_args[2]->getStaticAnalysis().getStaticType().getReturnType()) {
-    _src.getStaticType() = *_args[2]->getStaticAnalysis().getStaticType().getReturnType();
-    _src.getStaticType().setCardinality(0, StaticType::UNLIMITED);
+  _src.getStaticType() = StaticType::EMPTY;
+
+  const StaticType::ItemTypes &types = _args[2]->getStaticAnalysis().getStaticType().getTypes();
+  StaticType::ItemTypes::const_iterator i = types.begin();
+  for(; i != types.end(); ++i) {
+    if((*i)->getItemTestType() == ItemType::TEST_FUNCTION) {
+      if((*i)->getFunctionSignature()) {
+        if((*i)->getFunctionSignature()->numArgs() == 2) {
+          StaticType tmp((*i)->getFunctionSignature()->returnType, BasicMemoryManager::get());
+          _src.getStaticType().typeUnion(tmp);
+        }
+      } else {
+        _src.getStaticType() = StaticType::ITEM_STAR;
+        break;
+      }
+    }
   }
-  else {
-    _src.getStaticType() = StaticType(StaticType::ITEM_TYPE, 0, StaticType::UNLIMITED);
-  }
+
+  _src.getStaticType().setCardinality(0, StaticType::UNLIMITED);
 
   return this;
 }

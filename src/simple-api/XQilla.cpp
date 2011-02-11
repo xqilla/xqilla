@@ -59,17 +59,17 @@ Optimizer *XQilla::createOptimizer(DynamicContext *context, unsigned int flags)
   Optimizer *optimizer = 0;
 
   if((flags & NO_STATIC_RESOLUTION) == 0) {
-//     optimizer = new PrintASTOptimizer("Initial", context, optimizer);
+    // optimizer = new PrintASTOptimizer("Initial", context, optimizer);
     optimizer = new StaticResolver(context, optimizer);
-//     optimizer = new PrintASTOptimizer("After static resolution", context, optimizer);
+    // optimizer = new PrintASTOptimizer("After static resolution", context, optimizer);
     optimizer = new StaticTyper(context, optimizer);
-//     optimizer = new PrintASTOptimizer("After static typing", context, optimizer);
+    // optimizer = new PrintASTOptimizer("After static typing", context, optimizer);
 
     if((flags & NO_OPTIMIZATION) == 0) {
       optimizer = new PartialEvaluator(context, optimizer);
-//       optimizer = new PrintASTOptimizer("After partial evaluation", context, optimizer);
+      // optimizer = new PrintASTOptimizer("After partial evaluation", context, optimizer);
       optimizer = new StaticTyper(context, optimizer);
-//       optimizer = new PrintASTOptimizer("After static typing (2)", context, optimizer);
+      // optimizer = new PrintASTOptimizer("After static typing (2)", context, optimizer);
       optimizer = new QueryPathTreeGenerator(context, optimizer);
     }
     if((flags & DEBUG_QUERY) != 0) {

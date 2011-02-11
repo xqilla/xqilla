@@ -47,7 +47,7 @@ ASTNode *FunctionLast::staticTypingImpl(StaticContext *context)
 {
   _src.clearExceptType();
 
-  if(context && !context->getContextItemType().containsType(StaticType::ITEM_TYPE)) {
+  if(context && !context->getContextItemType().containsType(TypeFlags::ITEM)) {
     XQThrow(DynamicErrorException,X("XQContextItem::staticTyping"),
             X("It is an error for the context item to be undefined when using it [err:XPDY0002]"));
   }

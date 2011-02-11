@@ -67,9 +67,9 @@ ASTNode *XQValidate::staticTypingImpl(StaticContext *context)
   _src.add(expr_->getStaticAnalysis());
 
   _src.getStaticType() = expr_->getStaticAnalysis().getStaticType();
-  _src.getStaticType() &= StaticType::DOCUMENT_TYPE | StaticType::ELEMENT_TYPE;
+  _src.getStaticType().typeIntersect(TypeFlags::DOCUMENT | TypeFlags::ELEMENT);
 
-  if(!_src.getStaticType().containsType(StaticType::DOCUMENT_TYPE | StaticType::ELEMENT_TYPE)) {
+  if(!_src.getStaticType().containsType(TypeFlags::DOCUMENT | TypeFlags::ELEMENT)) {
     XQThrow(StaticErrorException, X("XQValidate::createSequence"),
             X("The expression to be validated must evaluate to exactly one document or element node [err:XQTY0030]."));
   }

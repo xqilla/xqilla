@@ -74,7 +74,7 @@ ASTNode *XQDocumentConstructor::staticTypingImpl(StaticContext *context)
               "to be an updating expression [err:XUST0001]"));
   }
 
-  _src.getStaticType() = StaticType::DOCUMENT_TYPE;
+  _src.getStaticType() = &ItemType::DOCUMENT;
   _src.creative(true);
   _src.setProperties(StaticAnalysis::DOCORDER | StaticAnalysis::GROUPED |
 	  StaticAnalysis::PEER | StaticAnalysis::SUBTREE | StaticAnalysis::SAMEDOC |

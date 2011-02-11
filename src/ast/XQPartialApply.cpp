@@ -26,6 +26,8 @@
 #include <xqilla/schema/SequenceType.hpp>
 #include <xqilla/ast/XQTreatAs.hpp>
 #include <xqilla/utils/XPath2Utils.hpp>
+#include <xqilla/functions/FunctionSignature.hpp>
+#include <xqilla/framework/BasicMemoryManager.hpp>
 
 XERCES_CPP_NAMESPACE_USE;
 using namespace std;
@@ -87,21 +89,31 @@ ASTNode *XQPartialApply::staticTypingImpl(StaticContext *context)
     }
   }
 
-  const StaticType &inType = expr_->getStaticAnalysis().getStaticType();
+  _src.getStaticType() = StaticType::EMPTY;
+  bool doneOne = false;
 
-  if(inType.getReturnType() == 0) {
-    _src.getStaticType() = StaticType::FUNCTION_TYPE;
-  }
-  else {
-    unsigned int minArgs = inType.getMinArgs();
-    unsigned int maxArgs = inType.getMaxArgs();
-
-    if(minArgs > argCount) minArgs -= argCount; else minArgs = 0;
-    if(maxArgs > argCount) maxArgs -= argCount; else maxArgs = 0;
-
-    // TBD Using getMemoryManager() might not be thread safe in DB XML - jpcs
-    _src.getStaticType() = StaticType(getMemoryManager(), minArgs, maxArgs,
-                                      *inType.getReturnType());
+  const StaticType::ItemTypes &types = expr_->getStaticAnalysis().getStaticType().getTypes();
+  StaticType::ItemTypes::const_iterator i = types.begin();
+  for(; i != types.end(); ++i) {
+    if((*i)->getItemTestType() == ItemType::TEST_FUNCTION) {
+      if((*i)->getFunctionSignature()) {
+        if((*i)->getFunctionSignature()->numArgs() == args_->size()) {
+          FunctionSignature *newSig = new (getMemoryManager())
+            FunctionSignature((*i)->getFunctionSignature(), args_, getMemoryManager());
+          ItemType *type = new (getMemoryManager()) ItemType(newSig, (*i)->getDocumentCache());
+          type->setLocationInfo(this);
+          StaticType tmp(type, BasicMemoryManager::get());
+          if(doneOne) _src.getStaticType().typeUnion(tmp);
+          else { _src.getStaticType() = tmp; doneOne = true; }
+        }
+      } else {
+        _src.getStaticType() = StaticType::FUNCTION;
+        break;
+      }
+    } else if(ItemType::FUNCTION.isSubtypeOf(*i)) {
+      _src.getStaticType() = StaticType::ITEM_STAR;
+      break;
+    }
   }
 
   return this;

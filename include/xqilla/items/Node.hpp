@@ -22,18 +22,34 @@
 
 #include <xqilla/items/ATQNameOrDerived.hpp>
 #include <xqilla/items/ATBooleanOrDerived.hpp>
-#include <xqilla/ast/XQStep.hpp>
 
 class DynamicContext;
 class XPath2MemoryManager;
 class Sequence;
 class Result;
 class NodeTest;
+class LocationInfo;
 
 class XQILLA_API Node : public Item
 {
 public:
   typedef RefCountPointer<const Node> Ptr;
+
+  enum Axis {
+    ANCESTOR,
+    ANCESTOR_OR_SELF,
+    ATTRIBUTE,
+    CHILD,
+    DESCENDANT,
+    DESCENDANT_OR_SELF,
+    FOLLOWING,
+    FOLLOWING_SIBLING,
+    NAMESPACE,
+    PARENT,
+    PRECEDING,
+    PRECEDING_SIBLING,
+    SELF
+  };
 
   virtual Type getType() const { return NODE; }
 
@@ -104,7 +120,7 @@ public:
    * Forward axis results should be in document order.
    * Reverse axis results should be in reverse document order.
    */
-  virtual Result getAxisResult(XQStep::Axis axis, const NodeTest *nodeTest, const DynamicContext *context, const LocationInfo *info) const = 0;
+  virtual Result getAxisResult(Axis axis, const NodeTest *nodeTest, const DynamicContext *context, const LocationInfo *info) const = 0;
 
   /** Returns if the node is an id node or not */
   virtual ATBooleanOrDerived::Ptr dmIsId(const DynamicContext* context) const = 0;

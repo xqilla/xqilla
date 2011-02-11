@@ -271,8 +271,8 @@ ASTNode *PartialEvaluator::optimize(ASTNode *item)
     break;
   default:
     if(!item->getStaticAnalysis().isUsed() &&
-       !item->getStaticAnalysis().getStaticType().isType(StaticType::NODE_TYPE) &&
-       !item->getStaticAnalysis().getStaticType().isType(StaticType::FUNCTION_TYPE)) {
+       !item->getStaticAnalysis().getStaticType().isType(TypeFlags::NODE) &&
+       !item->getStaticAnalysis().getStaticType().isType(TypeFlags::FUNCTION)) {
       XPath2MemoryManager* mm = context_->getMemoryManager();
 
       try {
@@ -580,9 +580,9 @@ protected:
     AutoReset<bool> reset(active_);
     AutoReset<bool> reset2(inScope_);
 
-    if(item->getSignature()->argSpecs) {
-      ArgumentSpecs::const_iterator argsIt = item->getSignature()->argSpecs->begin();
-      for(; argsIt != item->getSignature()->argSpecs->end(); ++argsIt) {
+    if(item->getItemType()->getFunctionSignature()->argSpecs) {
+      ArgumentSpecs::const_iterator argsIt = item->getItemType()->getFunctionSignature()->argSpecs->begin();
+      for(; argsIt != item->getItemType()->getFunctionSignature()->argSpecs->end(); ++argsIt) {
         if(required_ && required_->isVariableUsed((*argsIt)->getURI(), (*argsIt)->getName()))
           inScope_ = false;
 
@@ -874,8 +874,8 @@ ASTNode *PartialEvaluator::optimizeFunctionDeref(XQFunctionDeref *item)
   ASTNode *bodyCopy = func->getInstance()->copy(context_);
   InlineVar inliner;
 
-  if(args && func->getSignature()->argSpecs) {
-    ArgumentSpecs::const_iterator specIt = func->getSignature()->argSpecs->begin();
+  if(args && func->getItemType()->getFunctionSignature()->argSpecs) {
+    ArgumentSpecs::const_iterator specIt = func->getItemType()->getFunctionSignature()->argSpecs->begin();
     for(VectorOfASTNodes::iterator argIt = args->begin(); argIt != args->end(); ++argIt, ++specIt) {
       // Rename the variable to avoid naming conflicts
       const XMLCh *newName = context_->allocateTempVarName(X("inline_arg"));
@@ -933,7 +933,7 @@ ASTNode *PartialEvaluator::optimizePartialApply(XQPartialApply *item)
   ASTNode *bodyCopy = func->getInstance()->copy(context_);
   InlineVar inliner;
 
-  FunctionSignature *signature = new (mm) FunctionSignature(func->getSignature(), mm);
+  FunctionSignature *signature = new (mm) FunctionSignature(func->getItemType()->getFunctionSignature(), mm);
 
   if(args && signature->argSpecs) {
     ArgumentSpecs::iterator specIt = signature->argSpecs->begin();
@@ -966,7 +966,7 @@ ASTNode *PartialEvaluator::optimizePartialApply(XQPartialApply *item)
   ret->setLocationInfo(item);
 
   ASTNode *result = new (mm) XQInlineFunction(0, func->getPrefix(), func->getURI(), func->getName(),
-                                              signature->argSpecs->size(), signature, ret, mm);
+                                              new (mm) ItemType(signature, context_->getDocumentCache()), ret, mm);
   result->setLocationInfo(item);
 
   if(checkSizeLimit(item, result)) {
@@ -987,13 +987,13 @@ static inline FunctionSignature *findSignature(ASTNode *expr)
 
   switch(expr->getType()) {
   case ASTNode::INLINE_FUNCTION: {
-    signature = ((XQInlineFunction*)expr)->getSignature();
+    signature = ((XQInlineFunction*)expr)->getItemType()->getFunctionSignature();
     break;
   }
   case ASTNode::FUNCTION_COERCION: {
     XQFunctionCoercion *coercion = (XQFunctionCoercion*)expr;
     if(coercion->getFuncConvert()->getType() == ASTNode::INLINE_FUNCTION)
-      signature = ((XQInlineFunction*)coercion->getFuncConvert())->getSignature();
+      signature = ((XQInlineFunction*)coercion->getFuncConvert())->getItemType()->getFunctionSignature();
     break;
   }
   default: break;
@@ -1007,7 +1007,7 @@ ASTNode *PartialEvaluator::optimizeFunctionCoercion(XQFunctionCoercion *item)
   ASTVisitor::optimizeFunctionCoercion(item);
 
   FunctionSignature *signature = findSignature(item->getExpression());
-  if(signature && item->getSequenceType()->getItemType()->matches(signature, context_)) {
+  if(signature && item->getSequenceType()->getItemType()->matches(signature)) {
     ASTNode *result = item->getExpression();
     item->setExpression(0);
     sizeLimit_ += ASTCounter().count(item);
@@ -1046,7 +1046,7 @@ ASTNode *PartialEvaluator::optimizeTreatAs(XQTreatAs *item)
   if(!itemType) return item;
 
   FunctionSignature *signature = findSignature(item->getExpression());
-  if(signature && itemType->matches(signature, context_)) {
+  if(signature && itemType->matches(signature)) {
     ASTNode *result = item->getExpression();
     item->setExpression(0);
     sizeLimit_ += ASTCounter().count(item);
@@ -1494,7 +1494,7 @@ ASTNode *PartialEvaluator::optimizePredicate(XQPredicate *item)
   }
 
   if(item->getPredicate()->getStaticAnalysis().getStaticType().getMin() >= 1 &&
-     item->getPredicate()->getStaticAnalysis().getStaticType().isType(StaticType::NODE_TYPE)) {
+     item->getPredicate()->getStaticAnalysis().getStaticType().isType(TypeFlags::NODE)) {
     // If there is one or more nodes, EBV returns true
     ASTNode *tmp = const_cast<ASTNode *>(item->getExpression());
     item->setExpression(0);
@@ -1587,7 +1587,7 @@ ASTNode *PartialEvaluator::optimizeEffectiveBooleanValue(XQEffectiveBooleanValue
   }
 
   if(item->getExpression()->getStaticAnalysis().getStaticType().getMin() >= 1 &&
-     item->getExpression()->getStaticAnalysis().getStaticType().isType(StaticType::NODE_TYPE)) {
+     item->getExpression()->getStaticAnalysis().getStaticType().isType(TypeFlags::NODE)) {
     // If there is one or more nodes, EBV returns true
     ASTNode *result = XQLiteral::create(true, context_->getMemoryManager(), item);
     sizeLimit_ += ASTCounter().count(item);
@@ -1598,7 +1598,7 @@ ASTNode *PartialEvaluator::optimizeEffectiveBooleanValue(XQEffectiveBooleanValue
 
   if(item->getExpression()->getStaticAnalysis().getStaticType().getMin() == 1 &&
      item->getExpression()->getStaticAnalysis().getStaticType().getMax() == 1 &&
-     item->getExpression()->getStaticAnalysis().getStaticType().isType(StaticType::BOOLEAN_TYPE)) {
+     item->getExpression()->getStaticAnalysis().getStaticType().isType(TypeFlags::BOOLEAN)) {
     // If there is a single boolean, EBV isn't needed
     ASTNode *result = item->getExpression();
     item->setExpression(0);
@@ -1720,7 +1720,7 @@ ASTNode *PartialEvaluator::optimizePlus(Plus *item)
 
   VectorOfASTNodes &args = const_cast<VectorOfASTNodes &>(item->getArguments());
 
-  if(!item->getStaticAnalysis().getStaticType().isType(StaticType::NUMERIC_TYPE))
+  if(!item->getStaticAnalysis().getStaticType().isType(TypeFlags::NUMERIC))
     return foldEmptyArgument(item, context_);
 
   if(args[1]->isConstant() && (args[0]->getType() == ASTNode::PLUS ||
@@ -1812,7 +1812,7 @@ ASTNode *PartialEvaluator::optimizeMinus(Minus *item)
 
   VectorOfASTNodes &args = const_cast<VectorOfASTNodes &>(item->getArguments());
 
-  if(!item->getStaticAnalysis().getStaticType().isType(StaticType::NUMERIC_TYPE))
+  if(!item->getStaticAnalysis().getStaticType().isType(TypeFlags::NUMERIC))
     return foldEmptyArgument(item, context_);
 
   if(args[1]->isConstant() && (args[0]->getType() == ASTNode::PLUS ||
@@ -1915,7 +1915,7 @@ ASTNode *PartialEvaluator::optimizeMultiply(Multiply *item)
 {
   VectorOfASTNodes &args = const_cast<VectorOfASTNodes &>(item->getArguments());
 
-  if(!item->getStaticAnalysis().getStaticType().isType(StaticType::NUMERIC_TYPE))
+  if(!item->getStaticAnalysis().getStaticType().isType(TypeFlags::NUMERIC))
     return foldEmptyArgument(item, context_);
 
   if(args[1]->isConstant() && (args[0]->getType() == ASTNode::MULTIPLY ||
@@ -1968,7 +1968,7 @@ ASTNode *PartialEvaluator::optimizeMultiply(Multiply *item)
       // TBD type promotion - jpcs
       Numeric *num = (Numeric*)arg1.get();
       if(num->getState() == Numeric::NUM && num->asMAPM() == 0 &&
-         item->getStaticAnalysis().getStaticType().isType(StaticType::DECIMAL_TYPE)) {
+         item->getStaticAnalysis().getStaticType().isType(TypeFlags::DECIMAL)) {
         // X * 0 = 0
         // but only for xs:decimal, since otherwise "-0" messes things up
         ASTNode *result = args[1];
@@ -1993,7 +1993,7 @@ ASTNode *PartialEvaluator::optimizeMultiply(Multiply *item)
     if(arg0.notNull() && arg0->isNumericValue()) {
       // TBD type promotion - jpcs
       Numeric *num = (Numeric*)arg0.get();
-      if(num->asMAPM() == 0 && item->getStaticAnalysis().getStaticType().isType(StaticType::DECIMAL_TYPE)) {
+      if(num->asMAPM() == 0 && item->getStaticAnalysis().getStaticType().isType(TypeFlags::DECIMAL)) {
         // 0 * X = 0
         // but only for xs:decimal, since otherwise "-0" messes things up
         ASTNode *result = args[0];
@@ -2022,12 +2022,12 @@ ASTNode *PartialEvaluator::optimizeDivide(Divide *item)
 
   VectorOfASTNodes &args = const_cast<VectorOfASTNodes &>(item->getArguments());
 
-  if(!item->getStaticAnalysis().getStaticType().isType(StaticType::NUMERIC_TYPE))
+  if(!item->getStaticAnalysis().getStaticType().isType(TypeFlags::NUMERIC))
     return foldEmptyArgument(item, context_);
 
   // duration / duration = decimal
-  if(args[0]->getStaticAnalysis().getStaticType().containsType(StaticType::DAY_TIME_DURATION_TYPE | StaticType::YEAR_MONTH_DURATION_TYPE) ||
-     args[1]->getStaticAnalysis().getStaticType().containsType(StaticType::DAY_TIME_DURATION_TYPE | StaticType::YEAR_MONTH_DURATION_TYPE))
+  if(args[0]->getStaticAnalysis().getStaticType().containsType(TypeFlags::DAY_TIME_DURATION | TypeFlags::YEAR_MONTH_DURATION) ||
+     args[1]->getStaticAnalysis().getStaticType().containsType(TypeFlags::DAY_TIME_DURATION | TypeFlags::YEAR_MONTH_DURATION))
     return foldEmptyArgument(item, context_);
 
   if(args[1]->isConstant() && (args[0]->getType() == ASTNode::MULTIPLY ||

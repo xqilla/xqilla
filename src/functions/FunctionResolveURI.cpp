@@ -61,8 +61,7 @@ ASTNode* FunctionResolveURI::staticResolution(StaticContext *context)
 
     XPath2MemoryManager* mm = context->getMemoryManager();
 
-    ASTNode *baseURI = new (mm) XQLiteral(SchemaSymbols::fgURI_SCHEMAFORSCHEMA, SchemaSymbols::fgDT_STRING,
-                                          context->getBaseURI(), AnyAtomicType::STRING, mm);
+    ASTNode *baseURI = new (mm) XQLiteral((ItemType*)&ItemType::STRING, context->getBaseURI(), mm);
     baseURI->setLocationInfo(this);
     _args.push_back(baseURI);
   }

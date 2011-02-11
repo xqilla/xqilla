@@ -128,7 +128,7 @@ Sequence FastXDMNodeImpl::dmBaseURI(const DynamicContext* context) const
       xmlBase.setNodeUri(XMLUni::fgXMLURIName);
       xmlBase.setTypeWildcard();
 
-      Item::Ptr item = getAxisResult(XQStep::ATTRIBUTE, &xmlBase, const_cast<DynamicContext*>(context), 0)->
+      Item::Ptr item = getAxisResult(Node::ATTRIBUTE, &xmlBase, const_cast<DynamicContext*>(context), 0)->
         next(const_cast<DynamicContext*>(context));
       if(item.notNull()) {
         const XMLCh *uri = ((Node*)item.get())->dmStringValue(context);
@@ -290,7 +290,7 @@ public:
     test.setNameWildcard();
     test.setTypeWildcard();
 
-    Item::Ptr found = node_->getAxisResult(XQStep::NAMESPACE, &test, context_, 0)->next(context_);
+    Item::Ptr found = node_->getAxisResult(Node::NAMESPACE, &test, context_, 0)->next(context_);
     if(found.notNull()) {
       return ((Node*)found.get())->dmStringValue(context_);
     }
@@ -1125,58 +1125,58 @@ Result FastXDMNodeImpl::dmChildren(const DynamicContext *context, const Location
   return 0;
 }
 
-Result FastXDMNodeImpl::getAxisResult(XQStep::Axis axis, const NodeTest *nodeTest, const DynamicContext *context, const LocationInfo *info) const
+Result FastXDMNodeImpl::getAxisResult(Node::Axis axis, const NodeTest *nodeTest, const DynamicContext *context, const LocationInfo *info) const
 {
   switch(axis) {
-  case XQStep::ANCESTOR: {
+  case Node::ANCESTOR: {
     return new FastXDMAncestorAxis(info, document_, node_, nodeTest);
   }
-  case XQStep::ANCESTOR_OR_SELF: {
+  case Node::ANCESTOR_OR_SELF: {
     return new FastXDMAncestorOrSelfAxis(info, document_, node_, nodeTest);
   }
-  case XQStep::ATTRIBUTE: {
+  case Node::ATTRIBUTE: {
     if(node_->nodeKind == FastXDMDocument::ELEMENT && node_->data.element.attributes.ptr != 0) {
       return new FastXDMAttributeAxis(info, document_, node_, nodeTest);
     }
     break;
   }
-  case XQStep::CHILD: {
+  case Node::CHILD: {
     if(node_->nodeKind == FastXDMDocument::ELEMENT || node_->nodeKind == FastXDMDocument::DOCUMENT) {
       return new FastXDMChildAxis(info, document_, node_, nodeTest);
     }
     break;
   }
-  case XQStep::DESCENDANT: {
+  case Node::DESCENDANT: {
     if(node_->nodeKind == FastXDMDocument::ELEMENT || node_->nodeKind == FastXDMDocument::DOCUMENT) {
       return new FastXDMDescendantAxis(info, document_, node_, nodeTest);
     }
     break;
   }
-  case XQStep::DESCENDANT_OR_SELF: {
+  case Node::DESCENDANT_OR_SELF: {
     return new FastXDMDescendantOrSelfAxis(info, document_, node_, nodeTest);
   }
-  case XQStep::FOLLOWING: {
+  case Node::FOLLOWING: {
     return new FastXDMFollowingAxis(info, document_, node_, nodeTest);
   }
-  case XQStep::FOLLOWING_SIBLING: {
+  case Node::FOLLOWING_SIBLING: {
     return new FastXDMFollowingSiblingAxis(info, document_, node_, nodeTest);
   }
-  case XQStep::NAMESPACE: {
+  case Node::NAMESPACE: {
     if(node_->nodeKind == FastXDMDocument::ELEMENT) {
       return new FastXDMNamespaceAxis(info, this, nodeTest);
     }
     break;
   }
-  case XQStep::PARENT: {
+  case Node::PARENT: {
     return new FastXDMParentAxis(info, document_, node_, nodeTest);
   }
-  case XQStep::PRECEDING: {
+  case Node::PRECEDING: {
     return new FastXDMPrecedingAxis(info, document_, node_, nodeTest);
   }
-  case XQStep::PRECEDING_SIBLING: {
+  case Node::PRECEDING_SIBLING: {
     return new FastXDMPrecedingSiblingAxis(info, document_, node_, nodeTest);
   }
-  case XQStep::SELF: {
+  case Node::SELF: {
     return new FastXDMSelfAxis(info, document_, node_, nodeTest);
   }
   }
@@ -1466,37 +1466,37 @@ Result FastXDMAttributeNodeImpl::dmChildren(const DynamicContext *context, const
   return 0;
 }
 
-Result FastXDMAttributeNodeImpl::getAxisResult(XQStep::Axis axis, const NodeTest *nodeTest, const DynamicContext *context, const LocationInfo *info) const
+Result FastXDMAttributeNodeImpl::getAxisResult(Node::Axis axis, const NodeTest *nodeTest, const DynamicContext *context, const LocationInfo *info) const
 {
   switch(axis) {
-  case XQStep::ANCESTOR: {
+  case Node::ANCESTOR: {
     if(attr_->owner.ptr == 0) return 0;
     return new FastXDMAncestorOrSelfAxis(info, document_, attr_->owner.ptr, nodeTest);
   }
-  case XQStep::ANCESTOR_OR_SELF: {
+  case Node::ANCESTOR_OR_SELF: {
     return new FastXDMAttributeAncestorOrSelfAxis(info, document_, attr_, nodeTest);
   }
-  case XQStep::FOLLOWING: {
+  case Node::FOLLOWING: {
     return new FastXDMFollowingAxis(info, document_, attr_, nodeTest);
   }
-  case XQStep::PARENT: {
+  case Node::PARENT: {
     if(attr_->owner.ptr == 0) return 0;
     return new FastXDMSelfAxis(info, document_, attr_->owner.ptr, nodeTest);
   }
-  case XQStep::PRECEDING: {
+  case Node::PRECEDING: {
     if(attr_->owner.ptr == 0) return 0;
     return new FastXDMPrecedingAxis(info, document_, attr_->owner.ptr, nodeTest);
   }
-  case XQStep::DESCENDANT_OR_SELF:
-  case XQStep::SELF: {
+  case Node::DESCENDANT_OR_SELF:
+  case Node::SELF: {
     return nodeTest->filterResult(new SelfAxis(info, this), info);
   }
-  case XQStep::ATTRIBUTE:
-  case XQStep::CHILD:
-  case XQStep::DESCENDANT:
-  case XQStep::FOLLOWING_SIBLING:
-  case XQStep::NAMESPACE:
-  case XQStep::PRECEDING_SIBLING:
+  case Node::ATTRIBUTE:
+  case Node::CHILD:
+  case Node::DESCENDANT:
+  case Node::FOLLOWING_SIBLING:
+  case Node::NAMESPACE:
+  case Node::PRECEDING_SIBLING:
     break;
   }
 
@@ -1758,45 +1758,45 @@ Result FastXDMNamespaceNodeImpl::dmChildren(const DynamicContext *context, const
   return 0;
 }
 
-Result FastXDMNamespaceNodeImpl::getAxisResult(XQStep::Axis axis, const NodeTest *nodeTest, const DynamicContext *context, const LocationInfo *info) const
+Result FastXDMNamespaceNodeImpl::getAxisResult(Node::Axis axis, const NodeTest *nodeTest, const DynamicContext *context, const LocationInfo *info) const
 {
   switch(axis) {
-  case XQStep::ANCESTOR: {
+  case Node::ANCESTOR: {
     if(owner_.notNull())
       return new FastXDMAncestorOrSelfAxis(info, owner_->getDocument(), owner_->getNode(), nodeTest);
     break;
   }
-  case XQStep::ANCESTOR_OR_SELF: {
+  case Node::ANCESTOR_OR_SELF: {
     if(owner_.notNull())
       return new FastXDMNamespaceAncestorOrSelfAxis(info, this, nodeTest);
     else 
       return nodeTest->filterResult(new SelfAxis(info, this), info);
   }
-  case XQStep::FOLLOWING: {
+  case Node::FOLLOWING: {
     if(owner_.notNull())
       return new FastXDMFollowingAxis(info, owner_->getDocument(), this, nodeTest);
     break;
   }
-  case XQStep::PARENT: {
+  case Node::PARENT: {
     if(owner_.notNull())
       return nodeTest->filterResult(new SelfAxis(info, owner_), info);
     break;
   }
-  case XQStep::PRECEDING: {
+  case Node::PRECEDING: {
     if(owner_.notNull())
       return new FastXDMPrecedingAxis(info, owner_->getDocument(), owner_->getNode(), nodeTest);
     break;
   }
-  case XQStep::DESCENDANT_OR_SELF:
-  case XQStep::SELF: {
+  case Node::DESCENDANT_OR_SELF:
+  case Node::SELF: {
     return nodeTest->filterResult(new SelfAxis(info, this), info);
   }
-  case XQStep::ATTRIBUTE:
-  case XQStep::CHILD:
-  case XQStep::DESCENDANT:
-  case XQStep::FOLLOWING_SIBLING:
-  case XQStep::NAMESPACE:
-  case XQStep::PRECEDING_SIBLING:
+  case Node::ATTRIBUTE:
+  case Node::CHILD:
+  case Node::DESCENDANT:
+  case Node::FOLLOWING_SIBLING:
+  case Node::NAMESPACE:
+  case Node::PRECEDING_SIBLING:
     break;
   }
 

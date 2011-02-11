@@ -19,6 +19,7 @@
 
 #include <xqilla/ast/ContextTuple.hpp>
 #include <xqilla/context/DynamicContext.hpp>
+#include <xqilla/runtime/Result.hpp>
 
 TupleNode *ContextTuple::staticResolution(StaticContext *context)
 {

@@ -155,7 +155,7 @@ ASTNode *GeneralComp::staticTypingImpl(StaticContext *context)
       _src.implicitTimezoneUsed(true);
   }
 
-  _src.getStaticType() = StaticType::BOOLEAN_TYPE;
+  _src.getStaticType() = StaticType::BOOLEAN;
 
   return this;
 }

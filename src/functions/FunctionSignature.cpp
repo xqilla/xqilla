@@ -87,6 +87,29 @@ FunctionSignature::FunctionSignature(const FunctionSignature *o, unsigned int sk
   }
 }
 
+FunctionSignature::FunctionSignature(const FunctionSignature *o, const VectorOfASTNodes *args,
+                                     XPath2MemoryManager *mm)
+  : updating(o->updating),
+    nondeterministic(o->nondeterministic),
+    privateOption(o->privateOption),
+    argSpecs(0),
+    returnType(o->returnType),
+    memMgr(mm)
+{
+  assert(o->numArgs() == args->size());
+
+  if(o->argSpecs) {
+    argSpecs = new (mm) ArgumentSpecs(XQillaAllocator<ArgumentSpec*>(mm));
+
+    VectorOfASTNodes::const_iterator i = args->begin();
+    ArgumentSpecs::const_iterator argIt = o->argSpecs->begin();
+    for(; argIt != o->argSpecs->end() && i != args->end(); ++argIt, ++i) {
+      if((*i) == 0)
+        argSpecs->push_back(new (mm) ArgumentSpec(*argIt, mm));
+    }
+  }
+}
+
 void FunctionSignature::release()
 {
   if(argSpecs) {
@@ -114,18 +137,21 @@ void FunctionSignature::staticResolution(StaticContext *context)
       (*it)->staticResolution(context);
     }
     // check for duplicate parameters
-    for(it = argSpecs->begin(); argSpecs->size() > 1 && it != argSpecs->end()-1; ++it) {
-      for(ArgumentSpecs::iterator it2 = it+1; it2 != argSpecs->end (); ++it2) {
-        if(XPath2Utils::equals((*it)->getURI(),(*it2)->getURI()) && 
-           XPath2Utils::equals((*it)->getName(),(*it2)->getName())) {
-          XMLBuffer buf;
-          buf.append(X("Two parameters have the same expanded QName '"));
-          buf.append(X("{"));
-          buf.append((*it)->getURI());
-          buf.append(X("}"));
-          buf.append((*it)->getName());
-          buf.append(X("' [err:XQST0039]"));
-          XQThrow3(StaticErrorException, X("XQUserFunction::staticResolution"), buf.getRawBuffer(), *it2);
+    it = argSpecs->begin();
+    if(it != argSpecs->end() &&(*it)->getName() != 0) {
+      for(; argSpecs->size() > 1 && it != argSpecs->end()-1; ++it) {
+        for(ArgumentSpecs::iterator it2 = it+1; it2 != argSpecs->end (); ++it2) {
+          if(XPath2Utils::equals((*it)->getURI(),(*it2)->getURI()) && 
+             XPath2Utils::equals((*it)->getName(),(*it2)->getName())) {
+            XMLBuffer buf;
+            buf.append(X("Two parameters have the same expanded QName '"));
+            buf.append(X("{"));
+            buf.append((*it)->getURI());
+            buf.append(X("}"));
+            buf.append((*it)->getName());
+            buf.append(X("' [err:XQST0039]"));
+            XQThrow3(StaticErrorException, X("XQUserFunction::staticResolution"), buf.getRawBuffer(), *it2);
+          }
         }
       }
     }
@@ -147,7 +173,7 @@ void FunctionSignature::toBuffer(XMLBuffer &buffer, bool typeSyntax) const
       if(doneOne) buffer.append(X(", "));
       doneOne = true;
 
-      if(!typeSyntax) {
+      if(!typeSyntax && ((*i)->getQName() || (*i)->getName())) {
         buffer.append('$');
         if((*i)->getQName()) {
           buffer.append((*i)->getQName());
@@ -208,9 +234,7 @@ void ArgumentSpec::staticResolution(StaticContext* context)
   }
 
   seqType_->staticResolution(context);
-
-  bool isPrimitive;
-  seqType_->getStaticType(src_.getStaticType(), context, isPrimitive, seqType_);
+  src_.getStaticType() = seqType_;
 
   if(seqType_->getOccurrenceIndicator() == SequenceType::EXACTLY_ONE ||
      seqType_->getOccurrenceIndicator() == SequenceType::QUESTION_MARK) {

@@ -165,8 +165,6 @@ RELEASE(FTContains)
 ASTNode *ASTReleaser::optimizeInlineFunction(XQInlineFunction *item)
 {
   ASTVisitor::optimizeInlineFunction(item);
-  if(item->getSignature())
-    item->getSignature()->release();
   RELEASE_IMPL();
 }
 

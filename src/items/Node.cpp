@@ -19,7 +19,9 @@
 
 #include "../config/xqilla_config.h"
 #include <xqilla/items/Node.hpp>
+
 #include <xercesc/util/XMLUniDefs.hpp>
+#include <xercesc/framework/XMLBuffer.hpp>
 
 const XMLCh Node::document_string[] = 
 {

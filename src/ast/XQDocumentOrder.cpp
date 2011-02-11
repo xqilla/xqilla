@@ -57,7 +57,7 @@ ASTNode *XQDocumentOrder::staticTypingImpl(StaticContext *context)
     _src.getStaticType().setCardinality(1, _src.getStaticType().getMax());
 
   // Check if nodes will be returned
-  if(!_src.getStaticType().containsType(StaticType::NODE_TYPE)) {
+  if(!_src.getStaticType().containsType(TypeFlags::NODE)) {
     return substitute(expr_);
   }
 

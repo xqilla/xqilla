@@ -50,8 +50,8 @@ ASTNode *FunctionDoc::staticTypingImpl(StaticContext *context)
   calculateSRCForArguments(context);
 
   if(_args[0]->getStaticAnalysis().getStaticType().getMin() == 0)
-	  _src.getStaticType() = StaticType(StaticType::DOCUMENT_TYPE, 0, 1);
-  else _src.getStaticType() = StaticType(StaticType::DOCUMENT_TYPE, 1, 1);
+	  _src.getStaticType() = StaticType::DOCUMENT_QUESTION;
+  else _src.getStaticType() = StaticType::DOCUMENT;
 
   _src.setProperties(StaticAnalysis::DOCORDER | StaticAnalysis::GROUPED |
                      StaticAnalysis::PEER | StaticAnalysis::SUBTREE | StaticAnalysis::ONENODE);

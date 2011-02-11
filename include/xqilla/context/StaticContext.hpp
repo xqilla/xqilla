@@ -42,6 +42,7 @@ class ExternalFunction;
 class XQillaConfiguration;
 class XQUserFunction;
 class XQillaNSResolver;
+class ASTNode;
 
 // Copied from ASTNode.hpp
 typedef std::vector<ASTNode*,XQillaAllocator<ASTNode*> > VectorOfASTNodes;

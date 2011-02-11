@@ -22,6 +22,7 @@
 #include <xqilla/runtime/Result.hpp>
 #include <xqilla/utils/XPath2Utils.hpp>
 #include <xqilla/context/DynamicContext.hpp>
+#include <xqilla/ast/StaticAnalysis.hpp>
 
 XERCES_CPP_NAMESPACE_USE;
 using namespace std;

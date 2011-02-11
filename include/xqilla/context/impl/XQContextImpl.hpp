@@ -25,6 +25,7 @@
 #include <xqilla/context/impl/VarStoreImpl.hpp>
 #include <xqilla/schema/DocumentCache.hpp>
 #include <xqilla/ast/ASTNode.hpp>
+#include <xqilla/ast/StaticType.hpp>
 #include <xqilla/runtime/Sequence.hpp>
 #include <xqilla/simple-api/XQilla.hpp>
 #include <xqilla/framework/ProxyMemoryManager.hpp>

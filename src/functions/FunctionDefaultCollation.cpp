@@ -54,9 +54,8 @@ ASTNode *FunctionDefaultCollation::staticResolution(StaticContext *context)
   XPath2MemoryManager *mm = context->getMemoryManager();
 
   Collation *collation = context->getDefaultCollation(this);
-  ASTNode *newBlock = new (mm) XQLiteral(SchemaSymbols::fgURI_SCHEMAFORSCHEMA, SchemaSymbols::fgDT_STRING,
-                                         collation ? collation->getCollationName() : CodepointCollation::getCodepointCollationName(),
-                                         AnyAtomicType::STRING, mm);
+  ASTNode *newBlock = new (mm) XQLiteral((ItemType*)&ItemType::STRING, collation ? collation->getCollationName() :
+                                         CodepointCollation::getCodepointCollationName(), mm);
   newBlock->setLocationInfo(this);
 
   return newBlock->staticResolution(context);

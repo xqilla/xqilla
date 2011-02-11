@@ -125,7 +125,7 @@ ASTNode *XQNamespaceConstructor::staticTypingImpl(StaticContext *context)
     }
   }
 
-  _src.getStaticType() = StaticType::NAMESPACE_TYPE;
+  _src.getStaticType() = &ItemType::NAMESPACE;
   _src.creative(true);
   _src.setProperties(StaticAnalysis::DOCORDER | StaticAnalysis::GROUPED |
                      StaticAnalysis::PEER | StaticAnalysis::SUBTREE | StaticAnalysis::SAMEDOC |

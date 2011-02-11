@@ -22,6 +22,7 @@
 
 #include <xqilla/framework/XQillaExport.hpp>
 
+#include <xqilla/items/AnyAtomicType.hpp>
 #include <xqilla/items/Node.hpp>
 #include <xqilla/items/FunctionRef.hpp>
 #include <xqilla/parser/QName.hpp>
@@ -32,12 +33,52 @@ class Item;
 class XPath2MemoryManager;
 class SequenceType;
 class FunctionSignature;
-
-typedef std::vector<SequenceType*, XQillaAllocator<SequenceType*> > VectorOfSequenceTypes;
+class ASTNode;
+class StaticType;
+class DocumentCache;
 
 class XQILLA_API ItemType : public LocationInfo
 {
 public:
+  static const ItemType ITEM;
+
+  static const ItemType ANY_SIMPLE_TYPE;
+  static const ItemType ANY_ATOMIC_TYPE;
+  static const ItemType UNTYPED_ATOMIC;
+  static const ItemType BOOLEAN;
+  static const ItemType DECIMAL;
+  static const ItemType FLOAT;
+  static const ItemType DOUBLE;
+  static const ItemType STRING;
+  static const ItemType QNAME;
+  static const ItemType DAY_TIME_DURATION;
+  static const ItemType ANY_URI;
+  static const ItemType BASE_64_BINARY;
+  static const ItemType DATE;
+  static const ItemType DATE_TIME;
+  static const ItemType DURATION;
+  static const ItemType G_DAY;
+  static const ItemType G_MONTH;
+  static const ItemType G_MONTH_DAY;
+  static const ItemType G_YEAR;
+  static const ItemType G_YEAR_MONTH;
+  static const ItemType HEX_BINARY;
+  static const ItemType NOTATION;
+  static const ItemType TIME;
+  static const ItemType YEAR_MONTH_DURATION;
+  static const ItemType INTEGER;
+
+  static const ItemType NODE;
+  static const ItemType DOCUMENT;
+  static const ItemType ELEMENT;
+  static const ItemType ATTRIBUTE;
+  static const ItemType TEXT;
+  static const ItemType PI;
+  static const ItemType COMMENT;
+  static const ItemType NAMESPACE;
+
+  static const ItemType FUNCTION;
+
   /**
    * The type of item that this sequence can hold.
    */
@@ -60,10 +101,14 @@ public:
 
   // Normal constructor
   ItemType(ItemTestType test, QualifiedName* name=NULL, QualifiedName* type=NULL);
-  // Constructor for an atomic type
-  ItemType(const XMLCh *typeURI, const XMLCh *typeName);
   // Constructor for a function
-  ItemType(VectorOfSequenceTypes *argTypes, SequenceType *returnType);
+  ItemType(FunctionSignature *signature, const DocumentCache *dc);
+
+  // Constructor for static const ItemTypes
+  ItemType(ItemTestType test, const DocumentCache *dc);
+  // Constructor for static const atomic type ItemTypes
+  ItemType(AnyAtomicType::AtomicObjectType primitiveType, bool primitive,
+           const XMLCh *typeURI, const XMLCh *typeName, const DocumentCache *dc);
 
   ~ItemType();
 
@@ -72,6 +117,9 @@ public:
    */
   ItemTestType getItemTestType() const;
   void setItemTestType(ItemTestType t);
+
+  bool isPrimitive() const { return m_primitive; }
+  AnyAtomicType::AtomicObjectType getPrimitiveType() const { return m_primitiveType; }
 
   void setAllowNilled(bool value);
   bool getAllowNilled() const;
@@ -83,30 +131,32 @@ public:
   const XMLCh *getNameURI() const { return m_NameURI; }
   const XMLCh *getNameName() const { return m_NameName; }
 
-  VectorOfSequenceTypes *getArgumentTypes() const { return argTypes_; }
-  SequenceType *getReturnType() const { return returnType_; }
-
-  void getStaticType(StaticType &st, const StaticContext *context,
-                     bool &isExact, const LocationInfo *location) const;
+  FunctionSignature *getFunctionSignature() const { return signature_; }
+  const DocumentCache *getDocumentCache() const { return dc_; }
 
   bool matches(const Item::Ptr &toBeTested, DynamicContext* context) const;
   bool matches(const Node::Ptr &toBeTested, DynamicContext* context) const;
-  bool matches(const FunctionRef::Ptr &toBeTested, DynamicContext* context) const;
-  bool matches(const FunctionSignature *sig, DynamicContext* context) const;
+  bool matches(const FunctionRef::Ptr &toBeTested) const;
+  bool matches(const FunctionSignature *sig) const;
   bool matchesNameType(const Item::Ptr &toBeTested, const DynamicContext* context) const;
   bool matchesSchemaElement(const Node::Ptr &toBeTested, const DynamicContext* context) const;
 
-  bool isSubtypeOf(const ItemType *toBeTested, const StaticContext* context) const;
+  bool isSubtypeOf(const ItemType *toBeTested) const;
+  bool intersects(const ItemType *toBeTested) const;
 
   void staticResolution(StaticContext *context, const LocationInfo *location);
 
   void toBuffer(XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer &buffer, bool addBrackets = false) const;
 
 private:
-  bool isSubtypeOfNameType(const ItemType *toBeTested, const StaticContext* context) const;
+  bool isSubtypeOfNameType(const ItemType *toBeTested) const;
 
   // The ItemTestType of this ItemType
   ItemTestType m_nTestType;
+
+  // The primitive type of TEST_ATOMIC_TYPE
+  AnyAtomicType::AtomicObjectType m_primitiveType;
+  bool m_primitive;
 
   // The name and type to match
   const XMLCh *m_NamePrefix, *m_NameURI, *m_NameName;
@@ -115,11 +165,10 @@ private:
   // allow elements having the xsi:nil="true" attribute
   bool m_bAllowNil;
 
-  // The number of arguments the function should take
-  VectorOfSequenceTypes *argTypes_;
-  // The return type of the function
-  SequenceType *returnType_;
+  // The signature of a the required function
+  FunctionSignature *signature_;
 
+  const DocumentCache *dc_;
   bool staticallyResolved_;
 };
 
@@ -178,6 +227,20 @@ public:
   ASTNode *convertFunctionArg(ASTNode *arg, StaticContext *context, bool numericFunction,
                               const LocationInfo *location);
 
+  enum TypeMatchEnum {
+    NEVER = 0,
+    PROBABLY_NOT = 1,
+    MAYBE = 2,
+    ALWAYS = 3
+  };
+
+  struct TypeMatch
+  {
+    TypeMatchEnum type, cardinality;
+  };
+
+  TypeMatch matches(const StaticType &actual) const;
+
   /**
    * Getter for m_pItemType.
    */
@@ -190,11 +253,9 @@ public:
 
   const ItemType *getItemType() const;
 
-  bool isSubtypeOf(const SequenceType *toBeTested, const StaticContext* context) const;
+  bool isSubtypeOf(const SequenceType *toBeTested) const;
 
   void staticResolution(StaticContext* context);
-  void getStaticType(StaticType &st, const StaticContext *context,
-                     bool &isExact, const LocationInfo *location) const;
 
   void toBuffer(XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer &buffer) const;
 

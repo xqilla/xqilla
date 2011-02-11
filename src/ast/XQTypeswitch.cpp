@@ -103,14 +103,14 @@ ASTNode *XQTypeswitch::staticTypingImpl(StaticContext *context)
     bool found = false;
     Cases newCases = Cases(XQillaAllocator<Case*>(mm));
     for(it = cases_->begin(); it != cases_->end(); ++it) {
-      StaticType::TypeMatch match = (*it)->getTreatType().matches(sType);
-      if(found || match.type == StaticType::NEVER || match.cardinality == StaticType::NEVER) {
+      SequenceType::TypeMatch match = (*it)->getSequenceType()->matches(sType);
+      if(found || match.type == SequenceType::NEVER || match.cardinality == SequenceType::NEVER) {
         // It never matches
         (*it)->getExpression()->release();
         mm->deallocate(*it);
       }
-      else if((*it)->getIsExact() && match.type == StaticType::ALWAYS &&
-         match.cardinality == StaticType::ALWAYS) {
+      else if(match.type == SequenceType::ALWAYS &&
+         match.cardinality == SequenceType::ALWAYS) {
         // It always matches, so set this clause as the
         // default clause and remove all clauses after it
         default_->getExpression()->release();
@@ -196,19 +196,16 @@ XQTypeswitch::Case::Case(const XMLCh *qname, SequenceType *seqType, ASTNode *exp
     uri_(0),
     name_(0),
     seqType_(seqType),
-    isExact_(false),
     expr_(expr)
 {
 }
 
 XQTypeswitch::Case::Case(const XMLCh *qname, const XMLCh *uri, const XMLCh *name, SequenceType *seqType,
-                         const StaticType &treatType, bool isExact, ASTNode *expr)
+                         ASTNode *expr)
   : qname_(qname),
     uri_(uri),
     name_(name),
     seqType_(seqType),
-    treatType_(treatType),
-    isExact_(isExact),
     expr_(expr)
 {
 }
@@ -217,7 +214,6 @@ void XQTypeswitch::Case::staticResolution(StaticContext* context)
 {
   if(seqType_) {
     seqType_->staticResolution(context);
-    seqType_->getStaticType(treatType_, context, isExact_, this);
   }
   expr_ = expr_->staticResolution(context);
 
@@ -258,7 +254,7 @@ void XQTypeswitch::Case::staticTyping(const StaticAnalysis &var_src, StaticConte
     src.getStaticType() = expr_->getStaticAnalysis().getStaticType();
     src.setProperties(expr_->getStaticAnalysis().getProperties());
   } else {
-    src.getStaticType() |= expr_->getStaticAnalysis().getStaticType();
+    src.getStaticType().typeUnion(expr_->getStaticAnalysis().getStaticType());
     src.setProperties(src.getProperties() & expr_->getStaticAnalysis().getProperties());
   }
   if(qname_ != 0) {

@@ -258,17 +258,17 @@ ASTNode *ASTCopier::optimize ## methodname (classname *item) \
 // TBD copy SequenceType objects - jpcs
 // TBD copy NodeTest objects - jpcs
 
-COPY_XQ4(Literal, TypeURI, TypeName, Value, PrimitiveType)
-COPY_XQ5(QNameLiteral, TypeURI, TypeName, URI, Prefix, Localname)
-COPY_XQ4(NumericLiteral, TypeURI, TypeName, Value, PrimitiveType)
+COPY_XQ2(Literal, ItemType, Value)
+COPY_XQ4(QNameLiteral, ItemType, URI, Prefix, Localname)
+COPY_XQ2(NumericLiteral, ItemType, Value)
 COPY_XQ1(Sequence, Children)
 COPY_XQ2(Step, Axis, NodeTest)
 COPY_XQ4(Variable, Prefix, URI, Name, Global)
 COPY_XQ3(If, Test, WhenTrue, WhenFalse)
-COPY_XQ4(CastableAs, Expression, SequenceType, IsPrimitive, TypeIndex)
-COPY_XQ4(CastAs, Expression, SequenceType, IsPrimitive, TypeIndex)
-COPY_XQ7(TreatAs, Expression, SequenceType, ErrorCode, DoTypeCheck, DoCardinalityCheck, TreatType, IsExact)
-COPY_XQ4(FunctionCoercion, Expression, SequenceType, FuncConvert, TreatType)
+COPY_XQ2(CastableAs, Expression, SequenceType)
+COPY_XQ2(CastAs, Expression, SequenceType)
+COPY_XQ5(TreatAs, Expression, SequenceType, ErrorCode, DoTypeCheck, DoCardinalityCheck)
+COPY_XQ3(FunctionCoercion, Expression, SequenceType, FuncConvert)
 COPY_XQ0(ContextItem)
 COPY_XQ2(Return, Parent, Expression)
 COPY_XQ3(Quantified, QuantifierType, Parent, Expression)
@@ -276,9 +276,9 @@ COPY_XQ2(Validate, Expression, Mode)
 COPY_XQ2(OrderingChange, OrderingValue, Expr)
 COPY_XQ2(Atomize, Expression, DoPSVI)
 COPY_XQ1(EffectiveBooleanValue, Expression)
-COPY_XQ5(PromoteUntyped, Expression, TypeURI, TypeName, IsPrimitive, TypeIndex)
-COPY_XQ4(PromoteNumeric, Expression, TypeURI, TypeName, TypeIndex)
-COPY_XQ3(PromoteAnyURI, Expression, TypeURI, TypeName)
+COPY_XQ2(PromoteUntyped, Expression, ItemType)
+COPY_XQ2(PromoteNumeric, Expression, ItemType)
+COPY_XQ2(PromoteAnyURI, Expression, ItemType)
 COPY_XQ2(DocumentOrder, Expression, Unordered)
 COPY_XQ3(Predicate, Expression, Predicate, Reverse)
 COPY_XQ1(NameExpression, Expression)
@@ -309,9 +309,8 @@ COPY_FULL3(UserFunction, XQUserFunctionInstance, FunctionDefinition, Arguments, 
 ASTNode *ASTCopier::optimizeInlineFunction(XQInlineFunction *item)
 {
   XQInlineFunction *result = new (mm_) XQInlineFunction(item->getUserFunction(), item->getPrefix(),
-                                                        item->getURI(), item->getName(), item->getNumArgs(),
-                                                        new (mm_) FunctionSignature(item->getSignature(), mm_),
-                                                        item->getInstance(), mm_);
+                                                        item->getURI(), item->getName(),
+                                                        item->getItemType(), item->getInstance(), mm_);
   ASTVisitor::optimizeInlineFunction(result);
 
   if(result->getUserFunction()) {
@@ -393,7 +392,7 @@ ASTNode *ASTCopier::optimizeOperator(XQOperator *item)
 static XQTypeswitch::Case *copyCase(const XQTypeswitch::Case *in, XPath2MemoryManager *mm)
 {
   XQTypeswitch::Case *result = new (mm) XQTypeswitch::Case(in->getQName(), in->getURI(), in->getName(), in->getSequenceType(),
-                                                           in->getTreatType(), in->getIsExact(), in->getExpression());
+                                                           in->getExpression());
   result->setLocationInfo(in);
   return result;
 }

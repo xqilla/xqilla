@@ -52,7 +52,7 @@ ASTNode *FunctionParseXML::staticTypingImpl(StaticContext *context)
 
   _src.setProperties(StaticAnalysis::DOCORDER | StaticAnalysis::GROUPED |
                      StaticAnalysis::PEER | StaticAnalysis::SUBTREE | StaticAnalysis::ONENODE);
-  _src.getStaticType() = StaticType(StaticType::DOCUMENT_TYPE, 0, 1);
+  _src.getStaticType() = StaticType::DOCUMENT_QUESTION;
   _src.creative(true);
 
   return this;

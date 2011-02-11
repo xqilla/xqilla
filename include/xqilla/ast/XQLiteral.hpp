@@ -26,8 +26,8 @@
 class XQILLA_API XQLiteral : public ASTNodeImpl
 {
 public:
-  XQLiteral(const XMLCh* typeURI, const XMLCh* typeName, const XMLCh* value,
-            AnyAtomicType::AtomicObjectType primitiveType, XPath2MemoryManager* memMgr);
+  XQLiteral(ItemType *type, const XMLCh* value,
+            XPath2MemoryManager* memMgr);
 
   virtual bool isDateOrTimeAndHasNoTimezone(StaticContext* context) const;
 
@@ -37,9 +37,7 @@ public:
   virtual EventGenerator::Ptr generateEvents(EventHandler *events, DynamicContext *context,
                                              bool preserveNS, bool preserveType) const;
 
-  AnyAtomicType::AtomicObjectType getPrimitiveType() const { return primitiveType_; }
-  const XMLCh *getTypeURI() const { return typeURI_; }
-  const XMLCh *getTypeName() const { return typeName_; }
+  ItemType *getItemType() const { return type_; }
   const XMLCh *getValue() const { return value_; }
 
   static ASTNode *create(const Item::Ptr &item, DynamicContext *context, XPath2MemoryManager* memMgr,
@@ -47,16 +45,14 @@ public:
   static ASTNode *create(bool value, XPath2MemoryManager* memMgr, const LocationInfo *location);
 
 private:
-  const XMLCh *typeURI_;
-  const XMLCh *typeName_;
-  AnyAtomicType::AtomicObjectType primitiveType_;
+  ItemType *type_;
   const XMLCh *value_;
 };
 
 class XQILLA_API XQQNameLiteral : public ASTNodeImpl
 {
 public:
-  XQQNameLiteral(const XMLCh* typeURI, const XMLCh* typeName, const XMLCh* uri,
+  XQQNameLiteral(ItemType *type, const XMLCh* uri,
                  const XMLCh* prefix, const XMLCh* localname, XPath2MemoryManager* memMgr);
 
   virtual bool isDateOrTimeAndHasNoTimezone(StaticContext* context) const;
@@ -67,23 +63,21 @@ public:
   virtual EventGenerator::Ptr generateEvents(EventHandler *events, DynamicContext *context,
                                              bool preserveNS, bool preserveType) const;
 
-  const XMLCh *getTypeURI() const { return typeURI_; }
-  const XMLCh *getTypeName() const { return typeName_; }
+  ItemType *getItemType() const { return type_; }
   const XMLCh *getURI() const { return uri_; }
   const XMLCh *getLocalname() const { return localname_; }
   const XMLCh *getPrefix() const { return prefix_; }
 
 private:
-  const XMLCh *typeURI_;
-  const XMLCh *typeName_;
+  ItemType *type_;
   const XMLCh *uri_, *prefix_, *localname_;
 };
 
 class XQILLA_API XQNumericLiteral : public ASTNodeImpl
 {
 public:
-  XQNumericLiteral(const XMLCh* typeURI, const XMLCh* typeName, const MAPM& value,
-                   AnyAtomicType::AtomicObjectType primitiveType, XPath2MemoryManager* memMgr);
+  XQNumericLiteral(ItemType *type, const MAPM& value,
+                   XPath2MemoryManager* memMgr);
 
   virtual bool isDateOrTimeAndHasNoTimezone(StaticContext* context) const;
 
@@ -93,16 +87,12 @@ public:
   virtual EventGenerator::Ptr generateEvents(EventHandler *events, DynamicContext *context,
                                              bool preserveNS, bool preserveType) const;
 
-  AnyAtomicType::AtomicObjectType getPrimitiveType() const { return primitiveType_; }
-  const XMLCh *getTypeURI() const { return typeURI_; }
-  const XMLCh *getTypeName() const { return typeName_; }
+  ItemType *getItemType() const { return type_; }
   MAPM getValue() const;
   const M_APM_struct &getRawValue() const { return value_; }
 
 private:
-  const XMLCh *typeURI_;
-  const XMLCh *typeName_;
-  AnyAtomicType::AtomicObjectType primitiveType_;
+  ItemType *type_;
   M_APM_struct value_;
 };
 

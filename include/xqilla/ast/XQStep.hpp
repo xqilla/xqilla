@@ -23,6 +23,7 @@
 #include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/ast/ASTNodeImpl.hpp>
+#include <xqilla/items/Node.hpp>
 
 class NodeTest;
 
@@ -30,24 +31,8 @@ class NodeTest;
 class XQILLA_API XQStep : public ASTNodeImpl
 {
 public:
-  enum Axis {
-    ANCESTOR,
-    ANCESTOR_OR_SELF,
-    ATTRIBUTE,
-    CHILD,
-    DESCENDANT,
-    DESCENDANT_OR_SELF,
-    FOLLOWING,
-    FOLLOWING_SIBLING,
-    NAMESPACE,
-    PARENT,
-    PRECEDING,
-    PRECEDING_SIBLING,
-    SELF
-  };
-
   //constuctor that takes the step this XQ is refuring to
-  XQStep(Axis axis, NodeTest* nodeTest, XPath2MemoryManager* memMgr);
+  XQStep(Node::Axis axis, NodeTest* nodeTest, XPath2MemoryManager* memMgr);
   ~XQStep();
 
   virtual ASTNode* staticResolution(StaticContext *context);
@@ -58,15 +43,15 @@ public:
   NodeTest *getNodeTest() const;
   void setNodeTest(NodeTest *nodeTest);
 
-  Axis getAxis() const;
-  void setAxis(Axis axis);
+  Node::Axis getAxis() const;
+  void setAxis(Node::Axis axis);
 
-  static bool isForwardAxis(Axis axis);
-  static unsigned int getAxisProperties(Axis axis);
+  static bool isForwardAxis(Node::Axis axis);
+  static unsigned int getAxisProperties(Node::Axis axis);
 
 private:
   NodeTest* nodeTest_;
-  Axis axis_;
+  Node::Axis axis_;
 };
 
 #endif

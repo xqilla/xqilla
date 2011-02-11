@@ -18,6 +18,7 @@
  */
 
 #include <xqilla/ast/ForTuple.hpp>
+#include <xqilla/ast/ASTNode.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/context/VariableTypeStore.hpp>
 #include <xqilla/context/ContextHelpers.hpp>

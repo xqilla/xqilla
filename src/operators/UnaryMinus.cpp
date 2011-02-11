@@ -26,6 +26,7 @@
 #include <xqilla/exceptions/XPath2ErrorException.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
+#include <xqilla/framework/BasicMemoryManager.hpp>
 
 #include <xercesc/util/XMLUniDefs.hpp>
 
@@ -57,15 +58,17 @@ ASTNode *UnaryMinus::staticTypingImpl(StaticContext *context)
   return result;
 }
 
-void UnaryMinus::calculateStaticType()
+void UnaryMinus::calculateStaticType(StaticContext *context)
 {
   const StaticType &arg0 = _args[0]->getStaticAnalysis().getStaticType();
   // untypedAtomic will be promoted to xs:double
-  if(arg0.containsType(StaticType::NUMERIC_TYPE)) {
-    _src.getStaticType() = arg0 & StaticType::NUMERIC_TYPE;
+  if(arg0.containsType(TypeFlags::NUMERIC)) {
+    StaticType tmp(BasicMemoryManager::get()); tmp = arg0;
+    tmp.typeIntersect(TypeFlags::NUMERIC);
+    _src.getStaticType().typeUnion(tmp);
   }
-  if(arg0.containsType(StaticType::UNTYPED_ATOMIC_TYPE)) {
-    _src.getStaticType() |= StaticType::DOUBLE_TYPE;
+  if(arg0.containsType(TypeFlags::UNTYPED_ATOMIC)) {
+    _src.getStaticType().typeUnion(StaticType::DOUBLE);
   }
 }
 

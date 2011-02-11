@@ -3,6 +3,8 @@
  *     DecisionSoft Limited. All rights reserved.
  * Copyright (c) 2004, 2010,
  *     Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010,
+ *     John Snelson. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,134 +28,283 @@
 #include <xqilla/context/StaticContext.hpp>
 #include <xqilla/utils/XPath2Utils.hpp>
 #include <xqilla/utils/XStr.hpp>
+#include <xqilla/framework/BasicMemoryManager.hpp>
 
 #include <xercesc/validators/schema/SchemaSymbols.hpp>
 
 XERCES_CPP_NAMESPACE_USE;
 
+const StaticType StaticType::EMPTY(BasicMemoryManager::get());
+const StaticType StaticType::ITEM(&ItemType::ITEM, BasicMemoryManager::get());
+const StaticType StaticType::ITEM_STAR(&ItemType::ITEM, 0, StaticType::UNLIMITED, BasicMemoryManager::get());
+const StaticType StaticType::FUNCTION(&ItemType::FUNCTION, BasicMemoryManager::get());
+const StaticType StaticType::ANY_ATOMIC_TYPE(&ItemType::ANY_ATOMIC_TYPE, BasicMemoryManager::get());
+const StaticType StaticType::UNTYPED_ATOMIC(&ItemType::UNTYPED_ATOMIC, BasicMemoryManager::get());
+const StaticType StaticType::STRING(&ItemType::STRING, BasicMemoryManager::get());
+const StaticType StaticType::DECIMAL(&ItemType::DECIMAL, BasicMemoryManager::get());
+const StaticType StaticType::DECIMAL_QUESTION(&ItemType::DECIMAL, 0, 1, BasicMemoryManager::get());
+const StaticType StaticType::FLOAT(&ItemType::FLOAT, BasicMemoryManager::get());
+const StaticType StaticType::FLOAT_QUESTION(&ItemType::FLOAT, 0, 1, BasicMemoryManager::get());
+const StaticType StaticType::DOUBLE(&ItemType::DOUBLE, BasicMemoryManager::get());
+const StaticType StaticType::DOUBLE_QUESTION(&ItemType::DOUBLE, 0, 1, BasicMemoryManager::get());
+const StaticType StaticType::QNAME(&ItemType::QNAME, BasicMemoryManager::get());
+const StaticType StaticType::QNAME_QUESTION(&ItemType::QNAME, 0, 1, BasicMemoryManager::get());
+const StaticType StaticType::BOOLEAN(&ItemType::BOOLEAN, BasicMemoryManager::get());
+const StaticType StaticType::BOOLEAN_QUESTION(&ItemType::BOOLEAN, 0, 1, BasicMemoryManager::get());
+const StaticType StaticType::DAY_TIME_DURATION(&ItemType::DAY_TIME_DURATION, BasicMemoryManager::get());
+const StaticType StaticType::NODE(&ItemType::NODE, BasicMemoryManager::get());
+const StaticType StaticType::NODE_QUESTION(&ItemType::NODE, 0, 1, BasicMemoryManager::get());
+const StaticType StaticType::NODE_STAR(&ItemType::NODE, 0, StaticType::UNLIMITED, BasicMemoryManager::get());
+const StaticType StaticType::DOCUMENT(&ItemType::DOCUMENT, BasicMemoryManager::get());
+const StaticType StaticType::DOCUMENT_QUESTION(&ItemType::DOCUMENT, 0, 1, BasicMemoryManager::get());
+const StaticType StaticType::DOCUMENT_STAR(&ItemType::DOCUMENT, 0, StaticType::UNLIMITED, BasicMemoryManager::get());
+const StaticType StaticType::ELEMENT(&ItemType::ELEMENT, BasicMemoryManager::get());
+const StaticType StaticType::ATTRIBUTE(&ItemType::ATTRIBUTE, BasicMemoryManager::get());
+const StaticType StaticType::TEXT(&ItemType::TEXT, BasicMemoryManager::get());
+const StaticType StaticType::TEXT_QUESTION(&ItemType::TEXT, 0, 1, BasicMemoryManager::get());
+const StaticType StaticType::TEXT_STAR(&ItemType::TEXT, 0, StaticType::UNLIMITED, BasicMemoryManager::get());
+const StaticType StaticType::PI(&ItemType::PI, BasicMemoryManager::get());
+const StaticType StaticType::PI_STAR(&ItemType::PI, 0, StaticType::UNLIMITED, BasicMemoryManager::get());
+const StaticType StaticType::COMMENT(&ItemType::COMMENT, BasicMemoryManager::get());
+const StaticType StaticType::COMMENT_STAR(&ItemType::COMMENT, 0, StaticType::UNLIMITED, BasicMemoryManager::get());
+const StaticType StaticType::NAMESPACE(&ItemType::NAMESPACE, BasicMemoryManager::get());
+
+TypeFlags::Enum flagsForAtomicType(AnyAtomicType::AtomicObjectType type)
+{
+  switch(type) {
+  case AnyAtomicType::ANY_SIMPLE_TYPE: return TypeFlags::ANY_SIMPLE_TYPE | TypeFlags::ANY_ATOMIC_TYPE;
+  case AnyAtomicType::ANY_URI: return TypeFlags::ANY_URI;
+  case AnyAtomicType::BASE_64_BINARY: return TypeFlags::BASE_64_BINARY;
+  case AnyAtomicType::BOOLEAN: return TypeFlags::BOOLEAN;
+  case AnyAtomicType::DATE: return TypeFlags::DATE;
+  case AnyAtomicType::DATE_TIME: return TypeFlags::DATE_TIME;
+  case AnyAtomicType::DAY_TIME_DURATION: return TypeFlags::DAY_TIME_DURATION;
+  case AnyAtomicType::DECIMAL: return TypeFlags::DECIMAL;
+  case AnyAtomicType::DOUBLE: return TypeFlags::DOUBLE;
+  case AnyAtomicType::DURATION: return TypeFlags::DURATION | TypeFlags::DAY_TIME_DURATION | TypeFlags::YEAR_MONTH_DURATION;
+  case AnyAtomicType::FLOAT: return TypeFlags::FLOAT;
+  case AnyAtomicType::G_DAY: return TypeFlags::G_DAY;
+  case AnyAtomicType::G_MONTH: return TypeFlags::G_MONTH;
+  case AnyAtomicType::G_MONTH_DAY: return TypeFlags::G_MONTH_DAY;
+  case AnyAtomicType::G_YEAR: return TypeFlags::G_YEAR;
+  case AnyAtomicType::G_YEAR_MONTH: return TypeFlags::G_YEAR_MONTH;
+  case AnyAtomicType::HEX_BINARY: return TypeFlags::HEX_BINARY;
+  case AnyAtomicType::NOTATION: return TypeFlags::NOTATION;
+  case AnyAtomicType::QNAME: return TypeFlags::QNAME;
+  case AnyAtomicType::STRING: return TypeFlags::STRING;
+  case AnyAtomicType::TIME: return TypeFlags::TIME;
+  case AnyAtomicType::UNTYPED_ATOMIC: return TypeFlags::UNTYPED_ATOMIC;
+  case AnyAtomicType::YEAR_MONTH_DURATION: return TypeFlags::YEAR_MONTH_DURATION;
+  case AnyAtomicType::NumAtomicObjectTypes: return TypeFlags::ANY_ATOMIC_TYPE;
+  }
+
+  return TypeFlags::EMPTY;
+}
+
+static inline TypeFlags::Enum flagsForItemType(const ItemType *type)
+{
+  switch(type->getItemTestType()) {
+  case ItemType::TEST_ANYTHING:
+    return TypeFlags::ITEM;
+  case ItemType::TEST_SCHEMA_ELEMENT:
+  case ItemType::TEST_ELEMENT:
+    return TypeFlags::ELEMENT;
+  case ItemType::TEST_SCHEMA_ATTRIBUTE:
+  case ItemType::TEST_ATTRIBUTE:
+    return TypeFlags::ATTRIBUTE;
+  case ItemType::TEST_SCHEMA_DOCUMENT:
+  case ItemType::TEST_DOCUMENT:
+    return TypeFlags::DOCUMENT;
+  case ItemType::TEST_NODE:
+    return TypeFlags::NODE;
+  case ItemType::TEST_PI:
+    return TypeFlags::PI;
+  case ItemType::TEST_COMMENT:
+    return TypeFlags::COMMENT;
+  case ItemType::TEST_TEXT:
+    return TypeFlags::TEXT;
+  case ItemType::TEST_NAMESPACE:
+    return TypeFlags::NAMESPACE;
+  case ItemType::TEST_ATOMIC_TYPE:
+    return flagsForAtomicType(type->getPrimitiveType());
+  case ItemType::TEST_FUNCTION:
+    return TypeFlags::FUNCTION;
+  }
+
+  return TypeFlags::EMPTY;
+}
+
+bool ItemType::intersects(const ItemType *b) const
+{
+  TypeFlags::Enum aflags = flagsForItemType(this);
+  TypeFlags::Enum bflags = flagsForItemType(b);
+  return (aflags & bflags) != 0;
+}
+
+static inline bool flagsIntersect(const ItemType *type, TypeFlags::Enum flags)
+{
+  TypeFlags::Enum tflags = flagsForItemType(type);
+  return ((tflags & flags) != 0);
+}
+
+static inline bool flagsSubtype(const ItemType *type, TypeFlags::Enum flags)
+{
+  TypeFlags::Enum tflags = flagsForItemType(type);
+  return ((tflags & flags) != 0) && (tflags & ~flags) == 0;
+}
+
+static inline void normalizedPushBack(StaticType::ItemTypes &newTypes, const ItemType *type)
+{
+  // Keep the StaticType normalized
+  StaticType::ItemTypes::iterator i = newTypes.begin();
+  while(i != newTypes.end()) {
+    if(type->isSubtypeOf(*i))
+      return;
+    if((*i)->isSubtypeOf(type))
+      newTypes.erase(i);
+    else ++i;
+  }
+  newTypes.push_back(type);
+}
+
+static void addItemTypesFromFlags(TypeFlags::Enum tflags, StaticType::ItemTypes &newTypes)
+{
+#define ADD_ITEMTYPE_FOR(type) \
+  if((tflags & TypeFlags::type) == TypeFlags::type) { \
+    normalizedPushBack(newTypes, &ItemType::type); \
+    tflags = tflags & (TypeFlags::Enum)~TypeFlags::type; \
+  }
+
+  ADD_ITEMTYPE_FOR(NODE);
+  ADD_ITEMTYPE_FOR(ANY_ATOMIC_TYPE);
+  ADD_ITEMTYPE_FOR(DOCUMENT);
+  ADD_ITEMTYPE_FOR(ELEMENT);
+  ADD_ITEMTYPE_FOR(ATTRIBUTE);
+  ADD_ITEMTYPE_FOR(TEXT);
+  ADD_ITEMTYPE_FOR(PI);
+  ADD_ITEMTYPE_FOR(COMMENT);
+  ADD_ITEMTYPE_FOR(NAMESPACE);
+  ADD_ITEMTYPE_FOR(ANY_SIMPLE_TYPE);
+  ADD_ITEMTYPE_FOR(ANY_URI);
+  ADD_ITEMTYPE_FOR(BASE_64_BINARY);
+  ADD_ITEMTYPE_FOR(BOOLEAN);
+  ADD_ITEMTYPE_FOR(DATE);
+  ADD_ITEMTYPE_FOR(DATE_TIME);
+  ADD_ITEMTYPE_FOR(DAY_TIME_DURATION);
+  ADD_ITEMTYPE_FOR(DECIMAL);
+  ADD_ITEMTYPE_FOR(DOUBLE);
+  ADD_ITEMTYPE_FOR(DURATION);
+  ADD_ITEMTYPE_FOR(FLOAT);
+  ADD_ITEMTYPE_FOR(G_DAY);
+  ADD_ITEMTYPE_FOR(G_MONTH);
+  ADD_ITEMTYPE_FOR(G_MONTH_DAY);
+  ADD_ITEMTYPE_FOR(G_YEAR);
+  ADD_ITEMTYPE_FOR(G_YEAR_MONTH);
+  ADD_ITEMTYPE_FOR(HEX_BINARY);
+  ADD_ITEMTYPE_FOR(NOTATION);
+  ADD_ITEMTYPE_FOR(QNAME);
+  ADD_ITEMTYPE_FOR(STRING);
+  ADD_ITEMTYPE_FOR(TIME);
+  ADD_ITEMTYPE_FOR(UNTYPED_ATOMIC);
+  ADD_ITEMTYPE_FOR(YEAR_MONTH_DURATION);
+  ADD_ITEMTYPE_FOR(FUNCTION);
+}
+
+static inline bool intersectItemType(const ItemType *type, TypeFlags::Enum flags,
+                                     StaticType::ItemTypes &newTypes)
+{
+  TypeFlags::Enum tflags = flagsForItemType(type);
+
+  if((tflags & flags) == 0) return true;
+
+  if((tflags & ~flags) == 0) {
+    normalizedPushBack(newTypes, type);
+    return false;
+  }
+
+  addItemTypesFromFlags(tflags & flags, newTypes);
+  return true;
+}
+
 const unsigned int StaticType::UNLIMITED = (unsigned int)-1;
 
-StaticType StaticType::create(const XMLCh *uri, const XMLCh *name, const StaticContext *context,
-                              bool &isExact)
-{
-  if(XPath2Utils::equals(name, AnyAtomicType::fgDT_ANYATOMICTYPE) &&
-     XPath2Utils::equals(uri, SchemaSymbols::fgURI_SCHEMAFORSCHEMA)) {
-    isExact = true;
-    return ANY_ATOMIC_TYPE;
-  }
-  else {
-    return create(context->getItemFactory()->getPrimitiveTypeIndex(uri, name, /*isPrimitive*/isExact));
-  }
-}
-
-StaticType StaticType::create(AnyAtomicType::AtomicObjectType primitiveType)
-{
-  switch(primitiveType) {
-  case AnyAtomicType::ANY_SIMPLE_TYPE: return ANY_SIMPLE_TYPE;
-  case AnyAtomicType::ANY_URI: return ANY_URI_TYPE;
-  case AnyAtomicType::BASE_64_BINARY: return BASE_64_BINARY_TYPE;
-  case AnyAtomicType::BOOLEAN: return BOOLEAN_TYPE;
-  case AnyAtomicType::DATE: return DATE_TYPE;
-  case AnyAtomicType::DATE_TIME: return DATE_TIME_TYPE;
-  case AnyAtomicType::DAY_TIME_DURATION: return DAY_TIME_DURATION_TYPE;
-  case AnyAtomicType::DECIMAL: return DECIMAL_TYPE;
-  case AnyAtomicType::DOUBLE: return DOUBLE_TYPE;
-  case AnyAtomicType::DURATION: return DURATION_TYPE | DAY_TIME_DURATION_TYPE | YEAR_MONTH_DURATION_TYPE;
-  case AnyAtomicType::FLOAT: return FLOAT_TYPE;
-  case AnyAtomicType::G_DAY: return G_DAY_TYPE;
-  case AnyAtomicType::G_MONTH: return G_MONTH_TYPE;
-  case AnyAtomicType::G_MONTH_DAY: return G_MONTH_DAY_TYPE;
-  case AnyAtomicType::G_YEAR: return G_YEAR_TYPE;
-  case AnyAtomicType::G_YEAR_MONTH: return G_YEAR_MONTH_TYPE;
-  case AnyAtomicType::HEX_BINARY: return HEX_BINARY_TYPE;
-  case AnyAtomicType::NOTATION: return NOTATION_TYPE;
-  case AnyAtomicType::QNAME: return QNAME_TYPE;
-  case AnyAtomicType::STRING: return STRING_TYPE;
-  case AnyAtomicType::TIME: return TIME_TYPE;
-  case AnyAtomicType::UNTYPED_ATOMIC: return UNTYPED_ATOMIC_TYPE;
-  case AnyAtomicType::YEAR_MONTH_DURATION: return YEAR_MONTH_DURATION_TYPE;
-  default: break;
-  }
-  return StaticType();
-}
-
-StaticType::StaticType()
-  : flags_(0),
+StaticType::StaticType(MemoryManager *mm)
+  : types_(XQillaAllocator<const ItemType*>(mm)),
     min_(0),
-    max_(0),
-    mm_(0),
-    minArgs_(0),
-    maxArgs_(0),
-    returnType_(0)
+    max_(0)
 {
 }
 
-StaticType::StaticType(StaticTypeFlags f, unsigned int min, unsigned int max)
-  : flags_(f),
+StaticType::StaticType(const ItemType *type, MemoryManager *mm)
+  : types_(XQillaAllocator<const ItemType*>(mm)),
+    min_(1),
+    max_(1)
+{
+  types_.push_back(type);
+}
+
+StaticType::StaticType(const ItemType *type, unsigned int min, unsigned int max, MemoryManager *mm)
+  : types_(XQillaAllocator<const ItemType*>(mm)),
     min_(min),
-    max_(max),
-    mm_(0),
-    minArgs_(0),
-    maxArgs_(0),
-    returnType_(0)
+    max_(max)
 {
-  // max must be 0 if flags is 0
-  assert(max != 0 || flags_ == 0);
-  assert(min <= max);
-  assert(min != UNLIMITED);
+  types_.push_back(type);
 }
 
-StaticType::StaticType(XPath2MemoryManager *mm, unsigned int numArgs, const StaticType &returnType, unsigned int min, unsigned int max)
-  : flags_(FUNCTION_TYPE),
-    min_(min),
-    max_(max),
-    mm_(mm),
-    minArgs_(numArgs),
-    maxArgs_(numArgs),
-    returnType_(new (mm) StaticType(returnType))
+StaticType::StaticType(const SequenceType *type, MemoryManager *mm)
+  : types_(XQillaAllocator<const ItemType*>(mm)),
+    min_(0),
+    max_(0)
 {
-  assert(min <= max);
-  assert(min != UNLIMITED);
-}
-
-StaticType::StaticType(XPath2MemoryManager *mm, unsigned int minArgs, unsigned int maxArgs, const StaticType &returnType,
-                       unsigned int min, unsigned int max)
-  : flags_(FUNCTION_TYPE),
-    min_(min),
-    max_(max),
-    mm_(mm),
-    minArgs_(minArgs),
-    maxArgs_(maxArgs),
-    returnType_(new (mm) StaticType(returnType))
-{
-  assert(min <= max);
-  assert(min != UNLIMITED);
-}
-
-StaticType::StaticType(const StaticType &o)
-  : flags_(o.flags_),
-    min_(o.min_),
-    max_(o.max_),
-    mm_(o.mm_),
-    minArgs_(o.minArgs_),
-    maxArgs_(o.maxArgs_),
-    returnType_(o.returnType_ ? new (mm_) StaticType(*o.returnType_) : 0)
-{
+  *this = type;
 }
 
 StaticType &StaticType::operator=(const StaticType &o)
 {
-  if(this != &o) {
-    flags_ = o.flags_;
-    min_ = o.min_;
-    max_ = o.max_;
+  types_.clear();
 
-    delete returnType_;
+  ItemTypes::const_iterator i = o.types_.begin();
+  for(; i != o.types_.end(); ++i) {
+    types_.push_back(*i);
+  }
 
-    if(mm_ == 0) mm_ = o.mm_;
-    minArgs_ = o.minArgs_;
-    maxArgs_ = o.maxArgs_;
-    returnType_ = o.returnType_ ? new (mm_) StaticType(*o.returnType_) : 0;
+  min_ = o.min_;
+  max_ = o.max_;
+
+  return *this;
+}
+
+StaticType &StaticType::operator=(const ItemType *type)
+{
+  types_.clear();
+
+  types_.push_back(type);
+
+  min_ = 1;
+  max_ = 1;
+
+  return *this;
+}
+
+StaticType &StaticType::operator=(const SequenceType *type)
+{
+  clear();
+
+  if(!type) {
+    types_.push_back(&ItemType::ITEM);
+    min_ = 0; max_ = UNLIMITED;
+  } else if(type->getItemType()) {
+    types_.push_back(type->getItemType());
+    switch(type->getOccurrenceIndicator()) {
+    case SequenceType::EXACTLY_ONE:
+      min_ = 1; max_ = 1; break;
+    case SequenceType::STAR:
+      min_ = 0; max_ = UNLIMITED; break;
+    case SequenceType::PLUS:
+      min_ = 1; max_ = UNLIMITED; break;
+    case SequenceType::QUESTION_MARK:
+      min_ = 0; max_ = 1; break;
+    }
   }
 
   return *this;
@@ -161,207 +312,129 @@ StaticType &StaticType::operator=(const StaticType &o)
 
 StaticType::~StaticType()
 {
-  delete returnType_;
+}
+
+void StaticType::release()
+{
+#if defined(_MSC_VER) || defined(__xlC__)
+  types_.~ItemTypes();
+#else
+  types_.~vector<const ItemType*, XQillaAllocator<const ItemType*> >();
+#endif
+}
+
+void StaticType::clear()
+{
+  types_.clear();
+  min_ = 0; max_ = 0;
+}
+
+bool StaticType::containsType(TypeFlags::Enum flags) const
+{
+  ItemTypes::const_iterator i = types_.begin();
+  for(; i != types_.end(); ++i) {
+    if(flagsIntersect(*i, flags)) return true;
+  }
+  return false;
+}
+
+bool StaticType::isType(TypeFlags::Enum flags) const
+{
+  if(max_ == 0) return flags == 0;
+
+  ItemTypes::const_iterator i = types_.begin();
+  for(; i != types_.end(); ++i) {
+    if(!flagsSubtype(*i, flags)) return false;
+  }
+  return true;
+}
+
+bool StaticType::containsType(const StaticType &type) const
+{
+  // Could be more accurate by using ItemType::isSubtypeOf(),
+  // but this will do for now.
+  ItemTypes::const_iterator i = type.types_.begin();
+  for(; i != type.types_.end(); ++i) {
+    if(containsType(flagsForItemType(*i))) return true;
+  }
+  return false;
 }
 
 void StaticType::typeUnion(const StaticType &st)
 {
-  bool thisFunctions = (flags_ & FUNCTION_TYPE) != 0;
-  bool otherFunctions = (st.flags_ & FUNCTION_TYPE) != 0;
-
-  flags_ |= st.flags_;
   min_ = (min_ < st.min_) ? min_ : st.min_;
   max_ = (max_ > st.max_) ? max_ : st.max_;
 
-  if(st.returnType_) {
-    if(returnType_) {
-      minArgs_ = (minArgs_ < st.minArgs_) ? minArgs_ : st.minArgs_;
-      maxArgs_ = (maxArgs_ > st.maxArgs_) ? maxArgs_ : st.maxArgs_;
-      returnType_->typeUnion(*st.returnType_);
-    }
-    else if(!thisFunctions) {
-      if(mm_ == 0) mm_ = st.mm_;
-      minArgs_ = st.minArgs_;
-      maxArgs_ = st.maxArgs_;
-      returnType_ = new (mm_) StaticType(*st.returnType_);
-    }
-    else {
-      // This was a wildcard function, the union of which is still a wildcard function
-    }
+  ItemTypes::const_iterator i = st.types_.begin();
+  for(; i != st.types_.end(); ++i) {
+    normalizedPushBack(types_, *i);
   }
-  else if(otherFunctions) {
-    // Other was a wildcard function, so this is now a wildcard function
-    minArgs_ = 0;
-    maxArgs_ = 0;
-    delete returnType_;
-    returnType_ = 0;
-  }
-}
-
-void StaticType::typeIntersect(const StaticType &st)
-{
-  flags_ &= st.flags_;
-  min_ = (min_ > st.min_) ? min_ : st.min_;
-  max_ = (max_ < st.max_) ? max_ : st.max_;
-
-  if(st.returnType_) {
-    if(returnType_) {
-      minArgs_ = (minArgs_ > st.minArgs_) ? minArgs_ : st.minArgs_;
-      maxArgs_ = (maxArgs_ < st.maxArgs_) ? maxArgs_ : st.maxArgs_;
-      returnType_->typeIntersect(*st.returnType_);
-    }
-    else {
-      if(mm_ == 0) mm_ = st.mm_;
-      minArgs_ = st.minArgs_;
-      maxArgs_ = st.maxArgs_;
-      returnType_ = new (mm_) StaticType(*st.returnType_);
-    }
-  }
-
-  if((flags_ & FUNCTION_TYPE) == 0 || minArgs_ > maxArgs_) {
-    // A function is no longer part of this type
-    flags_ &= ~FUNCTION_TYPE;
-    minArgs_ = 0;
-    maxArgs_ = 0;
-    delete returnType_;
-    returnType_ = 0;
-  }
-
-  if(flags_ == 0 || max_ == 0 || min_ > max_) {
-    (*this) = StaticType();
-  }
-}
-
-void StaticType::typeExcept(const StaticType &st)
-{
-  assert((st.flags_ & FUNCTION_TYPE) == 0);
-
-  flags_ &= ~st.flags_;
 }
 
 void StaticType::typeConcat(const StaticType &st)
 {
-  bool thisFunctions = (flags_ & FUNCTION_TYPE) != 0;
-  bool otherFunctions = (st.flags_ & FUNCTION_TYPE) != 0;
-
-  flags_ |= st.flags_;
-
   min_ += st.min_;
   if(max_ == UNLIMITED || st.max_ == UNLIMITED)
     max_ = UNLIMITED;
   else max_ += st.max_;
 
-  if(st.returnType_) {
-    if(returnType_) {
-      minArgs_ = (minArgs_ < st.minArgs_) ? minArgs_ : st.minArgs_;
-      maxArgs_ = (maxArgs_ > st.maxArgs_) ? maxArgs_ : st.maxArgs_;
-      returnType_->typeUnion(*st.returnType_);
-    }
-    else if(!thisFunctions) {
-      if(mm_ == 0) mm_ = st.mm_;
-      minArgs_ = st.minArgs_;
-      maxArgs_ = st.maxArgs_;
-      returnType_ = new (mm_) StaticType(*st.returnType_);
-    }
-    else {
-      // This was a wildcard function, the union of which is still a wildcard function
-    }
-  }
-  else if(otherFunctions) {
-    // Other was a wildcard function, so this is now a wildcard function
-    minArgs_ = 0;
-    maxArgs_ = 0;
-    delete returnType_;
-    returnType_ = 0;
+  ItemTypes::const_iterator i = st.types_.begin();
+  for(; i != st.types_.end(); ++i) {
+    normalizedPushBack(types_, *i);
   }
 }
 
-void StaticType::typeNodeIntersect(const StaticType &st)
+bool StaticType::typeIntersect(TypeFlags::Enum st)
 {
-  if(flags_ != st.flags_ && (flags_ & st.flags_) != 0) {
-    min_ = 0;
+  ItemTypes newTypes(XQillaAllocator<const ItemType*>(BasicMemoryManager::get()));
+
+  bool result = false;
+  ItemTypes::iterator i = types_.begin();
+  for(;i != types_.end(); ++i) {
+    result = intersectItemType(*i, st, newTypes) || result;
   }
 
-  flags_ &= st.flags_;
-  min_ = (min_ < st.min_) ? min_ : st.min_;
+  types_ = newTypes;
+  if(types_.empty() || max_ == 0)
+    clear();
+
+  return result;
+}
+
+void StaticType::typeIntersect(const StaticType &st)
+{
+  min_ = (min_ > st.min_) ? min_ : st.min_;
   max_ = (max_ < st.max_) ? max_ : st.max_;
 
-  flags_ &= ~FUNCTION_TYPE;
-  minArgs_ = 0;
-  maxArgs_ = 0;
-  delete returnType_;
-  returnType_ = 0;
-
-  if(flags_ == 0 || max_ == 0) {
-    min_ = 0;
-    max_ = 0;
-    flags_ = 0;
+  // Could be more accurate by using ItemType::isSubtypeOf(),
+  // but this will do for now.
+  TypeFlags::Enum flags = TypeFlags::EMPTY;
+  ItemTypes::const_iterator i = st.types_.begin();
+  for(; i != st.types_.end(); ++i) {
+    flags = flags | flagsForItemType(*i);
   }
-
-  assert(min_ <= max_);
+  typeIntersect(flags);
 }
 
-StaticType StaticType::operator|(const StaticType &st) const
+bool StaticType::typeExcept(TypeFlags::Enum flags)
 {
-  StaticType result(*this);
-  result.typeUnion(st);
-  return result;
+  return typeIntersect((TypeFlags::Enum)~flags);
 }
 
-StaticType &StaticType::operator|=(const StaticType &st)
+bool StaticType::substitute(TypeFlags::Enum from, const StaticType &to)
 {
-  typeUnion(st);
-  return *this;
+  if(!typeExcept(from)) return false;
+  typeUnion(to);
+  return true;
 }
 
-StaticType::StaticTypeFlags operator|(StaticType::StaticTypeFlags a, StaticType::StaticTypeFlags b)
+bool StaticType::substitute(TypeFlags::Enum from, const ItemType *to)
 {
-  return (StaticType::StaticTypeFlags)((unsigned int)a | (unsigned int)b);
+  StaticType tmp(to, BasicMemoryManager::get());
+  return substitute(from, tmp);;
 }
 
-StaticType StaticType::operator&(const StaticType &st) const
-{
-  StaticType result(*this);
-  result.typeIntersect(st);
-  return result;
-}
-
-StaticType &StaticType::operator&=(const StaticType &st)
-{
-  typeIntersect(st);
-  return *this;
-}
-
-StaticType::StaticTypeFlags operator&(StaticType::StaticTypeFlags a, StaticType::StaticTypeFlags b)
-{
-  return (StaticType::StaticTypeFlags)((unsigned int)a & (unsigned int)b);
-}
-
-StaticType &StaticType::substitute(const StaticType &from, const StaticType &to)
-{
-  assert((from.flags_ & FUNCTION_TYPE) == 0);
-  assert((to.flags_ & FUNCTION_TYPE) == 0);
-
-  if(containsType(from)) {
-    if(to.max_ > 0) {
-      if(max_ == UNLIMITED || to.max_ == UNLIMITED)
-        max_ = UNLIMITED;
-      else max_ *= to.max_;
-    }
-
-    flags_ &= ~from.flags_;
-    flags_ |= to.flags_;
-
-    if(flags_ == 0) {
-      min_ = 0;
-      max_ = 0;
-    }
-  }
-
-  return *this;
-}
-
-StaticType &StaticType::multiply(unsigned int min, unsigned int max)
+void StaticType::multiply(unsigned int min, unsigned int max)
 {
   assert(min <= max);
   assert(min != UNLIMITED);
@@ -372,12 +445,7 @@ StaticType &StaticType::multiply(unsigned int min, unsigned int max)
     max_ = UNLIMITED;
   else max_ *= max;
 
-  if(max_ == 0) {
-    min_ = 0;
-    flags_ = 0;
-  }
-
-  return *this;
+  if(max_ == 0) clear();
 }
 
 void StaticType::setCardinality(unsigned int min, unsigned int max)
@@ -388,341 +456,26 @@ void StaticType::setCardinality(unsigned int min, unsigned int max)
   min_ = min;
   max_ = max;
 
-  if(max_ > 0 && flags_ == 0) flags_ = ITEM_TYPE;
-  else if(max_ == 0 && flags_ != 0) flags_ = 0;
-}
-
-bool StaticType::containsType(StaticType::StaticTypeFlags flags) const
-{
-  return (flags_ & flags) != 0;
-}
-
-bool StaticType::containsType(const StaticType &type) const
-{
-  if((flags_ & type.flags_) == 0)
-    return false;
-
-  if((type.flags_ & FUNCTION_TYPE) != 0 && type.returnType_ != 0 &&
-     returnType_ != 0 &&
-     (type.minArgs_ > maxArgs_ || type.maxArgs_ < minArgs_ ||
-
-      returnType_->min_ > type.returnType_->max_ ||
-      returnType_->max_ < type.returnType_->min_ ||
-
-      (!type.returnType_->containsType(*returnType_) &&
-       (returnType_->min_ > 0 || type.returnType_->min_ > 0))
-      ))
-    return false;
-
-  return true;
-}
-
-bool StaticType::isType(const StaticType &type) const
-{
-  if(type.flags_ == 0) return flags_ == 0;
-  if(flags_ == 0) return type.min_ == 0;
-
-  if((flags_ & type.flags_) == 0 || (flags_ & ~type.flags_) != 0)
-    return false;
-
-  if((type.flags_ & FUNCTION_TYPE) != 0 && type.returnType_ != 0 &&
-     (type.minArgs_ != minArgs_ || type.maxArgs_ != maxArgs_ ||
-      returnType_->min_ > type.returnType_->max_ ||
-      returnType_->max_ < type.returnType_->min_ ||
-      (!type.returnType_->containsType(*returnType_) &&
-       (returnType_->min_ > 0 || type.returnType_->min_ > 0))
-      ))
-    return false;
-
-  return true;
-}
-
-StaticType::TypeMatchEnum StaticType::matchesFunctionType(const StaticType &type) const
-{
-  TypeMatchEnum result = ALWAYS;
-
-  if(returnType_ && type.returnType_) {
-    if(type.minArgs_ > maxArgs_ || type.maxArgs_ < minArgs_)
-      return NEVER;
-    if(result > MAYBE &&
-       type.minArgs_ != minArgs_ && type.maxArgs_ != maxArgs_)
-      result = MAYBE;
-
-    // TBD Take function conversion into account here - jpcs
-
-    TypeMatch ret = returnType_->matches(*type.returnType_);
-//     if(ret.type < result) result = ret.type;
-    if(ret.cardinality < result) result = ret.cardinality;
-  }
-
-  return result;
-}
-
-StaticType::TypeMatchEnum StaticType::matchesType(const StaticType &type) const
-{
-  TypeMatchEnum result = ALWAYS;
-
-  if(type.flags_ == 0 && min_ == 0)
-    return ALWAYS;
-
-  if((flags_ & type.flags_) == 0) {
-    if(min_ > 0 || type.min_ > 0)
-      return NEVER;
-    result = PROBABLY_NOT;
-  }
-
-  if((type.flags_ & ~flags_) != 0)
-    result = MAYBE;
-
-  TypeMatchEnum func = matchesFunctionType(type);
-
-  if(flags_ == FUNCTION_TYPE) {
-    if(func < result) result = func;
-  }
-  else {
-    if(func == NEVER && result > PROBABLY_NOT) result = PROBABLY_NOT;
-    if(func < ALWAYS && result > MAYBE) result = MAYBE;
-  }
-
-  return result;
-}
-
-StaticType::TypeMatch StaticType::matches(const StaticType &actual) const
-{
-  TypeMatch result = { ALWAYS, ALWAYS };
-
-  if(min_ > actual.max_ ||
-     max_ < actual.min_) {
-    result.cardinality = NEVER;
-  }
-  else if(min_ > actual.min_ ||
-          max_ < actual.max_) {
-    if(actual.max_ != StaticType::UNLIMITED)
-      result.cardinality = PROBABLY_NOT;
-    else
-      result.cardinality = MAYBE;
-  }
-
-  result.type = matchesType(actual);
-
-  return result;
-}
-
-static int countBits(unsigned int v)
-{
-  int result = 0;
-
-  if(v == StaticType::ITEM_TYPE) {
-    ++result;
-    v &= ~StaticType::ITEM_TYPE;
-  }
-  if(v == StaticType::ANY_ATOMIC_TYPE) {
-    ++result;
-    v &= ~StaticType::ANY_ATOMIC_TYPE;
-  }
-  if(v == StaticType::NODE_TYPE) {
-    ++result;
-    v &= ~StaticType::NODE_TYPE;
-  }
-
-  while(v != 0) {
-    result += (v & 0x1);
-    v = v >> 1;
-  }
-  return result;
+  if(max_ > 0 && types_.empty()) types_.push_back(&ItemType::ITEM);
+  else if(max_ == 0) clear();
 }
 
 void StaticType::typeToBuf(XMLBuffer &result) const
 {
-  if(flags_ == 0) {
+  if(types_.empty() || max_ == 0) {
     result.append(X("empty-sequence()"));
     return;
   }
 
-  unsigned int flags = flags_;
-
-  bool except = false;
   int count = 0;
   XMLBuffer buf;
 
-  if(flags != ANY_ATOMIC_TYPE &&
-     (flags & ~ANY_ATOMIC_TYPE) == 0 &&
-     countBits(flags) > countBits(ANY_ATOMIC_TYPE & ~flags)) {
-    result.append(X("(xs:anyAtomicType - "));
-    except = true;
-    flags = ANY_ATOMIC_TYPE & ~flags;
-  }
-  else if(flags != NODE_TYPE &&
-          (flags & ~NODE_TYPE) == 0 &&
-          countBits(flags) > countBits(NODE_TYPE & ~flags)) {
-    result.append(X("(node() - "));
-    except = true;
-    flags = NODE_TYPE & ~flags;
-  }
-  else if(flags != ITEM_TYPE &&
-          countBits(flags) > countBits(ITEM_TYPE & ~flags)) {
-    result.append(X("(item() - "));
-    except = true;
-    flags = ITEM_TYPE & ~flags;
-  }
-
-
-  if(flags == ITEM_TYPE && returnType_ == 0) {
+  ItemTypes::const_iterator i = types_.begin();
+  for(; i != types_.end(); ++i) {
     if(count++) buf.append(X(" | "));
-    buf.append(X("item()"));
-    flags = 0;
+    (*i)->toBuffer(buf);
   }
-  if((flags & ANY_ATOMIC_TYPE) == ANY_ATOMIC_TYPE) {
-    if(count++) buf.append(X(" | "));
-    buf.append(X("xs:anyAtomicType"));
-    flags &= ~ANY_ATOMIC_TYPE;
-  }
-  if((flags & NODE_TYPE) == NODE_TYPE) {
-    if(count++) buf.append(X(" | "));
-    buf.append(X("node()"));
-    flags &= ~NODE_TYPE;
-  }
-
-  if((flags & DOCUMENT_TYPE) != 0) {
-    if(count++) buf.append(X(" | "));
-    buf.append(X("document-node()"));
-  }
-  if((flags & ELEMENT_TYPE) != 0) {
-    if(count++) buf.append(X(" | "));
-    buf.append(X("element()"));
-  }
-  if((flags & ATTRIBUTE_TYPE) != 0) {
-    if(count++) buf.append(X(" | "));
-    buf.append(X("attribute()"));
-  }
-  if((flags & TEXT_TYPE) != 0) {
-    if(count++) buf.append(X(" | "));
-    buf.append(X("text()"));
-  }
-  if((flags & PI_TYPE) != 0) {
-    if(count++) buf.append(X(" | "));
-    buf.append(X("processing-instruction()"));
-  }
-  if((flags & COMMENT_TYPE) != 0) {
-    if(count++) buf.append(X(" | "));
-    buf.append(X("comment()"));
-  }
-  if((flags & NAMESPACE_TYPE) != 0) {
-    if(count++) buf.append(X(" | "));
-    buf.append(X("namespace()"));
-  }
-  if((flags & FUNCTION_TYPE) != 0) {
-    if(count++) buf.append(X(" | "));
-
-    buf.append(X("function("));
-    if(returnType_ == 0) {
-      buf.append(X("*"));
-    }
-    else {
-      XPath2Utils::numToBuf(minArgs_, buf);
-      buf.append(X(","));
-      if(maxArgs_ == UNLIMITED)
-        buf.append(X("unlimited"));
-      else XPath2Utils::numToBuf(maxArgs_, buf);
-      buf.append(X(","));
-      returnType_->typeToBuf(buf);
-    }
-    buf.append(X(")"));
-  }
-
-  if((flags & ANY_SIMPLE_TYPE) != 0) {
-    if(count++) buf.append(X(" | "));
-    buf.append(X("xs:anySimpleType"));
-  }
-  if((flags & ANY_URI_TYPE) != 0) {
-    if(count++) buf.append(X(" | "));
-    buf.append(X("xs:anyURI"));
-  }
-  if((flags & BASE_64_BINARY_TYPE) != 0) {
-    if(count++) buf.append(X(" | "));
-    buf.append(X("xs:base64Binary"));
-  }
-  if((flags & BOOLEAN_TYPE) != 0) {
-    if(count++) buf.append(X(" | "));
-    buf.append(X("xs:boolean"));
-  }
-  if((flags & DATE_TYPE) != 0) {
-    if(count++) buf.append(X(" | "));
-    buf.append(X("xs:date"));
-  }
-  if((flags & DATE_TIME_TYPE) != 0) {
-    if(count++) buf.append(X(" | "));
-    buf.append(X("xs:dateTime"));
-  }
-  if((flags & DAY_TIME_DURATION_TYPE) != 0) {
-    if(count++) buf.append(X(" | "));
-    buf.append(X("xs:dayTimeDuration"));
-  }
-  if((flags & DECIMAL_TYPE) != 0) {
-    if(count++) buf.append(X(" | "));
-    buf.append(X("xs:decimal"));
-  }
-  if((flags & DOUBLE_TYPE) != 0) {
-    if(count++) buf.append(X(" | "));
-    buf.append(X("xs:double"));
-  }
-  if((flags & DURATION_TYPE) != 0) {
-    if(count++) buf.append(X(" | "));
-    buf.append(X("xs:duration"));
-  }
-  if((flags & FLOAT_TYPE) != 0) {
-    if(count++) buf.append(X(" | "));
-    buf.append(X("xs:float"));
-  }
-  if((flags & G_DAY_TYPE) != 0) {
-    if(count++) buf.append(X(" | "));
-    buf.append(X("xs:gDay"));
-  }
-  if((flags & G_MONTH_TYPE) != 0) {
-    if(count++) buf.append(X(" | "));
-    buf.append(X("xs:gMonth"));
-  }
-  if((flags & G_MONTH_DAY_TYPE) != 0) {
-    if(count++) buf.append(X(" | "));
-    buf.append(X("xs:gMonthDay"));
-  }
-  if((flags & G_YEAR_TYPE) != 0) {
-    if(count++) buf.append(X(" | "));
-    buf.append(X("xs:gYear"));
-  }
-  if((flags & G_YEAR_MONTH_TYPE) != 0) {
-    if(count++) buf.append(X(" | "));
-    buf.append(X("xs:gYearMonth"));
-  }
-  if((flags & HEX_BINARY_TYPE) != 0) {
-    if(count++) buf.append(X(" | "));
-    buf.append(X("xs:hexBinary"));
-  }
-  if((flags & NOTATION_TYPE) != 0) {
-    if(count++) buf.append(X(" | "));
-    buf.append(X("xs:NOTATION"));
-  }
-  if((flags & QNAME_TYPE) != 0) {
-    if(count++) buf.append(X(" | "));
-    buf.append(X("xs:QName"));
-  }
-  if((flags & STRING_TYPE) != 0) {
-    if(count++) buf.append(X(" | "));
-    buf.append(X("xs:string"));
-  }
-  if((flags & TIME_TYPE) != 0) {
-    if(count++) buf.append(X(" | "));
-    buf.append(X("xs:time"));
-  }
-  if((flags & UNTYPED_ATOMIC_TYPE) != 0) {
-    if(count++) buf.append(X(" | "));
-    buf.append(X("xs:untypedAtomic"));
-  }
-  if((flags & YEAR_MONTH_DURATION_TYPE) != 0) {
-    if(count++) buf.append(X(" | "));
-    buf.append(X("xs:yearMonthDuration"));
-  }
-
+  
   if(count > 1) {
     result.append(X("("));
     result.append(buf.getRawBuffer());
@@ -730,10 +483,6 @@ void StaticType::typeToBuf(XMLBuffer &result) const
   }
   else {
     result.append(buf.getRawBuffer());
-  }
-
-  if(except) {
-    result.append(X(")"));
   }
 
   if(min_ == 0 && max_ == 1) {
@@ -761,3 +510,12 @@ void StaticType::typeToBuf(XMLBuffer &result) const
   }
 }
 
+TypeFlags::Enum operator|(TypeFlags::Enum a, TypeFlags::Enum b)
+{
+  return (TypeFlags::Enum)((uint64_t)a|(uint64_t)b);
+}
+
+TypeFlags::Enum operator&(TypeFlags::Enum a, TypeFlags::Enum b)
+{
+  return (TypeFlags::Enum)((uint64_t)a&(uint64_t)b);
+}

@@ -55,12 +55,11 @@ XQFunctionCoercion::XQFunctionCoercion(ASTNode* expr, SequenceType* exprType, XP
 {
 }
 
-XQFunctionCoercion::XQFunctionCoercion(ASTNode* expr, SequenceType *exprType, ASTNode *funcConvert, const StaticType &treatType, XPath2MemoryManager* memMgr)
+XQFunctionCoercion::XQFunctionCoercion(ASTNode* expr, SequenceType *exprType, ASTNode *funcConvert, XPath2MemoryManager* memMgr)
   : ASTNodeImpl(FUNCTION_COERCION, memMgr),
     _expr(expr),
     _exprType(exprType),
-    _funcConvert(funcConvert),
-    _treatType(treatType)
+    _funcConvert(funcConvert)
 {
 }
 
@@ -71,12 +70,9 @@ ASTNode* XQFunctionCoercion::staticResolution(StaticContext *context)
   _exprType->staticResolution(context);
   _expr = _expr->staticResolution(context);
 
-  bool isExact;
-  _exprType->getStaticType(_treatType, context, isExact, this);
-
   const ItemType *type = _exprType->getItemType();
   if(!type || type->getItemTestType() != ItemType::TEST_FUNCTION ||
-     type->getReturnType() == 0)
+     type->getFunctionSignature() == 0)
     return substitute(_expr);
 
   // Construct an XQInlineFunction that will convert a function reference
@@ -88,17 +84,19 @@ ASTNode* XQFunctionCoercion::staticResolution(StaticContext *context)
   ArgumentSpecs *paramList = new (mm) ArgumentSpecs(XQillaAllocator<ArgumentSpec*>(mm));
   VectorOfASTNodes *argList = new (mm) VectorOfASTNodes(XQillaAllocator<ASTNode*>(mm));
 
-  VectorOfSequenceTypes *argTypes = type->getArgumentTypes();
-  for(VectorOfSequenceTypes::iterator i = argTypes->begin(); i != argTypes->end(); ++i) {
-    const XMLCh *argName = context->allocateTempVarName(argVarPrefix);
+  ArgumentSpecs *argTypes = type->getFunctionSignature()->argSpecs;
+  if(argTypes) {
+    for(ArgumentSpecs::iterator i = argTypes->begin(); i != argTypes->end(); ++i) {
+      const XMLCh *argName = context->allocateTempVarName(argVarPrefix);
 
-    ArgumentSpec *argSpec = new (mm) ArgumentSpec(argName, *i, mm);
-    argSpec->setLocationInfo(*i);
-    paramList->push_back(argSpec);
+      ArgumentSpec *argSpec = new (mm) ArgumentSpec(argName, (*i)->getType(), mm);
+      argSpec->setLocationInfo(*i);
+      paramList->push_back(argSpec);
     
-    XQVariable *argVar = new (mm) XQVariable(0, argName, mm);
-    argVar->setLocationInfo(this);
-    argList->push_back(argVar);
+      XQVariable *argVar = new (mm) XQVariable(0, argName, mm);
+      argVar->setLocationInfo(this);
+      argList->push_back(argVar);
+    }
   }
 
   XQVariable *funcVar = new (mm) XQVariable(0, funcVarName, mm);
@@ -107,7 +105,7 @@ ASTNode* XQFunctionCoercion::staticResolution(StaticContext *context)
   XQFunctionDeref *body = new (mm) XQFunctionDeref(funcVar, argList, mm);
   body->setLocationInfo(this);
 
-  FunctionSignature *signature = new (mm) FunctionSignature(paramList, type->getReturnType(), mm);
+  FunctionSignature *signature = new (mm) FunctionSignature(paramList, type->getFunctionSignature()->returnType, mm);
 
   XQUserFunction *func = new (mm) XQUserFunction(0, signature, body, false, mm);
   func->setLocationInfo(this);
@@ -125,18 +123,14 @@ ASTNode *XQFunctionCoercion::staticTypingImpl(StaticContext *context)
   _src.clear();
 
   // Get a better static type by looking at our expression's type too
-  _src.getStaticType() = _treatType;
-  _src.getStaticType() &= _expr->getStaticAnalysis().getStaticType();
+  _src.getStaticType() = _exprType->getItemType();
+  _src.getStaticType().setCardinality(
+    _expr->getStaticAnalysis().getStaticType().getMin(),
+    _expr->getStaticAnalysis().getStaticType().getMax());
 
-  StaticType nonFunctionTypes = _expr->getStaticAnalysis().getStaticType();
-  nonFunctionTypes &= StaticType(StaticType::NODE_TYPE | StaticType::ANY_ATOMIC_TYPE, 0, StaticType::UNLIMITED);
-
-  _src.getStaticType() |= nonFunctionTypes;
-
-  _src.setProperties(_expr->getStaticAnalysis().getProperties());
   _src.add(_expr->getStaticAnalysis());
 
-  if(!_expr->getStaticAnalysis().getStaticType().containsType(StaticType::FUNCTION_TYPE))
+  if(!_expr->getStaticAnalysis().getStaticType().containsType(TypeFlags::FUNCTION))
     return substitute(_expr);
 
   return this;
@@ -159,7 +153,7 @@ public:
     Item::Ptr item = parent_->next(context);
 
     if(item.notNull() && item->getType() == Item::FUNCTION &&
-       !itemType_->matches((FunctionRef::Ptr)item, context)) {
+       !itemType_->matches((FunctionRef::Ptr)item)) {
       XPath2MemoryManager *mm = context->getMemoryManager();
 
       VarStoreImpl scope(mm, context->getVariableStore());

@@ -152,11 +152,10 @@ void XQGlobalVariable::staticResolution(StaticContext* context)
 
   // Set up a default StaticType
   if(m_Type != 0) {
-    bool isPrimitive;
-    m_Type->getStaticType(_src.getStaticType(), context, isPrimitive, m_Type);
+    _src.getStaticType() = m_Type;
   }
   else {
-    _src.getStaticType() = StaticType(StaticType::ITEM_TYPE, 0, StaticType::UNLIMITED);
+    _src.getStaticType() = StaticType::ITEM_STAR;
   }
   _src.setProperties(0);
 }
@@ -250,11 +249,10 @@ void XQGlobalVariable::staticTyping(StaticContext* context, StaticTyper *styper)
 
   if(m_Value == 0 || !required_) {
     if(m_Type != 0) {
-      bool isPrimitive;
-      m_Type->getStaticType(_src.getStaticType(), context, isPrimitive, m_Type);
+      _src.getStaticType() = m_Type;
     }
     else {
-      _src.getStaticType() = StaticType(StaticType::ITEM_TYPE, 0, StaticType::UNLIMITED);
+      _src.getStaticType() = StaticType::ITEM_STAR;
     }
     _src.setProperties(0);
   }

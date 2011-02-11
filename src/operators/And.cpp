@@ -68,7 +68,7 @@ ASTNode *And::staticTypingImpl(StaticContext *context)
     }
   }
 
-  _src.getStaticType() = StaticType::BOOLEAN_TYPE;
+  _src.getStaticType() = StaticType::BOOLEAN;
   return this;
 }
 

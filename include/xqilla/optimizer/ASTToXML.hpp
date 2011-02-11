@@ -106,7 +106,7 @@ protected:
   virtual void getElementName(FTSelection *item, XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer &buf);
 
   static const XMLCh *getComparisonOperationName(GeneralComp::ComparisonOperation co);
-  static const XMLCh *getAxisName(XQStep::Axis axis);
+  static const XMLCh *getAxisName(Node::Axis axis);
   static const XMLCh *getFTRangeTypeName(FTRange::Type type);
   static const XMLCh *getFTUnitName(FTOption::FTUnit unit);
 

@@ -23,6 +23,7 @@
 #include <xqilla/functions/FuncFactory.hpp>
 #include <xqilla/utils/XPath2NSUtils.hpp>
 #include <xqilla/ast/XQFunction.hpp>
+#include <xqilla/framework/BasicMemoryManager.hpp>
 
 #include <stdlib.h>
 
@@ -66,24 +67,6 @@ void FuncFactory::setURIName(const XMLCh *uri, const XMLCh *name, XPath2MemoryMa
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-
-class BasicMemoryManager : public MemoryManager
-{
-public:
-  static inline MemoryManager *get() {
-    static BasicMemoryManager instance;
-    return &instance;
-  }
-
-#if _XERCES_VERSION >= 30000
-  void* allocate(XMLSize_t numElements)
-#else
-  void* allocate(size_t numElements)
-#endif  
-	{ return ::malloc(numElements); }
-	void deallocate(void *p) { ::free(p); }
-	MemoryManager *getExceptionMemoryManager() { return get(); }
-};
 
 SimpleBuiltinFactory::SimpleBuiltinFactory(const XMLCh *uri, const XMLCh *name,
   unsigned args, const char *signature, ResultFunc result,

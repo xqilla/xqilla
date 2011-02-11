@@ -23,6 +23,7 @@
 #include <xqilla/items/AnyAtomicType.hpp>
 #include <xqilla/functions/FunctionSignature.hpp>
 #include <xqilla/schema/SequenceType.hpp>
+#include <xqilla/context/StaticContext.hpp>
 
 #if defined(XERCES_HAS_CPP_NAMESPACE)
 XERCES_CPP_NAMESPACE_USE
@@ -44,11 +45,13 @@ ASTNode *NumericFunction::staticTypingImpl(StaticContext *context)
   _src.clear();
   calculateSRCForArguments(context);
 
-  if(!_args[0]->getStaticAnalysis().getStaticType().containsType(StaticType::NUMERIC_TYPE) &&
+  if(!_args[0]->getStaticAnalysis().getStaticType().containsType(TypeFlags::NUMERIC) &&
      _args[0]->getStaticAnalysis().getStaticType().getMin() > 0)
     XQThrow(FunctionException,X("NumericFunction::staticTyping"), X("Non-numeric argument in numeric function [err:XPTY0004]"));
 
-  _src.getStaticType() = StaticType(StaticType::NUMERIC_TYPE, 0, 1);
+  _src.getStaticType() = StaticType::DECIMAL_QUESTION;
+  _src.getStaticType().typeUnion(StaticType::FLOAT_QUESTION);
+  _src.getStaticType().typeUnion(StaticType::DOUBLE_QUESTION);
   return this;
 }
 

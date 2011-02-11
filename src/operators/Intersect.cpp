@@ -81,7 +81,7 @@ ASTNode *Intersect::staticTypingImpl(StaticContext *context)
 
   _src.add(_args[1]->getStaticAnalysis());
 
-  _src.getStaticType().typeNodeIntersect(_args[1]->getStaticAnalysis().getStaticType());
+  _src.getStaticType().typeIntersect(_args[1]->getStaticAnalysis().getStaticType());
   _src.getStaticType().multiply(0, 1);
 
   if(_args[1]->getStaticAnalysis().isUpdating()) {

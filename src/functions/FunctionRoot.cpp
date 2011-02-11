@@ -67,7 +67,7 @@ ASTNode *FunctionRoot::staticTypingImpl(StaticContext *context)
 
   _src.setProperties(StaticAnalysis::DOCORDER | StaticAnalysis::GROUPED |
                      StaticAnalysis::PEER | StaticAnalysis::SAMEDOC | StaticAnalysis::ONENODE);
-  _src.getStaticType() = StaticType(StaticType::NODE_TYPE, 0, 1);
+  _src.getStaticType() = StaticType::NODE_QUESTION;
 
   _src.add(_args[0]->getStaticAnalysis());
 
@@ -77,7 +77,7 @@ ASTNode *FunctionRoot::staticTypingImpl(StaticContext *context)
               "to be an updating expression [err:XUST0001]"));
   }
 
-  if(_args[0]->getStaticAnalysis().getStaticType().isType(StaticType::DOCUMENT_TYPE)) {
+  if(_args[0]->getStaticAnalysis().getStaticType().isType(TypeFlags::DOCUMENT)) {
     return _args[0];
   }
 

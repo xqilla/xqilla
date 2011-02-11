@@ -22,6 +22,7 @@
 
 #include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/schema/DocumentCache.hpp>
+#include <xqilla/ast/LocationInfo.hpp>
 
 #include <xercesc/framework/XMLDocumentHandler.hpp>
 #include <xercesc/framework/XMLEntityHandler.hpp>
@@ -102,8 +103,6 @@ public:
   static XERCES_CPP_NAMESPACE_QUALIFIER InputSource *resolveURI(const XMLCh *uri, const XMLCh *baseUri);
 
 protected:
-  void init(XERCES_CPP_NAMESPACE_QUALIFIER XMLGrammarPool *gramPool = 0);
-
   void loadSchema(const XMLCh* const uri, const XMLCh* location, StaticContext *context, const LocationInfo *info);
 
   // XMLEntityHandler
@@ -158,6 +157,7 @@ protected:
 protected:
   XERCES_CPP_NAMESPACE_QUALIFIER XMLScanner *getScanner();
 
+  XERCES_CPP_NAMESPACE_QUALIFIER XMLGrammarPool *grammarPool_;
   XERCES_CPP_NAMESPACE_QUALIFIER GrammarResolver *grammarResolver_;
   XERCES_CPP_NAMESPACE_QUALIFIER XMLScanner *scanner_;
   XERCES_CPP_NAMESPACE_QUALIFIER XMLEntityResolver *entityResolver_;

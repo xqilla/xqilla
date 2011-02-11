@@ -86,7 +86,7 @@ ASTNode *URename::staticTypingImpl(StaticContext *context)
   }
 
   if(!target_->getStaticAnalysis().getStaticType().
-     containsType(StaticType::ELEMENT_TYPE|StaticType::ATTRIBUTE_TYPE|StaticType::PI_TYPE)) {
+     containsType(TypeFlags::ELEMENT|TypeFlags::ATTRIBUTE|TypeFlags::PI)) {
     XQThrow(XPath2TypeMatchException,X("URename::staticTyping"),
             X("It is a type error for the target expression of a rename expression not to be a single element, "
               "attribute or processing instruction [err:XUTY0012]"));

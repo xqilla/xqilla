@@ -22,6 +22,8 @@
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/events/QueryPathTreeFilter.hpp>
 #include <xqilla/events/SequenceBuilder.hpp>
+#include <xqilla/runtime/Sequence.hpp>
+#include <xqilla/runtime/Result.hpp>
 
 ASTNodeEventGenerator::ASTNodeEventGenerator(const ASTNode *ast, bool preserveNS, bool preserveType)
   : ast_(ast),

@@ -83,7 +83,7 @@ ASTNode *XQCopy::staticTypingImpl(StaticContext *context)
     _src.add(children_[i]->getStaticAnalysis());
   }
 
-  if(!_src.getStaticType().containsType(StaticType::NODE_TYPE)) {
+  if(!_src.getStaticType().containsType(TypeFlags::NODE)) {
     return expr_;
   }
 

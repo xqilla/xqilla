@@ -31,7 +31,7 @@ using namespace std;
 StaticAnalysis::StaticAnalysis(XPath2MemoryManager* memMgr)
   : _flags(0),
     _properties(0),
-    _staticType(),
+    _staticType(memMgr),
     _dynamicVariables(true, memMgr),
     _memMgr(memMgr)
 {
@@ -40,7 +40,7 @@ StaticAnalysis::StaticAnalysis(XPath2MemoryManager* memMgr)
 StaticAnalysis::StaticAnalysis(const StaticAnalysis &o, XPath2MemoryManager* memMgr)
   : _flags(0),
     _properties(0),
-    _staticType(),
+    _staticType(memMgr),
     _dynamicVariables(true, memMgr),
     _memMgr(memMgr)
 {
@@ -56,14 +56,14 @@ void StaticAnalysis::copy(const StaticAnalysis &o)
 
 void StaticAnalysis::release()
 {
-  _staticType = StaticType();
+  _staticType.release();
   _dynamicVariables.release();
 }
 
 void StaticAnalysis::clear()
 {
   clearExceptType();
-  _staticType = StaticType();
+  _staticType.clear();
 }
 
 void StaticAnalysis::clearExceptType()

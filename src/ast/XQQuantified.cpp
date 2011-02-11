@@ -52,7 +52,7 @@ ASTNode *XQQuantified::staticTypingImpl(StaticContext *context)
   _src.clear();
 
   _src.add(expr_->getStaticAnalysis());
-  _src.getStaticType() = StaticType::BOOLEAN_TYPE;
+  _src.getStaticType() = &ItemType::BOOLEAN;
 
   parent_ = parent_->staticTypingTeardown(context, _src);
 

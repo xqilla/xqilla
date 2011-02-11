@@ -355,6 +355,7 @@ xqilla/utils/utf8proc.h \
 xqilla/utils/DelayedModule.hpp \
 xqilla/framework/ReferenceCounted.hpp \
 xqilla/framework/XPath2MemoryManager.hpp \
+xqilla/framework/BasicMemoryManager.hpp \
 xqilla/framework/BaseMemoryManager.hpp \
 xqilla/framework/ProxyMemoryManager.hpp \
 xqilla/framework/StringPool.hpp \

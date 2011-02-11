@@ -113,12 +113,11 @@ typedef union {
   XQUserFunction::ModeList* modeList;
   XQGlobalVariable *globalVar;
   NodeTest *nodeTest;
-  XQStep::Axis axis;
+  Node::Axis axis;
   QualifiedName *qName;
   SequenceType* sequenceType;
   SequenceType::OccurrenceIndicator occurrence;
   ItemType* itemType;
-  VectorOfSequenceTypes *sequenceTypes;
   VectorOfASTNodes* itemList;
   VectorOfPredicates* predicates;
   TupleNode *tupleNode;

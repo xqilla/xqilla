@@ -733,9 +733,7 @@ ASTNode *XSLT2Lexer::wrap(ASTNode *result) const
 
 ASTNode *XSLT2Lexer::makeQNameLiteral(const XMLCh *uri, const XMLCh *prefix, const XMLCh *name) const
 {
-  return wrap(new (mm_) XQQNameLiteral(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-                                       SchemaSymbols::fgDT_QNAME,
-                                       uri, prefix, name, mm_));
+  return wrap(new (mm_) XQQNameLiteral((ItemType*)&ItemType::QNAME, uri, prefix, name, mm_));
 }
 
 ASTNode *XSLT2Lexer::makeDirectName(const XMLCh *prefix, const XMLCh *name) const
@@ -747,9 +745,7 @@ ASTNode *XSLT2Lexer::makeDirectName(const XMLCh *prefix, const XMLCh *name) cons
 
 ASTNode *XSLT2Lexer::makeStringLiteral(const XMLCh *value) const
 {
-  return wrap(new (mm_) XQLiteral(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-                                  SchemaSymbols::fgDT_STRING,
-                                  value, AnyAtomicType::STRING, mm_));
+  return wrap(new (mm_) XQLiteral((ItemType*)&ItemType::STRING, value, mm_));
 }
 
 void XSLT2Lexer::pushElementStack()

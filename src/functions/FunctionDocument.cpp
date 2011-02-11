@@ -54,7 +54,7 @@ ASTNode *FunctionDocument::staticTypingImpl(StaticContext *context)
                      StaticAnalysis::PEER | StaticAnalysis::SUBTREE | StaticAnalysis::ONENODE);
 
   // TBD Change if we support fragment identifiers - jpcs
-  _src.getStaticType() = StaticType(StaticType::DOCUMENT_TYPE, 0, StaticType::UNLIMITED);
+  _src.getStaticType() = StaticType::DOCUMENT_STAR;
   _src.availableDocumentsUsed(true);
 
   return this;

@@ -27,6 +27,7 @@
 #include <xqilla/items/Node.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/utils/XStr.hpp>
+#include <xqilla/ast/StaticType.hpp>
 
 #if defined(XERCES_HAS_CPP_NAMESPACE)
 XERCES_CPP_NAMESPACE_USE
@@ -88,37 +89,39 @@ void NodeTest::getStaticType(StaticType &st, const StaticContext *context,
                              bool &isExact, const LocationInfo *location) const
 {
   if(_itemType) {
-    _itemType->getStaticType(st, context, isExact, location);
+    st = _itemType;
+    isExact = true;
   }
   else {
     if(_wildcardType) {
       if(_hasChildren) {
-        st = StaticType::ELEMENT_TYPE | StaticType::DOCUMENT_TYPE;
+        st = StaticType::ELEMENT;
+        st.typeUnion(StaticType::DOCUMENT);
       }
       else {
-        st = StaticType::NODE_TYPE;
+        st = StaticType::NODE;
       }
     }
     else if(_type == Node::document_string) {
-      st = StaticType::DOCUMENT_TYPE;
+      st = StaticType::DOCUMENT;
     }
     else if(_type == Node::element_string) {
-      st = StaticType::ELEMENT_TYPE;
+      st = StaticType::ELEMENT;
     }
     else if(_type == Node::attribute_string) {
-      st = StaticType::ATTRIBUTE_TYPE;
+      st = StaticType::ATTRIBUTE;
     }
     else if(_type == Node::namespace_string) {
-      st = StaticType::NAMESPACE_TYPE;
+      st = StaticType::NAMESPACE;
     }
     else if(_type == Node::processing_instruction_string) {
-      st = StaticType::PI_TYPE;
+      st = StaticType::PI;
     }
     else if(_type == Node::comment_string) {
-      st = StaticType::COMMENT_TYPE;
+      st = StaticType::COMMENT;
     }
     else if(_type == Node::text_string) {
-      st = StaticType::TEXT_TYPE;
+      st = StaticType::TEXT;
     }
 
     if(_wildcardName && _wildcardNamespace)

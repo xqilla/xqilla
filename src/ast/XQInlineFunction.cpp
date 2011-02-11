@@ -37,24 +37,26 @@ XQInlineFunction::XQInlineFunction(XQUserFunction *func, XPath2MemoryManager *mm
     prefix_(0),
     uri_(0),
     name_(0),
-    numArgs_((unsigned int)(func->getSignature()->argSpecs ? func->getSignature()->argSpecs->size() : 0)),
-    signature_(new (mm) FunctionSignature(func->getSignature(), mm)),
+    type_(new (mm) ItemType(new (mm) FunctionSignature(func->getSignature(), mm), 0)),
     instance_(0)
 {
 }
 
 XQInlineFunction::XQInlineFunction(XQUserFunction *func, const XMLCh *prefix, const XMLCh *uri, const XMLCh *name,
-                                   unsigned int numArgs, FunctionSignature *signature, ASTNode *instance,
-                                   XPath2MemoryManager *mm)
+  ItemType *type, ASTNode *instance, XPath2MemoryManager *mm)
   : ASTNodeImpl(INLINE_FUNCTION, mm),
     func_(func),
     prefix_(prefix),
     uri_(uri),
     name_(name),
-    numArgs_(numArgs),
-    signature_(signature),
+    type_(type),
     instance_(instance)
 {
+}
+
+unsigned int XQInlineFunction::getNumArgs() const
+{
+  return type_->getFunctionSignature()->numArgs();
 }
 
 ASTNode *XQInlineFunction::staticResolution(StaticContext *context)
@@ -62,9 +64,9 @@ ASTNode *XQInlineFunction::staticResolution(StaticContext *context)
   XPath2MemoryManager *mm = context->getMemoryManager();
 
   func_->staticResolutionStage1(context);
-  signature_->staticResolution(context);
+  type_->staticResolution(context, this);
 
-  instance_ = FunctionRefImpl::createInstance(func_, signature_, mm, this);
+  instance_ = FunctionRefImpl::createInstance(func_, type_->getFunctionSignature(), mm, this);
   instance_ = instance_->staticResolution(context);
 
   func_->staticResolutionStage2(context);
@@ -79,20 +81,19 @@ ASTNode *XQInlineFunction::staticTypingImpl(StaticContext *context)
   _src.addExceptContextFlags(instance_->getStaticAnalysis());
 
   // Remove the argument variables
-  if(signature_->argSpecs) {
-    ArgumentSpecs::const_iterator argsIt = signature_->argSpecs->begin();
-    for(; argsIt != signature_->argSpecs->end(); ++argsIt) {
+  if(type_->getFunctionSignature()->argSpecs) {
+    ArgumentSpecs::const_iterator argsIt = type_->getFunctionSignature()->argSpecs->begin();
+    for(; argsIt != type_->getFunctionSignature()->argSpecs->end(); ++argsIt) {
       _src.removeVariable((*argsIt)->getURI(), (*argsIt)->getName());
     }
   }
 
-  // TBD Using getMemoryManager() might not be thread safe in DB XML - jpcs
-  _src.getStaticType() = StaticType(getMemoryManager(), numArgs_, instance_->getStaticAnalysis().getStaticType());
+  _src.getStaticType() = type_;
 
   return this;
 }
 
 Result XQInlineFunction::createResult(DynamicContext *context, int flags) const
 {
-  return (Item::Ptr)new FunctionRefImpl(prefix_, uri_, name_, signature_, instance_, _src, context);
+  return (Item::Ptr)new FunctionRefImpl(prefix_, uri_, name_, type_->getFunctionSignature(), instance_, _src, context);
 }

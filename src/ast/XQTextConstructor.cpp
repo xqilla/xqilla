@@ -73,7 +73,7 @@ ASTNode *XQTextConstructor::staticTypingImpl(StaticContext *context)
               "to be an updating expression [err:XUST0001]"));
   }
 
-  _src.getStaticType() = StaticType(StaticType::TEXT_TYPE, 0, 1);
+  _src.getStaticType() = StaticType::TEXT_QUESTION;
   _src.creative(true);
   _src.setProperties(StaticAnalysis::DOCORDER | StaticAnalysis::GROUPED |
                      StaticAnalysis::PEER | StaticAnalysis::SUBTREE | StaticAnalysis::SAMEDOC |

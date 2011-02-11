@@ -22,6 +22,7 @@
 #include <xqilla/ast/ASTNode.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/context/ContextHelpers.hpp>
+#include <xqilla/ast/StaticAnalysis.hpp>
 
 using namespace std;
 

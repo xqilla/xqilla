@@ -24,14 +24,14 @@
 
 class XQUserFunction;
 class FunctionSignature;
+class ItemType;
 
 class XQILLA_API XQInlineFunction : public ASTNodeImpl
 {
 public:
   XQInlineFunction(XQUserFunction *func, XPath2MemoryManager *mm);
   XQInlineFunction(XQUserFunction *func, const XMLCh *prefix, const XMLCh *uri, const XMLCh *name,
-                   unsigned int numArgs, FunctionSignature *signature, ASTNode *instance,
-                   XPath2MemoryManager *mm);
+                   ItemType *type, ASTNode *instance, XPath2MemoryManager *mm);
 
   virtual ASTNode *staticResolution(StaticContext *context);
   virtual ASTNode *staticTypingImpl(StaticContext *context);
@@ -40,13 +40,12 @@ public:
   const XMLCh *getPrefix() const { return prefix_; }
   const XMLCh *getURI() const { return uri_; }
   const XMLCh *getName() const { return name_; }
-  unsigned int getNumArgs() const { return numArgs_; }
+  unsigned int getNumArgs() const;
 
   XQUserFunction *getUserFunction() const { return func_; }
   void setUserFunction(XQUserFunction *func) { func_ = func; }
 
-  FunctionSignature *getSignature() const { return signature_; }
-  void setSignature(FunctionSignature *s) { signature_ = s; }
+  ItemType *getItemType() const { return type_; }
 
   ASTNode *getInstance() const { return instance_; }
   void setInstance(ASTNode *i) { instance_ = i; }
@@ -54,8 +53,7 @@ public:
 private:
   XQUserFunction *func_;
   const XMLCh *prefix_, *uri_, *name_;
-  unsigned int numArgs_;
-  FunctionSignature *signature_;
+  ItemType *type_;
   ASTNode *instance_;
 };
 

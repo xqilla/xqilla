@@ -300,12 +300,11 @@ void XQUserFunction::staticResolutionStage1(StaticContext *context)
       body_ = signature_->returnType->convertFunctionArg(body_, context, /*numericfunction*/false, signature_->returnType);
     }
 
-    bool isPrimitive;
-    signature_->returnType->getStaticType(src_.getStaticType(), context, isPrimitive, signature_->returnType);
+    src_.getStaticType() = signature_->returnType;
   }
   else {
     // Default type is item()*
-    src_.getStaticType() = StaticType(StaticType::ITEM_TYPE, 0, StaticType::UNLIMITED);
+    src_.getStaticType() = StaticType::ITEM_STAR;
   }
 
   if(signature_->updating == FunctionSignature::OP_TRUE) {
@@ -319,7 +318,7 @@ void XQUserFunction::staticResolutionStage1(StaticContext *context)
     // Set the pattern's initial static type to NODE_TYPE
     VectorOfASTNodes::iterator patIt = pattern_->begin();
     for(; patIt != pattern_->end(); ++patIt) {
-      const_cast<StaticAnalysis&>((*patIt)->getStaticAnalysis()).getStaticType() = StaticType(StaticType::NODE_TYPE, 0, StaticType::UNLIMITED);
+      const_cast<StaticAnalysis&>((*patIt)->getStaticAnalysis()).getStaticType() = StaticType::NODE_STAR;
     }
   }
 
@@ -513,7 +512,7 @@ void XQUserFunction::staticTyping(StaticContext *context, StaticTyper *styper)
   if(context) staticTypeFunctionCalls(body_, context, styper);
 
   bool ciTypeSet = false;
-  StaticType ciType = StaticType();
+  StaticType ciType(BasicMemoryManager::get());
   if(pattern_ != NULL) {
     VectorOfASTNodes::iterator patIt = pattern_->begin();
     for(; patIt != pattern_->end(); ++patIt) {
@@ -522,7 +521,7 @@ void XQUserFunction::staticTyping(StaticContext *context, StaticTyper *styper)
         ciTypeSet = true;
         ciType = (*patIt)->getStaticAnalysis().getStaticType();
       }
-      else ciType |= (*patIt)->getStaticAnalysis().getStaticType();
+      else ciType.typeUnion((*patIt)->getStaticAnalysis().getStaticType());
     }
     if(ciTypeSet) {
       ciType.setCardinality(1, 1);
@@ -531,7 +530,7 @@ void XQUserFunction::staticTyping(StaticContext *context, StaticTyper *styper)
   if(isTemplate_ && name_ != 0) {
     // Named template
     ciTypeSet = true;
-    ciType = StaticType::ITEM_TYPE;
+    ciType = StaticType::ITEM;
   }
 
   // define the new variables in a new scope and assign them the proper values
@@ -594,7 +593,7 @@ void XQUserFunction::staticTyping(StaticContext *context, StaticTyper *styper)
   // Run staticTyping on the template instances
   if(templateInstance_ != 0 && context) {
     StaticAnalysis templateVarSrc(context->getMemoryManager());
-    templateVarSrc.getStaticType() = StaticType::ITEM_TYPE;
+    templateVarSrc.getStaticType() = StaticType::ITEM;
 
     VariableTypeStore *varStore = context->getVariableTypeStore();
     varStore->addLogicalBlockScope();
@@ -687,7 +686,7 @@ ASTNode *XQUserFunctionInstance::staticTypingImpl(StaticContext *context)
   } else {
     // Force the type check to happen, by declaring our type as item()*
     _src.clear();
-    _src.getStaticType() = StaticType(StaticType::ITEM_TYPE, 0, StaticType::UNLIMITED);
+    _src.getStaticType() = StaticType::ITEM_STAR;
     _src.forceNoFolding(true);
   }
 

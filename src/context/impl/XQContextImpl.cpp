@@ -60,7 +60,7 @@ XQContextImpl::XQContextImpl(XQillaConfiguration *conf, XQilla::Language languag
     _language(language),
     _createdWith(memMgr),
     _internalMM(memMgr),
-    _contextItemType(StaticType::ITEM_TYPE, 0, 1),
+    _contextItemType(&ItemType::ITEM, 0, 1, &_internalMM),
     _varTypeStore(0),
     _templateNameMap(29, false, &_internalMM),
     _templates(XQillaAllocator<XQUserFunction*>(&_internalMM)),
@@ -264,7 +264,7 @@ DynamicContext *XQContextImpl::createDebugQueryContext(const Item::Ptr &contextI
 
   // For simplicity we'll make them all have type item()*
   StaticAnalysis *src = new (rmm) StaticAnalysis(rmm);
-  src->getStaticType() = StaticType(StaticType::ITEM_TYPE, 0, StaticType::UNLIMITED);
+  src->getStaticType() = StaticType::ITEM_STAR;
 
   std::vector<std::pair<const XMLCh *, const XMLCh*> > inScopeVars;
   variables->getInScopeVariables(inScopeVars);
@@ -716,7 +716,7 @@ ASTNode *XQContextImpl::lookUpFunction(const XMLCh *uri, const XMLCh* name, cons
 
   XPath2MemoryManager *mm = getMemoryManager();
 
-  ItemType *itemType = new (mm) ItemType(uri, name);
+  ItemType *itemType = new (mm) ItemType(AnyAtomicType::NumAtomicObjectTypes, false, uri, name, 0);
   itemType->setLocationInfo(location);
   SequenceType *seqType = new (mm) SequenceType(itemType, SequenceType::QUESTION_MARK);
   seqType->setLocationInfo(location);

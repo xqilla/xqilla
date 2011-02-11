@@ -22,6 +22,8 @@
 
 #include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/context/DynamicContext.hpp>
+#include <xqilla/ast/StaticType.hpp>
+#include <xqilla/framework/BasicMemoryManager.hpp>
 
 class XQILLA_API AutoNodeSetOrderingReset
 {
@@ -51,6 +53,7 @@ class XQILLA_API AutoContextItemTypeReset
 {
 public:
   AutoContextItemTypeReset(StaticContext* context)
+    : sType_(BasicMemoryManager::get())
   {
     context_ = context;
     if(context_) {
@@ -59,6 +62,7 @@ public:
   }
 
   AutoContextItemTypeReset(StaticContext* context, const StaticType &sType)
+    : sType_(BasicMemoryManager::get())
   {
     context_ = context;
     if(context_) {

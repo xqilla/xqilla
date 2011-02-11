@@ -72,10 +72,10 @@ Result XQNav::createResult(DynamicContext* context, int flags) const
     ASTNode *step = it->step;
 
     result = step->createResult(context, flags);
-    StaticType st = step->getStaticAnalysis().getStaticType();
+    StaticType st(BasicMemoryManager::get()); st = step->getStaticAnalysis().getStaticType();
 
     for(++it; it != end; ++it) {
-      if(st.containsType(StaticType::ANY_ATOMIC_TYPE)) {
+      if(st.containsType(TypeFlags::ANY_ATOMIC_TYPE)) {
         result = new IntermediateStepCheckResult(step, result);
       }
 
@@ -87,8 +87,8 @@ Result XQNav::createResult(DynamicContext* context, int flags) const
     }
 
     // the last step allows either nodes or atomic items
-    if(st.containsType(StaticType::NODE_TYPE) &&
-       st.containsType(StaticType::ANY_ATOMIC_TYPE)) {
+    if(st.containsType(TypeFlags::NODE) &&
+       st.containsType(TypeFlags::ANY_ATOMIC_TYPE)) {
       result = new LastStepCheckResult(step, result);
     }
   }
@@ -177,7 +177,7 @@ ASTNode *XQNav::staticTypingImpl(StaticContext *context)
     props = combineProperties(props, stepSrc.getProperties());
 
     if(!context || stepSrc.areContextFlagsUsed() || _src.isNoFoldingForced() ||
-       stepSrc.getStaticType().containsType(StaticType::ANY_ATOMIC_TYPE) ||
+       stepSrc.getStaticType().containsType(TypeFlags::ANY_ATOMIC_TYPE) ||
        stepSrc.isCreative()) {
       if(it != begin) {
         // Remove context item usage
@@ -231,7 +231,7 @@ ASTNode *XQNav::staticTypingImpl(StaticContext *context)
             const XQPredicate *pred = (const XQPredicate*)peek;
             if(pred->getPredicate()->getStaticAnalysis().isContextPositionUsed() ||
                pred->getPredicate()->getStaticAnalysis().isContextSizeUsed() ||
-               pred->getPredicate()->getStaticAnalysis().getStaticType().containsType(StaticType::NUMERIC_TYPE)) {
+               pred->getPredicate()->getStaticAnalysis().getStaticType().containsType(TypeFlags::NUMERIC)) {
               usesContextPositionOrSize = true;
             }
             peek = pred->getExpression();
@@ -241,14 +241,14 @@ ASTNode *XQNav::staticTypingImpl(StaticContext *context)
             const XQStep *peekstep = (XQStep*)peek;
             // If the next node is CHILD or DESCENDANT axis, then
             // this step must have children
-            if(peekstep->getAxis() == XQStep::CHILD || peekstep->getAxis() == XQStep::DESCENDANT) {
+            if(peekstep->getAxis() == Node::CHILD || peekstep->getAxis() == Node::DESCENDANT) {
 
               // Check for a descendant-or-self axis
-              if(step->getAxis() == XQStep::DESCENDANT_OR_SELF) {
+              if(step->getAxis() == Node::DESCENDANT_OR_SELF) {
                 if(!usesContextPositionOrSize) {
                   // This is a descendant-or-self::node()/child::foo that we can optimise into descendant::foo
                   ++it;
-                  const_cast<XQStep*>(peekstep)->setAxis(XQStep::DESCENDANT);
+                  const_cast<XQStep*>(peekstep)->setAxis(Node::DESCENDANT);
                   // Set the properties to those for descendant axis
                   const_cast<StaticAnalysis&>(peekstep->getStaticAnalysis()).
                     setProperties(StaticAnalysis::SUBTREE | StaticAnalysis::DOCORDER |
@@ -260,7 +260,7 @@ ASTNode *XQNav::staticTypingImpl(StaticContext *context)
             }
             // If the next node is ATTRIBUTE axis, then this step needs to be
             // an element
-            else if(peekstep->getAxis() == XQStep::ATTRIBUTE) {
+            else if(peekstep->getAxis() == Node::ATTRIBUTE) {
               nodetest->setTypeWildcard(false);
               nodetest->setNodeType(Node::element_string);
             }

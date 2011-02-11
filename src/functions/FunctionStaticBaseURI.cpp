@@ -53,10 +53,7 @@ ASTNode* FunctionStaticBaseURI::staticResolution(StaticContext *context)
 {
   XPath2MemoryManager* mm=context->getMemoryManager();
 
-  ASTNode* newBlock = new (mm) XQLiteral(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-                                         SchemaSymbols::fgDT_ANYURI,
-                                         context->getBaseURI() ? context->getBaseURI() : XMLUni::fgZeroLenString,
-                                         AnyAtomicType::ANY_URI, mm);
+  ASTNode* newBlock = new (mm) XQLiteral((ItemType*)&ItemType::STRING, context->getBaseURI() ? context->getBaseURI() : XMLUni::fgZeroLenString, mm);
   newBlock->setLocationInfo(this);
 
   return newBlock->staticResolution(context);

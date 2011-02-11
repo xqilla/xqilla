@@ -47,12 +47,12 @@ ASTNode *FunctionNodeName::staticTypingImpl(StaticContext *context)
   calculateSRCForArguments(context);
 
   if(_args[0]->getStaticAnalysis().getStaticType().getMin() == 1 &&
-     _args[0]->getStaticAnalysis().getStaticType().isType(StaticType::ELEMENT_TYPE | StaticType::ATTRIBUTE_TYPE |
-                                                          StaticType::PI_TYPE | StaticType::NAMESPACE_TYPE)) {
-    _src.getStaticType() = StaticType::QNAME_TYPE;
+     _args[0]->getStaticAnalysis().getStaticType().isType(TypeFlags::ELEMENT | TypeFlags::ATTRIBUTE |
+                                                          TypeFlags::PI | TypeFlags::NAMESPACE)) {
+    _src.getStaticType() = StaticType::QNAME;
   }
   else {
-    _src.getStaticType() = StaticType(StaticType::QNAME_TYPE, 0, 1);
+    _src.getStaticType() = StaticType::QNAME_QUESTION;
   }
 
   return this;

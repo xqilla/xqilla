@@ -31,7 +31,6 @@ public:
        const NodeTest *nodeTest, const AxisNodeFactory &factory);
 
   const XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *nextNode(DynamicContext *context);
-  std::string asString(DynamicContext *context, int indent) const;
 
 private:
   XERCES_CPP_NAMESPACE_QUALIFIER DOMNamedNodeMap *nodeMap_;
