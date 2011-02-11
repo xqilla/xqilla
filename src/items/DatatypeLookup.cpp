@@ -32,7 +32,6 @@
 #include "DatatypeFactoryTemplate.hpp"
 #include <xqilla/exceptions/TypeNotFoundException.hpp>
 #include "impl/ATAnyURIOrDerivedImpl.hpp"
-#include "impl/ATAnySimpleTypeImpl.hpp"
 #include "impl/ATBase64BinaryOrDerivedImpl.hpp"
 #include <xqilla/items/impl/ATBooleanOrDerivedImpl.hpp>
 #include <xqilla/items/impl/ATDateOrDerivedImpl.hpp>
@@ -64,10 +63,6 @@ DatatypeLookup::DatatypeLookup(const DocumentCache* dc, MemoryManager* memMgr) :
     fDocumentCache(dc),
     fMemMgr(memMgr)
 {
-  // create a xs:anySimpleType
-  anySimpleType_ = new (fMemMgr) DatatypeFactoryTemplate<ATAnySimpleTypeImpl>(fDocumentCache);
-  insertDatatype(anySimpleType_);
-  
   // create a xs:anyURI
   anyURI_ = new (fMemMgr) DatatypeFactoryTemplate<ATAnyURIOrDerivedImpl>(fDocumentCache);
   insertDatatype(anyURI_);
@@ -159,7 +154,6 @@ DatatypeLookup::DatatypeLookup(const DocumentCache* dc, MemoryManager* memMgr) :
 
 DatatypeLookup::~DatatypeLookup()
 {
-	fMemMgr->deallocate(anySimpleType_);
 	fMemMgr->deallocate(anyURI_);
 	fMemMgr->deallocate(base64Binary_);
 	fMemMgr->deallocate(boolean_);
@@ -192,7 +186,6 @@ void DatatypeLookup::insertDatatype(DatatypeFactory *datatype)
 const DatatypeFactory* DatatypeLookup::lookupDatatype(AnyAtomicType::AtomicObjectType typeIndex) const
 {
   switch(typeIndex) {
-  case AnyAtomicType::ANY_SIMPLE_TYPE: return anySimpleType_;
   case AnyAtomicType::ANY_URI: return anyURI_;
   case AnyAtomicType::BASE_64_BINARY: return base64Binary_;
   case AnyAtomicType::BOOLEAN: return boolean_;
@@ -267,11 +260,6 @@ const DatatypeFactory* DatatypeLookup::lookupDatatype(const XMLCh* typeURI, cons
   buf.append(X(" not found [err:XPST0051]"));
   XQThrow2(TypeNotFoundException, X("DatatypeLookup::lookupDatatype"), buf.getRawBuffer());
 
-}
-
-DatatypeFactory *DatatypeLookup::getAnySimpleTypeFactory() const
-{
-  return anySimpleType_;
 }
 
 DatatypeFactory *DatatypeLookup::getAnyURIFactory() const

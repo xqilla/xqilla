@@ -42,7 +42,6 @@ public:
   ///returns the appropriate Datatype object
   const DatatypeFactory* lookupDatatype(const XMLCh* typeURI, const XMLCh* typeName, bool &isPrimitive) const;
 
-  DatatypeFactory *getAnySimpleTypeFactory() const;
   DatatypeFactory *getAnyURIFactory() const;
   DatatypeFactory *getBase64BinaryFactory() const;
   DatatypeFactory *getBooleanFactory() const;
@@ -74,7 +73,6 @@ private:
   void insertDatatype(DatatypeFactory *datatype);
     
 private:
-  DatatypeFactory *anySimpleType_;
   DatatypeFactory *anyURI_;
   DatatypeFactory *base64Binary_;
   DatatypeFactory *boolean_;

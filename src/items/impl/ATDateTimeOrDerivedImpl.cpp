@@ -253,9 +253,8 @@ AnyAtomicType::Ptr ATDateTimeOrDerivedImpl::castAsInternal(AtomicObjectType targ
       }
       return context->getItemFactory()->createGYearOrDerived(targetURI, targetType, buf.getRawBuffer(), context);
     } 
-    case ANY_SIMPLE_TYPE:
     case UNTYPED_ATOMIC:
-      //anySimpleType and untypedAtomic follow the same casting rules as string.
+      // untypedAtomic follows the same casting rules as string.
     case STRING: {
       return context->getItemFactory()->createDerivedFromAtomicType(targetIndex, targetURI, targetType, asString(context), context);
     }

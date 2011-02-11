@@ -298,7 +298,8 @@ AnyAtomicType::AtomicObjectType xqcToXQillaType(XQC_ItemType type)
     break;
 
   case XQC_ANY_SIMPLE_TYPE:
-    return AnyAtomicType::ANY_SIMPLE_TYPE;
+    // TBD remove XQC_ANY_SIMPLE_TYPE - jpcs
+    break;
   case XQC_ANY_URI_TYPE:
     return AnyAtomicType::ANY_URI;
   case XQC_BASE_64_BINARY_TYPE:

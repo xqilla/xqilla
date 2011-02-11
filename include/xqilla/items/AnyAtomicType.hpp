@@ -32,30 +32,29 @@ class XQILLA_API AnyAtomicType: public Item
 
 public:
   enum AtomicObjectType {
-    ANY_SIMPLE_TYPE    = 0,
-    ANY_URI            = 1,
-    BASE_64_BINARY     = 2,
-    BOOLEAN            = 3,
-    DATE               = 4,
-    DATE_TIME          = 5,
-    DAY_TIME_DURATION  = 6,
-    DECIMAL            = 7,
-    DOUBLE             = 8,
-    DURATION           = 9,
-    FLOAT              = 10,
-    G_DAY              = 11,
-    G_MONTH            = 12,
-    G_MONTH_DAY        = 13,
-    G_YEAR             = 14,
-    G_YEAR_MONTH       = 15,
-    HEX_BINARY         = 16,
-    NOTATION           = 17,
-    QNAME              = 18,
-    STRING             = 19,
-    TIME               = 20,
-    UNTYPED_ATOMIC     = 21,
-    YEAR_MONTH_DURATION= 22,
-    NumAtomicObjectTypes= 23
+    ANY_URI            = 0,
+    BASE_64_BINARY     = 1,
+    BOOLEAN            = 2,
+    DATE               = 3,
+    DATE_TIME          = 4,
+    DAY_TIME_DURATION  = 5,
+    DECIMAL            = 6,
+    DOUBLE             = 7,
+    DURATION           = 8,
+    FLOAT              = 9,
+    G_DAY              = 10,
+    G_MONTH            = 11,
+    G_MONTH_DAY        = 12,
+    G_YEAR             = 13,
+    G_YEAR_MONTH       = 14,
+    HEX_BINARY         = 15,
+    NOTATION           = 16,
+    QNAME              = 17,
+    STRING             = 18,
+    TIME               = 19,
+    UNTYPED_ATOMIC     = 20,
+    YEAR_MONTH_DURATION= 21,
+    NumAtomicObjectTypes= 22
   };
 
   typedef RefCountPointer<const AnyAtomicType> Ptr;
@@ -121,7 +120,7 @@ public:
    * (b) the input type is a derived atomic type and the 
    *     target type is a supertype of the input type
    * (c) the target type is a derived atomic type and the 
-   *     input type is xs:string, xs:anySimpleType, or a supertype of the 
+   *     input type is xs:string, or a supertype of the 
    *     target type.
    * (d) If a primitive type P1 can be cast into a primitive type P2, then any 
    *     subtype of P1 can be cast into any subtype of P2

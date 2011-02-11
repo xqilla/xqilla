@@ -76,9 +76,8 @@ AnyAtomicType::AtomicObjectType ATAnyURIOrDerivedImpl::getTypeIndex() {
 /* If possible, cast this type to the target type */
 AnyAtomicType::Ptr ATAnyURIOrDerivedImpl::castAsInternal(AtomicObjectType targetIndex, const XMLCh* targetURI, const XMLCh* targetType, const DynamicContext* context) const {
   switch (targetIndex) {
-    case ANY_SIMPLE_TYPE:
     case UNTYPED_ATOMIC:
-      //anySimpleType and untypedAtomic follow the same casting rules as string.
+      // untypedAtomic follows the same casting rules as string.
     case STRING: {
       return context->getItemFactory()->createDerivedFromAtomicType(targetIndex, targetURI, targetType, _uri, context);
     }

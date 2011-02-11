@@ -44,7 +44,6 @@ struct XQILLA_API TypeFlags
     COMMENT             = 0x00000020,
     NAMESPACE           = 0x00000040,
 
-    ANY_SIMPLE_TYPE     = 0x00000080,
     ANY_URI             = 0x00000100,
     BASE_64_BINARY      = 0x00000200,
     BOOLEAN             = 0x00000400,

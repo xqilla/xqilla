@@ -140,9 +140,8 @@ AnyAtomicType::Ptr ATQNameOrDerivedImpl::castAsInternal(AtomicObjectType targetI
                                                         const XMLCh* targetType, const DynamicContext* context) const
 {
   switch (targetIndex) {
-    case ANY_SIMPLE_TYPE:
     case UNTYPED_ATOMIC:
-      //anySimpleType and untypedAtomic follow the same casting rules as string.
+      // untypedAtomic follows the same casting rules as string.
     case STRING: {
       return context->getItemFactory()->createDerivedFromAtomicType(targetIndex, targetURI, targetType,
                                                                     this->asLexicalString(context), context);

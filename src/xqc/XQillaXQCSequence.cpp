@@ -111,8 +111,6 @@ XQC_ItemType typeOfItem(const Item::Ptr &item)
   }
   else if(item->getType() == Item::ATOMIC) {
     switch(((AnyAtomicType*)item.get())->getPrimitiveTypeIndex()) {
-    case AnyAtomicType::ANY_SIMPLE_TYPE:
-      return XQC_ANY_SIMPLE_TYPE;
     case AnyAtomicType::ANY_URI:
       return XQC_ANY_URI_TYPE;
     case AnyAtomicType::BASE_64_BINARY:

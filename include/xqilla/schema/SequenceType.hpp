@@ -42,7 +42,6 @@ class XQILLA_API ItemType : public LocationInfo
 public:
   static const ItemType ITEM;
 
-  static const ItemType ANY_SIMPLE_TYPE;
   static const ItemType ANY_ATOMIC_TYPE;
   static const ItemType UNTYPED_ATOMIC;
   static const ItemType BOOLEAN;

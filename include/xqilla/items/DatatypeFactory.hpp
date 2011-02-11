@@ -26,7 +26,6 @@
 
 #include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/mapm/m_apm.h>
-#include <xqilla/items/ATAnySimpleType.hpp>
 #include <xqilla/items/ATAnyURIOrDerived.hpp>
 #include <xqilla/items/ATBase64BinaryOrDerived.hpp>
 #include <xqilla/items/ATBooleanOrDerived.hpp>

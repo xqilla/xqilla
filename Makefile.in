@@ -154,7 +154,7 @@ am_libxqilla_la_OBJECTS = ReferenceCounted.lo BaseMemoryManager.lo \
 	FunctionSerializeJSON.lo FunctionParseHTML.lo \
 	FunctionExplain.lo FunctionAnalyzeString.lo RegExpFunction.lo \
 	XQUserFunction.lo FunctionSignature.lo BuiltInModules.lo \
-	ATAnySimpleTypeImpl.lo ATAnyURIOrDerivedImpl.lo \
+	ATAnyURIOrDerivedImpl.lo \
 	ATBase64BinaryOrDerivedImpl.lo ATBooleanOrDerivedImpl.lo \
 	ATDateOrDerivedImpl.lo ATDateTimeOrDerivedImpl.lo \
 	ATDecimalOrDerivedImpl.lo ATDoubleOrDerivedImpl.lo \
@@ -719,8 +719,6 @@ src/functions/FunctionSignature.cpp \
 src/functions/BuiltInModules.cpp \
 src/functions/CoreModule.hpp \
 src/functions/FnModule.hpp \
-src/items/impl/ATAnySimpleTypeImpl.cpp \
-src/items/impl/ATAnySimpleTypeImpl.hpp \
 src/items/impl/ATAnyURIOrDerivedImpl.cpp \
 src/items/impl/ATAnyURIOrDerivedImpl.hpp \
 src/items/impl/ATBase64BinaryOrDerivedImpl.cpp \
@@ -1247,7 +1245,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ASTReleaser.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ASTToXML.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ASTVisitor.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ATAnySimpleTypeImpl.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ATAnyURIOrDerivedImpl.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ATBase64BinaryOrDerivedImpl.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ATBooleanOrDerivedImpl.Plo@am__quote@
@@ -3463,13 +3460,6 @@ BuiltInModules.lo: src/functions/BuiltInModules.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/functions/BuiltInModules.cpp' object='BuiltInModules.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o BuiltInModules.lo `test -f 'src/functions/BuiltInModules.cpp' || echo '$(srcdir)/'`src/functions/BuiltInModules.cpp
-
-ATAnySimpleTypeImpl.lo: src/items/impl/ATAnySimpleTypeImpl.cpp
-@am__fastdepCXX_TRUE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ATAnySimpleTypeImpl.lo -MD -MP -MF $(DEPDIR)/ATAnySimpleTypeImpl.Tpo -c -o ATAnySimpleTypeImpl.lo `test -f 'src/items/impl/ATAnySimpleTypeImpl.cpp' || echo '$(srcdir)/'`src/items/impl/ATAnySimpleTypeImpl.cpp
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/ATAnySimpleTypeImpl.Tpo $(DEPDIR)/ATAnySimpleTypeImpl.Plo
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/items/impl/ATAnySimpleTypeImpl.cpp' object='ATAnySimpleTypeImpl.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ATAnySimpleTypeImpl.lo `test -f 'src/items/impl/ATAnySimpleTypeImpl.cpp' || echo '$(srcdir)/'`src/items/impl/ATAnySimpleTypeImpl.cpp
 
 ATAnyURIOrDerivedImpl.lo: src/items/impl/ATAnyURIOrDerivedImpl.cpp
 @am__fastdepCXX_TRUE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ATAnyURIOrDerivedImpl.lo -MD -MP -MF $(DEPDIR)/ATAnyURIOrDerivedImpl.Tpo -c -o ATAnyURIOrDerivedImpl.lo `test -f 'src/items/impl/ATAnyURIOrDerivedImpl.cpp' || echo '$(srcdir)/'`src/items/impl/ATAnyURIOrDerivedImpl.cpp

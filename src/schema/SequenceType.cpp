@@ -65,7 +65,6 @@ static const DocumentCache *staticDocumentCache()
 const ItemType ItemType::ITEM(ItemType::TEST_ANYTHING, staticDocumentCache());
 
 const ItemType ItemType::ANY_ATOMIC_TYPE(ItemType::TEST_ATOMIC_TYPE, staticDocumentCache());
-const ItemType ItemType::ANY_SIMPLE_TYPE(AnyAtomicType::ANY_SIMPLE_TYPE, true, SchemaSymbols::fgURI_SCHEMAFORSCHEMA, SchemaSymbols::fgDT_ANYSIMPLETYPE, staticDocumentCache());
 const ItemType ItemType::UNTYPED_ATOMIC(AnyAtomicType::UNTYPED_ATOMIC, true, SchemaSymbols::fgURI_SCHEMAFORSCHEMA, ATUntypedAtomic::fgDT_UNTYPEDATOMIC, staticDocumentCache());
 const ItemType ItemType::BOOLEAN(AnyAtomicType::BOOLEAN, true, SchemaSymbols::fgURI_SCHEMAFORSCHEMA, SchemaSymbols::fgDT_BOOLEAN, staticDocumentCache());
 const ItemType ItemType::DECIMAL(AnyAtomicType::DECIMAL, true, SchemaSymbols::fgURI_SCHEMAFORSCHEMA, SchemaSymbols::fgDT_DECIMAL, staticDocumentCache());
@@ -253,7 +252,8 @@ void ItemType::staticResolution(StaticContext *context, const LocationInfo *loca
 
   if(m_TypeName) {
     if(m_nTestType == ItemType::TEST_ATOMIC_TYPE) {
-      if(XPath2Utils::equals(m_TypeName, AnyAtomicType::fgDT_ANYATOMICTYPE) &&
+      if((XPath2Utils::equals(m_TypeName, AnyAtomicType::fgDT_ANYATOMICTYPE) ||
+          XPath2Utils::equals(m_TypeName, SchemaSymbols::fgDT_ANYSIMPLETYPE)) &&
          XPath2Utils::equals(m_TypeURI, SchemaSymbols::fgURI_SCHEMAFORSCHEMA)) {
         m_TypePrefix = m_TypeURI = m_TypeName = 0;
         m_primitiveType = AnyAtomicType::NumAtomicObjectTypes;

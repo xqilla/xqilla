@@ -124,7 +124,6 @@ AnyAtomicType::Ptr AnyAtomicType::castAsNoCheck(AtomicObjectType targetIndex, co
     XQThrow2(XPath2TypeCastException, X("AnyAtomicType::castAs"), e.getError());
   } catch (InvalidLexicalSpaceException &e) {
     if(getPrimitiveTypeIndex() == UNTYPED_ATOMIC ||
-       getPrimitiveTypeIndex() == ANY_SIMPLE_TYPE || 
        getPrimitiveTypeIndex() == STRING) {
       XQThrow2(XPath2TypeCastException, X("AnyAtomicType::castAs"), X("Invalid lexical value [err:FORG0001]"));
     } else if(getPrimitiveTypeIndex() == targetIndex) {
@@ -193,7 +192,7 @@ bool AnyAtomicType::isInstanceOfType(const XMLCh* targetTypeURI, const XMLCh* ta
   * (b) cast is supported if the input type is a derived atomic type and the 
   *     target type is a supertype of the input type
   * (c) cast is supported if the target type is a derived atomic type and the 
-  *     input type is xs:string, xs:anySimpleType, or a supertype of the 
+  *     input type is xs:string, or a supertype of the 
   *     target type.
   * (d) If a primitive type P1 can be cast into a primitive type P2, then any 
   *     subtype of P1 can be cast into any subtype of P2

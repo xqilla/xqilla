@@ -72,7 +72,6 @@ const StaticType StaticType::NAMESPACE(&ItemType::NAMESPACE, BasicMemoryManager:
 TypeFlags::Enum flagsForAtomicType(AnyAtomicType::AtomicObjectType type)
 {
   switch(type) {
-  case AnyAtomicType::ANY_SIMPLE_TYPE: return TypeFlags::ANY_SIMPLE_TYPE | TypeFlags::ANY_ATOMIC_TYPE;
   case AnyAtomicType::ANY_URI: return TypeFlags::ANY_URI;
   case AnyAtomicType::BASE_64_BINARY: return TypeFlags::BASE_64_BINARY;
   case AnyAtomicType::BOOLEAN: return TypeFlags::BOOLEAN;
@@ -184,7 +183,6 @@ static void addItemTypesFromFlags(TypeFlags::Enum tflags, StaticType::ItemTypes 
   ADD_ITEMTYPE_FOR(PI);
   ADD_ITEMTYPE_FOR(COMMENT);
   ADD_ITEMTYPE_FOR(NAMESPACE);
-  ADD_ITEMTYPE_FOR(ANY_SIMPLE_TYPE);
   ADD_ITEMTYPE_FOR(ANY_URI);
   ADD_ITEMTYPE_FOR(BASE_64_BINARY);
   ADD_ITEMTYPE_FOR(BOOLEAN);

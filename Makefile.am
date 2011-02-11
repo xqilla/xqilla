@@ -247,8 +247,6 @@ src/functions/FunctionSignature.cpp \
 src/functions/BuiltInModules.cpp \
 src/functions/CoreModule.hpp \
 src/functions/FnModule.hpp \
-src/items/impl/ATAnySimpleTypeImpl.cpp \
-src/items/impl/ATAnySimpleTypeImpl.hpp \
 src/items/impl/ATAnyURIOrDerivedImpl.cpp \
 src/items/impl/ATAnyURIOrDerivedImpl.hpp \
 src/items/impl/ATBase64BinaryOrDerivedImpl.cpp \

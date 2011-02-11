@@ -441,7 +441,6 @@ xqilla/functions/XQUserFunction.hpp \
 xqilla/functions/FunctionSignature.hpp \
 xqilla/functions/XQillaFunction.hpp \
 xqilla/functions/BuiltInModules.hpp \
-xqilla/items/ATAnySimpleType.hpp \
 xqilla/items/ATAnyURIOrDerived.hpp \
 xqilla/items/ATBase64BinaryOrDerived.hpp \
 xqilla/items/ATBooleanOrDerived.hpp \
