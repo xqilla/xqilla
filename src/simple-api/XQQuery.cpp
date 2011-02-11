@@ -340,7 +340,7 @@ void XQQuery::staticResolution()
         if((*itFn)->isTemplate()) {
           m_context->addTemplate(*itFn);
         }
-        else if((*itFn)->getName() && (*itFn)->getSignature()->privateOption != FunctionSignature::OP_TRUE) {
+        else if((*itFn)->getName() && !(*itFn)->getSignature()->isPrivate()) {
           m_context->addCustomFunction(*itFn);
         }
       }

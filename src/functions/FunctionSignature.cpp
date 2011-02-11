@@ -19,6 +19,7 @@
 
 #include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/functions/FunctionSignature.hpp>
+#include <xqilla/ast/XQFunction.hpp>
 #include <xqilla/utils/XPath2Utils.hpp>
 #include <xqilla/utils/XPath2NSUtils.hpp>
 #include <xqilla/utils/XStr.hpp>
@@ -30,9 +31,8 @@ XERCES_CPP_NAMESPACE_USE;
 using namespace std;
 
 FunctionSignature::FunctionSignature(XPath2MemoryManager *m)
-  : updating(OP_DEFAULT),
-    nondeterministic(OP_DEFAULT),
-    privateOption(OP_DEFAULT),
+  : annotations(XQillaAllocator<Annotation*>(m)),
+    annotationMap(3, true, m),
     argSpecs(0),
     returnType(0),
     memMgr(m)
@@ -40,9 +40,8 @@ FunctionSignature::FunctionSignature(XPath2MemoryManager *m)
 }
 
 FunctionSignature::FunctionSignature(ArgumentSpecs *a, SequenceType *r, XPath2MemoryManager *mm)
-  : updating(OP_DEFAULT),
-    nondeterministic(OP_DEFAULT),
-    privateOption(OP_DEFAULT),
+  : annotations(XQillaAllocator<Annotation*>(mm)),
+    annotationMap(3, true, mm),
     argSpecs(a),
     returnType(r),
     memMgr(mm)
@@ -50,13 +49,23 @@ FunctionSignature::FunctionSignature(ArgumentSpecs *a, SequenceType *r, XPath2Me
 }
 
 FunctionSignature::FunctionSignature(const FunctionSignature *o, XPath2MemoryManager *mm)
-  : updating(o->updating),
-    nondeterministic(o->nondeterministic),
-    privateOption(o->privateOption),
+  : annotations(XQillaAllocator<Annotation*>(mm)),
+    annotationMap(3, true, mm),
     argSpecs(0),
     returnType(o->returnType),
     memMgr(mm)
 {
+  Annotations::const_iterator ait;
+  for(ait = o->annotations.begin(); ait != o->annotations.end(); ++ait) {
+    Annotation *newAnnotation = new (mm) Annotation((*ait)->getQName(), (*ait)->getURI(),
+      (*ait)->getName(), (*ait)->getURIName(), (*ait)->getExpression());
+    newAnnotation->setLocationInfo(*ait);
+    annotations.push_back(newAnnotation);
+    if(newAnnotation->getName() != 0) {
+      annotationMap.put(newAnnotation->getURIName(), newAnnotation);
+    }
+  }
+
   if(o->argSpecs) {
     argSpecs = new (mm) ArgumentSpecs(XQillaAllocator<ArgumentSpec*>(mm));
 
@@ -68,13 +77,23 @@ FunctionSignature::FunctionSignature(const FunctionSignature *o, XPath2MemoryMan
 }   
 
 FunctionSignature::FunctionSignature(const FunctionSignature *o, unsigned int skipArg, XPath2MemoryManager *mm)
-  : updating(o->updating),
-    nondeterministic(o->nondeterministic),
-    privateOption(o->privateOption),
+  : annotations(XQillaAllocator<Annotation*>(mm)),
+    annotationMap(3, true, mm),
     argSpecs(0),
     returnType(o->returnType),
     memMgr(mm)
 {
+  Annotations::const_iterator ait;
+  for(ait = o->annotations.begin(); ait != o->annotations.end(); ++ait) {
+    Annotation *newAnnotation = new (mm) Annotation((*ait)->getQName(), (*ait)->getURI(),
+      (*ait)->getName(), (*ait)->getURIName(), (*ait)->getExpression());
+    newAnnotation->setLocationInfo(*ait);
+    annotations.push_back(newAnnotation);
+    if(newAnnotation->getName() != 0) {
+      annotationMap.put(newAnnotation->getURIName(), newAnnotation);
+    }
+  }
+
   if(o->argSpecs) {
     argSpecs = new (mm) ArgumentSpecs(XQillaAllocator<ArgumentSpec*>(mm));
 
@@ -89,13 +108,23 @@ FunctionSignature::FunctionSignature(const FunctionSignature *o, unsigned int sk
 
 FunctionSignature::FunctionSignature(const FunctionSignature *o, const VectorOfASTNodes *args,
                                      XPath2MemoryManager *mm)
-  : updating(o->updating),
-    nondeterministic(o->nondeterministic),
-    privateOption(o->privateOption),
+  : annotations(XQillaAllocator<Annotation*>(mm)),
+    annotationMap(3, true, mm),
     argSpecs(0),
     returnType(o->returnType),
     memMgr(mm)
 {
+  Annotations::const_iterator ait;
+  for(ait = o->annotations.begin(); ait != o->annotations.end(); ++ait) {
+    Annotation *newAnnotation = new (mm) Annotation((*ait)->getQName(), (*ait)->getURI(),
+      (*ait)->getName(), (*ait)->getURIName(), (*ait)->getExpression());
+    newAnnotation->setLocationInfo(*ait);
+    annotations.push_back(newAnnotation);
+    if(newAnnotation->getName() != 0) {
+      annotationMap.put(newAnnotation->getURIName(), newAnnotation);
+    }
+  }
+
   assert(o->numArgs() == args->size());
 
   if(o->argSpecs) {
@@ -112,6 +141,11 @@ FunctionSignature::FunctionSignature(const FunctionSignature *o, const VectorOfA
 
 void FunctionSignature::release()
 {
+  Annotations::iterator ait;
+  for(ait = annotations.begin(); ait != annotations.end(); ++ait) {
+    (*ait)->release(memMgr);
+  }
+
   if(argSpecs) {
     ArgumentSpecs::iterator argIt = argSpecs->begin();
     for(; argIt != argSpecs->end(); ++argIt) {
@@ -130,6 +164,27 @@ void FunctionSignature::release()
 
 void FunctionSignature::staticResolution(StaticContext *context)
 {
+  // Resolve annotation names
+  Annotations::iterator ait;
+  for(ait = annotations.begin(); ait != annotations.end(); ++ait) {
+    (*ait)->staticResolution(context);
+  }
+  // Check for duplicate annotations
+  for(ait = annotations.begin(); ait != annotations.end(); ++ait) {
+    if(annotationMap.contains((*ait)->getURIName())) {
+      XMLBuffer buf;
+      buf.append(X("Two annotations have the same expanded QName '"));
+      buf.append(X("{"));
+      buf.append((*ait)->getURI());
+      buf.append(X("}"));
+      buf.append((*ait)->getName());
+      buf.append(X("' [err:TBD]"));
+      XQThrow3(StaticErrorException, X("FunctionSignature::staticResolution"), buf.getRawBuffer(), *ait);
+    }
+
+    annotationMap.put((*ait)->getURIName(), *ait);
+  }
+
   // Resolve the parameter names
   if(argSpecs) {
     ArgumentSpecs::iterator it;
@@ -150,7 +205,7 @@ void FunctionSignature::staticResolution(StaticContext *context)
             buf.append(X("}"));
             buf.append((*it)->getName());
             buf.append(X("' [err:XQST0039]"));
-            XQThrow3(StaticErrorException, X("XQUserFunction::staticResolution"), buf.getRawBuffer(), *it2);
+            XQThrow3(StaticErrorException, X("FunctionSignature::staticResolution"), buf.getRawBuffer(), *it2);
           }
         }
       }
@@ -198,6 +253,20 @@ void FunctionSignature::toBuffer(XMLBuffer &buffer, bool typeSyntax) const
   else buffer.append(X("item()*"));
 }
 
+bool FunctionSignature::isPrivate() const
+{
+  XMLBuffer buf;
+  XPath2NSUtils::makeURIName(XQFunction::XMLChFunctionURI, Annotation::XMLChPrivateLocalname, buf);
+  return annotationMap.contains(buf.getRawBuffer());
+}
+
+bool FunctionSignature::isUpdating() const
+{
+  XMLBuffer buf;
+  XPath2NSUtils::makeURIName(XQFunction::XMLChFunctionURI, Annotation::XMLChUpdatingLocalname, buf);
+  return annotationMap.contains(buf.getRawBuffer());
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 ArgumentSpec::ArgumentSpec(const XMLCh *qname, SequenceType *type, XPath2MemoryManager *memMgr)
@@ -212,6 +281,7 @@ ArgumentSpec::ArgumentSpec(const XMLCh *qname, SequenceType *type, XPath2MemoryM
     index_(0),
     mm_(memMgr)
 {
+  setLocationInfo(type);
 }
 
 ArgumentSpec::ArgumentSpec(const ArgumentSpec *o, XPath2MemoryManager *memMgr)
@@ -226,6 +296,7 @@ ArgumentSpec::ArgumentSpec(const ArgumentSpec *o, XPath2MemoryManager *memMgr)
     index_(o->index_),
     mm_(memMgr)
 {
+  setLocationInfo(o);
 }
 
 void ArgumentSpec::release()
@@ -268,6 +339,63 @@ void ArgumentSpec::staticResolution(StaticContext* context)
     }
   } else {
     type_ = StaticType::ITEM_STAR;
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+const XMLCh Annotation::XMLChPrivateLocalname[] = { 'p', 'r', 'i', 'v', 'a', 't', 'e', 0 };
+const XMLCh Annotation::XMLChUpdatingLocalname[] = { 'u', 'p', 'd', 'a', 't', 'i', 'n', 'g', 0 };
+
+Annotation::Annotation(const XMLCh *qname, ASTNode *expr)
+  : qname_(qname),
+    uri_(0),
+    name_(0),
+    uriname_(0),
+    expr_(expr)
+{
+}
+
+Annotation::Annotation(const XMLCh *qname, const XMLCh *uri, const XMLCh *name,
+                       ASTNode *expr, XPath2MemoryManager *mm)
+  : qname_(qname),
+    uri_(uri),
+    name_(name),
+    uriname_(XPath2NSUtils::makeURIName(uri, name, mm)),
+    expr_(expr)
+{
+}
+
+Annotation::Annotation(const XMLCh *qname, const XMLCh *uri, const XMLCh *name,
+                       const XMLCh *uriname, ASTNode *expr)
+  : qname_(qname),
+    uri_(uri),
+    name_(name),
+    uriname_(uriname),
+    expr_(expr)
+{
+}
+
+void Annotation::release(XPath2MemoryManager *mm)
+{
+  expr_->release();
+  mm->deallocate(this);
+}
+
+void Annotation::staticResolution(StaticContext* context)
+{
+  if(qname_ != 0 && name_ == 0) {
+    const XMLCh *prefix = XPath2NSUtils::getPrefix(qname_, context->getMemoryManager());
+    name_ = XPath2NSUtils::getLocalName(qname_);
+
+    if(prefix == 0 || *prefix == 0) {
+      uri_ = context->getDefaultFuncNS();
+    }
+    else {
+      uri_ = context->getUriBoundToPrefix(prefix, this);
+    }
+
+    uriname_ = XPath2NSUtils::makeURIName(uri_, name_, context->getMemoryManager());
   }
 }
 

@@ -497,7 +497,7 @@ void XQLexer::undoLessThan()
   }
 }
 <INITIAL>"function" {
-  if(isVersion11()) {
+  if(isVersion11() && lookAhead() == _LPAR_) {
     RECOGNIZE_VALUE(_FUNCTION_EXT_, yytext);
   } else {
     RECOGNIZE_VALUE(_FUNCTION_, yytext);
@@ -510,37 +510,16 @@ void XQLexer::undoLessThan()
     return error("Unrecognized token '#'");
   }
 }
+<INITIAL>"%" {
+  if(isVersion11()) {
+    RECOGNIZE(_PERCENT_);
+  } else {
+    return error("Unrecognized token '%'");
+  }
+}
 <INITIAL>"count" {
   if(isVersion11() && lookAhead() == _DOLLAR_) {
     RECOGNIZE_VALUE(_COUNT_, yytext);
-  } else {
-    RECOGNIZE_VALUE(_QNAME_, yytext);
-  }
-}
-<INITIAL>"private" {
-  if(isVersion11()) {
-    RECOGNIZE_VALUE(_PRIVATE_, yytext);
-  } else {
-    RECOGNIZE_VALUE(_QNAME_, yytext);
-  }
-}
-<INITIAL>"public" {
-  if(isVersion11()) {
-    RECOGNIZE_VALUE(_PUBLIC_, yytext);
-  } else {
-    RECOGNIZE_VALUE(_QNAME_, yytext);
-  }
-}
-<INITIAL>"deterministic" {
-  if(isVersion11()) {
-    RECOGNIZE_VALUE(_DETERMINISTIC_, yytext);
-  } else {
-    RECOGNIZE_VALUE(_QNAME_, yytext);
-  }
-}
-<INITIAL>"nondeterministic" {
-  if(isVersion11()) {
-    RECOGNIZE_VALUE(_NONDETERMINISTIC_, yytext);
   } else {
     RECOGNIZE_VALUE(_QNAME_, yytext);
   }

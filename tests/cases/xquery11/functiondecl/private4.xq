@@ -1,4 +1,4 @@
-declare private function local:func($a)
+declare %private function local:func($a)
 {
   $a + 7
 };

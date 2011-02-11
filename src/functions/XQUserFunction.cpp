@@ -307,7 +307,7 @@ void XQUserFunction::staticResolutionStage1(StaticContext *context)
     src_.getStaticType() = StaticType::ITEM_STAR;
   }
 
-  if(signature_->updating == FunctionSignature::OP_TRUE) {
+  if(signature_->isUpdating()) {
     src_.updating(true);
   }
 
@@ -502,7 +502,7 @@ void XQUserFunction::staticTyping(StaticContext *context, StaticTyper *styper)
   // Nothing more to do for external functions
   if(body_ == NULL) return;
 
-  if(signature_->updating == FunctionSignature::OP_TRUE && signature_->returnType != NULL) {
+  if(signature_->isUpdating() && signature_->returnType != NULL) {
     XQThrow(StaticErrorException, X("XQUserFunction::staticTyping"),
             X("It is a static error for an updating function to declare a return type [err:XUST0028]"));
   }
@@ -559,7 +559,7 @@ void XQUserFunction::staticTyping(StaticContext *context, StaticTyper *styper)
   if(context)
     context->getVariableTypeStore()->removeScope();
 
-  if(signature_->updating == FunctionSignature::OP_TRUE) {
+  if(signature_->isUpdating()) {
     if(!body_->getStaticAnalysis().isUpdating() && !body_->getStaticAnalysis().isPossiblyUpdating())
       XQThrow(StaticErrorException, X("XQUserFunction::staticTyping"),
               X("It is a static error for the body expression of a user defined updating function "

@@ -101,6 +101,7 @@ typedef struct yyltype
 class LetTuple;
 class XQGlobalVariable;
 class XQTypeAlias;
+class Annotation;
 
 typedef union {
   XMLCh* str;
@@ -111,6 +112,7 @@ typedef union {
   ArgumentSpecs* argSpecs;
   FunctionSignature *signature;
   TupleMembers *tupleMembers;
+  Annotation *annotation;
   XQUserFunction::Mode* mode;
   XQUserFunction::ModeList* modeList;
   XQGlobalVariable *globalVar;

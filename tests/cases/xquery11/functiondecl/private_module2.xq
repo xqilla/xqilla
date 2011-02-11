@@ -6,12 +6,12 @@ declare function pm:imported($a)
   $a + 9
 };
 
-declare private function pm:good-namespace($a)
+declare %private function pm:good-namespace($a)
 {
   $a + 7
 };
 
-declare private function tmp:bad-namespace($a)
+declare %private function tmp:bad-namespace($a)
 {
   $a + 1
 };

@@ -43,13 +43,13 @@ const unsigned int FunctionPut::maxArgs = 2;
  * fn:put($node as node(), $uri as xs:string?) as empty-sequence()
  */
 FunctionPut::FunctionPut(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
-  : XQFunction(name, "updating ($node as node(), $uri as xs:string?) as empty-sequence()", args, memMgr),
+  : XQFunction(name, "%updating ($node as node(), $uri as xs:string?) as empty-sequence()", args, memMgr),
     baseURI_(0)
 {
 }
 
 FunctionPut::FunctionPut(const XMLCh *baseURI, const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
-  : XQFunction(name, "updating ($node as node(), $uri as xs:string?) as empty-sequence()", args, memMgr),
+  : XQFunction(name, "%updating ($node as node(), $uri as xs:string?) as empty-sequence()", args, memMgr),
     baseURI_(baseURI)
 {
 }

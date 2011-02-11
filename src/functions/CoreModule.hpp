@@ -20,8 +20,8 @@ static const DelayedModule::FuncDef core_functions[] = {
     "}\n"
   },
   {
-    "to_helper", 2, false, 26, 1,
-    "declare function core:to_helper($a as xs:decimal, $b as xs:decimal) as xs:decimal*\n"
+    "to_helper", 2, true, 26, 1,
+    "declare %private function core:to_helper($a as xs:decimal, $b as xs:decimal) as xs:decimal*\n"
     "{\n"
     "  if($a gt $b) then () else ($a, core:to_helper($a + 1, $b))\n"
     "}\n"

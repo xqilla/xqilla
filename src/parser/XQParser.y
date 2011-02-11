@@ -397,6 +397,7 @@ namespace XQParser {
 %token _RBRACE_                "}"
 %token _SEMICOLON_             ";"
 %token _HASH_                  "#"
+%token _PERCENT_               "%"
 
 %token <str> _INTEGER_LITERAL_ "<integer literal>"
 %token <str> _DECIMAL_LITERAL_ "<decimal literal>"
@@ -471,7 +472,7 @@ namespace XQParser {
 %token <str> _QNAME_                "<qualified name>"
 %token <str> _XMLNS_QNAME_                "<xmlns qualified name>"
 %token <str> _CONSTR_QNAME_                "<computed constructor qualified name>"
-%token <str> _STRING_LITERAL_            "'...'"
+%token <str> _STRING_LITERAL_            "<string literal>"
 %token <str> _VARIABLE_                "variable"
 %token <str> _NCNAME_COLON_STAR_          "<NCName>:*"
 %token <str> _STAR_COLON_NCNAME_          "*:<NCName>"
@@ -539,7 +540,7 @@ namespace XQParser {
 %token <str> _MODULE_                  "module"
 %token <str> _ELEMENT_                "element"
 %token <str> _FUNCTION_                "function"
-%token <str> _FUNCTION_EXT_                "function (ext)"
+%token <str> _FUNCTION_EXT_                "function (XQuery 1.1)"
 %token <str> _SCORE_                                          "score"
 %token <str> _CONTAINS_                                       "contains"
 %token <str> _WEIGHT_                                         "weight"
@@ -592,10 +593,6 @@ namespace XQParser {
 %token <str> _FTOR_                                           "ftor"
 %token <str> _FTAND_                                          "ftand"
 %token <str> _FTNOT_                                          "ftnot"
-%token <str> _PRIVATE_                                        "private"
-%token <str> _PUBLIC_                                         "public"
-%token <str> _DETERMINISTIC_                                  "deterministic"
-%token <str> _NONDETERMINISTIC_                               "nondeterministic"
 %token <str> _TYPE_ALIAS_                                     "type-alias"
 
 /* XSLT 2.0 tokens */
@@ -710,7 +707,7 @@ namespace XQParser {
 %type <astNode>      SequenceAttrs_XSLT IfAttrs_XSLT WhenAttrs_XSLT Element_XSLT ElementAttrs_XSLT Namespace_XSLT NamespaceAttrs_XSLT
 %type <astNode>      RelativePathPattern_XSLT PatternStep_XSLT IdKeyPattern_XSLT PathPatternStart_XSLT
 
-%type <parenExpr>    SequenceConstructor_XSLT
+%type <parenExpr>    SequenceConstructor_XSLT AnnotationArgs
 
 %type <ftselection>     FTSelection FTWords FTUnaryNot FTMildnot FTAnd FTOr FTPrimaryWithOptions FTPrimary FTExtensionSelection
 %type <ftoption>        FTPosFilter
@@ -747,24 +744,21 @@ namespace XQParser {
 
 %type <modeList>        TemplateModes_XSLT TemplateDeclModesSection TemplateDeclModes
 %type <mode>            ApplyTemplatesMode_XSLT ApplyTemplatesMode TemplateDeclMode
-%type <signature>       FunctionOptions
-%type <boolean>         PreserveMode InheritMode PrivateOption DeterministicOption
+%type <signature>       AnnotatedDeclAnnotations
+%type <annotation>      Annotation CompatibilityAnnotation AnnotatedDeclAnnotation
+%type <boolean>         PreserveMode InheritMode
 
 %start SelectLanguage
 
 %pure_parser
-
-// We're expecting 50 shift/reduce conflicts. These have been checked and are harmless.
-// 48 arise from the xgs:leading-lone-slash grammar constraint (http://www.w3.org/TR/xquery/#parse-note-leading-lone-slash)
-// 2 arise from the xgs:occurrence-indicator grammar constriant (http://www.w3.org/TR/xquery/#parse-note-occurence-indicators)
-//%expect 50
 
 // We're expecting 90 shift/reduce conflicts. These have been checked and are harmless.
 // 49 arise from the xgs:leading-lone-slash grammar constraint (http://www.w3.org/TR/xquery/#parse-note-leading-lone-slash)
 // 3 arise from the xgs:occurrence-indicator grammar constriant (http://www.w3.org/TR/xquery/#parse-note-occurence-indicators)
 // 17 are due to template extensions
 // 21 are due to Variable_XSLT
-%expect 90
+// 1 due to AnnotatedDeclAnnotations in Start_FunctionSignature
+%expect 91
 
 %%
 
@@ -799,7 +793,7 @@ XQueryNamespaces:
   }
 
 Start_FunctionDecl:
-    _DECLARE_ FunctionOptions FunctionKeyword FunctionName FunctionParamList FunctionDeclReturnType EnclosedExpr FunctionDecl_MaybeSemicolon
+    _DECLARE_ AnnotatedDeclAnnotations _FUNCTION_ FunctionName FunctionParamList FunctionDeclReturnType EnclosedExpr FunctionDecl_MaybeSemicolon
   {
     $2->argSpecs = $5;
     $2->returnType = $6;
@@ -810,7 +804,7 @@ Start_FunctionDecl:
 FunctionDecl_MaybeSemicolon: /* empty */ | Separator;
 
 Start_FunctionSignature:
-    FunctionOptions FunctionParamList FunctionDeclReturnType
+    AnnotatedDeclAnnotations FunctionParamList FunctionDeclReturnType
   {
     $1->argSpecs = $2;
     $1->returnType = $3;
@@ -877,14 +871,17 @@ DM_Prolog:
   ;
 
 DM_FunctionDecl:
-    _DECLARE_ FunctionOptions FunctionKeyword FunctionName FunctionParamList FunctionDeclReturnType EnclosedExpr Separator
+    _DECLARE_ AnnotatedDeclAnnotations _FUNCTION_ FunctionName FunctionParamList FunctionDeclReturnType EnclosedExpr Separator
   {
     XMLBuffer buf;
+
+    // Call staticResolution on the function signature, to resolve the annotation names
+    $2->staticResolution(CONTEXT);
 
     const XMLCh *localname = XPath2NSUtils::getLocalName($4);
 
     printf("  {\n    \"%s\", %d, %s, %d, %d,\n", UTF8(localname), (int)($5 ? $5->size() : 0),
-           $2->privateOption == FunctionSignature::OP_TRUE ? "true" : "false", @1.first_line, @1.first_column);
+      $2->isPrivate() ? "true" : "false", @1.first_line, @1.first_column);
     printf("    \"");
     const XMLCh *ptr = ((XQLexer*)QP->_lexer)->getQueryString() + @1.first_offset;
     const XMLCh *start = ptr;
@@ -2718,7 +2715,7 @@ DefaultNamespaceDecl:
     CHECK_SPECIFIED(@1, BIT_DEFAULTELEMENTNAMESPACE_SPECIFIED, "default element namespace", "XQST0066");
     CONTEXT->setDefaultElementAndTypeNS($5);
   }
-  | _DECLARE_ _DEFAULT_ FunctionKeyword _NAMESPACE_ URILiteral
+  | _DECLARE_ _DEFAULT_ _FUNCTION_ _NAMESPACE_ URILiteral
   { 
     CHECK_SPECIFIED(@1, BIT_DEFAULTFUNCTIONNAMESPACE_SPECIFIED, "default function namespace", "XQST0066");
     CONTEXT->setDefaultFuncNS($5);
@@ -2963,25 +2960,6 @@ ModuleImport:
   }
   ;
 
-// [25]    VarDecl    ::=    <"declare" "variable" "$"> VarName TypeDeclaration? ((":=" ExprSingle) | "external")
-VarDecl:
-  _DECLARE_ _VARIABLE_ _DOLLAR_ VarName TypeDeclaration VarDeclValue
-  {
-    QP->_query->addVariable(WRAP(@1, new (MEMMGR) XQGlobalVariable($4, $5, $6, MEMMGR)));
-  }
-  ;
-
-VarDeclValue:
-  _COLON_EQUALS_ ExprSingle
-  {
-    $$ = $2;
-  }
-  | _EXTERNAL_
-  {
-    $$ = NULL;
-  }
-;
-
 // [26]    ConstructionDecl    ::=    <"declare" "construction"> ("preserve" | "strip") 
 ConstructionDecl:
   _DECLARE_ _CONSTRUCTION_ _PRESERVE_
@@ -2996,9 +2974,55 @@ ConstructionDecl:
   }
   ;
 
-// [31]   	FunctionDecl	   ::=   	"declare" FunctionOptions "function" QName "(" ParamList? ")" ("as" SequenceType)? (FunctionBody | "external")
+// AnnotatedDecl ::= "declare" (CompatibilityAnnotation | Annotation)* (VarDecl | FunctionDecl)
+AnnotatedDeclAnnotations:
+    /* empty */
+  {
+    $$ = new (MEMMGR) FunctionSignature(MEMMGR);
+  }
+  | AnnotatedDeclAnnotations AnnotatedDeclAnnotation
+  {
+    $$ = $1;
+    $$->annotations.push_back($2);
+  }
+  ;
+
+AnnotatedDeclAnnotation: CompatibilityAnnotation | Annotation;
+
+// CompatibilityAnnotation ::= "updating"
+CompatibilityAnnotation:
+    _UPDATING_
+  {
+    ASTNode *trueExpr =
+      WRAP(@1, new (MEMMGR) XQFunctionCall(0, XQFunction::XMLChFunctionURI,
+                                           MEMMGR->getPooledString("true"), 0, MEMMGR));
+    $$ = WRAP(@1, new (MEMMGR) Annotation(0, XQFunction::XMLChFunctionURI, $1, trueExpr, MEMMGR));
+  }
+  ;
+
+
+// VarDecl ::= "variable" "$" VarName TypeDeclaration? ((":=" ExprSingle) | "external")
+VarDecl:
+  _DECLARE_ AnnotatedDeclAnnotations _VARIABLE_ _DOLLAR_ VarName TypeDeclaration VarDeclValue
+  {
+    QP->_query->addVariable(WRAP(@1, new (MEMMGR) XQGlobalVariable($5, $6, $7, MEMMGR)));
+  }
+  ;
+
+VarDeclValue:
+  _COLON_EQUALS_ ExprSingle
+  {
+    $$ = $2;
+  }
+  | _EXTERNAL_
+  {
+    $$ = NULL;
+  }
+;
+
+// FunctionDecl ::= "function" QName "(" ParamList? ")" ("as" SequenceType)? (FunctionBody | "external")
 FunctionDecl:
-    _DECLARE_ FunctionOptions FunctionKeyword FunctionName FunctionParamList FunctionDeclReturnType FunctionBody
+    _DECLARE_ AnnotatedDeclAnnotations _FUNCTION_ FunctionName FunctionParamList FunctionDeclReturnType FunctionBody
   {
     $2->argSpecs = $5;
     $2->returnType = $6;
@@ -3006,14 +3030,23 @@ FunctionDecl:
   }
   ;
 
-FunctionKeyword: _FUNCTION_ | _FUNCTION_EXT_;
-
 FunctionParamList:
   _LPAR_ _RPAR_
   {
     $$ = NULL;
   }
   | _LPAR_ ParamList _RPAR_
+  {
+    $$ = $2;
+  }
+  ;
+
+FunctionDeclReturnType:
+    /* empty */
+  {
+    $$ = 0;
+  }
+  | _AS_ SequenceType
   {
     $$ = $2;
   }
@@ -3028,61 +3061,31 @@ FunctionBody:
   }
   ;
 
-// [32]   	FunctionOptions	   ::=   	(PrivateOption | DeterministicOption | "updating")*
-FunctionOptions:
-    /* empty */
+//   Annotation ::= "%" QName ("(" Literal ("," Literal)* ")")?
+Annotation:
+    _PERCENT_ QNameValue
   {
-    $$ = new (MEMMGR) FunctionSignature(MEMMGR);
+    ASTNode *trueExpr =
+      WRAP(@1, new (MEMMGR) XQFunctionCall(0, XQFunction::XMLChFunctionURI,
+                                           MEMMGR->getPooledString("true"), 0, MEMMGR));
+    $$ = WRAP(@1, new (MEMMGR) Annotation($2, trueExpr));
   }
-  | FunctionOptions PrivateOption
+  | _PERCENT_ QNameValue _LPAR_ AnnotationArgs _RPAR_
   {
-    switch($1->privateOption) {
-    case FunctionSignature::OP_TRUE:
-      yyerror(@2, "Function option 'private' already specified [err:XQST0106]");
-    case FunctionSignature::OP_FALSE:
-      yyerror(@2, "Function option 'public' already specified [err:XQST0106]");
-    case FunctionSignature::OP_DEFAULT:
-      $1->privateOption = $2 ? FunctionSignature::OP_TRUE : FunctionSignature::OP_FALSE;
-      break;
-    }
-    $$ = $1;
-  }
-  | FunctionOptions DeterministicOption
-  {
-    switch($1->nondeterministic) {
-    case FunctionSignature::OP_TRUE:
-      yyerror(@2, "Function option 'nondeterministic' already specified [err:XQST0106]");
-    case FunctionSignature::OP_FALSE:
-      yyerror(@2, "Function option 'deterministic' already specified [err:XQST0106]");
-    case FunctionSignature::OP_DEFAULT:
-      $1->nondeterministic = $2 ? FunctionSignature::OP_TRUE : FunctionSignature::OP_FALSE;
-      break;
-    }
-    $$ = $1;
-  }
-  | FunctionOptions _UPDATING_
-  {
-    if($1->updating != FunctionSignature::OP_DEFAULT)
-      yyerror(@2, "Function option 'updating' already specified [err:XPST0003]");
-    $1->updating = FunctionSignature::OP_TRUE;
-    $$ = $1;
+    $$ = WRAP(@1, new (MEMMGR) Annotation($2, $4));
   }
   ;
 
-// [33]   	PrivateOption	   ::=   	"private" | "public"
-PrivateOption: _PRIVATE_ { $$ = true; } | _PUBLIC_ { $$ = false; };
-
-// [34]   	DeterministicOption	   ::=   	"deterministic" | "nondeterministic"
-DeterministicOption: _DETERMINISTIC_ { $$ = false; } | _NONDETERMINISTIC_ { $$ = true; };
-
-FunctionDeclReturnType:
-    /* empty */
+AnnotationArgs:
+    Literal
   {
-    $$ = 0;
+    $$ = WRAP(@1, new (MEMMGR) XQSequence(MEMMGR));
+    $$->addItem($1);
   }
-  | _AS_ SequenceType
+  | AnnotationArgs _COMMA_ Literal
   {
-    $$ = $2;
+    $$ = $1;
+    $$->addItem($3);
   }
   ;
 
@@ -5847,21 +5850,25 @@ FunctionTest: AnyFunctionTest | TypedFunctionTest;
 
 // [190] AnyFunctionTest ::= "function" "(" "*" ")"
 AnyFunctionTest:
-    _FUNCTION_EXT_ _LPAR_ _ASTERISK_ _RPAR_
+    Annotations _FUNCTION_EXT_ _LPAR_ _ASTERISK_ _RPAR_
   {
     $$ = WRAP(@1, new (MEMMGR) ItemType(ItemType::TEST_FUNCTION));
   }
   ;
 
+Annotations:
+    /* empty */
+  | Annotations Annotation;
+
 // [191] TypedFunctionTest ::= "function" "(" (SequenceType ("," SequenceType)*)? ")" "as" SequenceType
 TypedFunctionTest:
-    _FUNCTION_EXT_ _LPAR_ _RPAR_ _AS_ SequenceType
+    Annotations _FUNCTION_EXT_ _LPAR_ _RPAR_ _AS_ SequenceType
   {
-    $$ = WRAP(@1, new (MEMMGR) ItemType(new (MEMMGR) FunctionSignature(0, $5, MEMMGR), 0));
+    $$ = WRAP(@1, new (MEMMGR) ItemType(new (MEMMGR) FunctionSignature(0, $6, MEMMGR), 0));
   }
-  | _FUNCTION_EXT_ _LPAR_ FunctionTypeArguments _RPAR_ _AS_ SequenceType
+  | Annotations _FUNCTION_EXT_ _LPAR_ FunctionTypeArguments _RPAR_ _AS_ SequenceType
   {
-    $$ = WRAP(@1, new (MEMMGR) ItemType(new (MEMMGR) FunctionSignature($3, $6, MEMMGR), 0));
+    $$ = WRAP(@1, new (MEMMGR) ItemType(new (MEMMGR) FunctionSignature($4, $7, MEMMGR), 0));
   }
   ;
 
@@ -5996,7 +6003,7 @@ TypeAlias:
 QNameValue:
 FunctionName | _ATTRIBUTE_ | _COMMENT_ | _DOCUMENT_NODE_ | _ELEMENT_ | _ITEM_ | _IF_ | _NODE_ |
 _PROCESSING_INSTRUCTION_ | _SCHEMA_ATTRIBUTE_ | _SCHEMA_ELEMENT_ | _TEXT_ | _TYPESWITCH_ | _EMPTY_SEQUENCE_ |
-_FUNCTION_EXT_ | _NAMESPACE_NODE_
+_NAMESPACE_NODE_
   ;
 
 FunctionName:
@@ -6015,8 +6022,7 @@ _DIFFERENT_ | _LOWERCASE_ | _UPPERCASE_ | _RELATIONSHIP_ | _LEVELS_ | _LANGUAGE_
 _EXACTLY_ | _FROM_ | _WORDS_ | _SENTENCES_ | _PARAGRAPHS_ | _SENTENCE_ | _PARAGRAPH_ | _REPLACE_ | _MODIFY_ | _FIRST_ |
 _INSERT_ | _BEFORE_ | _AFTER_ | _REVALIDATION_ | _WITH_ | _NODES_ | _RENAME_ | _LAST_ | _DELETE_ | _INTO_ | _UPDATING_ |
 _ORDERED_ | _UNORDERED_ | _ID_ | _KEY_ | _TEMPLATE_ | _MATCHES_ | _NAME_ | _CALL_ | _APPLY_ | _TEMPLATES_ | _MODE_ |
-_FTOR_ | _FTAND_ | _FTNOT_ | _PRIVATE_ | _PUBLIC_ | _DETERMINISTIC_ | _NONDETERMINISTIC_ | _TUPLE_ | _TYPE_ALIAS_ |
-_MAP_
+_FTOR_ | _FTAND_ | _FTNOT_ | _TUPLE_ | _TYPE_ALIAS_ | _MAP_
   ;
 
 /* _XQUERY_ | */
