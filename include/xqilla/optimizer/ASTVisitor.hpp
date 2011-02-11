@@ -39,6 +39,8 @@
 #include <xqilla/ast/XQContextItem.hpp>
 #include <xqilla/ast/XQDOMConstructor.hpp>
 #include <xqilla/ast/XQReturn.hpp>
+#include <xqilla/ast/XQTupleConstructor.hpp>
+#include <xqilla/ast/XQTupleMember.hpp>
 #include <xqilla/ast/XQQuantified.hpp>
 #include <xqilla/ast/XQFunctionCall.hpp>
 #include <xqilla/ast/XQGlobalVariable.hpp>
@@ -121,6 +123,8 @@
   virtual ASTNode *optimizeOperator(XQOperator *item); \
   virtual ASTNode *optimizeContextItem(XQContextItem *item); \
   virtual ASTNode *optimizeReturn(XQReturn *item); \
+  virtual ASTNode *optimizeTupleConstructor(XQTupleConstructor *item); \
+  virtual ASTNode *optimizeTupleMember(XQTupleMember *item); \
   virtual ASTNode *optimizeQuantified(XQQuantified *item); \
   virtual ASTNode *optimizeTypeswitch(XQTypeswitch *item); \
   virtual ASTNode *optimizeValidate(XQValidate *item); \

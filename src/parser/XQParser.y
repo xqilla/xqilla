@@ -46,10 +46,13 @@
 #include <xqilla/ast/XQTypeswitch.hpp>
 #include <xqilla/ast/XQValidate.hpp>
 #include <xqilla/ast/XQGlobalVariable.hpp>
+#include <xqilla/ast/XQTypeAlias.hpp>
 #include <xqilla/ast/XQFunctionCall.hpp>
 #include <xqilla/ast/XQOrderingChange.hpp>
 #include <xqilla/ast/XQDocumentOrder.hpp>
 #include <xqilla/ast/XQReturn.hpp>
+#include <xqilla/ast/XQTupleConstructor.hpp>
+#include <xqilla/ast/XQTupleMember.hpp>
 #include <xqilla/ast/XQNamespaceBinding.hpp>
 
 #include <xercesc/validators/schema/SchemaSymbols.hpp>
@@ -238,9 +241,11 @@ using namespace std;
 
 static const XMLCh sz1_0[] = { chDigit_1, chPeriod, chDigit_0, chNull };
 static const XMLCh sz1_1[] = { chDigit_1, chPeriod, chDigit_1, chNull };
+static const XMLCh sz3_0[] = { chDigit_3, chPeriod, chDigit_0, chNull };
 static const XMLCh option_projection[] = { 'p', 'r', 'o', 'j', 'e', 'c', 't', 'i', 'o', 'n', 0 };
 static const XMLCh option_psvi[] = { 'p', 's', 'v', 'i', 0 };
 static const XMLCh option_lint[] = { 'l', 'i', 'n', 't', 0 };
+static const XMLCh option_extensions[] = { 'e', 'x', 't', 'e', 'n', 's', 'i', 'o', 'n', 's', 0 };
 static const XMLCh var_name[] = { 'n', 'a', 'm', 'e', 0 };
 
 static const XMLCh XMLChXS[]    = { chLatin_x, chLatin_s, chNull };
@@ -577,6 +582,7 @@ namespace XQParser {
 %token <str> _KEY_                                            "key"
 %token <str> _TEMPLATE_                                       "template"
 %token <str> _MATCHES_                                        "matches"
+%token <str> _TUPLE_                                          "tuple"
 %token <str> _NAME_                                           "name"
 %token <str> _CALL_                                           "call"
 %token <str> _APPLY_                                          "apply"
@@ -589,6 +595,7 @@ namespace XQParser {
 %token <str> _PUBLIC_                                         "public"
 %token <str> _DETERMINISTIC_                                  "deterministic"
 %token <str> _NONDETERMINISTIC_                               "nondeterministic"
+%token <str> _TYPE_ALIAS_                                     "type-alias"
 
 /* XSLT 2.0 tokens */
 %token _XSLT_END_ELEMENT_                                     "<XSLT end element>"
@@ -621,6 +628,7 @@ namespace XQParser {
 %token _XSLT_FOR_EACH_                                        "<xsl:for-each..."
 %token _XSLT_OUTPUT_                                          "<xsl:output..."
 %token _XSLT_IMPORT_SCHEMA_                                   "<xsl:import-schema..."
+%token _XSLT_TYPE_ALIAS_                                      "<xsl:type-alias..."
 
 %token <str> _XSLT_VERSION_                                   "version='...'"
 %token <str> _XSLT_MODE_                                      "mode='...'"
@@ -674,8 +682,10 @@ namespace XQParser {
 
 %type <functDecl>    FunctionDecl TemplateDecl FunctionAttrs_XSLT TemplateAttrs_XSLT
 %type <globalVar>    GlobalVariableAttrs_XSLT GlobalParamAttrs_XSLT
-%type <argSpec>      Param Param_XSLT ParamAttrs_XSLT
+%type <alias>        TypeAliasAttrs_XSLT
+%type <argSpec>      Param Param_XSLT ParamAttrs_XSLT TupleTestEntry
 %type <argSpecs>     ParamList FunctionParamList TemplateParamList ParamList_XSLT FunctionTypeArguments
+%type <tupleMembers> TupleTestEntryList
 %type <astNode>      Expr ExprSingle OrExpr AndExpr EnclosedExpr FLWORExpr IfExpr ComparisonExpr DecimalLiteral VarRef
 %type <astNode>      RangeExpr AdditiveExpr MultiplicativeExpr UnionExpr QuantifiedExpr StringLiteral Literal ContextItemExpr
 %type <astNode>      UnaryExpr ValidateExpr CastExpr TreatExpr IntersectExceptExpr ParenthesizedExpr PrimaryExpr FunctionCall
@@ -688,6 +698,7 @@ namespace XQParser {
 %type <astNode>      ForwardStep ReverseStep AbbrevForwardStep AbbrevReverseStep OrderExpr CompPIConstructorContent
 %type <astNode>      PathPattern_XSLT IdValue_XSLT KeyValue_XSLT CallTemplateExpr ApplyTemplatesExpr
 %type <astNode>      DynamicFunctionInvocation InlineFunction LiteralFunctionItem FunctionItemExpr
+%type <astNode>      TupleConstructor TupleMemberExpr
 %type <astNode>      ForwardStepPredicateList ReverseStepPredicateList Argument FunctionBody CompNamespaceConstructor
 %type <astNode>      LiteralResultElement_XSLT ValueOf_XSLT ValueOfAttrs_XSLT Text_XSLT TextNode_XSLT ApplyTemplates_XSLT
 %type <astNode>      ApplyTemplatesAttrs_XSLT CallTemplate_XSLT CallTemplateAttrs_XSLT Sequence_XSLT Choose_XSLT If_XSLT
@@ -717,13 +728,14 @@ namespace XQParser {
 %type <sequenceType>    SequenceType TypeDeclaration SingleType TemplateSequenceType FunctionDeclReturnType
 %type <occurrence>      OccurrenceIndicator SingleTypeOccurrence
 %type <itemType>        ItemType KindTest AttributeTest SchemaAttributeTest PITest CommentTest TextTest AnyKindTest ElementTest DocumentTest SchemaElementTest
-%type <itemType>        FunctionTest AnyFunctionTest TypedFunctionTest ParenthesizedItemType NamespaceNodeTest
+%type <itemType>        FunctionTest AnyFunctionTest TypedFunctionTest ParenthesizedItemType NamespaceNodeTest TupleTest
 %type <copyBinding>     TransformBinding
 %type <copyBindingList> TransformBindingList
 %type <templateArg>     TemplateArgument WithParamAttrs_XSLT WithParam_XSLT
 %type <templateArgs>    TemplateArgumentList ApplyTemplatesContent_XSLT CallTemplateContent_XSLT
 %type <tupleNode>       ForBinding LetBinding WhereClause FLWORTuples OrderByClause OrderSpec OrderSpecList CountClause
 %type <tupleNode>       ForClause LetClause ForBindingList LetBindingList QuantifyBinding QuantifyBindingList InitialClause IntermediateClause
+%type <tupleNode>       TupleEntryList TupleEntry
 %type <letTuple>        VariableAttrs_XSLT
 %type <caseClause>      DefaultCase
 %type <caseClauses>     CaseClauseList CaseClause CaseSequenceTypeUnion
@@ -757,12 +769,25 @@ namespace XQParser {
 
 // Select the language we parse, based on the (fake) first token from the lexer
 SelectLanguage:
-    _LANG_XPATH2_ QueryBody
+    _LANG_XPATH2_ XPath2Namespaces QueryBody
+
+  | _LANG_XQUERY_ XQueryNamespaces Module
+  | _LANG_FUNCDECL_ XQueryNamespaces Start_FunctionDecl
+
+  | _LANG_XSLT2_ Start_XSLT
+
+  | _LANG_DELAYEDMODULE_ Start_DelayedModule
+  | _LANG_FUNCTION_SIGNATURE_ Start_FunctionSignature
+  ;
+
+XPath2Namespaces:
+    /* empty */
   {
     SET_BUILT_IN_NAMESPACE(XQillaFunction::XQillaPrefix, XQillaFunction::XMLChFunctionURI);
   }
 
-  | XQueryLanguage
+XQueryNamespaces:
+    /* empty */
   {
     SET_BUILT_IN_NAMESPACE(XMLChXS, SchemaSymbols::fgURI_SCHEMAFORSCHEMA);
     SET_BUILT_IN_NAMESPACE(XMLChXSI, SchemaSymbols::fgURI_XSI);
@@ -771,17 +796,6 @@ SelectLanguage:
     SET_BUILT_IN_NAMESPACE(XMLChERR, FunctionError::XMLChXQueryErrorURI);
     SET_BUILT_IN_NAMESPACE(XQillaFunction::XQillaPrefix, XQillaFunction::XMLChFunctionURI);
   }
-
-  | _LANG_XSLT2_ Start_XSLT
-
-  | _LANG_DELAYEDMODULE_ Start_DelayedModule
-  | _LANG_FUNCTION_SIGNATURE_ Start_FunctionSignature
-  ;
-
-XQueryLanguage:
-    _LANG_XQUERY_ Module
-  | _LANG_FUNCDECL_ Start_FunctionDecl
-  ;
 
 Start_FunctionDecl:
     _DECLARE_ FunctionOptions FunctionKeyword FunctionName FunctionParamList FunctionDeclReturnType EnclosedExpr FunctionDecl_MaybeSemicolon
@@ -973,6 +987,7 @@ StylesheetContent_XSLT:
   | StylesheetContent_XSLT GlobalVariable_XSLT
   | StylesheetContent_XSLT Output_XSLT
   | StylesheetContent_XSLT ImportSchema_XSLT
+  | StylesheetContent_XSLT TypeAlias_XSLT
   ;
 
 Template_XSLT:
@@ -1374,6 +1389,39 @@ QNames_XSLT:
   }
   | QNames_XSLT _QNAME_
   {
+  }
+  ;
+
+TypeAlias_XSLT:
+    TypeAliasAttrs_XSLT _XSLT_END_ELEMENT_
+  {
+    if($1->getName() == 0) {
+      yyerror(@1, "The xsl:type-alias declaration does not have a {}name attribute");
+    }
+    if($1->getType() == 0) {
+      yyerror(@1, "The xsl:type-alias declaration does not have an {}as attribute");
+    }
+
+    QP->_query->addTypeAlias($1);
+  }
+  ;
+
+TypeAliasAttrs_XSLT:
+    _XSLT_TYPE_ALIAS_
+  {
+    $$ = WRAP(@1, new (MEMMGR) XQTypeAlias(0, 0, MEMMGR));
+  }
+  | TypeAliasAttrs_XSLT _XSLT_NAME_
+  {
+    RESOLVE_QNAME(@2, $2);
+    $1->setURI(uri);
+    $1->setName(name);
+    $$ = $1;
+  }
+  | TypeAliasAttrs_XSLT _XSLT_AS_ ItemType
+  {
+    $$ = $1;
+    $$->setType($3);
   }
   ;
 
@@ -1874,8 +1922,8 @@ NonMatchingSubstring_XSLT:
 Variable_XSLT:
     VariableAttrs_XSLT SequenceConstructor_XSLT _XSLT_END_ELEMENT_ SequenceConstructor_XSLT
   {
-    $1->setExpression(XSLT_VARIABLE_VALUE(@1, $1->getExpression(), $2, $1->seqType));
-    $1->seqType = 0;
+    $1->setExpression(XSLT_VARIABLE_VALUE(@1, $1->getExpression(), $2, $1->getVar()->getType()));
+    const_cast<ArgumentSpec*>($1->getVar())->setType(0);
 
     if($1->getExpression() == 0) {
       yyerror(@1, "The xsl:variable instruction has both a select attribute and a sequence constructor [err:XTSE0620]");
@@ -1892,7 +1940,7 @@ Variable_XSLT:
 VariableAttrs_XSLT:
     _XSLT_VARIABLE_
   {
-    $$ = WRAP(@1, new (MEMMGR) LetTuple(WRAP(@1, new (MEMMGR) ContextTuple(MEMMGR)), 0, 0, MEMMGR));
+    $$ = WRAP(@1, new (MEMMGR) LetTuple(WRAP(@1, new (MEMMGR) ContextTuple(MEMMGR)), (XMLCh*)0, 0, MEMMGR));
   }
   | VariableAttrs_XSLT _XSLT_NAME_
   {
@@ -1908,7 +1956,7 @@ VariableAttrs_XSLT:
   }
   | VariableAttrs_XSLT _XSLT_AS_ SequenceType
   {
-    $1->seqType = $3;
+    const_cast<ArgumentSpec*>($1->getVar())->setType($3);
     $$ = $1;
   }
   ;
@@ -2498,16 +2546,15 @@ PatternStepPredicateList_XSLT:
 
 // [1]    Module    ::=      VersionDecl? (MainModule | LibraryModule)
 Module:
-  VersionDecl MainModule
+    VersionDecl MainModule
   | VersionDecl LibraryModule
-  | MainModule
-  | LibraryModule
   ;
 
 // [2]    VersionDecl    ::=    <"xquery" "version" StringLiteral> ("encoding" StringLiteral)? Separator
 // [2]   	VersionDecl	   ::=   	"xquery" (("encoding" StringLiteral) | ("version" StringLiteral ("encoding" StringLiteral)?)) Separator
 VersionDecl:
-  _XQUERY_ Version Separator
+    /* empty */
+  | _XQUERY_ Version Separator
   | _XQUERY_ Version Encoding Separator
   | _XQUERY_ Encoding Separator
   ;
@@ -2520,7 +2567,7 @@ Version:
       QP->_lexer->setVersion11(false);
       QP->_query->setVersion11(false);
     }
-    else if(XPath2Utils::equals($2,sz1_1)) {
+    else if(XPath2Utils::equals($2,sz1_1) || XPath2Utils::equals($2,sz3_0)) {
       if(!QP->_lexer->isVersion11()) {
         yyerror(@1, "This XQuery processor is not configured to support XQuery 1.1 [err:XQST0031]");
       }
@@ -2610,6 +2657,10 @@ Prolog:
   | Prolog FTOptionDecl Separator
   {
     CHECK_SECOND_STEP(@2, "an ftoption declaration");
+  }
+  | Prolog TypeAlias Separator
+  {
+    QP->_flags.set(BIT_DECLARE_SECOND_STEP);
   }
 ;
 
@@ -2724,6 +2775,17 @@ OptionDecl:
         }
         else {
           yyerror(@4, "Unknown value for option xqilla:lint. Should be 'true' or 'false' [err:XQILLA]");
+        }
+      }
+      else if(XPath2Utils::equals(qName.getName(), option_extensions)) {
+        if(XPath2Utils::equals($4, SchemaSymbols::fgATTVAL_TRUE)) {
+          QP->_lexer->setEnableExtensions(true);
+        }
+        else if(XPath2Utils::equals($4, SchemaSymbols::fgATTVAL_FALSE)) {
+          QP->_lexer->setEnableExtensions(false);
+        }
+        else {
+          yyerror(@4, "Unknown value for option xqilla:extensions. Should be 'true' or 'false' [err:XQILLA]");
         }
       }
       else {
@@ -4611,10 +4673,7 @@ CompPIConstructorContent:
 SingleType:
   AtomicType SingleTypeOccurrence
   {
-    SequenceType* seq = WRAP(@1, new (MEMMGR) SequenceType());
-    seq->setItemType(WRAP(@1, new (MEMMGR) ItemType(ItemType::TEST_ATOMIC_TYPE, NULL, $1)));
-    seq->setOccurrence($2);
-    $$ = seq;
+    $$ = WRAP(@1, new (MEMMGR) SequenceType(WRAP(@1, new (MEMMGR) ItemType(ItemType::TEST_ATOMIC_TYPE, NULL, $1)), $2));
   }
   ;
 
@@ -4647,10 +4706,7 @@ TypeDeclaration:
 SequenceType:
   ItemType OccurrenceIndicator
   {
-    SequenceType* seq = WRAP(@1, new (MEMMGR) SequenceType());
-    seq->setItemType($1);
-    seq->setOccurrence($2);
-    $$ = seq;
+    $$ = WRAP(@1, new (MEMMGR) SequenceType($1, $2));
   }
   | _EMPTY_SEQUENCE_ _LPAR_ _RPAR_
   { 
@@ -5828,6 +5884,98 @@ ParenthesizedItemType:
   ;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
+// Tuples
+
+ItemType: TupleTest;
+
+// TupleTest ::= "tuple" "(" (TupleTestEntry ("," TupleTestEntry)*)? ")"
+TupleTest:
+    _TUPLE_ _LPAR_ TupleTestEntryList _RPAR_
+  {
+    $$ = WRAP(@1, new (MEMMGR) ItemType($3, 0));
+  }
+  | _TUPLE_ _LPAR_ _RPAR_
+  {
+    $$ = WRAP(@1, new (MEMMGR) ItemType(ItemType::TEST_TUPLE));
+  }
+  ;
+
+TupleTestEntryList:
+    TupleTestEntry
+  {
+    $$ = new (MEMMGR) TupleMembers(true, MEMMGR);
+    $1->setIndex(0);
+    $$->add(0, $1);
+  }
+  | TupleTestEntryList _COMMA_ TupleTestEntry
+  {
+    $$ = $1;
+    $3->setIndex($$->size());
+    $$->add(0, $3);
+  }
+  ;
+
+// TupleTestEntry ::= QName ("as" SequenceType)?
+TupleTestEntry:
+    QNameValue TypeDeclaration
+  {
+    $$ = WRAP(@1, new (MEMMGR) ArgumentSpec($1, $2, MEMMGR));
+  }
+  ;
+
+PrimaryExpr: TupleConstructor;
+
+// TupleConstructor ::= "tuple" "{" (TupleEntry ("," TupleEntry)*)? "}"
+TupleConstructor:
+    _TUPLE_ _LBRACE_ TupleEntryList _RBRACE_
+  {
+    // Add a ContextTuple at the start
+    TupleNode *tuples = setLastAncestor($3, WRAP(@1, new (MEMMGR) ContextTuple(MEMMGR)));
+
+    // Add the tuple constructor expression
+    $$ = WRAP(@1, new (MEMMGR) XQTupleConstructor(tuples, MEMMGR));
+  }
+  | _TUPLE_ _LBRACE_ _RBRACE_
+  {
+    $$ = WRAP(@1, new (MEMMGR) XQTupleConstructor(WRAP(@1, new (MEMMGR) ContextTuple(MEMMGR)), MEMMGR));
+  }
+  ;
+
+TupleEntryList:
+    TupleEntry
+  | TupleEntryList _COMMA_ TupleEntry
+  {
+    $$ = setLastAncestor($3, $1);
+  }
+  ;
+
+// TupleEntry ::= QName ("as" SequenceType)? ":=" ExprSingle
+TupleEntry:
+    QNameValue TypeDeclaration _COLON_EQUALS_ ExprSingle
+  {
+    // TBD LetTuple doesn't give us the correct in-scope vars for the initializer - jpcs
+    $$ = WRAP(@1, new (MEMMGR) LetTuple(0, $1, WRAP(@2, new (MEMMGR) XQTreatAs($4, $2, MEMMGR)), MEMMGR));
+  }
+  ;
+
+PostfixExpr: TupleMemberExpr;
+
+TupleMemberExpr:
+    PostfixExpr _AT_SIGN_ QNameValue
+  {
+    $$ = WRAP(@1, new (MEMMGR) XQTupleMember($3, MEMMGR));
+    $$ = WRAP(@1, new (MEMMGR) XQMap($1, $$, MEMMGR));
+  }
+  ;
+
+TypeAlias:
+  _DECLARE_ _TYPE_ALIAS_ QNameValue _AS_ ItemType
+  {
+    QP->_query->addTypeAlias(WRAP(@1, new (MEMMGR) XQTypeAlias($3, $5, MEMMGR)));
+  }
+  ;
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 QNameValue:
 FunctionName | _ATTRIBUTE_ | _COMMENT_ | _DOCUMENT_NODE_ | _ELEMENT_ | _ITEM_ | _IF_ | _NODE_ |
@@ -5851,7 +5999,8 @@ _DIFFERENT_ | _LOWERCASE_ | _UPPERCASE_ | _RELATIONSHIP_ | _LEVELS_ | _LANGUAGE_
 _EXACTLY_ | _FROM_ | _WORDS_ | _SENTENCES_ | _PARAGRAPHS_ | _SENTENCE_ | _PARAGRAPH_ | _REPLACE_ | _MODIFY_ | _FIRST_ |
 _INSERT_ | _BEFORE_ | _AFTER_ | _REVALIDATION_ | _WITH_ | _NODES_ | _RENAME_ | _LAST_ | _DELETE_ | _INTO_ | _UPDATING_ |
 _ORDERED_ | _UNORDERED_ | _ID_ | _KEY_ | _TEMPLATE_ | _MATCHES_ | _NAME_ | _CALL_ | _APPLY_ | _TEMPLATES_ | _MODE_ |
-_FTOR_ | _FTAND_ | _FTNOT_ | _PRIVATE_ | _PUBLIC_ | _DETERMINISTIC_ | _NONDETERMINISTIC_
+_FTOR_ | _FTAND_ | _FTNOT_ | _PRIVATE_ | _PUBLIC_ | _DETERMINISTIC_ | _NONDETERMINISTIC_ | _TUPLE_ |
+_TYPE_ALIAS_
   ;
 
 /* _XQUERY_ | */

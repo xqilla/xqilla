@@ -74,7 +74,8 @@ ASTNode *XQFunctionRef::staticResolution(StaticContext *context)
 
   instance = instance->staticResolution(context);
 
-  ASTNode *result = new (mm) XQInlineFunction(0, prefix, uri, name, new (mm) ItemType(signature, context->getDocumentCache()), instance, mm);
+  ASTNode *result = new (mm) XQInlineFunction(0, prefix, uri, name, new (mm)
+    ItemType(signature, context->getDocumentCache()), instance, mm);
   result->setLocationInfo(result);
   this->release();
   return result; // Don't call staticResolution() on result

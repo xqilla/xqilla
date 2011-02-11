@@ -1,4 +1,5 @@
-/*
+/* -*- mode: c++; indent-tabs-mode: nil -*-
+ *
  * Copyright (c) 2001, 2008,
  *     DecisionSoft Limited. All rights reserved.
  * Copyright (c) 2004, 2010,
@@ -470,6 +471,20 @@ void XQLexer::undoLessThan()
 <INITIAL>"mode" {
   if(isExtensions()) {
     RECOGNIZE_VALUE(_MODE_, yytext);
+  } else {
+    RECOGNIZE_VALUE(_QNAME_, yytext);
+  }
+}
+<INITIAL>"tuple" {
+  if(isExtensions()) {
+    RECOGNIZE_VALUE(_TUPLE_, yytext);
+  } else {
+    RECOGNIZE_VALUE(_QNAME_, yytext);
+  }
+}
+<INITIAL>"type-alias" {
+  if(isExtensions()) {
+    RECOGNIZE_VALUE(_TYPE_ALIAS_, yytext);
   } else {
     RECOGNIZE_VALUE(_QNAME_, yytext);
   }

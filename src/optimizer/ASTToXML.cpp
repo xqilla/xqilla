@@ -17,6 +17,7 @@
 
 // #define SHOW_QUERY_PATH_TREES
 // #define SHOW_HIDDEN_AST
+// #define SHOW_STATIC_TYPES
 
 #include "../config/xqilla_config.h"
 #include <iostream>
@@ -66,6 +67,8 @@ static const XMLCh s_units[] = { 'u', 'n', 'i', 't', 's', 0 };
 static const XMLCh s_distance[] = { 'd', 'i', 's', 't', 'a', 'n', 'c', 'e', 0 };
 static const XMLCh s_unknown[] = { 'u', 'n', 'k', 'n', 'o', 'w', 'n', 0 };
 static const XMLCh s_Binding[] = { 'B', 'i', 'n', 'd', 'i', 'n', 'g', 0 };
+static const XMLCh s_static_type[] = { 's', 't', 'a', 't', 'i', 'c', '-', 't', 'y', 'p', 'e', 0 };
+static const XMLCh s_static_analysis[] = { 's', 't', 'a', 't', 'i', 'c', '-', 'a', 'n', 'a', 'l', 'y', 's', 'i', 's', 0 };
 
 ASTToXML::ASTToXML()
   : events_(0),
@@ -483,6 +486,12 @@ void ASTToXML::getElementName(ASTNode *item, XMLBuffer &buf)
   case ASTNode::PARTIAL_APPLY:
     buf.append(X("PartialApply"));
     break;
+  case ASTNode::TUPLE_CONSTRUCTOR:
+    buf.append(X("TupleConstructor"));
+    break;
+  case ASTNode::TUPLE_MEMBER:
+    buf.append(X("TupleMember"));
+    break;
   default:
     buf.append(X("Unknown"));
     break;
@@ -504,10 +513,12 @@ ASTNode *ASTToXML::optimize(ASTNode *item)
   indent();
   events_->startElementEvent(0, 0, elementName.getRawBuffer());
 
-  // static XMLCh s_static_type[] = { 's', 't', 'a', 't', 'i', 'c', '-', 't', 'y', 'p', 'e', 0 };
-  // XMLBuffer type_buf;
-  // item->getStaticAnalysis().getStaticType().typeToBuf(type_buf);
-  // events_->attributeEvent(0, 0, s_static_type, type_buf.getRawBuffer(), 0, 0);
+#ifdef SHOW_STATIC_TYPES
+  XMLBuffer type_buf;
+  item->getStaticAnalysis().getStaticType().typeToBuf(type_buf);
+  events_->attributeEvent(0, 0, s_static_type, type_buf.getRawBuffer(), 0, 0);
+  // events_->attributeEvent(0, 0, s_static_analysis, X(item->getStaticAnalysis().toString().c_str()), 0, 0);
+#endif
 
   if(item) {
     AutoReset<unsigned int> resetIndent(indent_);
@@ -1241,6 +1252,14 @@ ASTNode *ASTToXML::optimizeFunctionRef(XQFunctionRef *item)
   return ASTVisitor::optimizeFunctionRef(item);
 }
 
+ASTNode *ASTToXML::optimizeTupleMember(XQTupleMember *item)
+{
+  XMLBuffer buf;
+  qname(item->getQName(), 0, item->getURI(), item->getName(), buf);
+  events_->attributeEvent(0, 0, s_name, buf.getRawBuffer(), 0, 0);
+  return ASTVisitor::optimizeTupleMember(item);
+}
+
 void ASTToXML::getElementName(TupleNode *item, XMLBuffer &buf)
 {
   switch(item->getType()) {
@@ -1287,6 +1306,13 @@ TupleNode *ASTToXML::optimizeTupleNode(TupleNode *item)
 
   indent();
   events_->startElementEvent(0, 0, elementName.getRawBuffer());
+
+#ifdef SHOW_STATIC_TYPES
+  XMLBuffer type_buf;
+  item->getStaticAnalysis().getStaticType().typeToBuf(type_buf);
+  events_->attributeEvent(0, 0, s_static_type, type_buf.getRawBuffer(), 0, 0);
+  // events_->attributeEvent(0, 0, s_static_analysis, X(item->getStaticAnalysis().toString().c_str()), 0, 0);
+#endif
 
   {
     AutoReset<unsigned int> resetIndent(indent_);

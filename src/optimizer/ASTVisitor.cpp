@@ -134,6 +134,10 @@ ASTNode *ASTVisitor::optimize(ASTNode *item)
     return optimizeContextItem((XQContextItem *)item);
   case ASTNode::RETURN:
     return optimizeReturn((XQReturn *)item);
+  case ASTNode::TUPLE_CONSTRUCTOR:
+    return optimizeTupleConstructor((XQTupleConstructor *)item);
+  case ASTNode::TUPLE_MEMBER:
+    return optimizeTupleMember((XQTupleMember *)item);
   case ASTNode::QUANTIFIED:
     return optimizeQuantified((XQQuantified *)item);
   case ASTNode::TYPESWITCH:
@@ -333,6 +337,17 @@ ASTNode *ASTVisitor::optimizeReturn(XQReturn *item)
 {
   item->setParent(optimizeTupleNode(const_cast<TupleNode*>(item->getParent())));
   item->setExpression(optimize(item->getExpression()));
+  return item;
+}
+
+ASTNode *ASTVisitor::optimizeTupleConstructor(XQTupleConstructor *item)
+{
+  item->setParent(optimizeTupleNode(const_cast<TupleNode*>(item->getParent())));
+  return item;
+}
+
+ASTNode *ASTVisitor::optimizeTupleMember(XQTupleMember *item)
+{
   return item;
 }
 

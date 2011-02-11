@@ -42,12 +42,8 @@ TupleNode *TupleDebugHook::staticResolution(StaticContext *context)
 
 TupleNode *TupleDebugHook::staticTypingImpl(StaticContext *context)
 {
-  return this;
-}
-
-TupleNode *TupleDebugHook::staticTypingTeardown(StaticContext *context, StaticAnalysis &usedSrc)
-{
-  parent_ = parent_->staticTypingTeardown(context, usedSrc);
+  src_.clear();
+  src_.copy(parent_->getStaticAnalysis());
   return this;
 }
 
@@ -121,6 +117,11 @@ public:
       if(dl) dl->error(ex, &frame_, context);
     }
     return false;
+  }
+
+  virtual void createTuple(DynamicContext *context, size_t capacity, TupleImpl::Ptr &result) const
+  {
+    parent_->createTuple(context, capacity, result);
   }
 
 private:

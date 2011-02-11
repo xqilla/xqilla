@@ -42,14 +42,27 @@ ASTNode *XQReturn::staticResolution(StaticContext *context)
 
 ASTNode *XQReturn::staticTypingImpl(StaticContext *context)
 {
-  _src.clear();
+  const StaticType &pType = parent_->getStaticAnalysis().getStaticType();
+  const StaticType &sType = expr_->getStaticAnalysis().getStaticType();
 
+  assert(pType.getTypes().size() == 1);
+  const ItemType *pItemType = pType.getTypes()[0];
+  assert(pItemType->getItemTestType() == ItemType::TEST_TUPLE);
+
+  _src.clear();
   _src.add(expr_->getStaticAnalysis());
 
-  _src.getStaticType() = expr_->getStaticAnalysis().getStaticType();
-  _src.getStaticType().multiply(parent_->getMin(), parent_->getMax());
+  TupleMembers *pMembers = const_cast<TupleMembers*>(pItemType->getTupleMembers());
+  if(pMembers) {
+    TupleMembers::iterator i = pMembers->begin();
+    for(; i != pMembers->end(); ++i) {
+      _src.removeVariable(i.getValue()->getURI(), i.getValue()->getName());
+    }
+  }
 
-  parent_ = parent_->staticTypingTeardown(context, _src);
+  _src.getStaticType() = sType;
+  _src.getStaticType().multiply(pType.getMin(), pType.getMax());
+  _src.add(parent_->getStaticAnalysis());
 
   return this;
 }
@@ -84,8 +97,6 @@ public:
 
     return item;
   }
-
-  virtual std::string asString(DynamicContext *context, int indent) const { return ""; }
 
 private:
   const XQReturn *ast_;

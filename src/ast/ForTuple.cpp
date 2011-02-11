@@ -35,29 +35,17 @@ XERCES_CPP_NAMESPACE_USE;
 ForTuple::ForTuple(TupleNode *parent, const XMLCh *varQName, const XMLCh *posQName,
                    ASTNode *expr, XPath2MemoryManager *mm)
   : TupleNode(FOR, parent, mm),
-    varQName_(varQName),
-    varURI_(0),
-    varName_(0),
-    posQName_(posQName),
-    posURI_(0),
-    posName_(0),
-    varSrc_(mm),
-    posSrc_(mm),
+    var_(varQName ? new (mm) ArgumentSpec(varQName, 0, mm) : 0),
+    pos_(posQName ? new (mm) ArgumentSpec(posQName, 0, mm) : 0),
     expr_(expr)
 {
 }
 
-ForTuple::ForTuple(TupleNode *parent, const XMLCh *varURI, const XMLCh *varName,
-                   const XMLCh *posURI, const XMLCh *posName, ASTNode *expr, XPath2MemoryManager *mm)
+ForTuple::ForTuple(TupleNode *parent, const ArgumentSpec *var, const ArgumentSpec *pos,
+                   ASTNode *expr, XPath2MemoryManager *mm)
   : TupleNode(FOR, parent, mm),
-    varQName_(0),
-    varURI_(varURI),
-    varName_(varName),
-    posQName_(0),
-    posURI_(posURI),
-    posName_(posName),
-    varSrc_(mm),
-    posSrc_(mm),
+    var_(var ? new (mm) ArgumentSpec(var, mm) : 0),
+    pos_(pos ? new (mm) ArgumentSpec(pos, mm) : 0),
     expr_(expr)
 {
 }
@@ -66,22 +54,18 @@ TupleNode *ForTuple::staticResolution(StaticContext *context)
 {
   parent_ = parent_->staticResolution(context);
 
-  varURI_ = context->getUriBoundToPrefix(XPath2NSUtils::getPrefix(varQName_, context->getMemoryManager()), this);
-  varName_ = XPath2NSUtils::getLocalName(varQName_);
+  if(var_) var_->staticResolution(context);
+  if(pos_) pos_->staticResolution(context);
 
-  if(posQName_ && *posQName_) {
-    posURI_ = context->getUriBoundToPrefix(XPath2NSUtils::getPrefix(posQName_, context->getMemoryManager()), this);
-    posName_ = XPath2NSUtils::getLocalName(posQName_);
-
-    if(XPath2Utils::equals(posName_, varName_) && XPath2Utils::equals(posURI_, varURI_)) {
-      XMLBuffer errMsg;
-      errMsg.set(X("The positional variable with name {"));
-      errMsg.append(posURI_);
-      errMsg.append(X("}"));
-      errMsg.append(posName_);
-      errMsg.append(X(" conflicts with the iteration variable [err:XQST0089]"));
-      XQThrow(StaticErrorException,X("ForTuple::staticResolution"), errMsg.getRawBuffer());
-    }
+  if(var_ && pos_ && XPath2Utils::equals(pos_->getName(), var_->getName()) &&
+     XPath2Utils::equals(pos_->getURI(), var_->getURI())) {
+    XMLBuffer errMsg;
+    errMsg.set(X("The positional variable with name {"));
+    errMsg.append(pos_->getURI());
+    errMsg.append(X("}"));
+    errMsg.append(pos_->getName());
+    errMsg.append(X(" conflicts with the iteration variable [err:XQST0089]"));
+    XQThrow(StaticErrorException,X("ForTuple::staticResolution"), errMsg.getRawBuffer());
   }
 
   expr_ = expr_->staticResolution(context);
@@ -97,36 +81,49 @@ TupleNode *ForTuple::staticTypingImpl(StaticContext *context)
               "to be an updating expression [err:XUST0001]"));
   }
 
+  const StaticType &pType = parent_->getStaticAnalysis().getStaticType();
   const StaticType &sType = expr_->getStaticAnalysis().getStaticType();
 
-  min_ = parent_->getMin() * sType.getMin();
-  if(parent_->getMax() == StaticType::UNLIMITED || sType.getMax() == StaticType::UNLIMITED)
-    max_ = StaticType::UNLIMITED;
-  else max_ = parent_->getMax() * sType.getMax();
+  assert(pType.getTypes().size() == 1);
+  const ItemType *pItemType = pType.getTypes()[0];
+  assert(pItemType->getItemTestType() == ItemType::TEST_TUPLE);
 
-  return this;
-}
+  src_.clear();
+  src_.add(expr_->getStaticAnalysis());
 
-TupleNode *ForTuple::staticTypingTeardown(StaticContext *context, StaticAnalysis &usedSrc)
-{
-  // Remove our binding variable from the StaticAnalysis data (removing it if it's not used)
-  if(varName_ && !usedSrc.removeVariable(varURI_, varName_)) {
-    varURI_ = 0;
-    varName_ = 0;
+  TupleMembers *members = new (getMemoryManager()) TupleMembers(true, getMemoryManager());
+  if(var_) {
+    const_cast<StaticType&>(var_->getStaticType()) = sType;
+    const_cast<StaticType&>(var_->getStaticType()).setCardinality(1,1);
+    members->put(var_->getURIName(), var_);
+  }
+  if(pos_) {
+    const_cast<StaticType&>(pos_->getStaticType()) = StaticType::DECIMAL;
+    members->put(pos_->getURIName(), pos_);
   }
 
-  // Remove our positional variable from the StaticAnalysis data (removing it if it's not used)
-  if(posName_ && !usedSrc.removeVariable(posURI_, posName_)) {
-    posURI_ = 0;
-    posName_ = 0;
+  TupleMembers *pMembers = const_cast<TupleMembers*>(pItemType->getTupleMembers());
+  if(pMembers) {
+    members->putAll(*pMembers);
+
+    TupleMembers::iterator i = pMembers->begin();
+    for(; i != pMembers->end(); ++i) {
+      src_.removeVariable(i.getValue()->getURI(), i.getValue()->getName());
+    }
   }
 
-  usedSrc.add(expr_->getStaticAnalysis());
-  parent_ = parent_->staticTypingTeardown(context, usedSrc);
+  ItemType *type = new (getMemoryManager()) ItemType(members, pItemType->getDocumentCache());
+  type->setLocationInfo(this);
 
-  const StaticType &sType = expr_->getStaticAnalysis().getStaticType();
-  if(varName_ == 0 && posName_ == 0 && sType.getMin() == 1 && sType.getMax() == 1)
-    return parent_;
+  src_.getStaticType() = type;
+  unsigned min = pType.getMin() * sType.getMin();
+  unsigned max;
+  if(pType.getMax() == StaticType::UNLIMITED || sType.getMax() == StaticType::UNLIMITED)
+    max = StaticType::UNLIMITED;
+  else max = pType.getMax() * sType.getMax();
+  src_.getStaticType().setCardinality(min, max);
+
+  src_.add(parent_->getStaticAnalysis());
 
   return this;
 }
@@ -180,6 +177,14 @@ public:
     if(ast_->getPosName())
       posItem_ = context->getItemFactory()->createInteger(++position_, context);
     return true;
+  }
+
+  virtual void createTuple(DynamicContext *context, size_t capacity, TupleImpl::Ptr &result) const
+  {
+    parent_->createTuple(context, capacity + (ast_->getPosName() ? 2 : 1), result);
+    result->add(XPath2NSUtils::makeURIName(ast_->getVarURI(), ast_->getVarName(), context->getMemoryManager()), item_);
+    if(ast_->getPosName())
+      result->add(XPath2NSUtils::makeURIName(ast_->getPosURI(), ast_->getPosName(), context->getMemoryManager()), posItem_);
   }
 
 private:

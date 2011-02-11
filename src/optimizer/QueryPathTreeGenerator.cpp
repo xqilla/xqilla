@@ -165,7 +165,7 @@ XQUserFunction *QueryPathTreeGenerator::optimizeFunctionDef(XQUserFunction *item
       for(ArgumentSpecs::const_iterator it = params->begin();
           it != params->end(); ++it) {
           PathResult paramRes;
-          if((*it)->getStaticAnalysis().getStaticType().containsType(TypeFlags::NODE))
+          if((*it)->getStaticType().containsType(TypeFlags::NODE))
             createAnyNodeResult(paramRes);
           setVariable((*it)->getURI(), (*it)->getName(), paramRes);
       }
@@ -1006,6 +1006,36 @@ ASTNode *QueryPathTreeGenerator::optimizeReturn(XQReturn *item)
   return item;
 }
 
+ASTNode *QueryPathTreeGenerator::optimizeTupleConstructor(XQTupleConstructor *item)
+{
+  // TBD Fix path tracing here - jpcs
+  varStore_.addScope(VarStore::MyScope::LOGICAL_BLOCK_SCOPE);
+
+  optimizeTupleNode(const_cast<TupleNode*>(item->getParent()));
+  PathResult result // = generate(item->getExpression())
+    ;
+  
+  delete varStore_.popScope();
+
+  push(result);
+  return item;
+}
+
+ASTNode *QueryPathTreeGenerator::optimizeTupleMember(XQTupleMember *item)
+{
+  // TBD Fix path tracing here - jpcs
+  PathResult result;
+
+  const PathResult &currentContext = getCurrentContext();
+  for(QueryPathNode::Vector::const_iterator it = currentContext.returnPaths.begin();
+      it != currentContext.returnPaths.end(); ++it) {
+    // generateBuiltInStep(*it, dummy, result);
+  }
+
+  push(result);
+  return item;
+}
+
 ASTNode *QueryPathTreeGenerator::optimizeQuantified(XQQuantified *item)
 {
   varStore_.addScope(VarStore::MyScope::LOGICAL_BLOCK_SCOPE);
@@ -1460,7 +1490,7 @@ ASTNode *QueryPathTreeGenerator::optimizeInlineFunction(XQInlineFunction *item)
     unsigned int c = 0;
     for(; it != params->end(); ++it, ++c) {
       PathResult paramRes;
-      if((*it)->getStaticAnalysis().getStaticType().containsType(TypeFlags::NODE))
+      if((*it)->getStaticType().containsType(TypeFlags::NODE))
         createAnyNodeResult(paramRes);
       setVariable((*it)->getURI(), (*it)->getName(), paramRes);
     }

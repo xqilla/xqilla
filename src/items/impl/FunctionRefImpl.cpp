@@ -22,6 +22,9 @@
 #include <xqilla/ast/XQVariable.hpp>
 #include <xqilla/ast/XQFunction.hpp>
 #include <xqilla/ast/XQCastAs.hpp>
+#include <xqilla/ast/LetTuple.hpp>
+#include <xqilla/ast/XQTupleConstructor.hpp>
+#include <xqilla/ast/XQTypeAlias.hpp>
 #include <xqilla/exceptions/XPath2TypeMatchException.hpp>
 #include <xqilla/functions/FuncFactory.hpp>
 #include <xqilla/functions/FunctionSignature.hpp>
@@ -251,6 +254,34 @@ ASTNode *FunctionRefImpl::createInstance(const XMLCh *uri, const XMLCh *name, un
     args->push_back(arg);
 
     signature = new (mm) FunctionSignature(args, cast->getSequenceType(), mm);
+    signature->staticResolution(context);
+    break;
+  }
+  case ASTNode::TUPLE_CONSTRUCTOR: {
+    ArgumentSpecs *args = new (mm) ArgumentSpecs(XQillaAllocator<ArgumentSpec*>(mm));
+    args->resize(numArgs);
+
+    TupleNode *tuple = ((XQTupleConstructor*)result)->getParent();
+    while(tuple->getType() == TupleNode::LET) {
+      LetTuple *let = (LetTuple*)tuple;
+
+      XQVariable *var = new (mm) XQVariable(let->getVarURI(), let->getVarName(), mm);
+      var->setLocationInfo(location);
+      let->setExpression(var);
+
+      tuple = tuple->getParent();
+    }
+
+    ItemType *type = context->getTypeAlias(uri, name)->getType();
+    TupleMembers *members = const_cast<TupleMembers*>(type->getTupleMembers());
+    for(TupleMembers::iterator it = members->begin(); it != members->end(); ++it) {
+      (*args)[it.getValue()->getIndex()] = new (mm) ArgumentSpec(it.getValue(), mm);
+    }
+
+    SequenceType *returnType = new (mm) SequenceType(type);
+    returnType->setLocationInfo(location);
+
+    signature = new (mm) FunctionSignature(args, returnType, mm);
     signature->staticResolution(context);
     break;
   }

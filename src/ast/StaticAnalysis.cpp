@@ -286,7 +286,7 @@ std::string StaticAnalysis::toString() const
   s << "Variables Used:        [";
   bool first = true;
   VarIterator i = const_cast<StaticAnalysis*>(this)->_dynamicVariables.begin();
-  VarIterator end = const_cast<StaticAnalysis*>(this)->_dynamicVariables.begin();
+  VarIterator end = const_cast<StaticAnalysis*>(this)->_dynamicVariables.end();
   for(; i != end; ++i) {
     if(first) {
       first = false;

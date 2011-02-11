@@ -180,7 +180,7 @@ public:
    * @param memMgr The memory manager used to create the DynamicContext.
    * @return An implementation of DynamicContext
    */
-  static DynamicContext *createContext(Language language = XQUERY,
+  static DynamicContext *createContext(Language language = XQUERY11,
                                        XQillaConfiguration *conf = 0,
                                        XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *memMgr =
                                        XERCES_CPP_NAMESPACE_QUALIFIER XMLPlatformUtils::fgMemoryManager);

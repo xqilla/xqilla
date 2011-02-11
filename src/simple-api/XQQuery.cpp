@@ -33,6 +33,7 @@
 #include <xqilla/exceptions/StaticErrorException.hpp>
 #include <xqilla/items/Node.hpp>
 #include <xqilla/ast/XQGlobalVariable.hpp>
+#include <xqilla/ast/XQTypeAlias.hpp>
 #include <xqilla/ast/XQSequence.hpp>
 #include <xqilla/ast/StaticAnalysis.hpp>
 #include <xqilla/runtime/Result.hpp>
@@ -125,6 +126,7 @@ XQQuery::XQQuery(DynamicContext *context, bool contextOwned, ModuleCache *module
     m_userDefFns(XQillaAllocator<XQUserFunction*>(memMgr)),
     m_delayedFunctions(XQillaAllocator<DelayedFuncFactory*>(memMgr)),
     m_userDefVars(XQillaAllocator<XQGlobalVariable*>(memMgr)),
+    m_aliases(XQillaAllocator<XQTypeAlias*>(memMgr)),
     m_importedModules(XQillaAllocator<XQQuery*>(memMgr)),
     m_moduleCache(moduleCache ? moduleCache : new (memMgr) ModuleCache(memMgr)),
     m_moduleCacheOwned(moduleCache == 0),
@@ -312,6 +314,7 @@ void XQQuery::staticResolution()
   // Deal with the module imports
   ImportedModules::const_iterator modIt;
   GlobalVariables::iterator itVar;
+  TypeAliases::iterator itAlias;
   for(modIt = m_importedModules.begin(); modIt != m_importedModules.end(); ++modIt) {
     XQQuery *module = *modIt;
 
@@ -355,7 +358,24 @@ void XQQuery::staticResolution()
         if(existing) duplicateVariableError(existing, *itVar, mlistener);
         nsVars.put((void*)(*itVar)->getVariableLocalName(), *itVar);
       }
+
+      // Add the imported module's type aliases into my context
+      for(itAlias = module->m_aliases.begin(); itAlias != module->m_aliases.end(); ++itAlias) {
+        m_context->addTypeAlias(*itAlias);
+      }
     }
+  }
+
+  // Run staticResolutionStage1 on the type aliases to resolve their names -
+  // then add them to the context
+  for(itAlias = m_aliases.begin(); itAlias != m_aliases.end(); ++itAlias) {
+    (*itAlias)->resolveName(m_context);
+    m_context->addTypeAlias(*itAlias);
+  }
+
+  // Run staticResolutionStage2 on the type aliases to resolve their SequenceTypes
+  for(itAlias = m_aliases.begin(); itAlias != m_aliases.end(); ++itAlias) {
+    (*itAlias)->staticResolution(m_context);
   }
 
   // Run staticResolutionStage1 on the user defined functions,
@@ -448,7 +468,9 @@ void XQQuery::staticTyping(StaticTyper *styper)
     for(; module; module = module->getNext()) {
       for(varIt = module->m_userDefVars.begin(); varIt != module->m_userDefVars.end(); ++varIt) {
         varStore->declareGlobalVar((*varIt)->getVariableURI(), (*varIt)->getVariableLocalName(),
-                                   (*varIt)->getStaticAnalysis(), *varIt);
+                                   VariableType((*varIt)->getStaticAnalysis().getProperties(),
+                                                &(*varIt)->getStaticAnalysis().getStaticType(),
+                                                *varIt));
       }
     }
   }
@@ -457,7 +479,9 @@ void XQQuery::staticTyping(StaticTyper *styper)
   for(varIt = m_userDefVars.begin(); varIt != m_userDefVars.end(); ++varIt) {
     (*varIt)->resetStaticTypingOnce();
     varStore->declareGlobalVar((*varIt)->getVariableURI(), (*varIt)->getVariableLocalName(),
-                               (*varIt)->getStaticAnalysis(), *varIt);
+                               VariableType((*varIt)->getStaticAnalysis().getProperties(),
+                                            &(*varIt)->getStaticAnalysis().getStaticType(),
+                                            *varIt));
   }
 
   UserFunctions::const_iterator i, j;
@@ -538,6 +562,11 @@ void XQQuery::addDelayedFunction(const XMLCh *uri, const XMLCh *name, size_t num
 void XQQuery::addVariable(XQGlobalVariable* varDef)
 {
   m_userDefVars.push_back(varDef);
+}
+
+void XQQuery::addTypeAlias(XQTypeAlias *alias)
+{
+  m_aliases.push_back(alias);
 }
 
 void XQQuery::setIsLibraryModule(bool bIsModule/*=true*/)

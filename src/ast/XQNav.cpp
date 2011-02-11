@@ -383,7 +383,8 @@ Item::Ptr NavStepResult::next(DynamicContext *context)
 
 IntermediateStepCheckResult::IntermediateStepCheckResult(const LocationInfo *o, const Result &parent)
   : ResultImpl(o),
-    parent_(parent)
+    parent_(parent),
+    state_(NODES_OR_TUPLES)
 {
 }
 
@@ -392,9 +393,26 @@ Item::Ptr IntermediateStepCheckResult::next(DynamicContext *context)
   Item::Ptr result = parent_->next(context);
 
   // Check it's a node
-  if(!result.isNull() && result->getType() != Item::NODE) {
-    XQThrow(TypeErrorException,X("NavStepResult::next"),
-             X("The result of a step expression (StepExpr) is not a sequence of nodes [err:XPTY0019]"));
+  if(!result.isNull()) {
+    switch(state_) {
+    case NODES_OR_TUPLES:
+      if(result->getType() != Item::NODE && result->getType() != Item::TUPLE)
+        XQThrow(TypeErrorException,X("NavStepResult::next"),
+                X("The result of a step expression (StepExpr) is not a sequence of nodes or tuples [err:XPTY0019]"));
+      if(result->getType() == Item::NODE) state_ = NODES;
+      else state_ = TUPLES;
+      break;
+    case NODES:
+      if(result->getType() != Item::NODE)
+        XQThrow(TypeErrorException,X("NavStepResult::next"),
+                X("The result of a step expression (StepExpr) is not a sequence of nodes [err:XPTY0019]"));
+      break;
+    case TUPLES:
+      if(result->getType() != Item::TUPLE)
+        XQThrow(TypeErrorException,X("NavStepResult::next"),
+                X("The result of a step expression (StepExpr) is not a sequence of tuples [err:XPTY0019]"));
+      break;
+    }
   }
 
   return result;

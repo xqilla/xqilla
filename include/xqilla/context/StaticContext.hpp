@@ -41,6 +41,7 @@ class MessageListener;
 class ExternalFunction;
 class XQillaConfiguration;
 class XQUserFunction;
+class XQTypeAlias;
 class XQillaNSResolver;
 class ASTNode;
 
@@ -164,6 +165,11 @@ public:
   virtual void setXMLEntityResolver(XERCES_CPP_NAMESPACE_QUALIFIER XMLEntityResolver* const handler) = 0;
   /** Returns the entity resolver currently set */
   virtual XERCES_CPP_NAMESPACE_QUALIFIER XMLEntityResolver* getXMLEntityResolver() const = 0;
+
+  /** Adds a type alias to the context */
+  virtual void addTypeAlias(XQTypeAlias *alias) = 0;
+  /** Retrieve a type alias with the given name, or 0 is none exists */
+  virtual const XQTypeAlias *getTypeAlias(const XMLCh *uri, const XMLCh *name) const = 0;
 
   /** Register a callback object for resolving module URIs */
   virtual void setModuleResolver(ModuleResolver *resolver) = 0;

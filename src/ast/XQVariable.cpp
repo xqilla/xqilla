@@ -85,8 +85,8 @@ ASTNode *XQVariable::staticTypingImpl(StaticContext *context)
 
   _src.clear();
 
-  const StaticAnalysis *var_src = context->getVariableTypeStore()->getVar(_uri, _name, &_global);
-  if(var_src == NULL || (var_src->getProperties() & StaticAnalysis::UNDEFINEDVAR)!=0) {
+  const VariableType *vtype = context->getVariableTypeStore()->getVar(_uri, _name);
+  if(vtype == NULL) {
     XMLBuffer errMsg;
     errMsg.append(X("A variable called {"));
     errMsg.append(_uri);
@@ -95,9 +95,10 @@ ASTNode *XQVariable::staticTypingImpl(StaticContext *context)
     errMsg.append(X(" does not exist [err:XPST0008]"));
     XQThrow(StaticErrorException, X("XQVariable::staticResolution"), errMsg.getRawBuffer());
   }
-  _src.setProperties(var_src->getProperties() & ~(StaticAnalysis::SUBTREE|StaticAnalysis::SAMEDOC));
-  _src.getStaticType() = var_src->getStaticType();
+  _src.setProperties(vtype->properties & ~(StaticAnalysis::SUBTREE|StaticAnalysis::SAMEDOC));
+  _src.getStaticType() = *vtype->type;
   _src.variableUsed(_uri, _name);
+  _global = vtype->global;
 
   return this;
 }

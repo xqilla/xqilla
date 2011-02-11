@@ -32,7 +32,7 @@ public:
 
   const XMLCh *qname_, *uri_, *name_;
 
-  StaticAnalysis src_;
+  StaticType type_;
 
   ASTNode *expr_;
 

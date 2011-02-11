@@ -417,6 +417,44 @@ public:
     swap(tmp);
   }
 
+  void swap(HashMap &o)
+  {
+    Bucket *b;
+    size_t s;
+    bool bl;
+    XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *m;
+    char space[sizeof(inlineBuckets_)];
+
+    b = buckets_; buckets_ = o.buckets_; o.buckets_ = b;
+    b = lastKnownEmpty_; lastKnownEmpty_ = o.lastKnownEmpty_; o.lastKnownEmpty_ = b;
+
+    if(buckets_ == (Bucket*)o.inlineBuckets_ ||
+       o.buckets_ == (Bucket*)inlineBuckets_) {
+      memcpy(space, inlineBuckets_, sizeof(inlineBuckets_));
+
+      if(buckets_ == (Bucket*)o.inlineBuckets_) {
+        memcpy(inlineBuckets_, o.inlineBuckets_, sizeof(inlineBuckets_));
+        buckets_ = (Bucket*)inlineBuckets_;
+        lastKnownEmpty_ = lastKnownEmpty_ -
+          ((Bucket*)o.inlineBuckets_) + (Bucket*)inlineBuckets_;
+      }
+      if(o.buckets_ == (Bucket*)inlineBuckets_) {
+        memcpy(o.inlineBuckets_, space, sizeof(inlineBuckets_));
+        o.buckets_ = (Bucket*)o.inlineBuckets_;
+        o.lastKnownEmpty_ = o.lastKnownEmpty_ -
+          ((Bucket*)inlineBuckets_) + (Bucket*)o.inlineBuckets_;
+      }
+
+    }
+
+    s = capacity_; capacity_ = o.capacity_; o.capacity_ = s;
+    s = attic_; attic_ = o.attic_; o.attic_ = s;
+    s = count_; count_ = o.count_; o.count_ = s;
+    s = deleted_; deleted_ = o.deleted_; o.deleted_ = s;
+    bl = resizable_; resizable_ = o.resizable_; o.resizable_ = bl;
+    m = mm_; mm_ = o.mm_; o.mm_ = m;
+  }
+
   void printDebug(std::ostream &out) const
   {
     size_t links = 0;
@@ -516,44 +554,6 @@ private:
       if(s->state == Bucket::OCCUPIED)
         do_insert(s->key, s->value, s->hash, overwrite);
     }
-  }
-
-  void swap(HashMap &o)
-  {
-    Bucket *b;
-    size_t s;
-    bool bl;
-    XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *m;
-    char space[sizeof(inlineBuckets_)];
-
-    b = buckets_; buckets_ = o.buckets_; o.buckets_ = b;
-    b = lastKnownEmpty_; lastKnownEmpty_ = o.lastKnownEmpty_; o.lastKnownEmpty_ = b;
-
-    if(buckets_ == (Bucket*)o.inlineBuckets_ ||
-       o.buckets_ == (Bucket*)inlineBuckets_) {
-      memcpy(space, inlineBuckets_, sizeof(inlineBuckets_));
-
-      if(buckets_ == (Bucket*)o.inlineBuckets_) {
-        memcpy(inlineBuckets_, o.inlineBuckets_, sizeof(inlineBuckets_));
-        buckets_ = (Bucket*)inlineBuckets_;
-        lastKnownEmpty_ = lastKnownEmpty_ -
-          ((Bucket*)o.inlineBuckets_) + (Bucket*)inlineBuckets_;
-      }
-      if(o.buckets_ == (Bucket*)inlineBuckets_) {
-        memcpy(o.inlineBuckets_, space, sizeof(inlineBuckets_));
-        o.buckets_ = (Bucket*)o.inlineBuckets_;
-        o.lastKnownEmpty_ = o.lastKnownEmpty_ -
-          ((Bucket*)inlineBuckets_) + (Bucket*)o.inlineBuckets_;
-      }
-
-    }
-
-    s = capacity_; capacity_ = o.capacity_; o.capacity_ = s;
-    s = attic_; attic_ = o.attic_; o.attic_ = s;
-    s = count_; count_ = o.count_; o.count_ = s;
-    s = deleted_; deleted_ = o.deleted_; o.deleted_ = s;
-    bl = resizable_; resizable_ = o.resizable_; o.resizable_ = bl;
-    m = mm_; mm_ = o.mm_; o.mm_ = m;
   }
 
   Bucket *buckets_;

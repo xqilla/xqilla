@@ -55,11 +55,8 @@ public:
 
   void setUnstable() { modifiers_ = (Modifiers)(modifiers_ | UNSTABLE); }
 
-  const StaticAnalysis &getUsedSRC() const { return usedSrc_; }
-
   virtual TupleNode *staticResolution(StaticContext *context);
   virtual TupleNode *staticTypingImpl(StaticContext *context);
-  virtual TupleNode *staticTypingTeardown(StaticContext *context, StaticAnalysis &usedSrc);
 
   virtual TupleResult::Ptr createResult(DynamicContext* context) const;
 
@@ -67,7 +64,6 @@ private:
   ASTNode *expr_;
   Modifiers modifiers_;
   Collation *collation_;
-  StaticAnalysis usedSrc_;
 };
 
 #endif

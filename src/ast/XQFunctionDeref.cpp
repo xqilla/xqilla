@@ -83,6 +83,7 @@ ASTNode *XQFunctionDeref::staticTypingImpl(StaticContext *context)
       if((*i)->getFunctionSignature()) {
         if((*i)->getFunctionSignature()->numArgs() == numArgs) {
           StaticType tmp((*i)->getFunctionSignature()->returnType, BasicMemoryManager::get());
+          tmp.multiply(0,1);
           _src.getStaticType().typeUnion(tmp);
         }
       } else {
@@ -110,7 +111,10 @@ public:
   virtual Item::Ptr nextOrTail(Result &tail, DynamicContext *context)
   {
     FunctionRef::Ptr func = (FunctionRef*)ast_->getExpression()->createResult(context)->next(context).get();
-    if(func.isNull()) return 0;
+    if(func.isNull()) {
+      tail = 0;
+      return 0;
+    }
 
     VectorOfResults args;
     if(ast_->getArguments()) {

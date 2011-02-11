@@ -20,9 +20,15 @@
 #ifndef XQGLOBALVARIABLE_HPP
 #define XQGLOBALVARIABLE_HPP
 
-#include <xqilla/ast/ASTNodeImpl.hpp>
+#include <xqilla/ast/LocationInfo.hpp>
+#include <xqilla/ast/StaticAnalysis.hpp>
 
 class SequenceType;
+class ASTNode;
+class XPath2MemoryManager;
+class DynamicContext;
+class StaticContext;
+class StaticTyper;
 
 class XQILLA_API XQGlobalVariable : public LocationInfo
 {

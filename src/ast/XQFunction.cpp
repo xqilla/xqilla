@@ -121,7 +121,7 @@ void XQFunction::parseSignature(StaticContext *context)
     if(signature_->argSpecs) {
       // If the signature has too many arguments, remove some
       while(signature_->argSpecs->size() > _args.size()) {
-        signature_->argSpecs->back()->release(mm);
+        signature_->argSpecs->back()->release();
         signature_->argSpecs->pop_back();
       }
 

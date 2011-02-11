@@ -131,8 +131,7 @@ public:
     GROUPED      = 0x008, ///< Results are grouped by the document they come from
     SAMEDOC      = 0x010, ///< Results are from the same document as the context node
     ONENODE      = 0x020, ///< Only ever returns one node
-    SELF         = 0x040, ///< Only ever returns the context node
-    UNDEFINEDVAR = 0x080  ///< This is a variable that has been undefined
+    SELF         = 0x040  ///< Only ever returns the context node
   };
 
   unsigned int getProperties() const;

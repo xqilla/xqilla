@@ -73,6 +73,7 @@ src/ast/XQFunctionDeref.cpp \
 src/ast/XQPartialApply.cpp \
 src/ast/XQFunctionRef.cpp \
 src/ast/XQGlobalVariable.cpp \
+src/ast/XQTypeAlias.cpp \
 src/ast/XQOrderingChange.cpp \
 src/ast/XQQuantified.cpp \
 src/ast/XQValidate.cpp \
@@ -81,6 +82,8 @@ src/ast/ConvertFunctionArg.cpp \
 src/ast/XQDocumentOrder.cpp \
 src/ast/XQPredicate.cpp \
 src/ast/XQReturn.cpp \
+src/ast/XQTupleConstructor.cpp \
+src/ast/XQTupleMember.cpp \
 src/ast/TupleNode.cpp \
 src/ast/ContextTuple.cpp \
 src/ast/ForTuple.cpp \
@@ -275,6 +278,7 @@ src/items/impl/ATUntypedAtomicImpl.cpp \
 src/items/impl/ATUntypedAtomicImpl.hpp \
 src/items/impl/FunctionRefImpl.cpp \
 src/items/impl/FunctionRefImpl.hpp \
+src/items/impl/TupleImpl.cpp \
 src/items/DatatypeFactory.cpp \
 src/items/DatatypeFactoryTemplate.hpp \
 src/items/DatatypeLookup.cpp \

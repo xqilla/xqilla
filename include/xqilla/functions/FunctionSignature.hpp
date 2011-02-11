@@ -30,29 +30,37 @@ public:
   ArgumentSpec(const XMLCh *qname, SequenceType *type, XPath2MemoryManager *memMgr);
   ArgumentSpec(const ArgumentSpec *o, XPath2MemoryManager *memMgr);
 
-  void release(XPath2MemoryManager *mm);
+  void release();
 
   const XMLCh *getURI() const { return uri_; }
-  void setURI(const XMLCh *uri) { uri_ = uri; }
+  void setURI(const XMLCh *uri);
   const XMLCh *getName() const { return name_; }
-  void setName(const XMLCh *name) { name_ = name; }
+  void setName(const XMLCh *name);
   const XMLCh *getQName() const { return qname_; }
   void setQName(const XMLCh *qname) { qname_ = qname; }
+  const XMLCh *getURIName() const { return uriname_; }
   SequenceType *getType() const { return seqType_; }
   void setType(SequenceType *type) { seqType_ = type; }
 
   bool isUsed() const { return used_; }
   void setNotUsed() { used_ = false; }
 
-  const StaticAnalysis &getStaticAnalysis() const { return src_; }
+  unsigned getProperties() const { return properties_; }
+  const StaticType &getStaticType() const { return type_; }
+
+  unsigned getIndex() const { return index_; }
+  void setIndex(unsigned i) { index_ = i; }
 
   void staticResolution(StaticContext* context);
 
 private:
-  const XMLCh *qname_, *uri_, *name_;
+  const XMLCh *qname_, *uri_, *name_, *uriname_;
   bool used_;
   SequenceType *seqType_;
-  StaticAnalysis src_;
+  unsigned properties_;
+  StaticType type_;
+  unsigned index_;
+  XPath2MemoryManager *mm_;
 };
 
 typedef std::vector<ArgumentSpec*,XQillaAllocator<ArgumentSpec*> > ArgumentSpecs;

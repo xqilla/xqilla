@@ -44,8 +44,6 @@ XQSequence *XQSequence::constantFold(Result &result, DynamicContext *context, XP
     seq->addItem(XQLiteral::create(item, context, memMgr, location));
   }
 
-  // Don't specify a context for staticTyping
-  seq->staticTypingImpl(0);
   return seq;
 }
 

@@ -68,6 +68,7 @@ struct XQILLA_API TypeFlags
     YEAR_MONTH_DURATION = 0x20000000,
 
     FUNCTION            = 0x40000000,
+    TUPLE               = 0x80000000,
 
     NODE                = (DOCUMENT | ELEMENT | ATTRIBUTE | TEXT | PI | COMMENT |
                            NAMESPACE),
@@ -83,7 +84,7 @@ struct XQILLA_API TypeFlags
 
     ANY_ATOMIC_TYPE     = (TYPED_ATOMIC | UNTYPED_ATOMIC),
 
-    ITEM                = (NODE | ANY_ATOMIC_TYPE | FUNCTION),
+    ITEM                = (NODE | ANY_ATOMIC_TYPE | FUNCTION | TUPLE),
 
     EMPTY               = 0
   };
@@ -102,6 +103,7 @@ public:
   static const StaticType ITEM;
   static const StaticType ITEM_STAR;
   static const StaticType FUNCTION;
+  static const StaticType TUPLE;
 
   static const StaticType ANY_ATOMIC_TYPE;
   static const StaticType UNTYPED_ATOMIC;
@@ -141,6 +143,8 @@ public:
 
   /// Constructor for an empty type
   StaticType(XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *mm);
+  /// "Copy" constructor
+  StaticType(const StaticType &o, XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *mm);
   // Constructor for single type
   StaticType(const ItemType *type, XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *mm);
   // Constructor for a range of types

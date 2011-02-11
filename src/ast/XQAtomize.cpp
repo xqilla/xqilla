@@ -76,8 +76,8 @@ ASTNode *XQAtomize::staticTypingImpl(StaticContext *context)
     return substitute(expr_);
   }
 
-  // Remove function types
-  _src.getStaticType().typeExcept(TypeFlags::FUNCTION);
+  // Remove types other than node and atomic
+  _src.getStaticType().typeIntersect(TypeFlags::NODE | TypeFlags::ANY_ATOMIC_TYPE);
 
   if(doPSVI_) {
     if(_src.getStaticType().substitute(TypeFlags::ELEMENT | TypeFlags::ATTRIBUTE,

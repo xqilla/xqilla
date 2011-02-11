@@ -23,6 +23,7 @@
 #include <xqilla/ast/LocationInfo.hpp>
 #include <xqilla/context/VariableStore.hpp>
 #include <xqilla/framework/ReferenceCounted.hpp>
+#include <xqilla/items/impl/TupleImpl.hpp>
 
 class DynamicContext;
 
@@ -34,6 +35,15 @@ public:
   virtual ~TupleResult() {}
 
   virtual bool next(DynamicContext *context) = 0;
+
+  virtual Tuple::Ptr getTuple(DynamicContext *context) const
+  {
+    TupleImpl::Ptr result;
+    createTuple(context, 0, result);
+    return result;
+  }
+
+  virtual void createTuple(DynamicContext *context, size_t capacity, TupleImpl::Ptr &result) const = 0;
 
 protected:
   TupleResult(const LocationInfo *location)

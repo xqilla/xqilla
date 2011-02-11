@@ -37,7 +37,7 @@ XQMap::XQMap(ASTNode *arg1, ASTNode *arg2, XPath2MemoryManager* memMgr)
     arg2_(arg2),
     uri_(0),
     name_(0),
-    varSrc_(memMgr)
+    varType_(memMgr)
 {
 }
 
@@ -47,7 +47,7 @@ XQMap::XQMap(ASTNode *arg1, ASTNode *arg2, const XMLCh *uri, const XMLCh *name, 
     arg2_(arg2),
     uri_(uri),
     name_(name),
-    varSrc_(memMgr)
+    varType_(memMgr)
 {
 }
 

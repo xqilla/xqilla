@@ -41,7 +41,7 @@ CopyBinding::CopyBinding(XPath2MemoryManager* memMgr,
   : qname_(memMgr->getPooledString(variable)),
     uri_(0),
     name_(0),
-    src_(memMgr),
+    type_(memMgr),
     expr_(allValues)
 {
 }
@@ -50,7 +50,7 @@ CopyBinding::CopyBinding(XPath2MemoryManager* memMgr, const CopyBinding &o)
   : qname_(o.qname_),
     uri_(o.uri_),
     name_(o.name_),
-    src_(o.src_, memMgr),
+    type_(o.type_, memMgr),
     expr_(o.expr_)
 {
 }

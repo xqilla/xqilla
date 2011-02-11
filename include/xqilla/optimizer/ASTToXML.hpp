@@ -76,6 +76,7 @@ protected:
   virtual ASTNode *optimizeASTDebugHook(ASTDebugHook *item);
   virtual ASTNode *optimizeCallTemplate(XQCallTemplate *item);
   virtual ASTNode *optimizeApplyTemplates(XQApplyTemplates *item);
+  virtual ASTNode *optimizeTupleMember(XQTupleMember *item);
 
   virtual TupleNode *optimizeTupleNode(TupleNode *item);
   virtual TupleNode *optimizeForTuple(ForTuple *item);

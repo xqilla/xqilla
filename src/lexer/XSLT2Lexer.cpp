@@ -81,6 +81,7 @@ const XMLCh FOR_EACH_NAME[] = { 'f', 'o', 'r', '-', 'e', 'a', 'c', 'h', 0 };
 const XMLCh OUTPUT_NAME[] = { 'o', 'u', 't', 'p', 'u', 't', 0 };
 const XMLCh IMPORT_SCHEMA_NAME[] = { 'i', 'm', 'p', 'o', 'r', 't', '-', 's', 'c', 'h', 'e', 'm', 'a', 0 };
 const XMLCh ELEMENT_NAME[] = { 'e', 'l', 'e', 'm', 'e', 'n', 't', 0 };
+const XMLCh TYPE_ALIAS_NAME[] = { 't', 'y', 'p', 'e', '-', 'a', 'l', 'i', 'a', 's', 0 };
 
 const XMLCh VERSION_NAME[] = { 'v', 'e', 'r', 's', 'i', 'o', 'n', 0 };
 const XMLCh MATCH_NAME[] = { 'm', 'a', 't', 'c', 'h', 0 };
@@ -328,6 +329,12 @@ const AttrData IMPORT_SCHEMA_ATTR_DATA[] = {
   END_ATTR_DATA
 };
 
+const AttrData TYPE_ALIAS_ATTR_DATA[] = {
+  NAME_ATTR_DATA,
+  AS_ATTR_DATA,
+  END_ATTR_DATA
+};
+
 struct InstructionInfo
 {
   const XMLCh *name;
@@ -372,6 +379,7 @@ const InstructionInfo INSTRUCTION_INFO[] = {
   { IMPORT_SCHEMA_NAME,          _XSLT_IMPORT_SCHEMA_,          IMPORT_SCHEMA_ATTR_DATA,   InstructionInfo::DEFAULT  },
   { ELEMENT_NAME,                _XSLT_ELEMENT_,                ELEMENT_ATTR_DATA,         InstructionInfo::DEFAULT  },
   { NAMESPACE_NAME,              _XSLT_NAMESPACE_,              NAMESPACE_ATTR_DATA,       InstructionInfo::DEFAULT  },
+  { TYPE_ALIAS_NAME,             _XSLT_TYPE_ALIAS_,             TYPE_ALIAS_ATTR_DATA,      InstructionInfo::STRIP    },
   { 0, 0 }
 };
 

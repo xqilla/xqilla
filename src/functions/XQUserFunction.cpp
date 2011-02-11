@@ -544,7 +544,8 @@ void XQUserFunction::staticTyping(StaticContext *context, StaticTyper *styper)
     if(signature_->argSpecs) {
       ArgumentSpecs::iterator it;
       for(it = signature_->argSpecs->begin(); it != signature_->argSpecs->end (); ++it) {
-        varStore->declareVar((*it)->getURI(), (*it)->getName(), (*it)->getStaticAnalysis());
+        varStore->declareVar((*it)->getURI(), (*it)->getName(),
+                             VariableType((*it)->getProperties(), &(*it)->getStaticType(), 0));
       }
     }
   }
@@ -601,7 +602,8 @@ void XQUserFunction::staticTyping(StaticContext *context, StaticTyper *styper)
     if(signature_->argSpecs != 0) {
       ArgumentSpecs::const_iterator argIt;
       for(argIt = signature_->argSpecs->begin(); argIt != signature_->argSpecs->end(); ++argIt) {
-        varStore->declareVar((*argIt)->getURI(), (*argIt)->getName(), templateVarSrc);
+        varStore->declareVar((*argIt)->getURI(), (*argIt)->getName(),
+                             VariableType(0, &StaticType::ITEM, 0));
       }
     }
 

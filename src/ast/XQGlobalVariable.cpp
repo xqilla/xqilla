@@ -193,6 +193,11 @@ void XQGlobalVariable::staticTypingOnce(StaticContext* context, StaticTyper *sty
     // Static type the global variables from this module which we depend on
     GlobalVariables::iterator it = globalsUsed.begin();
     for(; it != globalsUsed.end(); ++it) {
+      if(*it == this) {
+        XQThrow(StaticErrorException,X("XQGlobalVariable::staticTypingOnce"),
+                X("The initializing expression of a global variable cannot reference itself [err:XPST0008]"));        
+      }
+
       // XQuery 1.0 doesn't allow forward references
       XQQuery *module = context->getModule();
       if(!module->getVersion11()) {
@@ -234,9 +239,6 @@ void XQGlobalVariable::staticTyping(StaticContext* context, StaticTyper *styper)
   if(m_Value != NULL) {
     XQUserFunction::staticTypeFunctionCalls(m_Value, context, styper);
 
-    // Add UNDEFINEDVAR to properties, since variables aren't in scope for themselves
-    _src.setProperties(_src.getProperties() | StaticAnalysis::UNDEFINEDVAR);
-
     m_Value = m_Value->staticTyping(context, styper);
     _src.copy(m_Value->getStaticAnalysis());
 
@@ -257,7 +259,8 @@ void XQGlobalVariable::staticTyping(StaticContext* context, StaticTyper *styper)
     _src.setProperties(0);
   }
 
-  varStore->declareGlobalVar(m_szURI, m_szLocalName, _src, this);
+  varStore->declareGlobalVar(m_szURI, m_szLocalName,
+                             VariableType(_src.getProperties(), &_src.getStaticType(), this));
 }
 
 const XMLCh* XQGlobalVariable::getVariableName() const

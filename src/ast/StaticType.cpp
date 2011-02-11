@@ -24,6 +24,7 @@
 #include "../config/xqilla_config.h"
 
 #include <xqilla/ast/StaticType.hpp>
+#include <xqilla/ast/XQTypeAlias.hpp>
 #include <xqilla/context/ItemFactory.hpp>
 #include <xqilla/context/StaticContext.hpp>
 #include <xqilla/utils/XPath2Utils.hpp>
@@ -38,6 +39,7 @@ const StaticType StaticType::EMPTY(BasicMemoryManager::get());
 const StaticType StaticType::ITEM(&ItemType::ITEM, BasicMemoryManager::get());
 const StaticType StaticType::ITEM_STAR(&ItemType::ITEM, 0, StaticType::UNLIMITED, BasicMemoryManager::get());
 const StaticType StaticType::FUNCTION(&ItemType::FUNCTION, BasicMemoryManager::get());
+const StaticType StaticType::TUPLE(&ItemType::TUPLE, BasicMemoryManager::get());
 const StaticType StaticType::ANY_ATOMIC_TYPE(&ItemType::ANY_ATOMIC_TYPE, BasicMemoryManager::get());
 const StaticType StaticType::UNTYPED_ATOMIC(&ItemType::UNTYPED_ATOMIC, BasicMemoryManager::get());
 const StaticType StaticType::STRING(&ItemType::STRING, BasicMemoryManager::get());
@@ -128,6 +130,8 @@ static inline TypeFlags::Enum flagsForItemType(const ItemType *type)
     return flagsForAtomicType(type->getPrimitiveType());
   case ItemType::TEST_FUNCTION:
     return TypeFlags::FUNCTION;
+  case ItemType::TEST_TUPLE:
+    return TypeFlags::TUPLE;
   }
 
   return TypeFlags::EMPTY;
@@ -135,6 +139,8 @@ static inline TypeFlags::Enum flagsForItemType(const ItemType *type)
 
 bool ItemType::intersects(const ItemType *b) const
 {
+  if(alias_) return alias_->getType()->intersects(b);
+
   TypeFlags::Enum aflags = flagsForItemType(this);
   TypeFlags::Enum bflags = flagsForItemType(b);
   return (aflags & bflags) != 0;
@@ -206,6 +212,7 @@ static void addItemTypesFromFlags(TypeFlags::Enum tflags, StaticType::ItemTypes 
   ADD_ITEMTYPE_FOR(UNTYPED_ATOMIC);
   ADD_ITEMTYPE_FOR(YEAR_MONTH_DURATION);
   ADD_ITEMTYPE_FOR(FUNCTION);
+  ADD_ITEMTYPE_FOR(TUPLE);
 }
 
 static inline bool intersectItemType(const ItemType *type, TypeFlags::Enum flags,
@@ -231,6 +238,14 @@ StaticType::StaticType(MemoryManager *mm)
     min_(0),
     max_(0)
 {
+}
+
+StaticType::StaticType(const StaticType &o, XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *mm)
+  : types_(XQillaAllocator<const ItemType*>(mm)),
+    min_(0),
+    max_(0)
+{
+  *this = o;
 }
 
 StaticType::StaticType(const ItemType *type, MemoryManager *mm)
@@ -471,7 +486,7 @@ void StaticType::typeToBuf(XMLBuffer &result) const
   ItemTypes::const_iterator i = types_.begin();
   for(; i != types_.end(); ++i) {
     if(count++) buf.append(X(" | "));
-    (*i)->toBuffer(buf);
+    (*i)->toBuffer(buf, true);
   }
   
   if(count > 1) {

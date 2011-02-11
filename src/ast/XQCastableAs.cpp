@@ -95,7 +95,7 @@ ASTNode* XQCastableAs::staticResolution(StaticContext *context)
     }
     catch(XQException &e) {}
 
-    return XQLiteral::create(dContext->getItemFactory()->createBoolean(result, dContext), dContext, mm, this)->staticResolution(context);
+    return XQLiteral::create(result, mm, this)->staticResolution(context);
   }
 
   _expr = new (mm) XQAtomize(_expr, mm);

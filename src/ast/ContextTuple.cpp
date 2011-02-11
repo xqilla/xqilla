@@ -28,13 +28,8 @@ TupleNode *ContextTuple::staticResolution(StaticContext *context)
 
 TupleNode *ContextTuple::staticTypingImpl(StaticContext *context)
 {
-  min_ = 1;
-  max_ = 1;
-  return this;
-}
-
-TupleNode *ContextTuple::staticTypingTeardown(StaticContext *context, StaticAnalysis &usedSrc)
-{
+  src_.clear();
+  src_.getStaticType() = StaticType::TUPLE;
   return this;
 }
 
@@ -63,6 +58,11 @@ public:
 
     varStore_ = context->getVariableStore();
     return true;
+  }
+
+  virtual void createTuple(DynamicContext *context, size_t capacity, TupleImpl::Ptr &result) const
+  {
+    result = new TupleImpl(capacity, context);
   }
 
 private:

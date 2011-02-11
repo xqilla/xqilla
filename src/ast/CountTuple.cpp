@@ -23,34 +23,24 @@
 #include <xqilla/utils/XPath2NSUtils.hpp>
 #include <xqilla/utils/XPath2Utils.hpp>
 #include <xqilla/context/ItemFactory.hpp>
+#include <xqilla/framework/BasicMemoryManager.hpp>
 
 CountTuple::CountTuple(TupleNode *parent, const XMLCh *varQName, XPath2MemoryManager *mm)
   : TupleNode(COUNT, parent, mm),
-    varQName_(varQName),
-    varURI_(0),
-    varName_(0),
-    varSrc_(mm)
+    var_(new (mm) ArgumentSpec(varQName, 0, mm))
 {
 }
 
-CountTuple::CountTuple(TupleNode *parent, const XMLCh *varURI, const XMLCh *varName, XPath2MemoryManager *mm)
+CountTuple::CountTuple(TupleNode *parent, const ArgumentSpec *var, XPath2MemoryManager *mm)
   : TupleNode(COUNT, parent, mm),
-    varQName_(0),
-    varURI_(varURI),
-    varName_(varName),
-    varSrc_(mm)
+    var_(new (mm) ArgumentSpec(var, mm))
 {
 }
 
 TupleNode *CountTuple::staticResolution(StaticContext *context)
 {
   parent_ = parent_->staticResolution(context);
-
-  if(varName_ == 0) {
-    varURI_ = context->getUriBoundToPrefix(XPath2NSUtils::getPrefix(varQName_, context->getMemoryManager()), this);
-    varName_ = XPath2NSUtils::getLocalName(varQName_);
-  }
-
+  var_->staticResolution(context);
   return this;
 }
 
@@ -83,24 +73,27 @@ TupleNode *CountTuple::staticTypingImpl(StaticContext *context)
     return tmp->staticTypingImpl(context);
   }
 
-  min_ = parent_->getMin();
-  max_ = parent_->getMax();
+  const StaticType &pType = parent_->getStaticAnalysis().getStaticType();
 
-  return this;
-}
+  assert(pType.getTypes().size() == 1);
+  const ItemType *pItemType = pType.getTypes()[0];
+  assert(pItemType->getItemTestType() == ItemType::TEST_TUPLE);
 
-TupleNode *CountTuple::staticTypingTeardown(StaticContext *context, StaticAnalysis &usedSrc)
-{
-  // Remove our binding variable from the StaticAnalysis data (removing it if it's not used)
-  if(varName_ && !usedSrc.removeVariable(varURI_, varName_)) {
-    varURI_ = 0;
-    varName_ = 0;
-  }
+  src_.clear();
 
-  parent_ = parent_->staticTypingTeardown(context, usedSrc);
+  TupleMembers *members = new (getMemoryManager()) TupleMembers(true, getMemoryManager());
+  const_cast<StaticType&>(var_->getStaticType()) = StaticType::DECIMAL;
+  members->put(var_->getURIName(), var_);
 
-  if(varName_ == 0)
-    return parent_;
+  TupleMembers *pMembers = const_cast<TupleMembers*>(pItemType->getTupleMembers());
+  if(pMembers) members->putAll(*pMembers);
+
+  ItemType *type = new (getMemoryManager()) ItemType(members, pItemType->getDocumentCache());
+  type->setLocationInfo(this);
+
+  src_.getStaticType() = type;
+  src_.getStaticType().setCardinality(pType.getMin(), pType.getMax());
+  src_.add(parent_->getStaticAnalysis());
 
   return this;
 }
@@ -140,6 +133,12 @@ public:
 
     posItem_ = context->getItemFactory()->createInteger(++position_, context);
     return true;
+  }
+
+  virtual void createTuple(DynamicContext *context, size_t capacity, TupleImpl::Ptr &result) const
+  {
+    parent_->createTuple(context, capacity + 1, result);
+    result->add(ast_->getVar()->getURIName(), posItem_);
   }
 
 private:

@@ -29,6 +29,7 @@
 #include <xqilla/runtime/Sequence.hpp>
 #include <xqilla/simple-api/XQilla.hpp>
 #include <xqilla/framework/ProxyMemoryManager.hpp>
+#include <xqilla/utils/HashMap.hpp>
 
 #include <xercesc/util/ValueHashTableOf.hpp>
 
@@ -184,6 +185,9 @@ public:
 
   virtual void setXMLEntityResolver(XERCES_CPP_NAMESPACE_QUALIFIER XMLEntityResolver* const handler);
   virtual XERCES_CPP_NAMESPACE_QUALIFIER XMLEntityResolver* getXMLEntityResolver() const;
+
+  virtual void addTypeAlias(XQTypeAlias *alias);
+  virtual const XQTypeAlias *getTypeAlias(const XMLCh *uri, const XMLCh *name) const;
 
   virtual void setModuleResolver(ModuleResolver *resolver);
   virtual ModuleResolver *getModuleResolver() const;
@@ -344,6 +348,10 @@ protected:
    * function signature specifies the static types of the function
    * parameters and the function result. */
   FunctionLookup* _functionTable;
+
+  typedef HashMap<const XMLCh*, XQTypeAlias*> TypeAliasMap;
+  /** The type alias that are declared or imported */
+  TypeAliasMap _aliases;
 
   /** In-scope collations. This is a set of  (URI, collation) pairs. It
    * defines the names of the collations that are available for use in

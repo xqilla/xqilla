@@ -65,7 +65,8 @@ ASTNode *FunctionCount::staticTypingImpl(StaticContext *context)
       try {
         AutoDelete<DynamicContext> dContext(context->createDynamicContext());
         dContext->setMemoryManager(mm);
-        return XQLiteral::create(mm->createInteger(sType.getMin()), dContext, mm, this);
+        return XQLiteral::create(mm->createInteger(sType.getMin()), dContext, mm, this)->
+          staticResolution(context);;
       }
       catch(XQException &ex) {
         // Constant folding failed

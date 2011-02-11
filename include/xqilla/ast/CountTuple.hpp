@@ -21,31 +21,27 @@
 #define COUNTTUPLE_HPP
 
 #include <xqilla/ast/TupleNode.hpp>
-#include <xqilla/ast/StaticAnalysis.hpp>
+#include <xqilla/functions/FunctionSignature.hpp>
 
 class XQILLA_API CountTuple : public TupleNode
 {
 public:
   CountTuple(TupleNode *parent, const XMLCh *varQName, XPath2MemoryManager *mm);
-  CountTuple(TupleNode *parent, const XMLCh *varURI, const XMLCh *varName, XPath2MemoryManager *mm);
+  CountTuple(TupleNode *parent, const ArgumentSpec *var, XPath2MemoryManager *mm);
 
-  const XMLCh *getVarQName() const { return varQName_; }
-  const XMLCh *getVarURI() const { return varURI_; }
-  void setVarURI(const XMLCh *uri) { varURI_ = uri; }
-  const XMLCh *getVarName() const { return varName_; }
-  void setVarName(const XMLCh *name) { varName_ = name; }
-
-  const StaticAnalysis &getVarSRC() const { return varSrc_; }
+  const XMLCh *getVarQName() const { return var_->getQName(); }
+  const XMLCh *getVarURI() const { return var_->getURI(); }
+  const XMLCh *getVarName() const { return var_->getName(); }
+  const ArgumentSpec *getVar() const { return var_; }
 
   virtual TupleNode *staticResolution(StaticContext *context);
   virtual TupleNode *staticTypingImpl(StaticContext *context);
-  virtual TupleNode *staticTypingTeardown(StaticContext *context, StaticAnalysis &usedSrc);
 
   virtual TupleResult::Ptr createResult(DynamicContext* context) const;
 
 private:
-  const XMLCh *varQName_, *varURI_, *varName_;
-  StaticAnalysis varSrc_;
+  ArgumentSpec *var_;
+  const XMLCh *uriname_;
 };
 
 #endif

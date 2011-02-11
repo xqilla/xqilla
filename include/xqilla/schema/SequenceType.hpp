@@ -25,9 +25,11 @@
 #include <xqilla/items/AnyAtomicType.hpp>
 #include <xqilla/items/Node.hpp>
 #include <xqilla/items/FunctionRef.hpp>
+#include <xqilla/items/Tuple.hpp>
 #include <xqilla/parser/QName.hpp>
 #include <xqilla/runtime/Result.hpp>
 #include <xqilla/runtime/ResultImpl.hpp>
+#include <xqilla/utils/HashMap.hpp>
 
 class Item;
 class XPath2MemoryManager;
@@ -36,6 +38,10 @@ class FunctionSignature;
 class ASTNode;
 class StaticType;
 class DocumentCache;
+class XQTypeAlias;
+class ArgumentSpec;
+
+typedef HashMap<const XMLCh*, ArgumentSpec*> TupleMembers;
 
 class XQILLA_API ItemType : public LocationInfo
 {
@@ -77,6 +83,7 @@ public:
   static const ItemType NAMESPACE;
 
   static const ItemType FUNCTION;
+  static const ItemType TUPLE;
 
   /**
    * The type of item that this sequence can hold.
@@ -95,13 +102,16 @@ public:
     TEST_NAMESPACE,    ///< namespace node
     TEST_ANYTHING,     ///< any item
     TEST_ATOMIC_TYPE,  ///< the named atomic type
-    TEST_FUNCTION      ///< function
+    TEST_FUNCTION,     ///< function
+    TEST_TUPLE         ///< tuple
   } ItemTestType;
 
   // Normal constructor
   ItemType(ItemTestType test, QualifiedName* name=NULL, QualifiedName* type=NULL);
   // Constructor for a function
   ItemType(FunctionSignature *signature, const DocumentCache *dc);
+  // Constructor for a tuple
+  ItemType(const TupleMembers *members, const DocumentCache *dc);
 
   // Constructor for static const ItemTypes
   ItemType(ItemTestType test, const DocumentCache *dc);
@@ -117,38 +127,44 @@ public:
   ItemTestType getItemTestType() const;
   void setItemTestType(ItemTestType t);
 
-  bool isPrimitive() const { return m_primitive; }
-  AnyAtomicType::AtomicObjectType getPrimitiveType() const { return m_primitiveType; }
+  bool isPrimitive() const;
+  AnyAtomicType::AtomicObjectType getPrimitiveType() const;
 
   void setAllowNilled(bool value);
   bool getAllowNilled() const;
 
-  const XMLCh *getTypePrefix() const { return m_TypePrefix; }
-  const XMLCh *getTypeURI() const { return m_TypeURI; }
-  const XMLCh *getTypeName() const { return m_TypeName; }
-  const XMLCh *getNamePrefix() const { return m_NamePrefix; }
-  const XMLCh *getNameURI() const { return m_NameURI; }
-  const XMLCh *getNameName() const { return m_NameName; }
+  const XMLCh *getTypePrefix() const;
+  const XMLCh *getTypeURI() const;
+  const XMLCh *getTypeName() const;
+  const XMLCh *getNamePrefix() const;
+  const XMLCh *getNameURI() const;
+  const XMLCh *getNameName() const;
 
-  FunctionSignature *getFunctionSignature() const { return signature_; }
-  const DocumentCache *getDocumentCache() const { return dc_; }
+  FunctionSignature *getFunctionSignature() const;
+  const TupleMembers *getTupleMembers() const;
+  const DocumentCache *getDocumentCache() const;
 
   bool matches(const Item::Ptr &toBeTested, DynamicContext* context) const;
   bool matches(const Node::Ptr &toBeTested, DynamicContext* context) const;
   bool matches(const FunctionRef::Ptr &toBeTested) const;
+  bool matches(const Tuple::Ptr &tuple, DynamicContext* context) const;
   bool matches(const FunctionSignature *sig) const;
-  bool matchesNameType(const Item::Ptr &toBeTested, const DynamicContext* context) const;
-  bool matchesSchemaElement(const Node::Ptr &toBeTested, const DynamicContext* context) const;
 
   bool isSubtypeOf(const ItemType *toBeTested) const;
   bool intersects(const ItemType *toBeTested) const;
 
-  void staticResolution(StaticContext *context, const LocationInfo *location);
+  ItemType *staticResolution(StaticContext *context, const LocationInfo *location);
 
-  void toBuffer(XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer &buffer, bool addBrackets = false) const;
+  void toBuffer(XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer &buffer, bool forStaticType = false,
+                bool addBrackets = false) const;
 
 private:
+  bool matchesNameType(const Item::Ptr &toBeTested, const DynamicContext* context) const;
+  bool matchesSchemaElement(const Node::Ptr &toBeTested, const DynamicContext* context) const;
   bool isSubtypeOfNameType(const ItemType *toBeTested) const;
+
+  // The type alias that gives us our real ItemType
+  const XQTypeAlias *alias_;
 
   // The ItemTestType of this ItemType
   ItemTestType m_nTestType;
@@ -164,8 +180,11 @@ private:
   // allow elements having the xsi:nil="true" attribute
   bool m_bAllowNil;
 
-  // The signature of a the required function
+  // The signature of the required function
   FunctionSignature *signature_;
+
+  // The tuple members
+  const TupleMembers *tupleMembers_;
 
   const DocumentCache *dc_;
   bool staticallyResolved_;
@@ -203,11 +222,6 @@ public:
    */
   virtual ~SequenceType();
 
-  /** 
-   * Setter for m_pItemType.
-   */ 
-  void setItemType(ItemType* itemType);
-
   /**
    * Setter for m_nOccurrencer.
    */
@@ -223,7 +237,7 @@ public:
 
   Result convertFunctionArg(const Result &input, DynamicContext *context, bool xpath1Compat,
                             const LocationInfo *location, const XMLCh *errorCode);
-  ASTNode *convertFunctionArg(ASTNode *arg, StaticContext *context, bool numericFunction,
+  ASTNode *convertFunctionArg(ASTNode *arg, const StaticContext *context, bool numericFunction,
                               const LocationInfo *location);
 
   enum TypeMatchEnum {

@@ -34,6 +34,10 @@
 #include <xqilla/ast/XQSequence.hpp>
 #include <xqilla/ast/XQVariable.hpp>
 #include <xqilla/ast/XQCastAs.hpp>
+#include <xqilla/ast/XQTypeAlias.hpp>
+#include <xqilla/ast/LetTuple.hpp>
+#include <xqilla/ast/ContextTuple.hpp>
+#include <xqilla/ast/XQTupleConstructor.hpp>
 #include <xqilla/utils/XPath2NSUtils.hpp>
 #include <xqilla/utils/XPath2Utils.hpp>
 #include <xqilla/utils/ContextUtils.hpp>
@@ -65,6 +69,7 @@ XQContextImpl::XQContextImpl(XQillaConfiguration *conf, XQilla::Language languag
     _templateNameMap(29, false, &_internalMM),
     _templates(XQillaAllocator<XQUserFunction*>(&_internalMM)),
     _functionTable(0),
+    _aliases(17, true, &_internalMM),
     _collations(XQillaAllocator<Collation*>(&_internalMM)),
     _constructionMode(CONSTRUCTION_MODE_PRESERVE),
     _bPreserveBoundarySpace(false),
@@ -263,14 +268,13 @@ DynamicContext *XQContextImpl::createDebugQueryContext(const Item::Ptr &contextI
   XPath2MemoryManager *rmm = result->getMemoryManager();
 
   // For simplicity we'll make them all have type item()*
-  StaticAnalysis *src = new (rmm) StaticAnalysis(rmm);
-  src->getStaticType() = StaticType::ITEM_STAR;
+  VariableType vtype(0, &StaticType::ITEM_STAR, 0);
 
   std::vector<std::pair<const XMLCh *, const XMLCh*> > inScopeVars;
   variables->getInScopeVariables(inScopeVars);
   std::vector<std::pair<const XMLCh *, const XMLCh*> >::iterator i = inScopeVars.begin();
   for(; i != inScopeVars.end(); ++i) {
-    store->declareGlobalVar(i->first, i->second, *src, 0);
+    store->declareGlobalVar(i->first, i->second, vtype);
   }
 
   // Set up all the in-scope namespaces
@@ -559,6 +563,20 @@ void XQContextImpl::removeCustomFunction(FuncFactory *func)
     _functionTable->removeFunction(func);
 }
 
+void XQContextImpl::addTypeAlias(XQTypeAlias *alias)
+{
+  _aliases.put(alias->getURINameHash(), alias);
+}
+
+const XQTypeAlias *XQContextImpl::getTypeAlias(const XMLCh *uri, const XMLCh *name) const
+{
+  XMLBuffer buf;
+  XPath2NSUtils::makeURIName(uri, name, buf);
+
+  TypeAliasMap::iterator i = const_cast<TypeAliasMap&>(_aliases).find(buf.getRawBuffer());
+  return i == const_cast<TypeAliasMap&>(_aliases).end() ? 0 : i.getValue();
+}
+
 void XQContextImpl::setContextSize(size_t size)
 {
   _contextSize = size;
@@ -690,6 +708,23 @@ Collation* XQContextImpl::getDefaultCollation(const LocationInfo *location) cons
   return getCollation(_defaultCollation, location);
 }
 
+static inline ASTNode *createCastFunction(ASTNode *expr, ItemType *itemType, const DynamicContext *context, const LocationInfo *location)
+{
+  if((XPath2Utils::equals(itemType->getTypeName(), XMLUni::fgNotationString) ||
+      XPath2Utils::equals(itemType->getTypeName(), AnyAtomicType::fgDT_ANYATOMICTYPE)) &&
+     XPath2Utils::equals(itemType->getTypeURI(), SchemaSymbols::fgURI_SCHEMAFORSCHEMA))
+    return 0;
+
+  XPath2MemoryManager *mm = context->getMemoryManager();
+
+  SequenceType *seqType = new (mm) SequenceType(itemType, SequenceType::QUESTION_MARK);
+  seqType->setLocationInfo(location);
+
+  ASTNode *functionImpl = new (mm) XQCastAs(expr, seqType, mm);
+  functionImpl->setLocationInfo(location);
+  return functionImpl;
+}
+
 ASTNode *XQContextImpl::lookUpFunction(const XMLCh *uri, const XMLCh* name, const VectorOfASTNodes &v, const LocationInfo *location) const
 {
   ASTNode* functionImpl = FunctionLookup::lookUpGlobalFunction(uri, name, v, getMemoryManager(), _functionTable);
@@ -698,32 +733,59 @@ ASTNode *XQContextImpl::lookUpFunction(const XMLCh *uri, const XMLCh* name, cons
     return functionImpl;
   }
 
-  if(v.size() != 1) return 0;
-
-  // maybe it's not a function, but a datatype
-  try {
-    bool isPrimitive;
-    _itemFactory->getPrimitiveTypeIndex(uri, name, isPrimitive);
-  }
-  catch(TypeNotFoundException&) {
-    // ignore this exception: it means the type has not been found
-    return 0;
-  }
-
-  if((XPath2Utils::equals(name, XMLUni::fgNotationString) || XPath2Utils::equals(name, AnyAtomicType::fgDT_ANYATOMICTYPE)) &&
-     XPath2Utils::equals(uri, SchemaSymbols::fgURI_SCHEMAFORSCHEMA))
-    return 0;
-
   XPath2MemoryManager *mm = getMemoryManager();
 
-  ItemType *itemType = new (mm) ItemType(AnyAtomicType::NumAtomicObjectTypes, false, uri, name, 0);
-  itemType->setLocationInfo(location);
-  SequenceType *seqType = new (mm) SequenceType(itemType, SequenceType::QUESTION_MARK);
-  seqType->setLocationInfo(location);
+  // Maybe it's a type alias
+  const XQTypeAlias *alias = getTypeAlias(uri, name);
+  if(alias) {
+    assert(alias->isResolved());
 
-  functionImpl = new (mm) XQCastAs(v[0], seqType, mm);
-  functionImpl->setLocationInfo(location);
-  return functionImpl;
+    switch(alias->getType()->getItemTestType()) {
+    case ItemType::TEST_ATOMIC_TYPE:
+      functionImpl = createCastFunction(v[0], alias->getType(), this, location);
+      if(functionImpl) return functionImpl;
+      break;
+    case ItemType::TEST_TUPLE: {
+      // Tuple constructor function
+      TupleMembers *members = const_cast<TupleMembers*>(alias->getType()->getTupleMembers());
+      if(members->size() != v.size()) break;
+
+      TupleNode *tuple = new (mm) ContextTuple(mm);
+      tuple->setLocationInfo(location);
+      
+      TupleMembers::iterator it = members->begin();
+      for(; it != members->end(); ++it) {
+        ASTNode *arg = v[it.getValue()->getIndex()];
+        arg = it.getValue()->getType()->convertFunctionArg(arg, this, /*numericFunction*/false, location);
+        tuple = new (mm) LetTuple(tuple, it.getValue()->getURI(), it.getValue()->getName(), arg, mm);
+        tuple->setLocationInfo(location);
+      }
+
+      ASTNode *result = new (mm) XQTupleConstructor(tuple, mm);
+      result->setLocationInfo(location);
+      return result;
+    }
+    default: break;
+    }
+  }
+
+  // maybe it's not a function, but a datatype
+  if(v.size() == 1) {
+    try {
+      bool isPrimitive;
+      AnyAtomicType::AtomicObjectType primitiveType = _itemFactory->getPrimitiveTypeIndex(uri, name, isPrimitive);
+
+      ItemType *itemType = new (mm) ItemType(primitiveType, isPrimitive, uri, name, _docCache);
+      itemType->setLocationInfo(location);
+
+      return createCastFunction(v[0], itemType, this, location);
+    }
+    catch(TypeNotFoundException&) {
+      // ignore this exception: it means the type has not been found
+    }
+  }
+
+  return 0;
 }
 
 void XQContextImpl::addExternalFunction(const ExternalFunction *func)

@@ -97,6 +97,8 @@ public:
     COPY_OF,
     COPY,
     MAP,
+    TUPLE_CONSTRUCTOR,
+    TUPLE_MEMBER,
 
     // Operators
     AND,

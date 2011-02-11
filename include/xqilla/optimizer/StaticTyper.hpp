@@ -36,10 +36,10 @@ public:
 
   StaticTyper()
     : ASTVisitor(), context_(0), globalsUsed_(0), globalsOrder_(0),
-    trail_(0), tupleSetup_(false) {}
+    trail_(0) {}
   StaticTyper(StaticContext *context, Optimizer *parent = 0)
     : ASTVisitor(parent), context_(context), globalsUsed_(0), globalsOrder_(0),
-    trail_(0), tupleSetup_(false) {}
+    trail_(0) {}
 
   GlobalVariables *&getGlobalsUsed() { return globalsUsed_; }
   GlobalVariables *&getGlobalsOrder() { return globalsOrder_; }
@@ -74,7 +74,6 @@ protected:
   virtual TupleNode *optimizeForTuple(ForTuple *item);
   virtual TupleNode *optimizeLetTuple(LetTuple *item);
   virtual TupleNode *optimizeWhereTuple(WhereTuple *item);
-  virtual TupleNode *optimizeCountTuple(CountTuple *item);
   virtual TupleNode *optimizeOrderByTuple(OrderByTuple *item);
 
   void optimizeCase(const StaticAnalysis &var_src, XQTypeswitch::Case *item);
@@ -83,7 +82,6 @@ protected:
   GlobalVariables *globalsUsed_;
   GlobalVariables *globalsOrder_;
   PrologItem *trail_;
-  bool tupleSetup_;
 };
 
 #endif

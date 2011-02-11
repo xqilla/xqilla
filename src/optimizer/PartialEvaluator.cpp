@@ -287,7 +287,7 @@ ASTNode *PartialEvaluator::optimize(ASTNode *item)
         if(newBlock != 0) {
           if(checkSizeLimit(item, newBlock)) {
             item->release();
-            return newBlock;
+            return newBlock->staticResolution(context_)->staticTypingImpl(context_);
           }
           else {
             newBlock->release();
@@ -966,7 +966,7 @@ ASTNode *PartialEvaluator::optimizePartialApply(XQPartialApply *item)
   ret->setLocationInfo(item);
 
   ASTNode *result = new (mm) XQInlineFunction(0, func->getPrefix(), func->getURI(), func->getName(),
-                                              new (mm) ItemType(signature, context_->getDocumentCache()), ret, mm);
+    new (mm) ItemType(signature, context_->getDocumentCache()), ret, mm);
   result->setLocationInfo(item);
 
   if(checkSizeLimit(item, result)) {
@@ -1147,7 +1147,7 @@ protected:
 
     item->setExpression(optimize(item->getExpression()));
 
-    count_ = uadd(tcount, umultiply(count_, item->getParent()->getMax()));
+    count_ = uadd(tcount, umultiply(count_, item->getParent()->getStaticAnalysis().getStaticType().getMax()));
 
     return item;
   }
@@ -1161,7 +1161,7 @@ protected:
 
     item->setExpression(optimize(item->getExpression()));
 
-    count_ = uadd(tcount, umultiply(count_, item->getParent()->getMax()));
+    count_ = uadd(tcount, umultiply(count_, item->getParent()->getStaticAnalysis().getStaticType().getMax()));
 
     return item;
   }
@@ -1173,7 +1173,7 @@ protected:
     unsigned int tcount = count_;
     count_ = 0;
 
-    count_ = uadd(tcount, umultiply(count_, item->getParent()->getMax()));
+    count_ = uadd(tcount, umultiply(count_, item->getParent()->getStaticAnalysis().getStaticType().getMax()));
 
     return item;
   }
@@ -1187,7 +1187,7 @@ protected:
 
     item->setExpression(optimize(item->getExpression()));
 
-    count_ = uadd(tcount, umultiply(count_, item->getParent()->getMax()));
+    count_ = uadd(tcount, umultiply(count_, item->getParent()->getStaticAnalysis().getStaticType().getMax()));
 
     return item;
   }
@@ -1201,7 +1201,7 @@ protected:
 
     item->setExpression(optimize(item->getExpression()));
 
-    count_ = uadd(tcount, umultiply(count_, item->getParent()->getMax()));
+    count_ = uadd(tcount, umultiply(count_, item->getParent()->getStaticAnalysis().getStaticType().getMax()));
 
     return item;
   }
@@ -1215,8 +1215,14 @@ protected:
 
     item->setExpression(optimize(item->getExpression()));
 
-    count_ = uadd(tcount, umultiply(count_, item->getParent()->getMax()));
+    count_ = uadd(tcount, umultiply(count_, item->getParent()->getStaticAnalysis().getStaticType().getMax()));
 
+    return item;
+  }
+
+  virtual ASTNode *optimizeTupleConstructor(XQTupleConstructor *item)
+  {
+    item->setParent(optimizeTupleNode(const_cast<TupleNode*>(item->getParent())));
     return item;
   }
 
@@ -1229,7 +1235,7 @@ protected:
 
     item->setExpression(optimize(item->getExpression()));
 
-    count_ = uadd(tcount, umultiply(count_, item->getParent()->getMax()));
+    count_ = uadd(tcount, umultiply(count_, item->getParent()->getStaticAnalysis().getStaticType().getMax()));
 
     return item;
   }
@@ -1268,7 +1274,7 @@ static void findLetsToInline(TupleNode *ancestor, vector<LetTuple*> &toInline, m
     LetTuple *f = (LetTuple*)ancestor;
 
     countLetUsage(f->getExpression(), toCount,
-                  ancestor->getParent()->getMax());
+                  ancestor->getParent()->getStaticAnalysis().getStaticType().getMax());
 
     if(f->getExpression()->isConstant() ||
        f->getExpression()->getType() == ASTNode::VARIABLE ||
@@ -1283,17 +1289,17 @@ static void findLetsToInline(TupleNode *ancestor, vector<LetTuple*> &toInline, m
   case TupleNode::WHERE:
     findLetsToInline(ancestor->getParent(), toInline, toCount);
     countLetUsage(((WhereTuple*)ancestor)->getExpression(), toCount,
-                  ancestor->getParent()->getMax());
+                  ancestor->getParent()->getStaticAnalysis().getStaticType().getMax());
     break;
   case TupleNode::ORDER_BY:
     findLetsToInline(ancestor->getParent(), toInline, toCount);
     countLetUsage(((OrderByTuple*)ancestor)->getExpression(), toCount,
-                  ancestor->getParent()->getMax());
+                  ancestor->getParent()->getStaticAnalysis().getStaticType().getMax());
     break;
   case TupleNode::FOR:
     findLetsToInline(ancestor->getParent(), toInline, toCount);
     countLetUsage(((ForTuple*)ancestor)->getExpression(), toCount,
-                  ancestor->getParent()->getMax());
+                  ancestor->getParent()->getStaticAnalysis().getStaticType().getMax());
     break;
   case TupleNode::COUNT:
     findLetsToInline(ancestor->getParent(), toInline, toCount);
@@ -1310,7 +1316,7 @@ static ASTNode *inlineLets(XQReturn *item, DynamicContext *context, size_t &size
   vector<LetTuple*> toInline;
   findLetsToInline(const_cast<TupleNode*>(item->getParent()), toInline, toCount);
   countLetUsage(item->getExpression(), toCount,
-                item->getParent()->getMax());
+                item->getParent()->getStaticAnalysis().getStaticType().getMax());
 
   InlineVar inliner;
   vector<LetTuple*>::iterator i = toInline.begin();
@@ -1424,8 +1430,9 @@ ASTNode *PartialEvaluator::optimizeQuantified(XQQuantified *item)
 {
   item->setParent(optimizeTupleNode(const_cast<TupleNode*>(item->getParent())));
 
-  if(item->getParent()->getMax() == 0) {
-    ASTNode *result = XQLiteral::create(item->getQuantifierType() == XQQuantified::EVERY, context_->getMemoryManager(), item);
+  if(item->getParent()->getStaticAnalysis().getStaticType().getMax() == 0) {
+    ASTNode *result = XQLiteral::create(item->getQuantifierType() == XQQuantified::EVERY, context_->getMemoryManager(), item)
+      ->staticResolution(context_);
     sizeLimit_ += ASTCounter().count(item);
     sizeLimit_ -= ASTCounter().count(result);
     item->release();
@@ -1434,9 +1441,11 @@ ASTNode *PartialEvaluator::optimizeQuantified(XQQuantified *item)
 
   item->setExpression(optimize(item->getExpression()));
 
-  if(item->getExpression()->isConstant() && item->getParent()->getMin() != 0) {
-    bool value = ((ATBooleanOrDerived*)item->getExpression()->createResult(context_)->next(context_).get())->isTrue();
-    ASTNode *result = XQLiteral::create(value, context_->getMemoryManager(), item);
+  if(item->getExpression()->isConstant() &&
+     item->getParent()->getStaticAnalysis().getStaticType().getMin() != 0) {
+      bool value = ((ATBooleanOrDerived*)item->getExpression()->createResult(context_)->next(context_).get())->isTrue();
+    ASTNode *result = XQLiteral::create(value, context_->getMemoryManager(), item)
+      ->staticResolution(context_);
     sizeLimit_ += ASTCounter().count(item);
     sizeLimit_ -= ASTCounter().count(result);
     item->release();
@@ -1526,7 +1535,8 @@ ASTNode *PartialEvaluator::optimizeAnd(And *item)
     if(!(*i)->getStaticAnalysis().isUsed()) {
       if(!((ATBooleanOrDerived*)(*i)->createResult(context_)->next(context_).get())->isTrue()) {
         // It's constantly false, so this expression is false
-        ASTNode *result = XQLiteral::create(false, context_->getMemoryManager(), item);
+        ASTNode *result = XQLiteral::create(false, context_->getMemoryManager(), item)
+          ->staticResolution(context_);
         sizeLimit_ += ASTCounter().count(item);
         sizeLimit_ -= ASTCounter().count(result);
         item->release();
@@ -1554,7 +1564,8 @@ ASTNode *PartialEvaluator::optimizeOr(Or *item)
     if(!(*i)->getStaticAnalysis().isUsed()) {
       if(((ATBooleanOrDerived*)(*i)->createResult(context_)->next(context_).get())->isTrue()) {
         // It's constantly true, so this expression is true
-        ASTNode *result = XQLiteral::create(true, context_->getMemoryManager(), item);
+        ASTNode *result = XQLiteral::create(true, context_->getMemoryManager(), item)
+          ->staticResolution(context_);
         sizeLimit_ += ASTCounter().count(item);
         sizeLimit_ -= ASTCounter().count(result);
         item->release();
@@ -1579,7 +1590,8 @@ ASTNode *PartialEvaluator::optimizeEffectiveBooleanValue(XQEffectiveBooleanValue
 
   if(item->getExpression()->getStaticAnalysis().getStaticType().getMax() == 0) {
     // If there are no items, EBV returns false
-    ASTNode *result = XQLiteral::create(false, context_->getMemoryManager(), item);
+    ASTNode *result = XQLiteral::create(false, context_->getMemoryManager(), item)
+      ->staticResolution(context_);
     sizeLimit_ += ASTCounter().count(item);
     sizeLimit_ -= ASTCounter().count(result);
     item->release();
@@ -1589,7 +1601,8 @@ ASTNode *PartialEvaluator::optimizeEffectiveBooleanValue(XQEffectiveBooleanValue
   if(item->getExpression()->getStaticAnalysis().getStaticType().getMin() >= 1 &&
      item->getExpression()->getStaticAnalysis().getStaticType().isType(TypeFlags::NODE)) {
     // If there is one or more nodes, EBV returns true
-    ASTNode *result = XQLiteral::create(true, context_->getMemoryManager(), item);
+    ASTNode *result = XQLiteral::create(true, context_->getMemoryManager(), item)
+      ->staticResolution(context_);
     sizeLimit_ += ASTCounter().count(item);
     sizeLimit_ -= ASTCounter().count(result);
     item->release();

@@ -96,6 +96,7 @@ public:
 
 private:
   Result parent_;
+  enum { NODES, TUPLES, NODES_OR_TUPLES } state_;
 };
 
 class XQILLA_API LastStepCheckResult : public ResultImpl

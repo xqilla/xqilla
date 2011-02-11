@@ -39,6 +39,11 @@ ResultBuffer::ResultBuffer(ResultBufferImpl *impl)
 {
 }
 
+ResultBuffer::ResultBuffer()
+  : _impl(0)
+{
+}
+
 Result ResultBuffer::createResult()
 {
   if(_impl.isNull()) return 0;

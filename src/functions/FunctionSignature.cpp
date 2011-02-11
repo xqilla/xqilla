@@ -115,7 +115,7 @@ void FunctionSignature::release()
   if(argSpecs) {
     ArgumentSpecs::iterator argIt = argSpecs->begin();
     for(; argIt != argSpecs->end(); ++argIt) {
-      (*argIt)->release(memMgr);
+      (*argIt)->release();
     }
 #if defined(_MSC_VER) && (_MSC_VER < 1300)
     argSpecs->~vector<ArgumentSpec*,XQillaAllocator<ArgumentSpec*> >();
@@ -204,9 +204,13 @@ ArgumentSpec::ArgumentSpec(const XMLCh *qname, SequenceType *type, XPath2MemoryM
   : qname_(memMgr->getPooledString(qname)),
     uri_(0),
     name_(0),
+    uriname_(0),
     used_(true),
     seqType_(type),
-    src_(memMgr)
+    properties_(0),
+    type_(memMgr),
+    index_(0),
+    mm_(memMgr)
 {
 }
 
@@ -214,33 +218,56 @@ ArgumentSpec::ArgumentSpec(const ArgumentSpec *o, XPath2MemoryManager *memMgr)
   : qname_(o->qname_),
     uri_(o->uri_),
     name_(o->name_),
+    uriname_(o->uriname_),
     used_(o->used_),
     seqType_(o->seqType_),
-    src_(memMgr)
+    properties_(0),
+    type_(o->type_, memMgr),
+    index_(o->index_),
+    mm_(memMgr)
 {
 }
 
-void ArgumentSpec::release(XPath2MemoryManager *mm)
+void ArgumentSpec::release()
 {
-  src_.clear();
-  mm->deallocate(this);
+  type_.release();
+  mm_->deallocate(this);
+}
+
+void ArgumentSpec::setURI(const XMLCh *uri)
+{
+  uri_ = uri;
+  uriname_ = XPath2NSUtils::makeURIName(uri_, name_, mm_);
+}
+
+void ArgumentSpec::setName(const XMLCh *name)
+{
+  name_ = name;
+  uriname_ = XPath2NSUtils::makeURIName(uri_, name_, mm_);
 }
 
 void ArgumentSpec::staticResolution(StaticContext* context)
 {
-  if(qname_ != 0) {
+  if(qname_ != 0 && name_ == 0) {
     uri_ = context->getUriBoundToPrefix(XPath2NSUtils::getPrefix(qname_, context->getMemoryManager()), this);
     name_ = XPath2NSUtils::getLocalName(qname_);
   }
+  if(name_ && uriname_ == 0) {
+    uriname_ = XPath2NSUtils::makeURIName(uri_, name_, context->getMemoryManager());
+  }
 
-  seqType_->staticResolution(context);
-  src_.getStaticType() = seqType_;
+  if(seqType_) {
+    seqType_->staticResolution(context);
+    type_ = seqType_;
 
-  if(seqType_->getOccurrenceIndicator() == SequenceType::EXACTLY_ONE ||
-     seqType_->getOccurrenceIndicator() == SequenceType::QUESTION_MARK) {
-    src_.setProperties(StaticAnalysis::DOCORDER | StaticAnalysis::GROUPED |
-                       StaticAnalysis::PEER | StaticAnalysis::SUBTREE | StaticAnalysis::SAMEDOC |
-                       StaticAnalysis::ONENODE | StaticAnalysis::SELF);
+    if(seqType_->getOccurrenceIndicator() == SequenceType::EXACTLY_ONE ||
+       seqType_->getOccurrenceIndicator() == SequenceType::QUESTION_MARK) {
+      properties_ = StaticAnalysis::DOCORDER | StaticAnalysis::GROUPED |
+        StaticAnalysis::PEER | StaticAnalysis::SUBTREE | StaticAnalysis::SAMEDOC |
+        StaticAnalysis::ONENODE | StaticAnalysis::SELF;
+    }
+  } else {
+    type_ = StaticType::ITEM_STAR;
   }
 }
 

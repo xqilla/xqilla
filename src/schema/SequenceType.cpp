@@ -48,6 +48,7 @@
 #include <xqilla/ast/XQFunctionCoercion.hpp>
 #include <xqilla/schema/DocumentCacheImpl.hpp>
 #include <xqilla/framework/BasicMemoryManager.hpp>
+#include <xqilla/ast/XQTypeAlias.hpp>
 
 #include <xercesc/validators/schema/SchemaAttDef.hpp>
 #include <xercesc/validators/schema/SchemaElementDecl.hpp>
@@ -99,6 +100,7 @@ const ItemType ItemType::COMMENT(ItemType::TEST_COMMENT, staticDocumentCache());
 const ItemType ItemType::NAMESPACE(ItemType::TEST_NAMESPACE, staticDocumentCache());
 
 const ItemType ItemType::FUNCTION(ItemType::TEST_FUNCTION, staticDocumentCache());
+const ItemType ItemType::TUPLE(ItemType::TEST_TUPLE, staticDocumentCache());
 
 SequenceType::SequenceType(ItemType* test, OccurrenceIndicator occur)
   : m_pItemType(test),
@@ -191,13 +193,6 @@ SequenceType::TypeMatch SequenceType::matches(const StaticType &actual) const
   return result;
 }
 
-void SequenceType::setItemType(ItemType* itemType)
-{
-  if(m_pItemType)
-    delete m_pItemType;
-  m_pItemType=itemType;
-}
-
 ItemType::ItemTestType SequenceType::getItemTestType() const {
 
   return m_pItemType->getItemTestType();
@@ -216,14 +211,14 @@ void SequenceType::setOccurrence(SequenceType::OccurrenceIndicator nOccurrence)
 void SequenceType::staticResolution(StaticContext* context)
 {
   if(m_pItemType)
-    m_pItemType->staticResolution(context, this);
+    m_pItemType = m_pItemType->staticResolution(context, this);
 }
 
-void ItemType::staticResolution(StaticContext *context, const LocationInfo *location)
+ItemType *ItemType::staticResolution(StaticContext *context, const LocationInfo *location)
 {
   // Prefix resolution should only happen once
   // (since SequenceType objects can be multiple times in the AST)
-  if(staticallyResolved_) return;
+  if(staticallyResolved_) return this;
   staticallyResolved_ = true;
 
   dc_ = context->getDocumentCache();
@@ -252,6 +247,11 @@ void ItemType::staticResolution(StaticContext *context, const LocationInfo *loca
 
   if(m_TypeName) {
     if(m_nTestType == ItemType::TEST_ATOMIC_TYPE) {
+      // Check if this is actually a type alias
+      alias_ = context->getTypeAlias(m_TypeURI, m_TypeName);
+      // if(alias_) return alias_->isResolved() ? alias_->getType() : this;
+      if(alias_) return this;
+
       if((XPath2Utils::equals(m_TypeName, AnyAtomicType::fgDT_ANYATOMICTYPE) ||
           XPath2Utils::equals(m_TypeName, SchemaSymbols::fgDT_ANYSIMPLETYPE)) &&
          XPath2Utils::equals(m_TypeURI, SchemaSymbols::fgURI_SCHEMAFORSCHEMA)) {
@@ -284,7 +284,7 @@ void ItemType::staticResolution(StaticContext *context, const LocationInfo *loca
     // retrieve the type of the element name
     SchemaElementDecl *elemDecl = context->getDocumentCache()->getElementDecl(m_NameURI, m_NameName);
     if(elemDecl == NULL) {
-      XMLBuffer msg(1023, context->getMemoryManager());
+      XMLBuffer msg;
       msg.set(X("Element {"));
       msg.append(m_NameURI);
       msg.append(X("}"));
@@ -298,7 +298,7 @@ void ItemType::staticResolution(StaticContext *context, const LocationInfo *loca
     // retrieve the type of the attribute name
     SchemaAttDef *attrDecl = context->getDocumentCache()->getAttributeDecl(m_NameURI, m_NameName);
     if(attrDecl == NULL) {
-      XMLBuffer msg(1023, context->getMemoryManager());
+      XMLBuffer msg;
       msg.set(X("Attribute {"));
       msg.append(m_NameURI);
       msg.append(X("}"));
@@ -313,10 +313,24 @@ void ItemType::staticResolution(StaticContext *context, const LocationInfo *loca
 
   if(signature_)
     signature_->staticResolution(context);
+
+  if(tupleMembers_) {
+    // Re-create the TupleMembers hash, this time hashing under the uriname of the member
+    TupleMembers newMembers(tupleMembers_->size(), false, context->getMemoryManager());
+    TupleMembers::iterator i = const_cast<TupleMembers*>(tupleMembers_)->begin();
+    for(; i != const_cast<TupleMembers*>(tupleMembers_)->end(); ++i) {
+      i.getValue()->staticResolution(context);
+      newMembers.put(i.getValue()->getURIName(), i.getValue());
+    }
+    const_cast<TupleMembers*>(tupleMembers_)->swap(newMembers);
+  }
+
+  return this;
 }
 
 ItemType::ItemType(ItemTestType test, QualifiedName* name, QualifiedName* type)
-  : m_nTestType(test),
+  : alias_(0),
+    m_nTestType(test),
     m_primitiveType(AnyAtomicType::NumAtomicObjectTypes),
     m_primitive(false),
     m_NamePrefix(name ? name->getPrefix() : 0),
@@ -327,13 +341,15 @@ ItemType::ItemType(ItemTestType test, QualifiedName* name, QualifiedName* type)
     m_TypeName(type ? type->getName() : 0),
     m_bAllowNil(false),
     signature_(0),
+    tupleMembers_(0),
     dc_(0),
     staticallyResolved_(false)
 {
 }
 
 ItemType::ItemType(ItemTestType test, const DocumentCache *dc)
-  : m_nTestType(test),
+  : alias_(0),
+    m_nTestType(test),
     m_primitiveType(AnyAtomicType::NumAtomicObjectTypes),
     m_primitive(false),
     m_NamePrefix(0),
@@ -344,14 +360,16 @@ ItemType::ItemType(ItemTestType test, const DocumentCache *dc)
     m_TypeName(0),
     m_bAllowNil(false),
     signature_(0),
+    tupleMembers_(0),
     dc_(dc),
-    staticallyResolved_(true)
+    staticallyResolved_(dc != 0)
 {
 }
 
 ItemType::ItemType(AnyAtomicType::AtomicObjectType primitiveType, bool primitive,
   const XMLCh *typeURI, const XMLCh *typeName, const DocumentCache *dc)
-  : m_nTestType(TEST_ATOMIC_TYPE),
+  : alias_(0),
+    m_nTestType(TEST_ATOMIC_TYPE),
     m_primitiveType(primitiveType),
     m_primitive(primitive),
     m_NamePrefix(0),
@@ -362,13 +380,15 @@ ItemType::ItemType(AnyAtomicType::AtomicObjectType primitiveType, bool primitive
     m_TypeName(typeName),
     m_bAllowNil(false),
     signature_(0),
+    tupleMembers_(0),
     dc_(dc),
-    staticallyResolved_(primitiveType != AnyAtomicType::NumAtomicObjectTypes)
+    staticallyResolved_(primitiveType != AnyAtomicType::NumAtomicObjectTypes && dc != 0)
 {
 }
 
 ItemType::ItemType(FunctionSignature *sig, const DocumentCache *dc)
-  : m_nTestType(TEST_FUNCTION),
+  : alias_(0),
+    m_nTestType(TEST_FUNCTION),
     m_primitiveType(AnyAtomicType::NumAtomicObjectTypes),
     m_primitive(false),
     m_NamePrefix(0),
@@ -379,6 +399,26 @@ ItemType::ItemType(FunctionSignature *sig, const DocumentCache *dc)
     m_TypeName(0),
     m_bAllowNil(false),
     signature_(sig),
+    tupleMembers_(0),
+    dc_(dc),
+    staticallyResolved_(dc != 0)
+{
+}
+
+ItemType::ItemType(const TupleMembers *members, const DocumentCache *dc)
+  : alias_(0),
+    m_nTestType(TEST_TUPLE),
+    m_primitiveType(AnyAtomicType::NumAtomicObjectTypes),
+    m_primitive(false),
+    m_NamePrefix(0),
+    m_NameURI(0),
+    m_NameName(0),
+    m_TypePrefix(0),
+    m_TypeURI(0),
+    m_TypeName(0),
+    m_bAllowNil(false),
+    signature_(0),
+    tupleMembers_(members),
     dc_(dc),
     staticallyResolved_(dc != 0)
 {
@@ -391,7 +431,7 @@ ItemType::~ItemType()
 
 ItemType::ItemTestType ItemType::getItemTestType() const
 {
-  return m_nTestType;
+  return alias_ ? alias_->getType()->getItemTestType() : m_nTestType;
 }
 
 void ItemType::setItemTestType(ItemTestType t)
@@ -406,16 +446,72 @@ void ItemType::setAllowNilled(bool value)
 
 bool ItemType::getAllowNilled() const
 {
-  return m_bAllowNil;
+  return alias_ ? alias_->getType()->getAllowNilled() : m_bAllowNil;
+}
+
+FunctionSignature *ItemType::getFunctionSignature() const
+{
+  return alias_ ? alias_->getType()->getFunctionSignature() : signature_;
+}
+
+const TupleMembers *ItemType::getTupleMembers() const
+{
+  return alias_ ? alias_->getType()->getTupleMembers() : tupleMembers_;
+}
+
+const DocumentCache *ItemType::getDocumentCache() const
+{
+  return alias_ ? alias_->getType()->getDocumentCache() : dc_;
+}
+
+bool ItemType::isPrimitive() const
+{
+  return alias_ ? alias_->getType()->isPrimitive() : m_primitive;
+}
+AnyAtomicType::AtomicObjectType ItemType::getPrimitiveType() const
+{
+  return alias_ ? alias_->getType()->getPrimitiveType() : m_primitiveType;
+}
+
+const XMLCh *ItemType::getTypePrefix() const
+{
+  return alias_ ? alias_->getType()->getTypePrefix() : m_TypePrefix;
+}
+
+const XMLCh *ItemType::getTypeURI() const
+{
+  return alias_ ? alias_->getType()->getTypeURI() : m_TypeURI;
+}
+
+const XMLCh *ItemType::getTypeName() const
+{
+  return alias_ ? alias_->getType()->getTypeName() : m_TypeName;
+}
+
+const XMLCh *ItemType::getNamePrefix() const
+{
+  return alias_ ? alias_->getType()->getNamePrefix() : m_NamePrefix;
+}
+
+const XMLCh *ItemType::getNameURI() const
+{
+  return alias_ ? alias_->getType()->getNameURI() : m_NameURI;
+}
+
+const XMLCh *ItemType::getNameName() const
+{
+  return alias_ ? alias_->getType()->getNameName() : m_NameName;
 }
 
 void SequenceType::toBuffer(XMLBuffer &buffer) const
 {
-  if(m_pItemType == 0) {
+  if(this == 0) {
+    buffer.append(X("item()*"));
+  } else if(m_pItemType == 0) {
     buffer.append(X("empty-sequence()"));
   }
   else {
-    m_pItemType->toBuffer(buffer, m_nOccurrence != EXACTLY_ONE);
+    m_pItemType->toBuffer(buffer, /*forStaticType*/false, m_nOccurrence != EXACTLY_ONE);
 
     switch(m_nOccurrence) {
     case EXACTLY_ONE: break;
@@ -442,7 +538,7 @@ inline void outputPrefixOrURI(const XMLCh *prefix, const XMLCh *uri, XMLBuffer &
   }
 }
 
-void ItemType::toBuffer(XMLBuffer &buffer, bool addBrackets) const
+void ItemType::toBuffer(XMLBuffer &buffer, bool forStaticType, bool addBrackets) const
 {
   static const XMLCh XMLChXS[] = { chLatin_x, chLatin_s, chNull };
 
@@ -593,6 +689,37 @@ void ItemType::toBuffer(XMLBuffer &buffer, bool addBrackets) const
     }
     break;
   }
+  case TEST_TUPLE: {
+    buffer.append(X("tuple("));
+
+    bool doneOne = false;
+    if(tupleMembers_) {
+      TupleMembers::iterator i = const_cast<TupleMembers*>(tupleMembers_)->begin();
+      for(; i != const_cast<TupleMembers*>(tupleMembers_)->end(); ++i) {
+        if(doneOne) buffer.append(',');
+        doneOne = true;
+
+        if(i.getValue()->getQName()) {
+          buffer.append(i.getValue()->getQName());
+        } else {
+          if(i.getValue()->getURI()) {
+            buffer.append('{');
+            buffer.append(i.getValue()->getURI());
+            buffer.append('}');
+          }
+          buffer.append(i.getValue()->getName());
+        }
+
+        buffer.append(X(" as "));
+        if(forStaticType)
+          i.getValue()->getStaticType().typeToBuf(buffer);
+        else
+          i.getValue()->getType()->toBuffer(buffer);
+      }
+    }
+    buffer.append(')');
+    break;
+  }
   }
 }
 
@@ -693,6 +820,8 @@ bool ItemType::matchesSchemaElement(const Node::Ptr &toBeTested, const DynamicCo
 
 bool ItemType::matches(const Node::Ptr &toBeTested, DynamicContext* context) const
 {
+  if(alias_) return alias_->getType()->matches(toBeTested, context);
+
   switch(m_nTestType) {
     case TEST_ELEMENT:
     {
@@ -812,6 +941,7 @@ bool ItemType::matches(const Node::Ptr &toBeTested, DynamicContext* context) con
 
     case TEST_ATOMIC_TYPE:
     case TEST_FUNCTION:
+    case TEST_TUPLE:
     {
         return false;
     }
@@ -827,6 +957,8 @@ bool ItemType::matches(const FunctionRef::Ptr &toBeTested) const
 
 bool ItemType::matches(const FunctionSignature *sig) const
 {
+  if(alias_) return alias_->getType()->matches(sig);
+
   switch(m_nTestType) {
     case TEST_ELEMENT:
     case TEST_ATTRIBUTE:
@@ -840,6 +972,7 @@ bool ItemType::matches(const FunctionSignature *sig) const
     case TEST_SCHEMA_DOCUMENT:
     case TEST_NAMESPACE:
     case TEST_ATOMIC_TYPE:
+    case TEST_TUPLE:
     {
       return false;
     }
@@ -872,13 +1005,76 @@ bool ItemType::matches(const FunctionSignature *sig) const
   return true;
 }
 
+bool ItemType::matches(const Tuple::Ptr &tuple, DynamicContext* context) const
+{
+  if(alias_) return alias_->getType()->matches(tuple, context);
+
+  switch(m_nTestType) {
+    case TEST_ELEMENT:
+    case TEST_ATTRIBUTE:
+    case TEST_SCHEMA_ELEMENT:
+    case TEST_SCHEMA_ATTRIBUTE:
+    case TEST_NODE:
+    case TEST_PI:
+    case TEST_COMMENT:
+    case TEST_TEXT:
+    case TEST_DOCUMENT:
+    case TEST_SCHEMA_DOCUMENT:
+    case TEST_NAMESPACE:
+    case TEST_ATOMIC_TYPE:
+    case TEST_FUNCTION:
+    {
+      return false;
+    }
+    
+    case TEST_ANYTHING:
+    {
+      return true;
+    }
+
+    case TEST_TUPLE:
+    {
+      // TBD implement this properly - jpcs
+      return true;
+
+      // // A TupleTest matches an item if it is a tuple, and the function
+      // // item's type signature is a subtype of the TypedFunctionTest.
+      // size_t numArgs = sig->argSpecs ? sig->argSpecs->size() : 0;
+      // if(numArgs != argTypes_->size()) return false;
+
+      // if(sig->argSpecs) {
+      //   ArgumentSpecs::const_iterator aa_i = sig->argSpecs->begin();
+      //   ArgumentSpecs::const_iterator ba_i = argTypes_->begin();
+      //   for(; aa_i != sig->argSpecs->end() && ba_i != argTypes_->end(); ++aa_i, ++ba_i) {
+      //     if(!(*ba_i)->getType()->isSubtypeOf((*aa_i)->getType(), context)) return false;
+      //   }
+      // }
+
+      // if(sig->returnType)
+      //   return sig->returnType->isSubtypeOf(returnType_, context);
+
+      // return returnType_->m_nOccurrence == STAR && returnType_->m_pItemType &&
+      //   returnType_->m_pItemType->getItemTestType() == TEST_ANYTHING;
+    }
+  }
+  return true;
+}
+
 bool ItemType::matches(const Item::Ptr &toBeTested, DynamicContext* context) const
 {
-  if(toBeTested->getType() == Item::NODE)
-    return matches((Node::Ptr)toBeTested, context);
-  if(toBeTested->getType() == Item::FUNCTION)
-    return matches((FunctionRef::Ptr)toBeTested);
-    
+  switch(toBeTested->getType()) {
+  case Item::NODE:
+     return matches((Node::Ptr)toBeTested, context);
+  case Item::FUNCTION:
+     return matches((FunctionRef::Ptr)toBeTested);
+  case Item::TUPLE:
+    return matches((Tuple::Ptr)toBeTested, context);
+  case Item::ATOMIC:
+    break;
+  }
+     
+  if(alias_) return alias_->getType()->matches(toBeTested, context);
+
   switch(m_nTestType) {
     case TEST_ELEMENT:
     case TEST_ATTRIBUTE:
@@ -892,6 +1088,7 @@ bool ItemType::matches(const Item::Ptr &toBeTested, DynamicContext* context) con
     case TEST_SCHEMA_DOCUMENT:
     case TEST_NAMESPACE:
     case TEST_FUNCTION:
+    case TEST_TUPLE:
     {
       return false;
     }
@@ -965,7 +1162,11 @@ bool ItemType::isSubtypeOfNameType(const ItemType *b) const
 
 bool ItemType::isSubtypeOf(const ItemType *b) const
 {
+  if(alias_) return alias_->getType()->isSubtypeOf(b);
+
   const ItemType *a = this;
+
+  while(b->alias_) b = b->alias_->getType();
 
   switch(b->m_nTestType) {
 
@@ -1092,6 +1293,11 @@ bool ItemType::isSubtypeOf(const ItemType *b) const
 
     return a->signature_->returnType->isSubtypeOf(b->signature_->returnType);
   }
+
+  case TEST_TUPLE: {
+    // TBD Do this properly - jpcs
+    return false;
+  }
   }
   return true;
 }
@@ -1174,7 +1380,7 @@ Result SequenceType::convertFunctionArg(const Result &input, DynamicContext *con
   return matches(result, location, errorCode);
 }
 
-ASTNode *SequenceType::convertFunctionArg(ASTNode *arg, StaticContext *context, bool numericFunction,
+ASTNode *SequenceType::convertFunctionArg(ASTNode *arg, const StaticContext *context, bool numericFunction,
                                           const LocationInfo *location)
 {
   XPath2MemoryManager *mm = context->getMemoryManager();

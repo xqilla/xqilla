@@ -44,7 +44,8 @@ public:
   enum Type {
     NODE,
     ATOMIC,
-    FUNCTION
+    FUNCTION,
+    TUPLE
   };
 
   virtual Type getType() const = 0;

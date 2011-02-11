@@ -40,6 +40,7 @@ xqilla/ast/XQFunctionDeref.hpp \
 xqilla/ast/XQPartialApply.hpp \
 xqilla/ast/XQFunctionRef.hpp \
 xqilla/ast/XQGlobalVariable.hpp \
+xqilla/ast/XQTypeAlias.hpp \
 xqilla/ast/XQOrderingChange.hpp \
 xqilla/ast/XQQuantified.hpp \
 xqilla/ast/XQTypeswitch.hpp \
@@ -51,6 +52,8 @@ xqilla/ast/ConvertFunctionArg.hpp \
 xqilla/ast/XQDocumentOrder.hpp \
 xqilla/ast/XQPredicate.hpp \
 xqilla/ast/XQReturn.hpp \
+xqilla/ast/XQTupleConstructor.hpp \
+xqilla/ast/XQTupleMember.hpp \
 xqilla/ast/TupleNode.hpp \
 xqilla/ast/ContextTuple.hpp \
 xqilla/ast/ForTuple.hpp \
@@ -273,6 +276,7 @@ xqilla/items/impl/ATGMonthDayOrDerivedImpl.hpp \
 xqilla/items/impl/ATGMonthOrDerivedImpl.hpp \
 xqilla/items/impl/ATGYearMonthOrDerivedImpl.hpp \
 xqilla/items/impl/ATGYearOrDerivedImpl.hpp \
+xqilla/items/impl/TupleImpl.hpp \
 xqilla/mapm/m_apm.h \
 xqilla/operators/And.hpp \
 xqilla/operators/ArithmeticOperator.hpp \

@@ -100,6 +100,7 @@ typedef struct yyltype
 
 class LetTuple;
 class XQGlobalVariable;
+class XQTypeAlias;
 
 typedef union {
   XMLCh* str;
@@ -109,9 +110,11 @@ typedef union {
   ArgumentSpec* argSpec;
   ArgumentSpecs* argSpecs;
   FunctionSignature *signature;
+  TupleMembers *tupleMembers;
   XQUserFunction::Mode* mode;
   XQUserFunction::ModeList* modeList;
   XQGlobalVariable *globalVar;
+  XQTypeAlias *alias;
   NodeTest *nodeTest;
   Node::Axis axis;
   QualifiedName *qName;
@@ -185,6 +188,11 @@ public:
   {
     m_language = (XQilla::Language)((m_language & ~(XQilla::VERSION11)) |
                                     (value ? XQilla::VERSION11 : 0));
+  }
+  void setEnableExtensions(bool value)
+  {
+    m_language = (XQilla::Language)((m_language & ~(XQilla::EXTENSIONS)) |
+                                    (value ? XQilla::EXTENSIONS : 0));
   }
 
   void setGenerateErrorException(bool bEnable) { m_bGenerateErrorException=bEnable; }

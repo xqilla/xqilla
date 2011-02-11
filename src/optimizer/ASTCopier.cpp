@@ -271,6 +271,8 @@ COPY_XQ5(TreatAs, Expression, SequenceType, ErrorCode, DoTypeCheck, DoCardinalit
 COPY_XQ3(FunctionCoercion, Expression, SequenceType, FuncConvert)
 COPY_XQ0(ContextItem)
 COPY_XQ2(Return, Parent, Expression)
+COPY_XQ1(TupleConstructor, Parent)
+COPY_XQ3(TupleMember, QName, URI, Name)
 COPY_XQ3(Quantified, QuantifierType, Parent, Expression)
 COPY_XQ2(Validate, Expression, Mode)
 COPY_XQ2(OrderingChange, OrderingValue, Expr)
@@ -527,7 +529,7 @@ ASTNode *ASTCopier::optimizeMap(XQMap *item)
 {
   XQMap *result = new (mm_) XQMap(item->getArg1(), item->getArg2(), item->getURI(), item->getName(), mm_);
   ASTVisitor::optimizeMap(result);
-  const_cast<StaticAnalysis&>(result->getVarSRC()).copy(item->getVarSRC());
+  result->getVarType() = item->getVarType();
   COPY_IMPL();
 }
 
@@ -580,33 +582,25 @@ TupleNode *ASTCopier::optimizeContextTuple(ContextTuple *item)
   ContextTuple *result = new (mm_) ContextTuple(mm_);
   ASTVisitor::optimizeContextTuple(result);
   result->setLocationInfo(item);
-  result->setMin(item->getMin());
-  result->setMax(item->getMax());
+  const_cast<StaticAnalysis&>(result->getStaticAnalysis()).copy(item->getStaticAnalysis());
   return result;
 }
 
 TupleNode *ASTCopier::optimizeForTuple(ForTuple *item)
 {
-  ForTuple *result = new (mm_) ForTuple(item->getParent(), item->getVarURI(), item->getVarName(),
-                                        item->getPosURI(), item->getPosName(), item->getExpression(), mm_);
+  ForTuple *result = new (mm_) ForTuple(item->getParent(), item->getVar(), item->getPos(), item->getExpression(), mm_);
   ASTVisitor::optimizeForTuple(result);
   result->setLocationInfo(item);
-  const_cast<StaticAnalysis&>(result->getVarSRC()).copy(item->getVarSRC());
-  const_cast<StaticAnalysis&>(result->getPosSRC()).copy(item->getPosSRC());
-  result->setMin(item->getMin());
-  result->setMax(item->getMax());
+  const_cast<StaticAnalysis&>(result->getStaticAnalysis()).copy(item->getStaticAnalysis());
   return result;
 }
 
 TupleNode *ASTCopier::optimizeLetTuple(LetTuple *item)
 {
-  LetTuple *result = new (mm_) LetTuple(item->getParent(), item->getVarURI(), item->getVarName(),
-                                        item->getExpression(), mm_);
+  LetTuple *result = new (mm_) LetTuple(item->getParent(), item->getVar(), item->getExpression(), mm_);
   ASTVisitor::optimizeLetTuple(result);
   result->setLocationInfo(item);
-  const_cast<StaticAnalysis&>(result->getVarSRC()).copy(item->getVarSRC());
-  result->setMin(item->getMin());
-  result->setMax(item->getMax());
+  const_cast<StaticAnalysis&>(result->getStaticAnalysis()).copy(item->getStaticAnalysis());
   return result;
 }
 
@@ -615,18 +609,16 @@ TupleNode *ASTCopier::optimizeWhereTuple(WhereTuple *item)
   WhereTuple *result = new (mm_) WhereTuple(item->getParent(), item->getExpression(), mm_);
   ASTVisitor::optimizeWhereTuple(result);
   result->setLocationInfo(item);
-  result->setMin(item->getMin());
-  result->setMax(item->getMax());
+  const_cast<StaticAnalysis&>(result->getStaticAnalysis()).copy(item->getStaticAnalysis());
   return result;
 }
 
 TupleNode *ASTCopier::optimizeCountTuple(CountTuple *item)
 {
-  CountTuple *result = new (mm_) CountTuple(item->getParent(), item->getVarURI(), item->getVarName(), mm_);
+  CountTuple *result = new (mm_) CountTuple(item->getParent(), item->getVar(), mm_);
   ASTVisitor::optimizeCountTuple(result);
   result->setLocationInfo(item);
-  result->setMin(item->getMin());
-  result->setMax(item->getMax());
+  const_cast<StaticAnalysis&>(result->getStaticAnalysis()).copy(item->getStaticAnalysis());
   return result;
 }
 
@@ -636,9 +628,7 @@ TupleNode *ASTCopier::optimizeOrderByTuple(OrderByTuple *item)
                                         item->getCollation(), mm_);
   ASTVisitor::optimizeOrderByTuple(result);
   result->setLocationInfo(item);
-  const_cast<StaticAnalysis&>(result->getUsedSRC()).copy(item->getUsedSRC());
-  result->setMin(item->getMin());
-  result->setMax(item->getMax());
+  const_cast<StaticAnalysis&>(result->getStaticAnalysis()).copy(item->getStaticAnalysis()); 
   return result;
 }
 
@@ -647,8 +637,7 @@ TupleNode *ASTCopier::optimizeTupleDebugHook(TupleDebugHook *item)
   TupleDebugHook *result = new (mm_) TupleDebugHook(item->getParent(), mm_);
   ASTVisitor::optimizeTupleDebugHook(result);
   result->setLocationInfo(item);
-  result->setMin(item->getMin());
-  result->setMax(item->getMax());
+  const_cast<StaticAnalysis&>(result->getStaticAnalysis()).copy(item->getStaticAnalysis()); 
   return result;
 }
 

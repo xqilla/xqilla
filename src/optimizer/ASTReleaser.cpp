@@ -130,6 +130,8 @@ RELEASE_XQ(TreatAs)
 RELEASE_XQ(FunctionCoercion)
 RELEASE_XQ(ContextItem)
 RELEASE_XQ(Return)
+RELEASE_XQ(TupleConstructor)
+RELEASE_XQ(TupleMember)
 RELEASE_XQ(Quantified)
 RELEASE_XQ(Validate)
 RELEASE_XQ(OrderingChange)
@@ -375,7 +377,7 @@ ASTNode *ASTReleaser::optimizeUTransform(UTransform *item)
   VectorOfCopyBinding *bindings = const_cast<VectorOfCopyBinding*>(item->getBindings());
   if(bindings != 0) {
     for(VectorOfCopyBinding::iterator i = bindings->begin(); i != bindings->end(); ++i) {
-      (*i)->src_.release();
+      (*i)->type_.release();
       item->getMemoryManager()->deallocate(*i);
     }
     bindings->~VectorOfCopyBinding();

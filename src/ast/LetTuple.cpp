@@ -29,25 +29,27 @@
 #include <xqilla/utils/XPath2Utils.hpp>
 #include <xqilla/exceptions/StaticErrorException.hpp>
 #include <xqilla/utils/XStr.hpp>
+#include <xqilla/framework/BasicMemoryManager.hpp>
 
 LetTuple::LetTuple(TupleNode *parent, const XMLCh *varQName, ASTNode *expr, XPath2MemoryManager *mm)
   : TupleNode(LET, parent, mm),
-    seqType(0),
-    varQName_(varQName),
-    varURI_(0),
-    varName_(0),
-    varSrc_(mm),
+    var_(new (mm) ArgumentSpec(varQName, 0, mm)),
     expr_(expr)
 {
 }
 
-LetTuple::LetTuple(TupleNode *parent, const XMLCh *varURI, const XMLCh *varName, ASTNode *expr, XPath2MemoryManager *mm)
+LetTuple::LetTuple(TupleNode *parent, const XMLCh *uri, const XMLCh *name, ASTNode *expr, XPath2MemoryManager *mm)
   : TupleNode(LET, parent, mm),
-    seqType(0),
-    varQName_(0),
-    varURI_(varURI),
-    varName_(varName),
-    varSrc_(mm),
+    var_(new (mm) ArgumentSpec(0, 0, mm)),
+    expr_(expr)
+{
+  var_->setURI(uri);
+  var_->setName(name);
+}
+
+LetTuple::LetTuple(TupleNode *parent, const ArgumentSpec *var, ASTNode *expr, XPath2MemoryManager *mm)
+  : TupleNode(LET, parent, mm),
+    var_(new (mm) ArgumentSpec(var, mm)),
     expr_(expr)
 {
 }
@@ -55,14 +57,8 @@ LetTuple::LetTuple(TupleNode *parent, const XMLCh *varURI, const XMLCh *varName,
 TupleNode *LetTuple::staticResolution(StaticContext *context)
 {
   parent_ = parent_->staticResolution(context);
-
-  if(varName_ == 0) {
-    varURI_ = context->getUriBoundToPrefix(XPath2NSUtils::getPrefix(varQName_, context->getMemoryManager()), this);
-    varName_ = XPath2NSUtils::getLocalName(varQName_);
-  }
-
+  var_->staticResolution(context);
   expr_ = expr_->staticResolution(context);
-
   return this;
 }
 
@@ -116,20 +112,36 @@ TupleNode *LetTuple::staticTypingImpl(StaticContext *context)
     return tmp->staticTypingImpl(context);
   }
 
-  min_ = parent_->getMin();
-  max_ = parent_->getMax();
+  const StaticType &pType = parent_->getStaticAnalysis().getStaticType();
+  const StaticType &sType = expr_->getStaticAnalysis().getStaticType();
 
-  return this;
-}
+  assert(pType.getTypes().size() == 1);
+  const ItemType *pItemType = pType.getTypes()[0];
+  assert(pItemType->getItemTestType() == ItemType::TEST_TUPLE);
 
-TupleNode *LetTuple::staticTypingTeardown(StaticContext *context, StaticAnalysis &usedSrc)
-{
-  usedSrc.removeVariable(varURI_, varName_);
+  src_.clear();
+  src_.add(expr_->getStaticAnalysis());
 
-  usedSrc.add(expr_->getStaticAnalysis());
-  parent_ = parent_->staticTypingTeardown(context, usedSrc);
+  TupleMembers *members = new (getMemoryManager()) TupleMembers(true, getMemoryManager());
+  const_cast<StaticType&>(var_->getStaticType()) = sType;
+  members->put(var_->getURIName(), var_);
 
-  // TBD Combine LetTuple that compute the same expression? - jpcs
+  TupleMembers *pMembers = const_cast<TupleMembers*>(pItemType->getTupleMembers());
+  if(pMembers) {
+    members->putAll(*pMembers);
+
+    TupleMembers::iterator i = pMembers->begin();
+    for(; i != pMembers->end(); ++i) {
+      src_.removeVariable(i.getValue()->getURI(), i.getValue()->getName());
+    }
+  }
+
+  ItemType *type = new (getMemoryManager()) ItemType(members, pItemType->getDocumentCache());
+  type->setLocationInfo(this);
+
+  src_.getStaticType() = type;
+  src_.getStaticType().setCardinality(pType.getMin(), pType.getMax());
+  src_.add(parent_->getStaticAnalysis());
 
   return this;
 }
@@ -169,6 +181,12 @@ public:
     // TBD Use counts for the variable - jpcs
     values_ = ResultBuffer(ClosureResult::create(ast_->getExpression(), context, parent_));
     return true;
+  }
+
+  virtual void createTuple(DynamicContext *context, size_t capacity, TupleImpl::Ptr &result) const
+  {
+    parent_->createTuple(context, capacity + 1, result);
+    result->add(ast_->getVar()->getURIName(), values_.createResult());
   }
 
 private:

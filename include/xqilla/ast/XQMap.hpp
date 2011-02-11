@@ -38,7 +38,7 @@ public:
   const XMLCh *getURI() const { return uri_; }
   const XMLCh *getName() const { return name_; }
 
-  const StaticAnalysis &getVarSRC() const { return varSrc_; }
+  StaticType &getVarType() { return varType_; }
 
   virtual ASTNode *staticResolution(StaticContext *context);
   virtual ASTNode *staticTypingImpl(StaticContext *context);
@@ -50,7 +50,7 @@ private:
 
   const XMLCh *uri_;
   const XMLCh *name_;
-  StaticAnalysis varSrc_;
+  StaticType varType_;
 };
 
 class XQILLA_API MapResult : public ResultImpl, public VariableStore

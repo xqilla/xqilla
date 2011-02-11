@@ -60,7 +60,7 @@ ASTNode *FunctionEmpty::staticTypingImpl(StaticContext *context)
     const StaticType &sType = sa.getStaticType();
     if((sType.getMin() > 0 || sType.getMax() == 0) && !sa.areDocsOrCollectionsUsed() && !sa.isNoFoldingForced()) {
       XPath2MemoryManager* mm = context->getMemoryManager();
-      return XQLiteral::create(sType.getMax() == 0, mm, this);
+      return XQLiteral::create(sType.getMax() == 0, mm, this)->staticResolution(context);
     }
   }
 

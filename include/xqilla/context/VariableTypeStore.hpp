@@ -26,8 +26,21 @@
 
 class SequenceType;
 class XPath2MemoryManager;
-class StaticAnalysis;
+class StaticType;
 class XQGlobalVariable;
+class ArgumentSpec;
+
+class XQILLA_API VariableType
+{
+public:
+  VariableType(unsigned p, const StaticType *t, XQGlobalVariable *g)
+    : properties(p), type(t), global(g) {}
+  VariableType(const ArgumentSpec *aspec);
+
+  unsigned properties;
+  const StaticType *type;
+  XQGlobalVariable *global;
+};
 
 /** This is the wrapper class for the variable store, which implements the 
     lookup and scoping of simple variables. */
@@ -48,24 +61,17 @@ public:
       implement scoping. */
   virtual void removeScope() = 0;
 
-  /** Declares and/or sets a variable in the global scope. */
+  /** Declares a variable in the global scope. */
   virtual void declareGlobalVar(const XMLCh* namespaceURI, const XMLCh* name,
-                                const StaticAnalysis &src, XQGlobalVariable *global) = 0;
+                                const VariableType &vtype) = 0;
 
-  /** Gets a variable from the global scope */
-  virtual const StaticAnalysis* getGlobalVar(const XMLCh* namespaceURI, const XMLCh* name,
-                                             XQGlobalVariable **global = 0) const = 0;
-
-  /** Declare a var in the top level scope (A full set of
-      these namespaceURI/name pair methods should be made) */
+  /** Declare a var in the top level scope */
   virtual void declareVar(const XMLCh* namespaceURI, const XMLCh* name,
-                          const StaticAnalysis &src) = 0;
+                          const VariableType &vtype) = 0;
 
   /** Looks up the value of a variable in the current scope, using ident as an
-      qname. Returns a boolean (true if successful), and the SequenceType value
-      of the variable*/
-  virtual const StaticAnalysis *getVar(const XMLCh* namespaceURI, const XMLCh* name,
-                                       XQGlobalVariable **global = 0) const = 0;
+      qname. */
+  virtual const VariableType *getVar(const XMLCh* namespaceURI, const XMLCh* name) const = 0;
 };
 
 #endif

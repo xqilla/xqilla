@@ -33,25 +33,19 @@ XERCES_CPP_NAMESPACE_USE;
 
 const XMLCh* XPath2NSUtils::getLocalName(const XMLCh* name)
 {
-  unsigned int len=XPath2Utils::uintStrlen(name);
+  if(name)
+    for(const XMLCh *ptr = name; *ptr; ++ptr)
+      if(*ptr == ':') return ptr + 1;
 
-  for(unsigned int i = 0; i < len; i++) {
-    if(name[i] == chColon) {
-      return name+i+1;
-    }
-  }
-  return name;
+ return name;
 }
 
 const XMLCh* XPath2NSUtils::getPrefix(const XMLCh* name, XPath2MemoryManager* memMgr)
 {
-  unsigned int len=XPath2Utils::uintStrlen(name);
-  
-  for(unsigned int i = 0; i < len; i++) {
-    if(name[i] == chColon) {
-      return XPath2Utils::subString(name, 0, i, memMgr);
-    }
-  }
+  if(name)
+    for(const XMLCh *ptr = name; *ptr; ++ptr)
+      if(*ptr == ':') return XPath2Utils::subString(name, 0, ptr - name, memMgr);
+
   return XMLUni::fgZeroLenString;
 }
 
@@ -77,6 +71,20 @@ const XMLCh *XPath2NSUtils::makeURIName(const XMLCh *uri, const XMLCh *name, XPa
   XMLBuffer buf;
   makeURIName(uri, name, buf);
   return mm->getPooledString(buf.getRawBuffer());
+}
+
+void XPath2NSUtils::decomposeURIName(const XMLCh *uriname, XPath2MemoryManager *mm, const XMLCh *&uri, const XMLCh *&name)
+{
+  if(uriname)
+    for(const XMLCh *ptr = uriname; *ptr; ++ptr)
+      if(*ptr == ':') {
+        name = XPath2Utils::subString(uriname, 0, ptr - uriname, mm);
+        uri = ptr + 1;
+        return;
+      }
+
+  uri = 0;
+  name = 0;
 }
 
 DOMNode *XPath2NSUtils::getParent(const DOMNode *node)

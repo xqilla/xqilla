@@ -21,9 +21,9 @@
 #define TUPLENODE_HPP
 
 #include <xqilla/runtime/TupleResult.hpp>
+#include <xqilla/ast/StaticAnalysis.hpp>
 
 class StaticContext;
-class StaticAnalysis;
 class XPath2MemoryManager;
 
 class XQILLA_API TupleNode : public LocationInfo
@@ -46,10 +46,7 @@ public:
   virtual Type getType() const { return type_; }
   virtual XPath2MemoryManager *getMemoryManager() const { return mm_; }
 
-  unsigned int getMin() const { return min_; }
-  unsigned int getMax() const { return max_; }
-  void setMin(unsigned int v) { min_ = v; }
-  void setMax(unsigned int v) { max_ = v; }
+  virtual const StaticAnalysis &getStaticAnalysis() const { return src_; }
 
   TupleNode *getParent() const { return parent_; }
   void setParent(TupleNode *parent) { parent_ = parent; }
@@ -59,17 +56,16 @@ public:
 
   virtual TupleNode *staticResolution(StaticContext *context) = 0;
   virtual TupleNode *staticTypingImpl(StaticContext *context) = 0;
-  virtual TupleNode *staticTypingTeardown(StaticContext *context, StaticAnalysis &usedSrc) = 0;
 
   virtual TupleResult::Ptr createResult(DynamicContext* context) const = 0;
 
 protected:
   TupleNode(Type type, TupleNode *parent, XPath2MemoryManager *mm)
-    : type_(type), parent_(parent), min_(0), max_(0), userData_(0), mm_(mm) {}
+    : type_(type), parent_(parent), src_(mm), userData_(0), mm_(mm) {}
 
   Type type_;
   TupleNode *parent_;
-  unsigned int min_, max_;
+  StaticAnalysis src_;
   void *userData_;
   XPath2MemoryManager *mm_;
 };

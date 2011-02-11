@@ -271,6 +271,7 @@ void NodeTest::staticResolution(StaticContext *context, const LocationInfo *loca
   // Convert certain NodeTest objects that use an ItemType to ones that don't,
   // for efficiency and simplicity of comparison.
   if(_itemType != 0) {
+    // This will never be a type alias
     _itemType->staticResolution(context, location);
 
     switch(_itemType->getItemTestType()) {

@@ -45,7 +45,7 @@ ASTNode *XQLiteral::create(const Item::Ptr &item, DynamicContext *context, XPath
     context->getItemFactory()->getPrimitiveTypeName(atom->getPrimitiveTypeIndex(), puri, pname);
     bool isPrimitive = XPath2Utils::equals(atom->getTypeName(), pname) && XPath2Utils::equals(atom->getTypeURI(), puri);
 
-    ItemType *type = new (mm) ItemType(atom->getPrimitiveTypeIndex(), isPrimitive, atom->getTypeURI(), atom->getTypeName(), context->getDocumentCache());
+    ItemType *type = new (mm) ItemType(atom->getPrimitiveTypeIndex(), isPrimitive, atom->getTypeURI(), atom->getTypeName(), 0);
     ASTNode *result = 0;
 
     switch(atom->getPrimitiveTypeIndex()) {
@@ -125,15 +125,18 @@ ASTNode* XQLiteral::staticResolution(StaticContext *context)
   case AnyAtomicType::DECIMAL:
   case AnyAtomicType::FLOAT:
   case AnyAtomicType::DOUBLE: {
-    // Constant fold, to parse numeric literals
+    // Pre-parse numeric literals
     XPath2MemoryManager* mm = context->getMemoryManager();
     AutoDelete<DynamicContext> dContext(context->createDynamicContext());
     dContext->setMemoryManager(mm);
 
-    Result result = createResult(dContext);
-    ASTNode *newBlock = XQSequence::constantFold(result, dContext, mm, this);
-    this->release();
-    return newBlock;
+    Numeric::Ptr number = (Numeric*)createResult(dContext)->next(dContext).get();
+    if(number->getState() == Numeric::NUM || (number->getState() == Numeric::NEG_NUM && !number->isZero())) {
+      ASTNode *result = new (mm) XQNumericLiteral(type_, number->asMAPM(), mm);
+      this->release();
+      return result->staticResolution(context);;
+    }
+    break;
   }
   default: break;
   }
@@ -185,6 +188,7 @@ bool XQQNameLiteral::isDateOrTimeAndHasNoTimezone(StaticContext *context) const
 
 ASTNode* XQQNameLiteral::staticResolution(StaticContext *context)
 {
+  type_->staticResolution(context, this);
   return this;
 }
 
@@ -240,6 +244,7 @@ bool XQNumericLiteral::isDateOrTimeAndHasNoTimezone(StaticContext *context) cons
 
 ASTNode* XQNumericLiteral::staticResolution(StaticContext *context)
 {
+  type_->staticResolution(context, this);
   return this;
 }
 
