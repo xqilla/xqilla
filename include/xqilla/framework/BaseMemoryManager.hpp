@@ -73,9 +73,6 @@ public:
     return fStringPool;
   }
   
-  /** create a collation */
-  virtual Collation* createCollation(CollationHelper* helper);
-
   /** create a resolver */
   virtual XQillaNSResolver* createNSResolver(XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *resolverNode);
   

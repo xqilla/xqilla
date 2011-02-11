@@ -76,19 +76,10 @@ Sequence FunctionStartsWith::createSequence(DynamicContext* context, int flags) 
 	if(XMLString::stringLen(find)==0)
 		return Sequence(context->getItemFactory()->createBoolean(true, context), memMgr);
 
-	Collation* collation=NULL;
-	if(getNumArgs()>2) {
-    Sequence collArg = getParamNumber(3,context)->toSequence(context);
-    const XMLCh* collName = collArg.first()->asString(context);
-    try {
-      context->getItemFactory()->createAnyURI(collName, context);
-    } catch(XPath2ErrorException &e) {
-      XQThrow(FunctionException, X("FunctionEndsWith::createSequence"), X("Invalid collationURI"));  
-    }
-	  collation=context->getCollation(collName, this);
-  }
-	else
-		collation=context->getDefaultCollation(this);
+  Collation* collation;
+  if(getNumArgs()>2) collation = context->getCollation(getParamNumber(3,context)->
+    next(context)->asString(context), this);
+  else collation = context->getDefaultCollation(this);
 
 	// Returns a boolean indicating whether or not the value of $operand1 ends with a string that is equal to the value 
 	// of $operand2 according to the specified collation

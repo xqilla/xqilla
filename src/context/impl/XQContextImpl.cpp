@@ -122,7 +122,7 @@ XQContextImpl::XQContextImpl(XQillaConfiguration *conf, XQilla::Language languag
   }
 
   // insert the default collation
-  addCollation(_internalMM.createCollation(&g_codepointCollation));
+  addCollation(&g_codepointCollation);
   setDefaultCollation(g_codepointCollation.getCollationName());
 
   _flworOrderingMode = FLWOR_ORDER_EMPTY_LEAST; // implementation-defined

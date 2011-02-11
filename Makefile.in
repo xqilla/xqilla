@@ -85,7 +85,7 @@ LTLIBRARIES = $(lib_LTLIBRARIES)
 libxqilla_la_LIBADD =
 am_libxqilla_la_OBJECTS = ReferenceCounted.lo BaseMemoryManager.lo \
 	ProxyMemoryManager.lo StringPool.lo XPath2MemoryManagerImpl.lo \
-	UpdateFactory.lo CollationImpl.lo CodepointCollation.lo \
+	UpdateFactory.lo CodepointCollation.lo \
 	VarStoreImpl.lo VarTypeStoreImpl.lo VarHashEntryImpl.lo \
 	XQContextImpl.lo XQDynamicContextImpl.lo ItemFactoryImpl.lo \
 	XQAtomize.lo XQEffectiveBooleanValue.lo XQMap.lo \
@@ -499,7 +499,6 @@ src/framework/ProxyMemoryManager.cpp \
 src/framework/StringPool.cpp \
 src/framework/XPath2MemoryManagerImpl.cpp \
 src/context/UpdateFactory.cpp \
-src/context/impl/CollationImpl.cpp \
 src/context/impl/CodepointCollation.cpp \
 src/context/impl/VarStoreImpl.cpp \
 src/context/impl/VarTypeStoreImpl.hpp \
@@ -1285,7 +1284,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ChildAxis.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ClosureResult.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/CodepointCollation.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/CollationImpl.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ComparisonOperator.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ContentSequenceFilter.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ContextTuple.Plo@am__quote@
@@ -2055,13 +2053,6 @@ UpdateFactory.lo: src/context/UpdateFactory.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/context/UpdateFactory.cpp' object='UpdateFactory.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o UpdateFactory.lo `test -f 'src/context/UpdateFactory.cpp' || echo '$(srcdir)/'`src/context/UpdateFactory.cpp
-
-CollationImpl.lo: src/context/impl/CollationImpl.cpp
-@am__fastdepCXX_TRUE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT CollationImpl.lo -MD -MP -MF $(DEPDIR)/CollationImpl.Tpo -c -o CollationImpl.lo `test -f 'src/context/impl/CollationImpl.cpp' || echo '$(srcdir)/'`src/context/impl/CollationImpl.cpp
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/CollationImpl.Tpo $(DEPDIR)/CollationImpl.Plo
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/context/impl/CollationImpl.cpp' object='CollationImpl.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o CollationImpl.lo `test -f 'src/context/impl/CollationImpl.cpp' || echo '$(srcdir)/'`src/context/impl/CollationImpl.cpp
 
 CodepointCollation.lo: src/context/impl/CodepointCollation.cpp
 @am__fastdepCXX_TRUE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT CodepointCollation.lo -MD -MP -MF $(DEPDIR)/CodepointCollation.Tpo -c -o CodepointCollation.lo `test -f 'src/context/impl/CodepointCollation.cpp' || echo '$(srcdir)/'`src/context/impl/CodepointCollation.cpp

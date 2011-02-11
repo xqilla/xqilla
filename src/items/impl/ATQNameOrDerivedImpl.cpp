@@ -224,6 +224,23 @@ int ATQNameOrDerivedImpl::compare(const ATQNameOrDerived::Ptr &other, const Dyna
   return XPath2Utils::compare(_uri, otherImpl->_uri);
 }
 
+size_t ATQNameOrDerivedImpl::hash(const Collation *collation, const DynamicContext *context) const
+{
+  uint32_t pc = 0xF00BAA56, pb = 0xBADFACE2;
+
+  // Hash the sort type
+  uint32_t ptype = (uint32_t)getSortType();
+  hashword2(&ptype, 1, &pc, &pb);
+
+  // Hash the name
+  hashlittle2((void*)_name, XPath2Utils::uintStrlen(_name) * sizeof(XMLCh), &pc, &pb);
+
+  // Hash the uri
+  hashlittle2((void*)_uri, XPath2Utils::uintStrlen(_uri) * sizeof(XMLCh), &pc, &pb);
+
+  return (size_t)pc + (((size_t)pb)<<32);
+}
+
 const XMLCh* ATQNameOrDerivedImpl::getPrimitiveName()  {
   return SchemaSymbols::fgDT_QNAME;
 }

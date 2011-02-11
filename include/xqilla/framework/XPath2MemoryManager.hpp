@@ -59,9 +59,6 @@ public:
 #endif  
   virtual void deallocate(void* p) = 0;
   
-  /** create a collation */
-  virtual Collation* createCollation(CollationHelper* helper) = 0;
-
   /** create a resolver */
   virtual XQillaNSResolver* createNSResolver(XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *resolverNode) = 0;
   

@@ -34,6 +34,7 @@
 #include <xqilla/context/ItemFactory.hpp>
 #include <xqilla/items/DatatypeFactory.hpp>
 #include <xqilla/utils/XPath2Utils.hpp>
+#include <xqilla/utils/lookup3.hpp>
 
 #include <xercesc/util/XMLString.hpp>
 
@@ -127,6 +128,20 @@ bool ATGYearOrDerivedImpl::equals(const AnyAtomicType::Ptr &target, const Dynami
 int ATGYearOrDerivedImpl::compare(const ATGYearOrDerived::Ptr &other, const DynamicContext *context) const
 {
   return buildReferenceDateTime(context).compare(((const ATGYearOrDerivedImpl *)other.get())->buildReferenceDateTime(context));
+}
+
+size_t ATGYearOrDerivedImpl::hash(const Collation *collation, const DynamicContext *context) const
+{
+  uint32_t pc = 0xF00BAA56, pb = 0xBADFACE2;
+
+  // Hash the sort type
+  uint32_t u32 = (uint32_t)getSortType();
+  hashword2(&u32, 1, &pc, &pb);
+
+  // Hash the normalized value
+  Numeric::hashMAPM(buildReferenceDateTime(context), &pc, &pb);
+
+  return (size_t)pc + (((size_t)pb)<<32);
 }
 
 /** Returns true if a timezone is defined for this.  False otherwise.*/

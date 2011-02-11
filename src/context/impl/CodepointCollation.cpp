@@ -19,6 +19,8 @@
 
 #include "../../config/xqilla_config.h"
 #include <xqilla/context/impl/CodepointCollation.hpp>
+#include <xqilla/utils/XPath2Utils.hpp>
+#include <xqilla/utils/lookup3.hpp>
 #include <xercesc/util/XMLUniDefs.hpp>
 #include <xercesc/util/XMLString.hpp>
 
@@ -77,4 +79,16 @@ int CodepointCollation::compare(const XMLCh* string1, const XMLCh* string2) cons
     ++string2;
   }
   return diff < 0 ? -1 : (diff > 0 ? 1 : 0);
+}
+
+size_t CodepointCollation::hash(const XMLCh* const string) const
+{
+  uint32_t pc = 0xF00BAA56, pb = 0xBADFACE2;
+
+  // Hash the string value
+  if(string != 0) {
+    hashlittle2((void*)string, XPath2Utils::uintStrlen(string) * sizeof(XMLCh), &pc, &pb);
+  }
+
+  return (size_t)pc + (((size_t)pb)<<32);
 }

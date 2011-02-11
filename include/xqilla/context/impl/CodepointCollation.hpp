@@ -21,17 +21,18 @@
 #define CODEPOINTCOLLATION_HPP
 
 #include <xqilla/framework/XQillaExport.hpp>
-#include <xqilla/context/impl/CollationImpl.hpp>
+#include <xqilla/context/Collation.hpp>
 
 class XPath2MemoryManager;
 
-class XQILLA_API CodepointCollation : public CollationHelper {
+class XQILLA_API CodepointCollation : public Collation {
 public:
 	CodepointCollation();
 
   static const XMLCh* getCodepointCollationName();
 	virtual const XMLCh* getCollationName() const;
 	virtual int compare(const XMLCh* string1, const XMLCh* string2) const;
+  virtual size_t hash(const XMLCh* const string) const;
 };
 
 #endif

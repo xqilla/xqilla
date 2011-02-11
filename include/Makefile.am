@@ -117,7 +117,6 @@ xqilla/context/Collation.hpp \
 xqilla/context/ExternalFunctionResolver.hpp \
 xqilla/context/UpdateFactory.hpp \
 xqilla/context/RegexGroupStore.hpp \
-xqilla/context/impl/CollationImpl.hpp \
 xqilla/context/impl/VarHashEntryImpl.hpp \
 xqilla/context/impl/VarStoreImpl.hpp \
 xqilla/context/impl/VariableStoreTemplate.hpp \

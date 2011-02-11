@@ -38,6 +38,7 @@
 #include <xqilla/items/Timezone.hpp>
 #include <xqilla/context/ItemFactory.hpp>
 #include <xqilla/utils/XPath2Utils.hpp>
+#include <xqilla/utils/lookup3.hpp>
 
 #include <limits.h>   // for INT_MIN and INT_MAX
 #include <stdlib.h>   // for atoi
@@ -259,6 +260,20 @@ int ATDateOrDerivedImpl::compare(const ATDateOrDerived::Ptr &target, const Dynam
 {
   const ATDateOrDerivedImpl *other = (const ATDateOrDerivedImpl *)target.get();
   return tzNormalize(_hasTimezone, seconds_, context).compare(tzNormalize(other->_hasTimezone, other->seconds_, context));
+}
+
+size_t ATDateOrDerivedImpl::hash(const Collation *collation, const DynamicContext *context) const
+{
+  uint32_t pc = 0xF00BAA56, pb = 0xBADFACE2;
+
+  // Hash the sort type
+  uint32_t u32 = (uint32_t)getSortType();
+  hashword2(&u32, 1, &pc, &pb);
+
+  // Hash the normalized value
+  Numeric::hashMAPM(tzNormalize(_hasTimezone, seconds_, context), &pc, &pb);
+
+  return (size_t)pc + (((size_t)pb)<<32);
 }
 
 /** 

@@ -30,6 +30,7 @@
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/context/ItemFactory.hpp>
 #include <xqilla/utils/XPath2Utils.hpp>
+#include <xqilla/utils/lookup3.hpp>
 
 #include <xercesc/util/XMLUniDefs.hpp>
 #include <xercesc/validators/schema/SchemaSymbols.hpp>
@@ -161,6 +162,31 @@ inline int typePromoteCompare(const Numeric::Ptr &num1, const Numeric::Ptr &num2
 int Numeric::compare(const Numeric::Ptr &other, const DynamicContext *context) const
 {
   return ::compare(getState(), asMAPM(), other->getState(), other->asMAPM());
+}
+
+void Numeric::hashMAPM(const MAPM &m, uint32_t *pc, uint32_t *pb)
+{
+  M_APM val = m.c_struct();
+  hashlittle2((void*)&val->m_apm_exponent, sizeof(int), pc, pb);
+  hashlittle2(val->m_apm_data, (val->m_apm_datalength + 1) >> 1, pc, pb);
+}
+
+size_t Numeric::hash(const Collation *collation, const DynamicContext *context) const
+{
+  uint32_t pc = 0xF00BAA56, pb = 0xBADFACE2;
+
+  // Hash the sort type
+  uint32_t u32 = (uint32_t)getSortType();
+  hashword2(&u32, 1, &pc, &pb);
+
+  // Hash the state
+  u32 = getState();
+  hashword2(&u32, 1, &pc, &pb);
+
+  // Hash the mapm
+  hashMAPM(asMAPM(), &pc, &pb);
+
+  return (size_t)pc + (((size_t)pb)<<32);
 }
 
 bool Numeric::equals(const AnyAtomicType::Ptr &target, const DynamicContext* context) const

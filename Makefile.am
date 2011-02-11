@@ -26,7 +26,6 @@ src/framework/ProxyMemoryManager.cpp \
 src/framework/StringPool.cpp \
 src/framework/XPath2MemoryManagerImpl.cpp \
 src/context/UpdateFactory.cpp \
-src/context/impl/CollationImpl.cpp \
 src/context/impl/CodepointCollation.cpp \
 src/context/impl/VarStoreImpl.cpp \
 src/context/impl/VarTypeStoreImpl.hpp \

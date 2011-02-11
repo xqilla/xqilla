@@ -30,10 +30,12 @@
 #include <xqilla/items/DatatypeFactory.hpp>
 #include <xqilla/context/ItemFactory.hpp>
 
+XERCES_CPP_NAMESPACE_USE;
+
 const XMLCh FunctionCompare::name[] = {
-  XERCES_CPP_NAMESPACE_QUALIFIER chLatin_c, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_o, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_m, 
-  XERCES_CPP_NAMESPACE_QUALIFIER chLatin_p, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_a, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_r, 
-  XERCES_CPP_NAMESPACE_QUALIFIER chLatin_e, XERCES_CPP_NAMESPACE_QUALIFIER chNull 
+  chLatin_c, chLatin_o, chLatin_m, 
+  chLatin_p, chLatin_a, chLatin_r, 
+  chLatin_e, chNull 
 };
 const unsigned int FunctionCompare::minArgs = 2;
 const unsigned int FunctionCompare::maxArgs = 3;
@@ -48,34 +50,18 @@ FunctionCompare::FunctionCompare(const VectorOfASTNodes &args, XPath2MemoryManag
 {
 }
 
-Sequence FunctionCompare::createSequence(DynamicContext* context, int flags) const
+Result FunctionCompare::createResult(DynamicContext* context, int flags) const
 {
-    Sequence str1 = getParamNumber(1,context)->toSequence(context);
-    Sequence str2 = getParamNumber(2,context)->toSequence(context);
-    if(str1.isEmpty() || str2.isEmpty())
-        return Sequence(context->getMemoryManager());
+  Item::Ptr str1 = getParamNumber(1,context)->next(context);
+  Item::Ptr str2 = getParamNumber(2,context)->next(context);
+  if(str1.isNull() || str2.isNull())
+    return 0;
 
-    Collation* collation = NULL;
-    if(getNumArgs()>2) {
-        Sequence collArg = getParamNumber(3,context)->toSequence(context);
-        const XMLCh* collName = collArg.first()->asString(context);
-        try {
-            context->getItemFactory()->createAnyURI(collName, context);
-        } catch(XPath2ErrorException &e) {
-            XQThrow(FunctionException, X("FunctionCompare::createSequence"), X("Invalid argument to compare function"));  
-        }
-        collation = context->getCollation(collName, this);
-        if(collation == NULL)
-            XQThrow(FunctionException,X("FunctionCompare::createSequence"),X("Collation object is not available"));
-    }
-    else
-        collation = context->getDefaultCollation(this);
-    if(collation == NULL)
-        collation = context->getCollation(CodepointCollation::getCodepointCollationName(), this);
+  Collation* collation;
+  if(getNumArgs()>2) collation = context->getCollation(getParamNumber(3,context)->
+    next(context)->asString(context), this);
+  else collation = context->getDefaultCollation(this);
 
-    const XMLCh* string1 = str1.first()->asString(context);
-    const XMLCh* string2 = str2.first()->asString(context);
-    Sequence result(context->getItemFactory()->createInteger(collation->compare(string1,string2), context), context->getMemoryManager());
-
-    return result;
+  return (Item::Ptr)context->getMemoryManager()->createInteger(collation->
+    compare(str1->asString(context), str2->asString(context)));
 }

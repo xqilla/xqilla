@@ -26,7 +26,6 @@
 
 #include <xqilla/exceptions/XQillaException.hpp>
 #include <xqilla/utils/XStr.hpp>
-#include <xqilla/context/impl/CollationImpl.hpp>
 #include <xqilla/dom-api/impl/XQillaNSResolverImpl.hpp>
 #include "../context/impl/VarTypeStoreImpl.hpp"
 #include <xqilla/items/impl/ATDecimalOrDerivedImpl.hpp>
@@ -280,11 +279,6 @@ void BaseMemoryManager::dumpStatistics() const
 
   std::cout << "\tAllocated objects: " << (unsigned int)objectsAllocated_ << std::endl;
   std::cout << "\tTotal Memory Allocated: " << (unsigned int)totalMemoryAllocated_ << std::endl;
-}
-
-/** create a collation */
-Collation* BaseMemoryManager::createCollation(CollationHelper* helper) {
-  return new (this) CollationImpl(this,helper);
 }
 
 /** create a resolver */

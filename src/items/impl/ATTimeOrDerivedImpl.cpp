@@ -31,9 +31,11 @@
 #include <xqilla/items/ATDecimalOrDerived.hpp>
 #include <xqilla/items/ATDurationOrDerived.hpp>
 #include <xqilla/items/Timezone.hpp>
+#include <xqilla/items/Numeric.hpp>
 #include <xqilla/items/impl/ATDecimalOrDerivedImpl.hpp>
 #include <xqilla/context/ItemFactory.hpp>
 #include <xqilla/utils/XPath2Utils.hpp>
+#include <xqilla/utils/lookup3.hpp>
 
 #include <limits.h>   // for INT_MIN and INT_MAX
 #include <stdlib.h>   // for atoi
@@ -216,6 +218,20 @@ int ATTimeOrDerivedImpl::compare(const ATTimeOrDerived::Ptr &target, const Dynam
 {
   const ATTimeOrDerivedImpl *other = (const ATTimeOrDerivedImpl *)target.get();
   return buildReferenceDateTime(context).compare(other->buildReferenceDateTime(context));
+}
+
+size_t ATTimeOrDerivedImpl::hash(const Collation *collation, const DynamicContext *context) const
+{
+  uint32_t pc = 0xF00BAA56, pb = 0xBADFACE2;
+
+  // Hash the sort type
+  uint32_t u32 = (uint32_t)getSortType();
+  hashword2(&u32, 1, &pc, &pb);
+
+  // Hash the normalized value
+  Numeric::hashMAPM(buildReferenceDateTime(context), &pc, &pb);
+
+  return (size_t)pc + (((size_t)pb)<<32);
 }
 
 /** 

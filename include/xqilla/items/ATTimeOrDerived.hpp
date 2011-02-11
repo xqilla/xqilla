@@ -53,6 +53,7 @@ public:
   /** Returns less than 0 if this is less that other,
       0 if they are the same, and greater than 0 otherwise */
   virtual int compare(const ATTimeOrDerived::Ptr &other, const DynamicContext *context) const = 0;
+  virtual size_t hash(const Collation *collation, const DynamicContext *context) const = 0;
  
   /** 
    * Returns an integer representing the hour component of this object

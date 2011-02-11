@@ -30,7 +30,13 @@
 #include <xqilla/exceptions/NamespaceLookupException.hpp>
 #include <xqilla/exceptions/IllegalArgumentException.hpp>
 #include <xqilla/context/ItemFactory.hpp>
+#include <xqilla/context/Collation.hpp>
 #include <xqilla/events/EventHandler.hpp>
+#include <xqilla/utils/lookup3.hpp>
+#include <xqilla/runtime/Result.hpp>
+#include <xqilla/ast/ASTNode.hpp>
+#include <xqilla/functions/FuncFactory.hpp>
+#include <xqilla/functions/XQillaFunction.hpp>
 
 #include <xercesc/util/XMLString.hpp>
 #include <xercesc/util/XMLUniDefs.hpp>
@@ -184,6 +190,65 @@ bool AnyAtomicType::isInstanceOfType(const XMLCh* targetTypeURI, const XMLCh* ta
   return context->isTypeOrDerivedFromType(this->getTypeURI(), this->getTypeName(), targetTypeURI, targetTypeName);
 }
 
+AnyAtomicType::AtomicObjectType AnyAtomicType::getSortType() const
+{
+  switch(getPrimitiveTypeIndex()) {
+  case ANY_URI:
+  case UNTYPED_ATOMIC:
+  case STRING: return STRING;
+
+  case DECIMAL:
+  case FLOAT:
+  case DOUBLE: return DOUBLE;
+
+  case DAY_TIME_DURATION:
+  case YEAR_MONTH_DURATION:
+  case DURATION: return DURATION;
+
+  case BASE_64_BINARY: return BASE_64_BINARY;
+  case BOOLEAN: return BOOLEAN;
+  case DATE: return DATE;
+  case DATE_TIME: return DATE_TIME;
+  case G_DAY: return G_DAY;
+  case G_MONTH: return G_MONTH;
+  case G_MONTH_DAY: return G_MONTH_DAY;
+  case G_YEAR: return G_YEAR;
+  case G_YEAR_MONTH: return G_YEAR_MONTH;
+  case HEX_BINARY: return HEX_BINARY;
+  case NOTATION: return NOTATION;
+  case QNAME: return QNAME;
+  case TIME: return TIME;
+  case NumAtomicObjectTypes: break;
+  }
+
+  assert(false); // Not supported
+  return NumAtomicObjectTypes;
+}
+
+size_t AnyAtomicType::hash(const Collation *collation, const DynamicContext *context) const
+{
+  uint32_t pc, pb;
+
+  uint32_t ptype = (uint32_t)getSortType();
+
+  // Hash the string value
+  const XMLCh *a = asString(context);
+  if(ptype == STRING && collation) {
+    size_t hash = collation->hash(a);
+    pc = (uint32_t)hash;
+    pb = (uint32_t)(hash >> 32);
+  }
+  else if(a != 0) {
+    pc = 0xF00BAA56;
+    pb = 0xBADFACE2;
+    hashlittle2((void*)a, XPath2Utils::uintStrlen(a) * sizeof(XMLCh), &pc, &pb);
+  }
+
+  // Hash the sort type
+  hashword2(&ptype, 1, &pc, &pb);
+
+  return (size_t)pc + (((size_t)pb)<<32);
+}
 
 /**
   * Returns true if 
@@ -321,3 +386,33 @@ bool AnyAtomicType::CastTable::getCell(AnyAtomicType::AtomicObjectType source,
   return staticCastTable[source][target];
   
 }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+static Result atomicHash(const VectorOfASTNodes &args, DynamicContext *context,
+                         const LocationInfo *info)
+{
+  Item::Ptr item = args[0]->createResult(context)->next(context);
+
+  Collation* collation;
+  if(args.size() > 1) collation = context->getCollation(args[1]->createResult(context)->
+    next(context)->asString(context), info);
+  else collation = context->getDefaultCollation(info);
+
+  size_t hash = ((AnyAtomicType*)item.get())->hash(collation, context);
+  return (Item::Ptr)context->getItemFactory()->createInteger(MAPM((uint64_t)hash), context);
+}
+
+const XMLCh atomicHashName[] =
+{ 'h', 'a', 's', 'h', 0 };
+
+static SimpleBuiltinFactory atomicHashFactory(
+  XQillaFunction::XMLChFunctionURI, atomicHashName, 1,
+  "($arg as xs:anyAtomicType) as xs:integer", atomicHash
+);
+
+static SimpleBuiltinFactory atomicHashFactory2(
+  XQillaFunction::XMLChFunctionURI, atomicHashName, 2,
+  "($arg as xs:anyAtomicType, $collation as xs:string) as xs:integer", atomicHash
+);
+

@@ -34,6 +34,7 @@
 #include "../../utils/DateUtils.hpp"
 #include <xqilla/utils/XPath2Utils.hpp>
 #include <xqilla/context/ItemFactory.hpp>
+#include <xqilla/utils/lookup3.hpp>
 
 #if defined(XERCES_HAS_CPP_NAMESPACE)
 XERCES_CPP_NAMESPACE_USE
@@ -354,6 +355,27 @@ int ATDurationOrDerivedImpl::compare(const ATDurationOrDerived::Ptr &other, cons
   if(cmp != 0) return cmp;
 
   return _seconds.compare(otherImpl->_seconds) * (_isPositive ? 1 : -1);
+}
+
+size_t ATDurationOrDerivedImpl::hash(const Collation *collation, const DynamicContext *context) const
+{
+  uint32_t pc = 0xF00BAA56, pb = 0xBADFACE2;
+
+  // Hash the sort type
+  uint32_t u32 = (uint32_t)getSortType();
+  hashword2(&u32, 1, &pc, &pb);
+
+  // Hash the sign
+  u32 = _isPositive;
+  hashword2(&u32, 1, &pc, &pb);
+
+  // Hash the months
+  Numeric::hashMAPM(_months, &pc, &pb);
+
+  // Hash the seconds
+  Numeric::hashMAPM(_seconds, &pc, &pb);
+
+  return (size_t)pc + (((size_t)pb)<<32);
 }
 
 static inline ATDurationOrDerived::Ptr newDayTimeDuration(const Numeric::Ptr &valueSeconds,

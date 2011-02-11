@@ -32,11 +32,8 @@ public:
   virtual ~Collation() {};
 
   virtual const XMLCh* getCollationName() const = 0;
-  virtual Sequence sort(Sequence data, const DynamicContext* context) const = 0;
   virtual int compare(const XMLCh* const string1, const XMLCh* const string2) const = 0;
-
-protected:
-  Collation() {}
+  virtual size_t hash(const XMLCh* const string) const = 0;
 };
 
 #endif

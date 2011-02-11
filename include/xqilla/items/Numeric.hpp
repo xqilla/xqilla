@@ -66,6 +66,7 @@ public:
   /** Returns less than 0 if this is less that other,
       0 if they are the same, and greater than 0 otherwise */
   virtual int compare(const Numeric::Ptr &other, const DynamicContext *context) const;
+  virtual size_t hash(const Collation *collation, const DynamicContext *context) const;
 
   /** Returns a Numeric object which is the sum of this and other */
   virtual Numeric::Ptr add(const Numeric::Ptr &other, const DynamicContext* context) const = 0;
@@ -175,6 +176,8 @@ public:
 
   static const XMLCh *asDecimalString(const MAPM &value, int significantDigits, const StaticContext* context);
   static const XMLCh *asDoubleString(State state, const MAPM &value, int significantDigits, const StaticContext* context);
+
+  static void hashMAPM(const MAPM &m, uint32_t *pc, uint32_t *pb);
 
 protected:
   virtual AnyAtomicType::Ptr castAsInternal(AtomicObjectType targetIndex, const XMLCh* targetURI,

@@ -26,6 +26,7 @@
 
 class DynamicContext;
 class StaticContext;
+class Collation;
 
 class XQILLA_API AnyAtomicType: public Item
 {
@@ -104,6 +105,8 @@ public:
    * in the context of the datatype), false otherwise */
   virtual bool equals(const AnyAtomicType::Ptr &target, const DynamicContext* context) const = 0;
 
+  virtual size_t hash(const Collation *collation, const DynamicContext *context) const;
+
   /* Returns true if this typeName and uri match the given typeName and uri */
   virtual bool isOfType(const XMLCh* targetURI, const XMLCh* targetType, const DynamicContext* context) const;
 
@@ -128,6 +131,7 @@ public:
   bool castIsSupported(AtomicObjectType targetIndex, const DynamicContext* context) const;
 
   virtual AtomicObjectType getPrimitiveTypeIndex() const = 0;
+  AnyAtomicType::AtomicObjectType getSortType() const;
  
   static const XMLCh fgDT_ANYATOMICTYPE[];
 

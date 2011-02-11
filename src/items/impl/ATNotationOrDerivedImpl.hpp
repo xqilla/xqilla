@@ -57,6 +57,7 @@ public:
   /** Returns less than 0 if this is less that other,
       0 if they are the same, and greater than 0 otherwise */
   virtual int compare(const ATNotationOrDerived::Ptr &other, const DynamicContext *context) const;
+  virtual size_t hash(const Collation *collation, const DynamicContext *context) const;
  
   /* Get the primitive index associated with this type */
   static AnyAtomicType::AtomicObjectType getTypeIndex(); 
