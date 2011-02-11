@@ -54,16 +54,6 @@ ASTNode *FunctionEmpty::staticTypingImpl(StaticContext *context)
 {
   _src.clearExceptType();
   calculateSRCForArguments(context);
-
-  if(context) {
-    const StaticAnalysis &sa = _args[0]->getStaticAnalysis();
-    const StaticType &sType = sa.getStaticType();
-    if((sType.getMin() > 0 || sType.getMax() == 0) && !sa.areDocsOrCollectionsUsed() && !sa.isNoFoldingForced()) {
-      XPath2MemoryManager* mm = context->getMemoryManager();
-      return XQLiteral::create(sType.getMax() == 0, mm, this)->staticResolution(context);
-    }
-  }
-
   return this;
 }
 

@@ -129,6 +129,9 @@ public:
 
   ASTNode *apply(const ASTNode *item, DynamicContext *context) const;
 
+  static XQRewriteRule *parse(const XMLCh *rulestr, XPath2MemoryManager *mm,
+                              const LocationInfo *info);
+
 private:
   const XMLCh *qname_, *uri_, *name_;
   RewritePattern *pattern_;

@@ -104,6 +104,8 @@ void XQRewriteRule::staticTyping(StaticContext *context, StaticTyper *styper)
 
 ASTNode *XQRewriteRule::apply(const ASTNode *item, DynamicContext *context) const
 {
+  const XMLCh s_this[] = { 't', 'h', 'i', 's', 0 };
+
   // std::cerr << UTF8(item->getFile()) << ":" << item->getLine()
   //           << ":" << item->getColumn() << " trying {"
   //           << UTF8(uri_) << "}" << UTF8(name_) << std::endl;
@@ -116,6 +118,9 @@ ASTNode *XQRewriteRule::apply(const ASTNode *item, DynamicContext *context) cons
   // std::cerr << UTF8(item->getFile()) << ":" << item->getLine()
   //           << ":" << item->getColumn() << " pattern matches {"
   //           << UTF8(uri_) << "}" << UTF8(name_) << std::endl;
+
+  // Add the "this" entry
+  tuple->add(0, s_this, Item::Ptr(new ExpressionItem(item)), context);
 
   if(where_) {
     // Check the where clause
@@ -144,6 +149,17 @@ ASTNode *XQRewriteRule::apply(const ASTNode *item, DynamicContext *context) cons
   }
 
   return 0;
+}
+
+XQRewriteRule *XQRewriteRule::parse(const XMLCh *rulestr, XPath2MemoryManager *mm,
+                                    const LocationInfo *info)
+{
+  XQLexer lexer(mm, _LANG_REWRITE_RULE_, info->getFile(), info->getLine(),
+                info->getColumn(), rulestr);
+  XQParserArgs args(&lexer);
+  args._rewriteRule = true;
+  XQParser::yyparse(&args);
+  return args._rwrule;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

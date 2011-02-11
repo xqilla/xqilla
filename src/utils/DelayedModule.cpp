@@ -22,6 +22,7 @@
 #include <xqilla/simple-api/XQQuery.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/functions/BuiltInModules.hpp>
+#include <xqilla/ast/XQRewriteRule.hpp>
 
 XERCES_CPP_NAMESPACE_USE;
 
@@ -35,6 +36,7 @@ void DelayedModule::importModuleInto(XQQuery *importer) const
 
     DynamicContext *context = scontext->createModuleContext();
     context->setNamespaceBinding(prefix, uri);
+    BuiltInModules::addNamespaces(context);
 
     module = new (scontext->getMemoryManager())
       XQQuery(context, true, importer->getModuleCache(), scontext->getMemoryManager());
@@ -46,16 +48,31 @@ void DelayedModule::importModuleInto(XQQuery *importer) const
 
     XPath2MemoryManager *mm = context->getMemoryManager();
 
-    for(const FuncDef *ptr = functions; ptr->name != 0; ++ptr) {
-      module->addDelayedFunction(uri, mm->getPooledString(ptr->name), ptr->args,
-                                 ptr->body, ptr->isPrivate,
-                                 ptr->line, ptr->column);
+    for(const Decl *ptr = declarations;; ++ptr) {
+      switch(ptr->type) {
+      case Decl::FUNCTION: {
+        module->addDelayedFunction(uri, mm->getPooledString(ptr->name), ptr->args,
+                                   ptr->body, ptr->isPrivate, ptr->line, ptr->column);
+        continue;
+      }
+      case Decl::REWRITE_RULE: {
+        LocationInfo loc(file, ptr->line, ptr->column);
+        module->addRewriteRule(XQRewriteRule::parse(mm->getPooledString(ptr->body), mm, &loc));
+        continue;
+      }
+      case Decl::NAMESPACE: {
+        context->setNamespaceBinding(mm->getPooledString(ptr->name),
+                                     mm->getPooledString(ptr->body));
+        continue;
+      }
+      case Decl::NONE: break;
+      }
+      break;
     }
 
     importer->getModuleCache()->put(guard.adopt());
 
-    BuiltInModules::core.importModuleInto(module);
-    BuiltInModules::fn.importModuleInto(module);
+    BuiltInModules::addModules(module);
   }
 
   importer->importModule(module);

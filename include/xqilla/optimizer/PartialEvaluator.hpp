@@ -47,23 +47,12 @@ protected:
   virtual ASTNode *optimizePartialApply(XQPartialApply *item);
   virtual ASTNode *optimizeFunctionCoercion(XQFunctionCoercion *item);
   virtual ASTNode *optimizeReturn(XQReturn *item);
-  virtual ASTNode *optimizeIf(XQIf *item);
   virtual ASTNode *optimizeQuantified(XQQuantified *item);
-  virtual ASTNode *optimizePredicate(XQPredicate *item);
-  virtual ASTNode *optimizeEffectiveBooleanValue(XQEffectiveBooleanValue *item);
-  virtual ASTNode *optimizeOperator(XQOperator *item);
   virtual ASTNode *optimizeNamespaceBinding(XQNamespaceBinding *item);
   virtual ASTNode *optimizeInlineFunction(XQInlineFunction *item);
   virtual ASTNode *optimizeFunction(XQFunction *item);
   virtual ASTNode *optimizeTypeswitch(XQTypeswitch *item);
   virtual ASTNode *optimizeTreatAs(XQTreatAs *item);
-
-  ASTNode *optimizePlus(Plus *item);
-  ASTNode *optimizeMinus(Minus *item);
-  ASTNode *optimizeMultiply(Multiply *item);
-  ASTNode *optimizeDivide(Divide *item);
-  ASTNode *optimizeAnd(And *item);
-  ASTNode *optimizeOr(Or *item);
 
   bool checkSizeLimit(const ASTNode *oldAST, const ASTNode *newAST);
 

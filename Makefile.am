@@ -250,6 +250,7 @@ src/functions/FunctionSignature.cpp \
 src/functions/BuiltInModules.cpp \
 src/functions/CoreModule.hpp \
 src/functions/FnModule.hpp \
+src/functions/RwModule.hpp \
 src/items/impl/ATAnyURIOrDerivedImpl.cpp \
 src/items/impl/ATAnyURIOrDerivedImpl.hpp \
 src/items/impl/ATBase64BinaryOrDerivedImpl.cpp \
@@ -487,6 +488,7 @@ src/samples/dom-api/foo.xml \
 src/samples/simple-api/foo.xml \
 src/functions/CoreModule.xq \
 src/functions/FnModule.xq \
+src/functions/RwModule.xq \
 LICENSE \
 TODO \
 README \
@@ -590,6 +592,9 @@ $(top_srcdir)/src/functions/CoreModule.hpp: $(top_srcdir)/src/functions/CoreModu
 
 $(top_srcdir)/src/functions/FnModule.hpp: $(top_srcdir)/src/functions/FnModule.xq
 	./compile-delayed-module $(top_srcdir)/src/functions/FnModule.xq >$(top_srcdir)/src/functions/FnModule.hpp
+
+$(top_srcdir)/src/functions/RwModule.hpp: $(top_srcdir)/src/functions/RwModule.xq
+	./compile-delayed-module $(top_srcdir)/src/functions/RwModule.xq >$(top_srcdir)/src/functions/RwModule.hpp
 
 LEXERFILE   = $(top_srcdir)/src/lexer/XQLexer.cpp
 LEXTEMPLATE = $(top_srcdir)/src/lexer/XQLexer.l

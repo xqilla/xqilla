@@ -140,7 +140,6 @@
 
 #include <xqilla/functions/FunctionRoot.hpp>
 #include <xqilla/functions/FunctionId.hpp>
-#include <xqilla/functions/FunctionError.hpp>
 #include <xqilla/functions/XQillaFunction.hpp>
 #include <xqilla/functions/BuiltInModules.hpp>
 
@@ -228,11 +227,6 @@ void *alloca (size_t);
   CONTEXT->setNamespaceBinding((prefix), (uri)); \
 }
 
-#define SET_BUILT_IN_NAMESPACE(prefix, uri) { \
-  if(!QP->_namespaceDecls.containsKey((prefix))) \
-    CONTEXT->setNamespaceBinding((prefix), (uri)); \
-}
-
 #undef yylex
 #define yylex QP->_lexer->yylex
 #undef yyerror
@@ -250,12 +244,6 @@ static const XMLCh option_lint[] = { 'l', 'i', 'n', 't', 0 };
 static const XMLCh option_extensions[] = { 'e', 'x', 't', 'e', 'n', 's', 'i', 'o', 'n', 's', 0 };
 static const XMLCh option_rule[] = { 'r', 'u', 'l', 'e', 0 };
 static const XMLCh var_name[] = { 'n', 'a', 'm', 'e', 0 };
-
-static const XMLCh XMLChXS[]    = { chLatin_x, chLatin_s, chNull };
-static const XMLCh XMLChXSI[]   = { chLatin_x, chLatin_s, chLatin_i, chNull };
-static const XMLCh XMLChFN[]    = { chLatin_f, chLatin_n, chNull };
-static const XMLCh XMLChLOCAL[] = { chLatin_l, chLatin_o, chLatin_c, chLatin_a, chLatin_l, chNull };
-static const XMLCh XMLChERR[]   = { chLatin_e, chLatin_r, chLatin_r, chNull };
 
 static inline VectorOfASTNodes packageArgs(ASTNode *arg1Impl, ASTNode *arg2Impl, XPath2MemoryManager* memMgr)
 {
@@ -340,6 +328,34 @@ static ASTNode *variableValueXSLT(const yyltype &pos, XQParserArgs *qp, ASTNode 
   }
 
   return WRAP(pos, new (MEMMGR) XQFunctionConversion(WRAP(pos, new (MEMMGR) XQSequence(MEMMGR)), seqType, MEMMGR));
+}
+
+static void DM_outputDecl(const char *type, const char *name, int size, bool privte, int line, int column, const XMLCh *body, int bodylen)
+{
+  XMLBuffer buf;
+  printf("  {\n    DelayedModule::Decl::%s, \"%s\", %d, %s, %d, %d,\n", type, name, size,
+         privte ? "true" : "false", line, column);
+  printf("    \"");
+  const XMLCh *ptr = body;
+  const XMLCh *start = ptr;
+  const XMLCh *end = body + bodylen;
+  for(;ptr < end; ++ptr) {
+    if(*ptr == '"') {
+      if((ptr - start) == 0) buf.reset();
+      else buf.set(start, ptr - start);
+      printf("%s\\\"", UTF8(buf.getRawBuffer()));
+      start = ptr + 1;
+    }
+    else if(*ptr == '\n') {
+      if((ptr - start) == 0) buf.reset();
+      else buf.set(start, ptr - start);
+      printf("%s\\n\"\n    \"", UTF8(buf.getRawBuffer()));
+      start = ptr + 1;
+    }
+  }
+  buf.set(start, ptr - start);
+  printf("%s\"\n", UTF8(buf.getRawBuffer()));
+  printf("  },\n");
 }
 
 namespace XQParser {
@@ -779,14 +795,14 @@ namespace XQParser {
 
 // Select the language we parse, based on the (fake) first token from the lexer
 SelectLanguage:
-    _LANG_XPATH2_ XPath2Namespaces QueryBody
+    _LANG_XPATH2_ QueryBody
 
   | _LANG_XQUERY_ XQueryNamespaces Module
   | _LANG_FUNCDECL_ XQueryNamespaces Start_FunctionDecl
 
   | _LANG_XSLT2_ Start_XSLT
 
-  | _LANG_DELAYEDMODULE_ Start_DelayedModule
+  | _LANG_DELAYEDMODULE_ XQueryNamespaces Start_DelayedModule
   | _LANG_FUNCTION_SIGNATURE_ Start_FunctionSignature
 
   | _LANG_REWRITE_RULE_ RewriteRule
@@ -798,21 +814,10 @@ SelectLanguage:
   }
   ;
 
-XPath2Namespaces:
-    /* empty */
-  {
-    SET_BUILT_IN_NAMESPACE(XQillaFunction::XQillaPrefix, XQillaFunction::XMLChFunctionURI);
-  }
-
 XQueryNamespaces:
     /* empty */
   {
-    SET_BUILT_IN_NAMESPACE(XMLChXS, SchemaSymbols::fgURI_SCHEMAFORSCHEMA);
-    SET_BUILT_IN_NAMESPACE(XMLChXSI, SchemaSymbols::fgURI_XSI);
-    SET_BUILT_IN_NAMESPACE(XMLChFN, XQFunction::XMLChFunctionURI);
-    SET_BUILT_IN_NAMESPACE(XMLChLOCAL, XQUserFunction::XMLChXQueryLocalFunctionsURI);
-    SET_BUILT_IN_NAMESPACE(XMLChERR, FunctionError::XMLChXQueryErrorURI);
-    SET_BUILT_IN_NAMESPACE(XQillaFunction::XQillaPrefix, XQillaFunction::XMLChFunctionURI);
+    BuiltInModules::addNamespaces(CONTEXT);
   }
 
 Start_FunctionDecl:
@@ -836,12 +841,12 @@ Start_FunctionSignature:
   ;
 
 Start_DelayedModule:
-    DM_ModuleDecl DM_Prolog
+    VersionDecl DM_ModuleDecl DM_Prolog
   {
-    printf("  { 0, 0, 0, 0, 0 }\n};\n\n");
+    printf("  { DelayedModule::Decl::NONE, 0, 0, 0, 0, 0 }\n};\n\n");
 
     UTF8Str module(QP->_moduleName);
-    printf("static const DelayedModule %s_module = { %s_file, %s_prefix, %s_uri, %s_functions };\n",
+    printf("static const DelayedModule %s_module = { %s_file, %s_prefix, %s_uri, %s_declarations };\n",
            module.str(), module.str(), module.str(), module.str(), module.str());
   }
   ;
@@ -849,6 +854,8 @@ Start_DelayedModule:
 DM_ModuleDecl:
     _MODULE_ _NAMESPACE_ NCName _EQUALS_ URILiteral Separator
   {
+    SET_NAMESPACE(@3, $3, $5);
+
     QP->_moduleName = $3;
 
     UTF8Str module(QP->_moduleName);
@@ -886,11 +893,11 @@ DM_ModuleDecl:
 DM_Prolog:
     /* empty */
   {
-    printf("static const DelayedModule::FuncDef %s_functions[] = {\n", UTF8(QP->_moduleName));
+    printf("static const DelayedModule::Decl %s_declarations[] = {\n", UTF8(QP->_moduleName));
   }
   | DM_Prolog DM_FunctionDecl
-  {
-  }
+  | DM_Prolog DM_OptionDecl
+  | DM_Prolog DM_NamespaceDecl
   ;
 
 DM_FunctionDecl:
@@ -902,32 +909,49 @@ DM_FunctionDecl:
     $2->staticResolution(CONTEXT);
 
     const XMLCh *localname = XPath2NSUtils::getLocalName($4);
-
-    printf("  {\n    \"%s\", %d, %s, %d, %d,\n", UTF8(localname), (int)($5 ? $5->size() : 0),
-      $2->isPrivate() ? "true" : "false", @1.first_line, @1.first_column);
-    printf("    \"");
-    const XMLCh *ptr = ((XQLexer*)QP->_lexer)->getQueryString() + @1.first_offset;
-    const XMLCh *start = ptr;
-    const XMLCh *end = ((XQLexer*)QP->_lexer)->getQueryString() + @8.last_offset;
-    for(;ptr < end; ++ptr) {
-      if(*ptr == '"') {
-        if((ptr - start) == 0) buf.reset();
-        else buf.set(start, ptr - start);
-        printf("%s\\\"", UTF8(buf.getRawBuffer()));
-        start = ptr + 1;
-      }
-      else if(*ptr == '\n') {
-        if((ptr - start) == 0) buf.reset();
-        else buf.set(start, ptr - start);
-        printf("%s\\n\"\n    \"", UTF8(buf.getRawBuffer()));
-        start = ptr + 1;
-      }
-    }
-    buf.set(start, ptr - start);
-    printf("%s\\n\"\n", UTF8(buf.getRawBuffer()));
-    printf("  },\n");
+    DM_outputDecl("FUNCTION", UTF8(localname), (int)($5 ? $5->size() : 0),
+                  $2->isPrivate(), @1.first_line, @1.first_column,
+                  ((XQLexer*)QP->_lexer)->getQueryString() + @1.first_offset,
+                  @8.last_offset - @1.first_offset);
   }
   ;
+
+DM_OptionDecl:
+    _DECLARE_ _OPTION_ QNameValue _STRING_LITERAL_ Separator
+  {
+    // validate the QName
+    QualifiedName qName($3);
+    const XMLCh* prefix = qName.getPrefix();
+    if(prefix == 0 || *prefix == 0)
+      yyerror(@3, "The option name must have a prefix [err:XPST0081]");
+
+    const XMLCh *uri = 0;
+    try {
+      LOCATION(@3, loc);
+      uri = CONTEXT->getUriBoundToPrefix(prefix, &loc);
+    }
+    catch(NamespaceLookupException&) {
+      yyerror(@3, "The option name is using an undefined namespace prefix [err:XPST0081]");
+    }
+
+    if(XPath2Utils::equals(uri, XQRewriteRule::URI)) {
+      if(XPath2Utils::equals(qName.getName(), option_rule)) {
+        DM_outputDecl("REWRITE_RULE", "", 0, false, @4.first_line, @4.first_column + 1,
+                      $4, XPath2Utils::intStrlen($4));
+      }
+    }
+  }
+  ;
+
+DM_NamespaceDecl:
+  _DECLARE_ _NAMESPACE_ NCName _EQUALS_ URILiteral Separator
+  {
+    SET_NAMESPACE(@3, $3, $5);
+    DM_outputDecl("NAMESPACE", UTF8($3), 0, false, @1.first_line, @1.first_column,
+                  $5, XPath2Utils::intStrlen($5));
+  }
+  ;
+
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // XSLT rules
@@ -2815,11 +2839,9 @@ OptionDecl:
     }
     else if(XPath2Utils::equals(uri, XQRewriteRule::URI)) {
       if(XPath2Utils::equals(qName.getName(), option_rule)) {
-        XQLexer rwlexer(MEMMGR, _LANG_REWRITE_RULE_, QP->_lexer->getFile(),
-          @4.first_line, @4.first_column + 1, $4);
-        XQParserArgs args(&rwlexer, QP->_query);
-        args._rewriteRule = true;
-        XQParser::yyparse(&args);
+        LOCATION(@4, loc);
+        loc.setLocationInfo(loc.getFile(), loc.getLine(), loc.getColumn() + 1);
+        QP->_query->addRewriteRule(XQRewriteRule::parse($4, MEMMGR, &loc));
       }
       else {
         yyerror(@3, "Unknown option name in the xqilla rewrite namespace [err:XQILLA]");
@@ -6039,7 +6061,7 @@ TypeAlias:
 RewriteRule:
   RW_Rule
   {
-    QP->_query->addRewriteRule($1);
+    QP->_rwrule = $1;
   }
 ;
 

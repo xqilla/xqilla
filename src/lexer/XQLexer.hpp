@@ -319,6 +319,7 @@ public:
       _query(query),
       _function(0),
       _signature(0),
+      _rwrule(0),
       _rwpattern(0),
       _seqType(0),
       _moduleName(0),
@@ -334,6 +335,7 @@ public:
       _query(0),
       _function(0),
       _signature(0),
+      _rwrule(0),
       _rwpattern(0),
       _seqType(0),
       _moduleName(0),
@@ -348,6 +350,7 @@ public:
   XQQuery* _query;
   XQUserFunction *_function;
   FunctionSignature *_signature;
+  XQRewriteRule *_rwrule;
   RewritePattern *_rwpattern;
   SequenceType *_seqType;
   const XMLCh *_moduleName;

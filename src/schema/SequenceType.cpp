@@ -190,9 +190,9 @@ SequenceType::TypeMatch SequenceType::matches(const StaticType &actual) const
   }
   else if(min > actual.getMin() ||
           max < actual.getMax()) {
-    if(actual.getMax() != StaticType::UNLIMITED)
-      result.cardinality = PROBABLY_NOT;
-    else
+    // if(actual.getMax() != StaticType::UNLIMITED)
+    //   result.cardinality = PROBABLY_NOT;
+    // else
       result.cardinality = MAYBE;
   }
 

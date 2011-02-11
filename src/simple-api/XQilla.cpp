@@ -107,8 +107,7 @@ XQQuery* XQilla::parse(const XMLCh* inputQuery, DynamicContext* context,
     result->setFile(queryFile);
   }
   if((flags & XQilla::NO_DEFAULT_MODULES) == 0) {
-    BuiltInModules::core.importModuleInto(result);
-    BuiltInModules::fn.importModuleInto(result);
+    BuiltInModules::addModules(result);
   }
 
   XQLexer lexer(context->getMemoryManager(), queryFile, inputQuery, context->getLanguage());
@@ -167,8 +166,7 @@ XQQuery* XQilla::parse(const InputSource& querySrc, DynamicContext* context,
   if(querySrc.getSystemId())
     result->setFile(querySrc.getSystemId());
   if((flags & XQilla::NO_DEFAULT_MODULES) == 0) {
-    BuiltInModules::core.importModuleInto(result);
-    BuiltInModules::fn.importModuleInto(result);
+    BuiltInModules::addModules(result);
   }
 
 #ifdef HAVE_FAXPP

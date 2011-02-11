@@ -1,3 +1,5 @@
+xquery version "3.0";
+
 (:
  : Copyright (c) 2004-2009
  :     Oracle. All rights reserved.

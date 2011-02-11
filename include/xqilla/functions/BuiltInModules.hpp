@@ -22,11 +22,18 @@
 
 #include <xqilla/utils/DelayedModule.hpp>
 
+class StaticContext;
+class XQQuery;
+
 class XQILLA_API BuiltInModules
 {
 public:
   static const DelayedModule &core;
   static const DelayedModule &fn;
+  static const DelayedModule &rw;
+
+  static void addNamespaces(StaticContext *context);
+  static void addModules(XQQuery *query);
 };
 
 #endif

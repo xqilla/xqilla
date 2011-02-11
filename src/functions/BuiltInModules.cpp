@@ -19,11 +19,42 @@
 
 #include "../config/xqilla_config.h"
 #include <xqilla/functions/BuiltInModules.hpp>
+#include <xqilla/functions/XQillaFunction.hpp>
+#include <xqilla/functions/XQUserFunction.hpp>
+#include <xqilla/functions/FunctionError.hpp>
+#include <xqilla/context/StaticContext.hpp>
+#include <xqilla/simple-api/XQQuery.hpp>
+
+#include <xercesc/validators/schema/SchemaSymbols.hpp>
 
 #include "CoreModule.hpp"
 #include "FnModule.hpp"
+#include "RwModule.hpp"
 
 XERCES_CPP_NAMESPACE_USE;
 
 const DelayedModule &BuiltInModules::core = core_module;
 const DelayedModule &BuiltInModules::fn = fn_module;
+const DelayedModule &BuiltInModules::rw = rw_module;
+
+static const XMLCh XMLChXS[]    = { chLatin_x, chLatin_s, chNull };
+static const XMLCh XMLChXSI[]   = { chLatin_x, chLatin_s, chLatin_i, chNull };
+static const XMLCh XMLChLOCAL[] = { chLatin_l, chLatin_o, chLatin_c, chLatin_a, chLatin_l, chNull };
+static const XMLCh XMLChERR[]   = { chLatin_e, chLatin_r, chLatin_r, chNull };
+
+void BuiltInModules::addNamespaces(StaticContext *context)
+{
+  context->setNamespaceBinding(XMLChXS, SchemaSymbols::fgURI_SCHEMAFORSCHEMA);
+  context->setNamespaceBinding(XMLChXSI, SchemaSymbols::fgURI_XSI);
+  context->setNamespaceBinding(fn.prefix, fn.uri);
+  context->setNamespaceBinding(XMLChLOCAL, XQUserFunction::XMLChXQueryLocalFunctionsURI);
+  context->setNamespaceBinding(XMLChERR, FunctionError::XMLChXQueryErrorURI);
+  context->setNamespaceBinding(XQillaFunction::XQillaPrefix, XQillaFunction::XMLChFunctionURI);
+}
+
+void BuiltInModules::addModules(XQQuery *query)
+{
+  core.importModuleInto(query);
+  fn.importModuleInto(query);
+  rw.importModuleInto(query);
+}

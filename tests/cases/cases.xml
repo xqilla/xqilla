@@ -506,4 +506,16 @@
 
   </test-group>
 
+  <test-group name="rewrite_rules">
+    <GroupInfo>
+      <title>Tests for rewrite rules support</title>
+    </GroupInfo>
+
+    <test-case name="testrw" FilePath="rewrite_rules">
+      <query name="testrw"/>
+      <param qname="a">20</param>
+      <output-file compare="Fragment">testrw.out</output-file>
+    </test-case>
+  </test-group>
+
 </test-suite>

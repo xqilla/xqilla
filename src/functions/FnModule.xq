@@ -1,6 +1,10 @@
+xquery version "3.0";
+
 (:
  : Copyright (c) 2004-2009
  :     Oracle. All rights reserved.
+ : Copyright (c) 2010
+ :     John Snelson. All rights reserved.
  :
  : Licensed under the Apache License, Version 2.0 (the "License");
  : you may not use this file except in compliance with the License.
@@ -16,6 +20,8 @@
  :)
 
 module namespace fn = "http://www.w3.org/2005/xpath-functions";
+
+declare namespace rw = "http://xqilla.sourceforge.net/rewrite";
 
 declare function data($a as item()*) as xs:anyAtomicType*
 {
@@ -242,10 +248,44 @@ declare function boolean($arg as item()*) as xs:boolean
   $arg and true()
 };
 
+declare option rw:rule "fn:EBVFold: boolean(~e)
+-> false() where rw:subtype(~e, 'empty-sequence()')
+-> exists(~e) where rw:subtype(~e, 'node()*')
+-> ~e where rw:subtype(~e, 'xs:boolean')";
+
 declare function exists($arg as item()*) as xs:boolean
 {
   not(empty($arg))
 };
+
+declare option rw:rule "fn:CountEqZero:
+count(~e) eq 0 -> empty(~e)";
+declare option rw:rule "fn:CountNeZero:
+count(~e) ne 0 -> exists(~e)";
+declare option rw:rule "fn:CountGtZero:
+count(~e) gt 0 -> exists(tail(~e))";
+
+declare option rw:rule "fn:FnEmptyFold: empty(~e)
+-> false() where rw:subtype(~e, 'item()+')
+-> true() where rw:subtype(~e, 'empty-sequence()')";
+
+declare option rw:rule "fn:AndTrueFold:  ~e and true()  -> ~e";
+declare option rw:rule "fn:AndFalseFold: ~e and false() -> false()";
+declare option rw:rule "fn:OrTrueFold:   ~e or  true()  -> true()";
+declare option rw:rule "fn:OrFalseFold:  ~e or  false() -> ~e";
+
+declare option rw:rule "fn:PredTypeAnalysis: ~e[~p]
+-> ~e[boolean(~p)] where (rw:never-subtype(~p, 'xs:decimal') and rw:never-subtype(~p, 'xs:float') and
+  rw:never-subtype(~p, 'xs:double') and rw:never-subtype(~p, 'xs:boolean'))";
+(: TBD Better static typing for fn:subsequence() - jpcs :)
+(: TBD Check for reverse predicates - jpcs :)
+(: -> subsequence(~e, ~p, 1) where not(rw:uses-focus(~p)) and :)
+(:   (rw:subtype(~p, 'xs:decimal') or rw:subtype(~p, 'xs:float') or :)
+(:    rw:subtype(~p, 'xs:double'))"; :)
+
+declare option rw:rule "fn:PredTrueFold: ~e[true()] -> ~e";
+declare option rw:rule "fn:PredFalseFold: ~e[false()] -> ()";
+declare option rw:rule "fn:PredEmptyFold: ()[~e] -> ()";
 
 (:----------------------------------------------------------------------------------------------------:)
 (: Sequence functions :)
@@ -767,6 +807,9 @@ declare function map($f as function(item()) as item()*, $seq as item()*) as item
   else ($f(head($seq)), map($f, tail($seq)))
 };
 
+declare option rw:rule "fn:MapMapFusion:
+map(~f, map(~g, ~e)) -> map(function($a) { ~f(~g($a)) }, ~e)";
+
 declare function filter($f as function(item()) as xs:boolean, $seq as item()*) as item()*
 {
   if(empty($seq)) then ()
@@ -799,4 +842,7 @@ declare function map-pairs($f as function(item(), item()) as item()*, $seq1 as i
      map-pairs($f, tail($seq1), tail($seq2))
    )
 };
+
+
+(:----------------------------------------------------------------------------------------------------:)
 
