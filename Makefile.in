@@ -85,16 +85,16 @@ LTLIBRARIES = $(lib_LTLIBRARIES)
 libxqilla_la_LIBADD =
 am_libxqilla_la_OBJECTS = ReferenceCounted.lo BaseMemoryManager.lo \
 	ProxyMemoryManager.lo StringPool.lo XPath2MemoryManagerImpl.lo \
-	UpdateFactory.lo CodepointCollation.lo \
-	VarStoreImpl.lo VarTypeStoreImpl.lo VarHashEntryImpl.lo \
-	XQContextImpl.lo XQDynamicContextImpl.lo ItemFactoryImpl.lo \
-	XQAtomize.lo XQEffectiveBooleanValue.lo XQMap.lo \
-	XQAnalyzeString.lo XQCastableAs.lo XQCastAs.lo \
-	XQContextItem.lo XQCopy.lo XQCopyOf.lo XQFunction.lo XQIf.lo \
-	ASTNodeImpl.lo XQInlineFunction.lo XQLiteral.lo XQNav.lo \
-	XQOperator.lo XQSequence.lo XQStep.lo XQTreatAs.lo \
-	XQFunctionCoercion.lo XQVariable.lo StaticAnalysis.lo \
-	StaticType.lo NumericFunction.lo XQDOMConstructor.lo \
+	UpdateFactory.lo CodepointCollation.lo VarStoreImpl.lo \
+	VarTypeStoreImpl.lo VarHashEntryImpl.lo XQContextImpl.lo \
+	XQDynamicContextImpl.lo ItemFactoryImpl.lo XQAtomize.lo \
+	XQEffectiveBooleanValue.lo XQMap.lo XQAnalyzeString.lo \
+	XQCastableAs.lo XQCastAs.lo XQContextItem.lo XQCopy.lo \
+	XQCopyOf.lo XQFunction.lo XQIf.lo ASTNodeImpl.lo \
+	XQInlineFunction.lo XQLiteral.lo XQNav.lo XQOperator.lo \
+	XQSequence.lo XQStep.lo XQTreatAs.lo XQFunctionCoercion.lo \
+	XQVariable.lo StaticAnalysis.lo StaticType.lo \
+	NumericFunction.lo XQDOMConstructor.lo \
 	XQDocumentConstructor.lo XQElementConstructor.lo \
 	XQAttributeConstructor.lo XQNamespaceConstructor.lo \
 	XQPIConstructor.lo XQCommentConstructor.lo \
@@ -120,13 +120,12 @@ am_libxqilla_la_OBJECTS = ReferenceCounted.lo BaseMemoryManager.lo \
 	XPathNamespaceImpl.lo XPath2ResultImpl.lo \
 	XQillaImplementation.lo XPath2NodeSerializer.lo XQilla.lo \
 	XQQuery.lo UTF8Str.lo XMLChCompare.lo XStr.lo ContextUtils.lo \
-	DateUtils.lo HashMap.lo lookup3.lo NumUtils.lo \
-	XQillaPlatformUtils.lo XPath2NSUtils.lo XPath2Utils.lo \
-	UnicodeTransformer.lo utf8proc.lo DelayedModule.lo \
-	XQillaException.lo XQException.lo EXSLTMathFunction.lo \
-	ExternalFunction.lo XQillaFunction.lo FunctionParseXML.lo \
-	FuncFactory.lo FunctionLookup.lo FunctionAbs.lo \
-	FunctionAcos.lo FunctionAsin.lo FunctionAtan.lo \
+	DateUtils.lo lookup3.lo NumUtils.lo XQillaPlatformUtils.lo \
+	XPath2NSUtils.lo XPath2Utils.lo UnicodeTransformer.lo \
+	utf8proc.lo DelayedModule.lo XQillaException.lo XQException.lo \
+	EXSLTMathFunction.lo ExternalFunction.lo XQillaFunction.lo \
+	FunctionParseXML.lo FuncFactory.lo FunctionLookup.lo \
+	FunctionAbs.lo FunctionAcos.lo FunctionAsin.lo FunctionAtan.lo \
 	FunctionBaseURI.lo FunctionCaseFold.lo FunctionCeiling.lo \
 	FunctionCodepointsToString.lo FunctionCollection.lo \
 	FunctionCompare.lo FunctionConcat.lo FunctionContains.lo \
@@ -155,35 +154,35 @@ am_libxqilla_la_OBJECTS = ReferenceCounted.lo BaseMemoryManager.lo \
 	FunctionSerializeJSON.lo FunctionParseHTML.lo \
 	FunctionExplain.lo FunctionAnalyzeString.lo RegExpFunction.lo \
 	XQUserFunction.lo FunctionSignature.lo BuiltInModules.lo \
-	ATAnyURIOrDerivedImpl.lo \
-	ATBase64BinaryOrDerivedImpl.lo ATBooleanOrDerivedImpl.lo \
-	ATDateOrDerivedImpl.lo ATDateTimeOrDerivedImpl.lo \
-	ATDecimalOrDerivedImpl.lo ATDoubleOrDerivedImpl.lo \
-	ATDurationOrDerivedImpl.lo ATFloatOrDerivedImpl.lo \
-	ATGDayOrDerivedImpl.lo ATGMonthDayOrDerivedImpl.lo \
-	ATGMonthOrDerivedImpl.lo ATGYearMonthOrDerivedImpl.lo \
-	ATGYearOrDerivedImpl.lo ATHexBinaryOrDerivedImpl.lo \
-	ATNotationOrDerivedImpl.lo ATQNameOrDerivedImpl.lo \
-	ATStringOrDerivedImpl.lo ATTimeOrDerivedImpl.lo \
-	ATUntypedAtomicImpl.lo FunctionRefImpl.lo TupleImpl.lo \
-	DatatypeFactory.lo DatatypeLookup.lo AnyAtomicType.lo \
-	ATDurationOrDerived.lo ATUntypedAtomic.lo DateOrTimeType.lo \
-	Item.lo Node.lo Numeric.lo Timezone.lo QName.lo XQParser.lo \
-	XQLexer.lo XQLexer2.lo XSLT2Lexer.lo mapm5sin.lo mapm_add.lo \
-	mapmasin.lo mapmasn0.lo mapmcbrt.lo mapmcnst.lo mapm_cpi.lo \
-	m_apm.lo mapm_div.lo mapm_exp.lo mapmfact.lo mapm_fam.lo \
-	mapm_fft.lo mapm_flr.lo mapmfmul.lo mapm_fpf.lo mapm_gcd.lo \
-	mapmgues.lo mapmhasn.lo mapmhsin.lo mapmipwr.lo mapmistr.lo \
-	mapm_lg2.lo mapm_lg3.lo mapm_log.lo mapm_mt.lo mapm_mul.lo \
-	mapm_pow.lo mapmpwr2.lo mapm_rcp.lo mapm_rnd.lo mapmrsin.lo \
-	mapm_set.lo mapm_sin.lo mapmsqrt.lo mapmstck.lo mapmutil.lo \
-	mapmutl2.lo NodeTest.lo SelfAxis.lo And.lo \
-	ArithmeticOperator.lo ComparisonOperator.lo Divide.lo \
-	Equals.lo Except.lo GeneralComp.lo GreaterThan.lo \
-	GreaterThanEqual.lo IntegerDivide.lo Intersect.lo LessThan.lo \
-	LessThanEqual.lo Minus.lo Mod.lo Multiply.lo NodeComparison.lo \
-	NotEquals.lo Or.lo OrderComparison.lo Plus.lo UnaryMinus.lo \
-	Union.lo DocumentCacheImpl.lo SequenceType.lo \
+	ATAnyURIOrDerivedImpl.lo ATBase64BinaryOrDerivedImpl.lo \
+	ATBooleanOrDerivedImpl.lo ATDateOrDerivedImpl.lo \
+	ATDateTimeOrDerivedImpl.lo ATDecimalOrDerivedImpl.lo \
+	ATDoubleOrDerivedImpl.lo ATDurationOrDerivedImpl.lo \
+	ATFloatOrDerivedImpl.lo ATGDayOrDerivedImpl.lo \
+	ATGMonthDayOrDerivedImpl.lo ATGMonthOrDerivedImpl.lo \
+	ATGYearMonthOrDerivedImpl.lo ATGYearOrDerivedImpl.lo \
+	ATHexBinaryOrDerivedImpl.lo ATNotationOrDerivedImpl.lo \
+	ATQNameOrDerivedImpl.lo ATStringOrDerivedImpl.lo \
+	ATTimeOrDerivedImpl.lo ATUntypedAtomicImpl.lo \
+	FunctionRefImpl.lo TupleImpl.lo DatatypeFactory.lo \
+	DatatypeLookup.lo AnyAtomicType.lo ATDurationOrDerived.lo \
+	ATUntypedAtomic.lo DateOrTimeType.lo Item.lo Node.lo \
+	Numeric.lo Timezone.lo QName.lo XQParser.lo XQLexer.lo \
+	XQLexer2.lo XSLT2Lexer.lo mapm5sin.lo mapm_add.lo mapmasin.lo \
+	mapmasn0.lo mapmcbrt.lo mapmcnst.lo mapm_cpi.lo m_apm.lo \
+	mapm_div.lo mapm_exp.lo mapmfact.lo mapm_fam.lo mapm_fft.lo \
+	mapm_flr.lo mapmfmul.lo mapm_fpf.lo mapm_gcd.lo mapmgues.lo \
+	mapmhasn.lo mapmhsin.lo mapmipwr.lo mapmistr.lo mapm_lg2.lo \
+	mapm_lg3.lo mapm_log.lo mapm_mt.lo mapm_mul.lo mapm_pow.lo \
+	mapmpwr2.lo mapm_rcp.lo mapm_rnd.lo mapmrsin.lo mapm_set.lo \
+	mapm_sin.lo mapmsqrt.lo mapmstck.lo mapmutil.lo mapmutl2.lo \
+	NodeTest.lo SelfAxis.lo And.lo ArithmeticOperator.lo \
+	ComparisonOperator.lo Divide.lo Equals.lo Except.lo \
+	GeneralComp.lo GreaterThan.lo GreaterThanEqual.lo \
+	IntegerDivide.lo Intersect.lo LessThan.lo LessThanEqual.lo \
+	Minus.lo Mod.lo Multiply.lo NodeComparison.lo NotEquals.lo \
+	Or.lo OrderComparison.lo Plus.lo UnaryMinus.lo Union.lo \
+	DocumentCacheImpl.lo SequenceType.lo \
 	AnyAtomicTypeDatatypeValidator.lo SchemaValidatorFilter.lo \
 	FaxppDocumentCacheImpl.lo ClosureResult.lo EmptyResult.lo \
 	LazySequenceResult.lo ResultBuffer.lo ResultBufferImpl.lo \
@@ -619,7 +618,6 @@ src/utils/XStr.cpp \
 src/utils/ContextUtils.cpp \
 src/utils/DateUtils.cpp \
 src/utils/DateUtils.hpp \
-src/utils/HashMap.cpp \
 src/utils/lookup3.cpp \
 src/utils/NumUtils.cpp \
 src/utils/XQillaPlatformUtils.cpp \
@@ -1414,7 +1412,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GeneralComp.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GreaterThan.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GreaterThanEqual.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/HashMap.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/InputParser.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/IntegerDivide.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/InteractiveDebugger.Plo@am__quote@
@@ -2809,13 +2806,6 @@ DateUtils.lo: src/utils/DateUtils.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/utils/DateUtils.cpp' object='DateUtils.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DateUtils.lo `test -f 'src/utils/DateUtils.cpp' || echo '$(srcdir)/'`src/utils/DateUtils.cpp
-
-HashMap.lo: src/utils/HashMap.cpp
-@am__fastdepCXX_TRUE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT HashMap.lo -MD -MP -MF $(DEPDIR)/HashMap.Tpo -c -o HashMap.lo `test -f 'src/utils/HashMap.cpp' || echo '$(srcdir)/'`src/utils/HashMap.cpp
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/HashMap.Tpo $(DEPDIR)/HashMap.Plo
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/utils/HashMap.cpp' object='HashMap.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o HashMap.lo `test -f 'src/utils/HashMap.cpp' || echo '$(srcdir)/'`src/utils/HashMap.cpp
 
 lookup3.lo: src/utils/lookup3.cpp
 @am__fastdepCXX_TRUE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT lookup3.lo -MD -MP -MF $(DEPDIR)/lookup3.Tpo -c -o lookup3.lo `test -f 'src/utils/lookup3.cpp' || echo '$(srcdir)/'`src/utils/lookup3.cpp

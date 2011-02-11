@@ -146,7 +146,6 @@ src/utils/XStr.cpp \
 src/utils/ContextUtils.cpp \
 src/utils/DateUtils.cpp \
 src/utils/DateUtils.hpp \
-src/utils/HashMap.cpp \
 src/utils/lookup3.cpp \
 src/utils/NumUtils.cpp \
 src/utils/XQillaPlatformUtils.cpp \

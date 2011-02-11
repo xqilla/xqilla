@@ -111,6 +111,13 @@ public:
     return (_p != 0);
   }
 
+  void swap(RefCountPointer<T> &o)
+  {
+    T *tmp = o._p;
+    o._p = _p;
+    _p = tmp;
+  }
+
 protected:
   T *_p;
 };

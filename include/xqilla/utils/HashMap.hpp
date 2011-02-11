@@ -22,16 +22,12 @@
 #include <assert.h>
 
 #include <xqilla/framework/XQillaExport.hpp>
+#include <xqilla/framework/BasicMemoryManager.hpp>
 #include <xqilla/utils/XPath2Utils.hpp>
 #include <xqilla/utils/lookup3.hpp>
 
 #include <xercesc/util/XMemory.hpp>
 #include <xercesc/framework/MemoryManager.hpp>
-
-struct Primes
-{
-  static size_t next(size_t n);
-};
 
 template<class T>
 struct DefaultEqualsFunctor
@@ -102,9 +98,9 @@ private:
   {
     Bucket() : key(), value(), state(EMPTY), hash(0), next(0) {}
 
-    void *operator new(size_t, Bucket *p) { return (void*)p; }
+    inline void *operator new(size_t, Bucket *p) { return (void*)p; }
 
-    void set(KEY k, VALUE v, size_t h)
+    inline void set(KEY k, VALUE v, size_t h)
     {
       key = k;
       value = v;
@@ -112,7 +108,7 @@ private:
       state = OCCUPIED;
     }
 
-    void setToDelete()
+    inline void setToDelete()
     {
       key = KEY();
       value = VALUE();
@@ -130,12 +126,12 @@ public:
   class iterator
   {
   public:
-    iterator()
+    inline iterator()
       : ptr_(0), end_(0), map_(0)
     {
     }
 
-    iterator(Bucket *s, Bucket *e, HashMap *m = 0)
+    inline iterator(Bucket *s, Bucket *e, HashMap *m = 0)
       : ptr_(s), end_(e), map_(m)
     {
       while(ptr_ != end_ && ptr_->state != Bucket::OCCUPIED) {
@@ -143,7 +139,7 @@ public:
       }
     }
 
-    iterator &operator++()
+    inline iterator &operator++()
     {
       if(map_) {
         ptr_ = map_->findNextDuplicate(ptr_);
@@ -157,29 +153,29 @@ public:
       return *this;
     }
 
-    iterator operator++(int)
+    inline iterator operator++(int)
     {
       iterator tmp = *this;
       ++*this;
       return tmp;
     }
 
-    bool operator==(const iterator &o) const
+    inline bool operator==(const iterator &o) const
     {
       return ptr_ == o.ptr_;
     }
 
-    bool operator!=(const iterator &o) const
+    inline bool operator!=(const iterator &o) const
     {
       return ptr_ != o.ptr_;
     }
 
-    const KEY &getKey() const
+    inline const KEY &getKey() const
     {
       return ptr_->key;
     }
 
-    VALUE &getValue() const
+    inline VALUE &getValue() const
     {
       return ptr_->value;
     }
@@ -191,18 +187,58 @@ public:
     friend class HashMap;
   };
 
+private:
+  static inline size_t nextLowerPowerOfTwo(size_t i)
+  {
+    // Find the next highest or equal power of two
+    --i;
+    i |= i >> 1;
+    i |= i >> 2;
+    i |= i >> 4;
+    i |= i >> 8;
+    i |= i >> 16;
+    i |= i >> 32;
+    ++i;
+    // Next lower power of two
+    return i >> 1;
+  }
+
+  static inline size_t calculateAttic(size_t size)
+  {
+    assert(size);
+    return size > 1 ? nextLowerPowerOfTwo(size) : 1;
+  }
+
+  static inline size_t nextCapacity(size_t capacity)
+  {
+    size_t attic = calculateAttic(capacity);
+    return ((attic << 1) * 114) / 100;
+  }
+
+  inline Bucket *createBuckets(size_t size) const
+  {
+    return size <= UNALLOCATED_SIZE ? (Bucket*)inlineBuckets_ :
+      (Bucket*)mm_->allocate(sizeof(Bucket) * size);
+  }
+
+  static inline size_t bucketsSize(size_t size)
+  {
+    return size <= UNALLOCATED_SIZE ? UNALLOCATED_SIZE : size;
+  }
+
 public:
-  HashMap(bool resizable, XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *mm)
-    : buckets_((Bucket*)inlineBuckets_),
+  HashMap(bool resizable, XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *mm
+          = BasicMemoryManager::get())
+    : mm_(mm),
+      buckets_((Bucket*)inlineBuckets_),
       capacity_(UNALLOCATED_SIZE),
-      attic_((capacity_ * 0.86) + 1.0),
+      attic_(calculateAttic(capacity_)),
       lastKnownEmpty_(buckets_ + capacity_),
       count_(0),
       deleted_(0),
       resizable_(resizable),
       hash_(),
-      equals_(),
-      mm_(mm)
+      equals_()
   {
     for(size_t i = 0; i < capacity_; ++i) {
       new (buckets_ + i) Bucket();
@@ -210,18 +246,18 @@ public:
   }
 
   HashMap(size_t initialCapacity, bool resizable,
-    XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *mm)
-    : buckets_(initialCapacity <= UNALLOCATED_SIZE ? (Bucket*)inlineBuckets_ :
-               (Bucket*)mm->allocate(sizeof(Bucket) * initialCapacity)),
-      capacity_(initialCapacity <= UNALLOCATED_SIZE ? UNALLOCATED_SIZE : initialCapacity),
-      attic_((capacity_ * 0.86) + 1.0),
+          XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *mm
+          = BasicMemoryManager::get())
+    : mm_(mm),
+      buckets_(createBuckets(initialCapacity)),
+      capacity_(bucketsSize(initialCapacity)),
+      attic_(calculateAttic(capacity_)),
       lastKnownEmpty_(buckets_ + capacity_),
       count_(0),
       deleted_(0),
       resizable_(resizable),
       hash_(),
-      equals_(),
-      mm_(mm)
+      equals_()
   {
     for(size_t i = 0; i < capacity_; ++i) {
       new (buckets_ + i) Bucket();
@@ -229,17 +265,16 @@ public:
   }
 
   HashMap(const HashMap &o)
-    : buckets_(o.capacity_ <= UNALLOCATED_SIZE ? (Bucket*)inlineBuckets_ :
-               (Bucket*)o.mm_->allocate(sizeof(Bucket) * o.capacity_)),
-      capacity_(o.capacity_ <= UNALLOCATED_SIZE ? UNALLOCATED_SIZE : o.capacity_),
-      attic_((capacity_ * 0.86) + 1.0),
+    : mm_(o.mm_),
+      buckets_(createBuckets(o.capacity_)),
+      capacity_(bucketsSize(o.capacity_)),
+      attic_(calculateAttic(capacity_)),
       lastKnownEmpty_(buckets_ + capacity_),
       count_(0),
       deleted_(0),
       resizable_(o.resizable_),
       hash_(o.hash_),
-      equals_(o.equals_),
-      mm_(o.mm_)
+      equals_(o.equals_)
   {
     for(size_t i = 0; i < capacity_; ++i) {
       new (buckets_ + i) Bucket();
@@ -248,17 +283,16 @@ public:
   }
 
   HashMap(const HashMap &o, XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *mm)
-    : buckets_(o.capacity_ <= UNALLOCATED_SIZE ? (Bucket*)inlineBuckets_ :
-               (Bucket*)mm->allocate(sizeof(Bucket) * o.capacity_)),
-      capacity_(o.capacity_ <= UNALLOCATED_SIZE ? UNALLOCATED_SIZE : o.capacity_),
-      attic_((capacity_ * 0.86) + 1.0),
+    : mm_(mm),
+      buckets_(createBuckets(o.capacity_)),
+      capacity_(bucketsSize(o.capacity_)),
+      attic_(calculateAttic(capacity_)),
       lastKnownEmpty_(buckets_ + capacity_),
       count_(0),
       deleted_(0),
       resizable_(o.resizable_),
       hash_(o.hash_),
-      equals_(o.equals_),
-      mm_(mm)
+      equals_(o.equals_)
   {
     for(size_t i = 0; i < capacity_; ++i) {
       new (buckets_ + i) Bucket();
@@ -296,14 +330,14 @@ public:
   inline void put(const KEY &key, size_t hash, const VALUE &value)
   {
     if(resizable_ && (count_ * 4) >= (capacity_ * 3))
-      resize(Primes::next(capacity_ + 1));
+      resize(nextCapacity(capacity_));
 
     do_insert(key, value, hash, /*overwrite*/true);
   }
   inline void putAll(const HashMap &o)
   {
     if(resizable_ && ((count_ + o.size()) * 4) >= (capacity_ * 3))
-      resize(Primes::next(capacity_ + o.size()));
+      resize(nextCapacity(capacity_ + o.size()));
 
     insert(o.buckets_, o.buckets_ + o.capacity_, /*overwrite*/true);
   }
@@ -316,14 +350,14 @@ public:
   inline void add(const KEY &key, size_t hash, const VALUE &value)
   {
     if(resizable_ && (count_ * 4) >= (capacity_ * 3))
-      resize(Primes::next(capacity_ + 1));
+      resize(nextCapacity(capacity_ + 1));
 
     do_insert(key, value, hash, /*overwrite*/false);
   }
   inline void addAll(const HashMap &o)
   {
     if(resizable_ && (count_ * 4) >= (capacity_ * 3))
-      resize(Primes::next(capacity_ + o.size()));
+      resize(nextCapacity(capacity_ + o.size()));
 
     insert(o.buckets_, o.buckets_ + o.capacity_, /*overwrite*/false);
   }
@@ -404,20 +438,20 @@ public:
   inline bool isEmpty() const { return count_ == deleted_; }
   inline bool isResizeable() const { return resizable_; }
 
-  void resize(size_t newCapacity)
+  inline void resize(size_t newCapacity)
   {
     HashMap tmp(newCapacity, resizable_, mm_);
     tmp.insert(buckets_, buckets_ + capacity_, /*overwrite*/false);
     swap(tmp);
   }
 
-  void removeAll()
+  inline void removeAll()
   {
     HashMap tmp(capacity_, resizable_, mm_);
     swap(tmp);
   }
 
-  void swap(HashMap &o)
+  inline void swap(HashMap &o)
   {
     Bucket *b;
     size_t s;
@@ -455,7 +489,7 @@ public:
     m = mm_; mm_ = o.mm_; o.mm_ = m;
   }
 
-  void printDebug(std::ostream &out) const
+  inline void printDebug(std::ostream &out) const
   {
     size_t links = 0;
     Bucket *ptr = buckets_;
@@ -477,11 +511,11 @@ public:
   }
 
 private:
-  Bucket *find(const KEY &key, size_t h, bool &found) const
+  inline Bucket *find(const KEY &key, size_t h, bool &found) const
   {
     found = false;
 
-    Bucket *ptr = &buckets_[h % attic_];
+    Bucket *ptr = &buckets_[h & (attic_ - 1)];
     if(ptr->state != Bucket::EMPTY) {
       while(true) {
         if(ptr->state == Bucket::OCCUPIED && ptr->hash == h && equals_(key, ptr->key)) {
@@ -496,7 +530,7 @@ private:
     return ptr;
   }
 
-  Bucket *findNextDuplicate(Bucket *prev)
+  inline Bucket *findNextDuplicate(Bucket *prev)
   {
     if(prev == buckets_ + capacity_) return prev;
 
@@ -510,7 +544,7 @@ private:
     return buckets_ + capacity_;
   }
 
-  void do_insert(const KEY &key, const VALUE &value, size_t h, bool overwrite)
+  inline void do_insert(const KEY &key, const VALUE &value, size_t h, bool overwrite)
   {
     bool found;
     Bucket *ptr = find(key, h, found);
@@ -548,13 +582,15 @@ private:
     ptr->next = lastKnownEmpty_;
   }
 
-  void insert(Bucket *s, Bucket *e, bool overwrite)
+  inline void insert(Bucket *s, Bucket *e, bool overwrite)
   {
     for(; s != e; ++s) {
       if(s->state == Bucket::OCCUPIED)
         do_insert(s->key, s->value, s->hash, overwrite);
     }
   }
+
+  XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *mm_;
 
   Bucket *buckets_;
   size_t capacity_, attic_;
@@ -565,8 +601,6 @@ private:
 
   HASH hash_;
   EQUALS equals_;
-
-  XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *mm_;
 
   char inlineBuckets_[sizeof(Bucket) * UNALLOCATED_SIZE];
 };
