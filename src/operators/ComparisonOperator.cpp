@@ -63,8 +63,9 @@ ASTNode* ComparisonOperator::staticResolution(StaticContext *context)
     //    and the implementation need not evaluate the other operand or apply the operator. However, an 
     //    implementation may choose to evaluate the other operand in order to determine whether it raises an error.
     // 3. If the atomized operand is a sequence of length greater than one, a type error is raised [err:XPTY0004].
-    SequenceType *seqType = new (mm) SequenceType(new (mm) SequenceType::ItemType(SequenceType::ItemType::TEST_ANYTHING),
-                                                  SequenceType::QUESTION_MARK);
+    ItemType *itemType = new (mm) ItemType(ItemType::TEST_ANYTHING);
+    itemType->setLocationInfo(*i);
+    SequenceType *seqType = new (mm) SequenceType(itemType, SequenceType::QUESTION_MARK);
     seqType->setLocationInfo(*i);
 
     *i = new (mm) XQTreatAs(*i, seqType, mm);

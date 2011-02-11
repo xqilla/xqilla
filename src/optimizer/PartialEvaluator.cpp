@@ -1042,7 +1042,7 @@ ASTNode *PartialEvaluator::optimizeTreatAs(XQTreatAs *item)
 {
   ASTVisitor::optimizeTreatAs(item);
 
-  const SequenceType::ItemType *itemType = item->getSequenceType()->getItemType();
+  const ItemType *itemType = item->getSequenceType()->getItemType();
   if(!itemType) return item;
 
   FunctionSignature *signature = findSignature(item->getExpression());

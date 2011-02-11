@@ -53,9 +53,9 @@ public:
   void staticResolution(StaticContext *context, const LocationInfo *location);
 
   ///gets the sequence type used to match the nodes
-  SequenceType::ItemType* getItemType() const;
+  ItemType* getItemType() const;
   ///set function for private member
-  void setItemType(SequenceType::ItemType* type);
+  void setItemType(ItemType* type);
   
   ///gets the name of the node we are selecting
   const XMLCh* getNodeName() const;
@@ -134,7 +134,7 @@ protected:
   const XMLCh* _name,*_uri,*_prefix;
   const XMLCh* _type;
   bool _wildcardName, _wildcardNamespace, _wildcardType, _usePrefix, _hasChildren;
-  SequenceType::ItemType* _itemType;
+  ItemType* _itemType;
 };
 
 #endif

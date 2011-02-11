@@ -64,9 +64,10 @@ ASTNode* XQAnalyzeString::staticResolution(StaticContext *context)
 {
   XPath2MemoryManager *mm = context->getMemoryManager();
 
-  SequenceType *seqType = new (mm) SequenceType(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-                                                SchemaSymbols::fgDT_STRING,
-                                                SequenceType::EXACTLY_ONE, mm);
+  ItemType *itemType = new (mm) ItemType(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
+                                         SchemaSymbols::fgDT_STRING);
+  itemType->setLocationInfo(this);
+  SequenceType *seqType = new (mm) SequenceType(itemType, SequenceType::EXACTLY_ONE);
   seqType->setLocationInfo(this);
 
   expr_ = new (mm) XQFunctionConversion(expr_, seqType, mm);

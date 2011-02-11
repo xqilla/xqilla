@@ -44,8 +44,9 @@ ASTNode* NodeComparison::staticResolution(StaticContext *context)
   XPath2MemoryManager *mm = context->getMemoryManager();
 
   for(VectorOfASTNodes::iterator i = _args.begin(); i != _args.end(); ++i) {
-    SequenceType *seqType = new (mm) SequenceType(new (mm) SequenceType::ItemType(SequenceType::ItemType::TEST_NODE),
-                                                  SequenceType::QUESTION_MARK);
+    ItemType *itemType = new (mm) ItemType(ItemType::TEST_NODE);
+    itemType->setLocationInfo(this);
+    SequenceType *seqType = new (mm) SequenceType(itemType, SequenceType::QUESTION_MARK);
     seqType->setLocationInfo(this);
 
     *i = new (mm) XQTreatAs(*i, seqType, mm);

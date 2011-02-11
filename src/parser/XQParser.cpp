@@ -1869,43 +1869,43 @@ static const yytype_uint16 yyrline[] =
     4653,  4664,  4667,  4676,  4679,  4689,  4696,  4706,  4707,  4709,
     4711,  4717,  4721,  4725,  4726,  4727,  4731,  4743,  4744,  4745,
     4746,  4747,  4748,  4749,  4750,  4751,  4752,  4757,  4765,  4769,
-    4774,  4783,  4791,  4799,  4808,  4812,  4816,  4824,  4828,  4832,
-    4840,  4841,  4849,  4857,  4862,  4866,  4870,  4874,  4883,  4884,
-    4892,  4899,  4902,  4905,  4908,  4912,  4924,  4940,  4942,  4949,
-    4952,  4961,  4973,  4978,  4990,  4995,  4999,  5004,  5009,  5014,
-    5015,  5024,  5029,  5033,  5039,  5043,  5051,  5056,  5066,  5069,
-    5073,  5077,  5081,  5085,  5093,  5095,  5106,  5112,  5118,  5124,
-    5139,  5143,  5147,  5151,  5155,  5159,  5163,  5167,  5175,  5179,
-    5183,  5191,  5195,  5203,  5204,  5216,  5217,  5218,  5219,  5220,
-    5221,  5222,  5223,  5231,  5235,  5239,  5243,  5252,  5256,  5264,
-    5268,  5278,  5282,  5286,  5290,  5294,  5302,  5304,  5311,  5315,
-    5319,  5323,  5333,  5337,  5341,  5349,  5351,  5359,  5363,  5370,
-    5374,  5382,  5386,  5394,  5402,  5406,  5414,  5421,  5429,  5434,
-    5439,  5451,  5455,  5459,  5463,  5467,  5473,  5473,  5478,  5484,
-    5484,  5489,  5493,  5503,  5511,  5518,  5523,  5531,  5540,  5552,
-    5564,  5577,  5588,  5597,  5609,  5614,  5619,  5625,  5631,  5637,
-    5647,  5650,  5658,  5662,  5670,  5674,  5682,  5687,  5696,  5700,
-    5704,  5712,  5716,  5724,  5728,  5732,  5736,  5744,  5748,  5752,
-    5760,  5765,  5775,  5788,  5788,  5792,  5800,  5811,  5816,  5840,
-    5840,  5844,  5852,  5856,  5863,  5868,  5877,  5886,  5886,  5886,
-    5886,  5886,  5886,  5886,  5886,  5887,  5887,  5887,  5887,  5887,
-    5887,  5888,  5888,  5892,  5892,  5892,  5892,  5892,  5892,  5892,
-    5892,  5892,  5892,  5893,  5893,  5893,  5893,  5893,  5893,  5893,
-    5894,  5894,  5894,  5894,  5894,  5894,  5894,  5894,  5895,  5895,
-    5895,  5895,  5895,  5895,  5895,  5895,  5895,  5895,  5895,  5896,
-    5896,  5896,  5896,  5896,  5896,  5896,  5896,  5896,  5896,  5896,
-    5896,  5897,  5897,  5897,  5897,  5897,  5897,  5897,  5897,  5897,
-    5897,  5898,  5898,  5898,  5898,  5898,  5898,  5898,  5898,  5898,
-    5898,  5898,  5898,  5899,  5899,  5899,  5899,  5899,  5899,  5899,
-    5899,  5899,  5899,  5899,  5899,  5900,  5900,  5900,  5900,  5900,
-    5900,  5900,  5900,  5900,  5901,  5901,  5901,  5901,  5901,  5901,
-    5901,  5901,  5902,  5902,  5902,  5902,  5902,  5902,  5902,  5902,
+    4776,  4787,  4795,  4803,  4812,  4816,  4820,  4828,  4832,  4836,
+    4844,  4845,  4853,  4861,  4866,  4870,  4874,  4878,  4887,  4888,
+    4896,  4903,  4906,  4909,  4912,  4916,  4928,  4944,  4946,  4953,
+    4956,  4965,  4977,  4982,  4994,  4999,  5003,  5008,  5013,  5018,
+    5019,  5028,  5033,  5037,  5043,  5047,  5055,  5060,  5070,  5073,
+    5077,  5081,  5085,  5089,  5097,  5099,  5110,  5116,  5122,  5128,
+    5143,  5147,  5151,  5155,  5159,  5163,  5167,  5171,  5179,  5183,
+    5187,  5195,  5199,  5207,  5208,  5220,  5221,  5222,  5223,  5224,
+    5225,  5226,  5227,  5235,  5239,  5243,  5247,  5256,  5260,  5268,
+    5272,  5282,  5286,  5290,  5294,  5298,  5306,  5308,  5315,  5319,
+    5323,  5327,  5337,  5341,  5345,  5353,  5355,  5363,  5367,  5374,
+    5378,  5386,  5390,  5398,  5406,  5410,  5418,  5425,  5433,  5438,
+    5443,  5455,  5459,  5463,  5467,  5471,  5477,  5477,  5482,  5488,
+    5488,  5493,  5497,  5507,  5515,  5522,  5527,  5535,  5544,  5556,
+    5568,  5581,  5592,  5601,  5613,  5618,  5623,  5629,  5635,  5641,
+    5651,  5654,  5662,  5666,  5674,  5678,  5686,  5691,  5700,  5704,
+    5708,  5716,  5720,  5728,  5732,  5736,  5740,  5748,  5752,  5756,
+    5764,  5769,  5779,  5792,  5792,  5796,  5804,  5815,  5820,  5844,
+    5844,  5848,  5856,  5860,  5867,  5872,  5881,  5890,  5890,  5890,
+    5890,  5890,  5890,  5890,  5890,  5891,  5891,  5891,  5891,  5891,
+    5891,  5892,  5892,  5896,  5896,  5896,  5896,  5896,  5896,  5896,
+    5896,  5896,  5896,  5897,  5897,  5897,  5897,  5897,  5897,  5897,
+    5898,  5898,  5898,  5898,  5898,  5898,  5898,  5898,  5899,  5899,
+    5899,  5899,  5899,  5899,  5899,  5899,  5899,  5899,  5899,  5900,
+    5900,  5900,  5900,  5900,  5900,  5900,  5900,  5900,  5900,  5900,
+    5900,  5901,  5901,  5901,  5901,  5901,  5901,  5901,  5901,  5901,
+    5901,  5902,  5902,  5902,  5902,  5902,  5902,  5902,  5902,  5902,
     5902,  5902,  5902,  5903,  5903,  5903,  5903,  5903,  5903,  5903,
-    5903,  5903,  5904,  5904,  5904,  5904,  5904,  5904,  5904,  5904,
-    5904,  5904,  5905,  5905,  5905,  5905,  5905,  5905,  5905,  5905,
-    5905,  5905,  5905,  5906,  5906,  5906,  5906,  5906,  5906,  5906,
-    5906,  5906,  5906,  5906,  5907,  5907,  5907,  5907,  5907,  5907,
-    5907
+    5903,  5903,  5903,  5903,  5903,  5904,  5904,  5904,  5904,  5904,
+    5904,  5904,  5904,  5904,  5905,  5905,  5905,  5905,  5905,  5905,
+    5905,  5905,  5906,  5906,  5906,  5906,  5906,  5906,  5906,  5906,
+    5906,  5906,  5906,  5907,  5907,  5907,  5907,  5907,  5907,  5907,
+    5907,  5907,  5908,  5908,  5908,  5908,  5908,  5908,  5908,  5908,
+    5908,  5908,  5909,  5909,  5909,  5909,  5909,  5909,  5909,  5909,
+    5909,  5909,  5909,  5910,  5910,  5910,  5910,  5910,  5910,  5910,
+    5910,  5910,  5910,  5910,  5911,  5911,  5911,  5911,  5911,  5911,
+    5911
 };
 #endif
 
@@ -5390,7 +5390,7 @@ yyreduce:
 
     const XMLCh *localname = XPath2NSUtils::getLocalName((yyvsp[(4) - (8)].str));
 
-    printf("  {\n    \"%s\", %d, %s, %d, %d,\n", UTF8(localname), ((yyvsp[(5) - (8)].argSpecs) ? (yyvsp[(5) - (8)].argSpecs)->size() : 0),
+    printf("  {\n    \"%s\", %d, %s, %d, %d,\n", UTF8(localname), (int)((yyvsp[(5) - (8)].argSpecs) ? (yyvsp[(5) - (8)].argSpecs)->size() : 0),
            (yyvsp[(2) - (8)].signature)->privateOption == FunctionSignature::OP_TRUE ? "true" : "false", (yylsp[(1) - (8)]).first_line, (yylsp[(1) - (8)]).first_column);
     printf("    \"");
     const XMLCh *ptr = ((XQLexer*)QP->_lexer)->getQueryString() + (yylsp[(1) - (8)]).first_offset;
@@ -5421,10 +5421,10 @@ yyreduce:
 /* Line 1455 of yacc.c  */
 #line 906 "../src/parser/XQParser.y"
     {
+    ItemType *itemType = WRAP((yylsp[(1) - (1)]), new (MEMMGR) ItemType(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
+        AnyAtomicType::fgDT_ANYATOMICTYPE));
     SequenceType *optionalString =
-      WRAP((yylsp[(1) - (1)]), new (MEMMGR) SequenceType(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-                                         AnyAtomicType::fgDT_ANYATOMICTYPE,
-                                         SequenceType::QUESTION_MARK, MEMMGR));
+      WRAP((yylsp[(1) - (1)]), new (MEMMGR) SequenceType(itemType, SequenceType::QUESTION_MARK));
 
     XQGlobalVariable *nameVar =
       WRAP((yylsp[(1) - (1)]), new (MEMMGR) XQGlobalVariable(0, optionalString,
@@ -5711,7 +5711,7 @@ yyreduce:
     }
 
     if((yyval.argSpec)->getType() == 0) {
-      (yyval.argSpec)->setType(WRAP((yylsp[(1) - (3)]), new (MEMMGR) SequenceType(new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_ANYTHING), SequenceType::STAR)));
+      (yyval.argSpec)->setType(WRAP((yylsp[(1) - (3)]), new (MEMMGR) SequenceType(WRAP((yylsp[(1) - (3)]), new (MEMMGR) ItemType(ItemType::TEST_ANYTHING)), SequenceType::STAR)));
     }
 
     // TBD default parameter values - jpcs
@@ -8606,7 +8606,7 @@ yyreduce:
 #line 3339 "../src/parser/XQParser.y"
     {
     SequenceType *zero_or_one = WRAP((yylsp[(1) - (1)]), new (MEMMGR)
-      SequenceType(new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_ANYTHING),
+      SequenceType(WRAP((yylsp[(1) - (1)]), new (MEMMGR) ItemType(ItemType::TEST_ANYTHING)),
                    SequenceType::QUESTION_MARK));
 
     (yyval.astNode) = (yyvsp[(1) - (1)].astNode);
@@ -9296,7 +9296,7 @@ yyreduce:
     FunctionRoot *root = WRAP((yylsp[(1) - (2)]), new (MEMMGR) FunctionRoot(args, MEMMGR));
 
     SequenceType *documentNode = WRAP((yylsp[(1) - (2)]), new (MEMMGR)
-      SequenceType(new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_DOCUMENT)));
+      SequenceType(WRAP((yylsp[(1) - (2)]), new (MEMMGR) ItemType(ItemType::TEST_DOCUMENT))));
 
     nav->addStep(WRAP((yylsp[(1) - (2)]), new (MEMMGR) XQTreatAs(root, documentNode, MEMMGR)));
 
@@ -9320,7 +9320,7 @@ yyreduce:
     FunctionRoot *root = WRAP((yylsp[(1) - (1)]), new (MEMMGR) FunctionRoot(args, MEMMGR));
 
     SequenceType *documentNode = WRAP((yylsp[(1) - (1)]), new (MEMMGR)
-      SequenceType(new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_DOCUMENT)));
+      SequenceType(WRAP((yylsp[(1) - (1)]), new (MEMMGR) ItemType(ItemType::TEST_DOCUMENT))));
 
     (yyval.astNode) = WRAP((yylsp[(1) - (1)]), new (MEMMGR) XQTreatAs(root, documentNode, MEMMGR));
   }
@@ -9490,8 +9490,8 @@ yyreduce:
 #line 4006 "../src/parser/XQParser.y"
     {
     XQStep::Axis axis = XQStep::CHILD;
-    SequenceType::ItemType *itemtype = (yyvsp[(1) - (1)].nodeTest)->getItemType();
-    if(itemtype != 0 && itemtype->getItemTestType() == SequenceType::ItemType::TEST_ATTRIBUTE) {
+    ItemType *itemtype = (yyvsp[(1) - (1)].nodeTest)->getItemType();
+    if(itemtype != 0 && itemtype->getItemTestType() == ItemType::TEST_ATTRIBUTE) {
       axis = XQStep::ATTRIBUTE;
     }
     else if(!(yyvsp[(1) - (1)].nodeTest)->isNodeTypeSet()) {
@@ -10272,7 +10272,7 @@ yyreduce:
 #line 4654 "../src/parser/XQParser.y"
     {
     SequenceType* seq = WRAP((yylsp[(1) - (2)]), new (MEMMGR) SequenceType());
-    seq->setItemType(new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_ATOMIC_TYPE, NULL, (yyvsp[(1) - (2)].qName)));
+    seq->setItemType(WRAP((yylsp[(1) - (2)]), new (MEMMGR) ItemType(ItemType::TEST_ATOMIC_TYPE, NULL, (yyvsp[(1) - (2)].qName))));
     seq->setOccurrence((yyvsp[(2) - (2)].occurrence));
     (yyval.sequenceType) = seq;
   }
@@ -10301,7 +10301,7 @@ yyreduce:
 /* Line 1455 of yacc.c  */
 #line 4676 "../src/parser/XQParser.y"
     {
-    (yyval.sequenceType) = WRAP((yyloc), new (MEMMGR) SequenceType(new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_ANYTHING), SequenceType::STAR));
+    (yyval.sequenceType) = WRAP((yyloc), new (MEMMGR) SequenceType(WRAP((yyloc), new (MEMMGR) ItemType(ItemType::TEST_ANYTHING)), SequenceType::STAR));
   }
     break;
 
@@ -10370,7 +10370,7 @@ yyreduce:
 /* Line 1455 of yacc.c  */
 #line 4718 "../src/parser/XQParser.y"
     {
-    (yyval.itemType) = new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_ATOMIC_TYPE, NULL, (yyvsp[(1) - (1)].qName));
+    (yyval.itemType) = WRAP((yylsp[(1) - (1)]), new (MEMMGR) ItemType(ItemType::TEST_ATOMIC_TYPE, NULL, (yyvsp[(1) - (1)].qName)));
   }
     break;
 
@@ -10379,7 +10379,7 @@ yyreduce:
 /* Line 1455 of yacc.c  */
 #line 4722 "../src/parser/XQParser.y"
     {
-    (yyval.itemType) = new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_ANYTHING);
+    (yyval.itemType) = WRAP((yylsp[(1) - (3)]), new (MEMMGR) ItemType(ItemType::TEST_ANYTHING));
   }
     break;
 
@@ -10388,7 +10388,7 @@ yyreduce:
 /* Line 1455 of yacc.c  */
 #line 4758 "../src/parser/XQParser.y"
     {
-    (yyval.itemType) = new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_NODE);
+    (yyval.itemType) = WRAP((yylsp[(1) - (3)]), new (MEMMGR) ItemType(ItemType::TEST_NODE));
   }
     break;
 
@@ -10397,7 +10397,7 @@ yyreduce:
 /* Line 1455 of yacc.c  */
 #line 4766 "../src/parser/XQParser.y"
     {
-    (yyval.itemType) = new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_DOCUMENT);
+    (yyval.itemType) = WRAP((yylsp[(1) - (3)]), new (MEMMGR) ItemType(ItemType::TEST_DOCUMENT));
   }
     break;
 
@@ -10407,106 +10407,110 @@ yyreduce:
 #line 4770 "../src/parser/XQParser.y"
     {
     (yyval.itemType) = (yyvsp[(3) - (4)].itemType);
-    (yyval.itemType)->setItemTestType(SequenceType::ItemType::TEST_DOCUMENT);
+    (yyval.itemType)->setItemTestType(ItemType::TEST_DOCUMENT);
+    LOCATION((yylsp[(1) - (4)]), loc);
+    (yyval.itemType)->setLocationInfo(&loc);
   }
     break;
 
   case 630:
 
 /* Line 1455 of yacc.c  */
-#line 4775 "../src/parser/XQParser.y"
+#line 4777 "../src/parser/XQParser.y"
     {
     (yyval.itemType) = (yyvsp[(3) - (4)].itemType);
-    (yyval.itemType)->setItemTestType(SequenceType::ItemType::TEST_SCHEMA_DOCUMENT);
+    (yyval.itemType)->setItemTestType(ItemType::TEST_SCHEMA_DOCUMENT);
+    LOCATION((yylsp[(1) - (4)]), loc);
+    (yyval.itemType)->setLocationInfo(&loc);
   }
     break;
 
   case 631:
 
 /* Line 1455 of yacc.c  */
-#line 4784 "../src/parser/XQParser.y"
+#line 4788 "../src/parser/XQParser.y"
     {
-    (yyval.itemType) = new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_TEXT);
+    (yyval.itemType) = WRAP((yylsp[(1) - (3)]), new (MEMMGR) ItemType(ItemType::TEST_TEXT));
   }
     break;
 
   case 632:
 
 /* Line 1455 of yacc.c  */
-#line 4792 "../src/parser/XQParser.y"
+#line 4796 "../src/parser/XQParser.y"
     {
-    (yyval.itemType) = new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_COMMENT);
+    (yyval.itemType) = WRAP((yylsp[(1) - (3)]), new (MEMMGR) ItemType(ItemType::TEST_COMMENT));
   }
     break;
 
   case 633:
 
 /* Line 1455 of yacc.c  */
-#line 4800 "../src/parser/XQParser.y"
+#line 4804 "../src/parser/XQParser.y"
     {
     REJECT_NOT_VERSION11(NamespaceNodeTest, (yylsp[(1) - (3)]));
-    (yyval.itemType) = new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_NAMESPACE);
+    (yyval.itemType) = WRAP((yylsp[(1) - (3)]), new (MEMMGR) ItemType(ItemType::TEST_NAMESPACE));
   }
     break;
 
   case 634:
 
 /* Line 1455 of yacc.c  */
-#line 4809 "../src/parser/XQParser.y"
+#line 4813 "../src/parser/XQParser.y"
     {
-    (yyval.itemType) = new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_PI);
+    (yyval.itemType) = WRAP((yylsp[(1) - (3)]), new (MEMMGR) ItemType(ItemType::TEST_PI));
   }
     break;
 
   case 635:
 
 /* Line 1455 of yacc.c  */
-#line 4813 "../src/parser/XQParser.y"
+#line 4817 "../src/parser/XQParser.y"
     {
-    (yyval.itemType) = new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_PI, new (MEMMGR) QualifiedName((yyvsp[(3) - (4)].str), MEMMGR));
+    (yyval.itemType) = WRAP((yylsp[(1) - (4)]), new (MEMMGR) ItemType(ItemType::TEST_PI, new (MEMMGR) QualifiedName((yyvsp[(3) - (4)].str), MEMMGR)));
   }
     break;
 
   case 636:
 
 /* Line 1455 of yacc.c  */
-#line 4817 "../src/parser/XQParser.y"
+#line 4821 "../src/parser/XQParser.y"
     {
-    (yyval.itemType) = new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_PI, new (MEMMGR) QualifiedName((yyvsp[(3) - (4)].str), MEMMGR));
+    (yyval.itemType) = WRAP((yylsp[(1) - (4)]), new (MEMMGR) ItemType(ItemType::TEST_PI, new (MEMMGR) QualifiedName((yyvsp[(3) - (4)].str), MEMMGR)));
   }
     break;
 
   case 637:
 
 /* Line 1455 of yacc.c  */
-#line 4825 "../src/parser/XQParser.y"
+#line 4829 "../src/parser/XQParser.y"
     {
-    (yyval.itemType) = new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_ATTRIBUTE);
+    (yyval.itemType) = WRAP((yylsp[(1) - (3)]), new (MEMMGR) ItemType(ItemType::TEST_ATTRIBUTE));
   }
     break;
 
   case 638:
 
 /* Line 1455 of yacc.c  */
-#line 4829 "../src/parser/XQParser.y"
+#line 4833 "../src/parser/XQParser.y"
     {
-    (yyval.itemType) = new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_ATTRIBUTE,(yyvsp[(3) - (4)].qName));
+    (yyval.itemType) = WRAP((yylsp[(1) - (4)]), new (MEMMGR) ItemType(ItemType::TEST_ATTRIBUTE,(yyvsp[(3) - (4)].qName)));
   }
     break;
 
   case 639:
 
 /* Line 1455 of yacc.c  */
-#line 4833 "../src/parser/XQParser.y"
+#line 4837 "../src/parser/XQParser.y"
     {
-    (yyval.itemType) = new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_ATTRIBUTE,(yyvsp[(3) - (6)].qName),(yyvsp[(5) - (6)].qName));
+    (yyval.itemType) = WRAP((yylsp[(1) - (6)]), new (MEMMGR) ItemType(ItemType::TEST_ATTRIBUTE,(yyvsp[(3) - (6)].qName),(yyvsp[(5) - (6)].qName)));
   }
     break;
 
   case 641:
 
 /* Line 1455 of yacc.c  */
-#line 4842 "../src/parser/XQParser.y"
+#line 4846 "../src/parser/XQParser.y"
     {
     (yyval.qName) = NULL;
   }
@@ -10515,45 +10519,45 @@ yyreduce:
   case 642:
 
 /* Line 1455 of yacc.c  */
-#line 4850 "../src/parser/XQParser.y"
+#line 4854 "../src/parser/XQParser.y"
     {
-    (yyval.itemType) = new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_SCHEMA_ATTRIBUTE,(yyvsp[(3) - (4)].qName));
+    (yyval.itemType) = WRAP((yylsp[(1) - (4)]), new (MEMMGR) ItemType(ItemType::TEST_SCHEMA_ATTRIBUTE,(yyvsp[(3) - (4)].qName)));
   }
     break;
 
   case 644:
 
 /* Line 1455 of yacc.c  */
-#line 4863 "../src/parser/XQParser.y"
+#line 4867 "../src/parser/XQParser.y"
     {
-    (yyval.itemType) = new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_ELEMENT);
+    (yyval.itemType) = WRAP((yylsp[(1) - (3)]), new (MEMMGR) ItemType(ItemType::TEST_ELEMENT));
   }
     break;
 
   case 645:
 
 /* Line 1455 of yacc.c  */
-#line 4867 "../src/parser/XQParser.y"
+#line 4871 "../src/parser/XQParser.y"
     {
-    (yyval.itemType) = new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_ELEMENT,(yyvsp[(3) - (4)].qName));
+    (yyval.itemType) = WRAP((yylsp[(1) - (4)]), new (MEMMGR) ItemType(ItemType::TEST_ELEMENT,(yyvsp[(3) - (4)].qName)));
   }
     break;
 
   case 646:
 
 /* Line 1455 of yacc.c  */
-#line 4871 "../src/parser/XQParser.y"
+#line 4875 "../src/parser/XQParser.y"
     {
-    (yyval.itemType) = new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_ELEMENT,(yyvsp[(3) - (6)].qName),(yyvsp[(5) - (6)].qName));
+    (yyval.itemType) = WRAP((yylsp[(1) - (6)]), new (MEMMGR) ItemType(ItemType::TEST_ELEMENT,(yyvsp[(3) - (6)].qName),(yyvsp[(5) - (6)].qName)));
   }
     break;
 
   case 647:
 
 /* Line 1455 of yacc.c  */
-#line 4875 "../src/parser/XQParser.y"
+#line 4879 "../src/parser/XQParser.y"
     {
-    (yyval.itemType) = new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_ELEMENT,(yyvsp[(3) - (7)].qName),(yyvsp[(5) - (7)].qName));
+    (yyval.itemType) = WRAP((yylsp[(1) - (7)]), new (MEMMGR) ItemType(ItemType::TEST_ELEMENT,(yyvsp[(3) - (7)].qName),(yyvsp[(5) - (7)].qName)));
     (yyval.itemType)->setAllowNilled(true);
   }
     break;
@@ -10561,7 +10565,7 @@ yyreduce:
   case 649:
 
 /* Line 1455 of yacc.c  */
-#line 4885 "../src/parser/XQParser.y"
+#line 4889 "../src/parser/XQParser.y"
     {
     (yyval.qName) = NULL;
   }
@@ -10570,16 +10574,16 @@ yyreduce:
   case 650:
 
 /* Line 1455 of yacc.c  */
-#line 4893 "../src/parser/XQParser.y"
+#line 4897 "../src/parser/XQParser.y"
     {
-    (yyval.itemType) = new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_SCHEMA_ELEMENT,(yyvsp[(3) - (4)].qName));
+    (yyval.itemType) = WRAP((yylsp[(1) - (4)]), new (MEMMGR) ItemType(ItemType::TEST_SCHEMA_ELEMENT,(yyvsp[(3) - (4)].qName)));
   }
     break;
 
   case 655:
 
 /* Line 1455 of yacc.c  */
-#line 4913 "../src/parser/XQParser.y"
+#line 4917 "../src/parser/XQParser.y"
     {
     // the string must be whitespace-normalized
     XMLString::collapseWS((yyvsp[(1) - (1)].str), MEMMGR);
@@ -10592,7 +10596,7 @@ yyreduce:
   case 656:
 
 /* Line 1455 of yacc.c  */
-#line 4925 "../src/parser/XQParser.y"
+#line 4929 "../src/parser/XQParser.y"
     {
     // TBD weight
     (yyval.ftselection) = (yyvsp[(1) - (3)].ftselection);
@@ -10609,7 +10613,7 @@ yyreduce:
   case 657:
 
 /* Line 1455 of yacc.c  */
-#line 4940 "../src/parser/XQParser.y"
+#line 4944 "../src/parser/XQParser.y"
     {
 }
     break;
@@ -10617,7 +10621,7 @@ yyreduce:
   case 658:
 
 /* Line 1455 of yacc.c  */
-#line 4943 "../src/parser/XQParser.y"
+#line 4947 "../src/parser/XQParser.y"
     {
 }
     break;
@@ -10625,7 +10629,7 @@ yyreduce:
   case 659:
 
 /* Line 1455 of yacc.c  */
-#line 4949 "../src/parser/XQParser.y"
+#line 4953 "../src/parser/XQParser.y"
     {
   (yyval.ftoptionlist) = new (MEMMGR) VectorOfFTOptions(XQillaAllocator<FTOption*>(MEMMGR));
 }
@@ -10634,7 +10638,7 @@ yyreduce:
   case 660:
 
 /* Line 1455 of yacc.c  */
-#line 4953 "../src/parser/XQParser.y"
+#line 4957 "../src/parser/XQParser.y"
     {
   if((yyvsp[(2) - (2)].ftoption) != NULL) (yyvsp[(1) - (2)].ftoptionlist)->push_back((yyvsp[(2) - (2)].ftoption));
   (yyval.ftoptionlist) = (yyvsp[(1) - (2)].ftoptionlist);
@@ -10644,7 +10648,7 @@ yyreduce:
   case 661:
 
 /* Line 1455 of yacc.c  */
-#line 4963 "../src/parser/XQParser.y"
+#line 4967 "../src/parser/XQParser.y"
     {
     if((yyvsp[(1) - (3)].ftselection)->getType() == FTSelection::OR) {
       FTOr *op = (FTOr*)(yyvsp[(1) - (3)].ftselection);
@@ -10660,7 +10664,7 @@ yyreduce:
   case 663:
 
 /* Line 1455 of yacc.c  */
-#line 4980 "../src/parser/XQParser.y"
+#line 4984 "../src/parser/XQParser.y"
     {
     if((yyvsp[(1) - (3)].ftselection)->getType() == FTSelection::AND) {
       FTAnd *op = (FTAnd*)(yyvsp[(1) - (3)].ftselection);
@@ -10676,7 +10680,7 @@ yyreduce:
   case 665:
 
 /* Line 1455 of yacc.c  */
-#line 4996 "../src/parser/XQParser.y"
+#line 5000 "../src/parser/XQParser.y"
     {
     (yyval.ftselection) = WRAP((yylsp[(2) - (4)]), new (MEMMGR) FTMildnot((yyvsp[(1) - (4)].ftselection), (yyvsp[(4) - (4)].ftselection), MEMMGR));
   }
@@ -10685,7 +10689,7 @@ yyreduce:
   case 667:
 
 /* Line 1455 of yacc.c  */
-#line 5006 "../src/parser/XQParser.y"
+#line 5010 "../src/parser/XQParser.y"
     {
     (yyval.ftselection) = WRAP((yylsp[(1) - (2)]), new (MEMMGR) FTUnaryNot((yyvsp[(2) - (2)].ftselection), MEMMGR));
   }
@@ -10694,7 +10698,7 @@ yyreduce:
   case 670:
 
 /* Line 1455 of yacc.c  */
-#line 5016 "../src/parser/XQParser.y"
+#line 5020 "../src/parser/XQParser.y"
     {
   // TBD match options
   (yyval.ftselection) = (yyvsp[(1) - (2)].ftselection);
@@ -10704,7 +10708,7 @@ yyreduce:
   case 671:
 
 /* Line 1455 of yacc.c  */
-#line 5025 "../src/parser/XQParser.y"
+#line 5029 "../src/parser/XQParser.y"
     {
   // TBD FTTimes
   (yyval.ftselection) = (yyvsp[(1) - (2)].ftselection);
@@ -10714,7 +10718,7 @@ yyreduce:
   case 672:
 
 /* Line 1455 of yacc.c  */
-#line 5030 "../src/parser/XQParser.y"
+#line 5034 "../src/parser/XQParser.y"
     {
   (yyval.ftselection) = (yyvsp[(2) - (3)].ftselection);
 }
@@ -10723,7 +10727,7 @@ yyreduce:
   case 674:
 
 /* Line 1455 of yacc.c  */
-#line 5040 "../src/parser/XQParser.y"
+#line 5044 "../src/parser/XQParser.y"
     {
     (yyval.ftselection) = WRAP((yylsp[(1) - (2)]), new (MEMMGR) FTWords((yyvsp[(1) - (2)].astNode), (yyvsp[(2) - (2)].ftanyalloption), MEMMGR));
   }
@@ -10732,7 +10736,7 @@ yyreduce:
   case 675:
 
 /* Line 1455 of yacc.c  */
-#line 5044 "../src/parser/XQParser.y"
+#line 5048 "../src/parser/XQParser.y"
     {
     (yyval.ftselection) = WRAP((yylsp[(2) - (4)]), new (MEMMGR) FTWords((yyvsp[(2) - (4)].astNode), (yyvsp[(4) - (4)].ftanyalloption), MEMMGR));
   }
@@ -10741,7 +10745,7 @@ yyreduce:
   case 676:
 
 /* Line 1455 of yacc.c  */
-#line 5052 "../src/parser/XQParser.y"
+#line 5056 "../src/parser/XQParser.y"
     {
   // we don't support any pragma
   yyerror((yylsp[(1) - (3)]), "This pragma is not recognized, and no alternative expression is specified [err:XQST0079]");
@@ -10751,7 +10755,7 @@ yyreduce:
   case 677:
 
 /* Line 1455 of yacc.c  */
-#line 5057 "../src/parser/XQParser.y"
+#line 5061 "../src/parser/XQParser.y"
     {
   // we don't support any pragma
   (yyval.ftselection) = (yyvsp[(3) - (4)].ftselection);
@@ -10761,7 +10765,7 @@ yyreduce:
   case 678:
 
 /* Line 1455 of yacc.c  */
-#line 5066 "../src/parser/XQParser.y"
+#line 5070 "../src/parser/XQParser.y"
     {
     (yyval.ftanyalloption) = FTWords::ANY;
   }
@@ -10770,7 +10774,7 @@ yyreduce:
   case 679:
 
 /* Line 1455 of yacc.c  */
-#line 5070 "../src/parser/XQParser.y"
+#line 5074 "../src/parser/XQParser.y"
     {
     (yyval.ftanyalloption) = FTWords::ANY;
   }
@@ -10779,7 +10783,7 @@ yyreduce:
   case 680:
 
 /* Line 1455 of yacc.c  */
-#line 5074 "../src/parser/XQParser.y"
+#line 5078 "../src/parser/XQParser.y"
     {
     (yyval.ftanyalloption) = FTWords::ANY_WORD;
   }
@@ -10788,7 +10792,7 @@ yyreduce:
   case 681:
 
 /* Line 1455 of yacc.c  */
-#line 5078 "../src/parser/XQParser.y"
+#line 5082 "../src/parser/XQParser.y"
     {
     (yyval.ftanyalloption) = FTWords::ALL;
   }
@@ -10797,7 +10801,7 @@ yyreduce:
   case 682:
 
 /* Line 1455 of yacc.c  */
-#line 5082 "../src/parser/XQParser.y"
+#line 5086 "../src/parser/XQParser.y"
     {
     (yyval.ftanyalloption) = FTWords::ALL_WORDS;
   }
@@ -10806,7 +10810,7 @@ yyreduce:
   case 683:
 
 /* Line 1455 of yacc.c  */
-#line 5086 "../src/parser/XQParser.y"
+#line 5090 "../src/parser/XQParser.y"
     {
     (yyval.ftanyalloption) = FTWords::PHRASE;
   }
@@ -10815,7 +10819,7 @@ yyreduce:
   case 685:
 
 /* Line 1455 of yacc.c  */
-#line 5096 "../src/parser/XQParser.y"
+#line 5100 "../src/parser/XQParser.y"
     {
   yyerror((yylsp[(1) - (3)]), "The FTTimes operator is not supported. [err:FTST0005]");
 }
@@ -10824,7 +10828,7 @@ yyreduce:
   case 686:
 
 /* Line 1455 of yacc.c  */
-#line 5107 "../src/parser/XQParser.y"
+#line 5111 "../src/parser/XQParser.y"
     {
     (yyval.ftrange).type = FTRange::EXACTLY;
     (yyval.ftrange).arg1 = (yyvsp[(2) - (2)].astNode);
@@ -10835,7 +10839,7 @@ yyreduce:
   case 687:
 
 /* Line 1455 of yacc.c  */
-#line 5113 "../src/parser/XQParser.y"
+#line 5117 "../src/parser/XQParser.y"
     {
     (yyval.ftrange).type = FTRange::AT_LEAST;
     (yyval.ftrange).arg1 = (yyvsp[(3) - (3)].astNode);
@@ -10846,7 +10850,7 @@ yyreduce:
   case 688:
 
 /* Line 1455 of yacc.c  */
-#line 5119 "../src/parser/XQParser.y"
+#line 5123 "../src/parser/XQParser.y"
     {
     (yyval.ftrange).type = FTRange::AT_MOST;
     (yyval.ftrange).arg1 = (yyvsp[(3) - (3)].astNode);
@@ -10857,7 +10861,7 @@ yyreduce:
   case 689:
 
 /* Line 1455 of yacc.c  */
-#line 5125 "../src/parser/XQParser.y"
+#line 5129 "../src/parser/XQParser.y"
     {
     (yyval.ftrange).type = FTRange::FROM_TO;
     (yyval.ftrange).arg1 = (yyvsp[(2) - (4)].astNode);
@@ -10868,7 +10872,7 @@ yyreduce:
   case 690:
 
 /* Line 1455 of yacc.c  */
-#line 5140 "../src/parser/XQParser.y"
+#line 5144 "../src/parser/XQParser.y"
     {
     (yyval.ftoption) = WRAP((yylsp[(1) - (1)]), new (MEMMGR) FTOrder(MEMMGR));
   }
@@ -10877,7 +10881,7 @@ yyreduce:
   case 691:
 
 /* Line 1455 of yacc.c  */
-#line 5144 "../src/parser/XQParser.y"
+#line 5148 "../src/parser/XQParser.y"
     {
     (yyval.ftoption) = WRAP((yylsp[(1) - (3)]), new (MEMMGR) FTWindow((yyvsp[(2) - (3)].astNode), (yyvsp[(3) - (3)].ftunit), MEMMGR));
   }
@@ -10886,7 +10890,7 @@ yyreduce:
   case 692:
 
 /* Line 1455 of yacc.c  */
-#line 5148 "../src/parser/XQParser.y"
+#line 5152 "../src/parser/XQParser.y"
     {
     (yyval.ftoption) = WRAP((yylsp[(1) - (3)]), new (MEMMGR) FTDistance((yyvsp[(2) - (3)].ftrange), (yyvsp[(3) - (3)].ftunit), MEMMGR));
   }
@@ -10895,7 +10899,7 @@ yyreduce:
   case 693:
 
 /* Line 1455 of yacc.c  */
-#line 5152 "../src/parser/XQParser.y"
+#line 5156 "../src/parser/XQParser.y"
     {
     (yyval.ftoption) = WRAP((yylsp[(1) - (2)]), new (MEMMGR) FTScope(FTScope::SAME, (yyvsp[(2) - (2)].ftunit), MEMMGR));
   }
@@ -10904,7 +10908,7 @@ yyreduce:
   case 694:
 
 /* Line 1455 of yacc.c  */
-#line 5156 "../src/parser/XQParser.y"
+#line 5160 "../src/parser/XQParser.y"
     {
     (yyval.ftoption) = WRAP((yylsp[(1) - (2)]), new (MEMMGR) FTScope(FTScope::DIFFERENT, (yyvsp[(2) - (2)].ftunit), MEMMGR));
   }
@@ -10913,7 +10917,7 @@ yyreduce:
   case 695:
 
 /* Line 1455 of yacc.c  */
-#line 5160 "../src/parser/XQParser.y"
+#line 5164 "../src/parser/XQParser.y"
     {
     (yyval.ftoption) = WRAP((yylsp[(1) - (2)]), new (MEMMGR) FTContent(FTContent::AT_START, MEMMGR));
   }
@@ -10922,7 +10926,7 @@ yyreduce:
   case 696:
 
 /* Line 1455 of yacc.c  */
-#line 5164 "../src/parser/XQParser.y"
+#line 5168 "../src/parser/XQParser.y"
     {
     (yyval.ftoption) = WRAP((yylsp[(1) - (2)]), new (MEMMGR) FTContent(FTContent::AT_END, MEMMGR));
   }
@@ -10931,7 +10935,7 @@ yyreduce:
   case 697:
 
 /* Line 1455 of yacc.c  */
-#line 5168 "../src/parser/XQParser.y"
+#line 5172 "../src/parser/XQParser.y"
     {
     (yyval.ftoption) = WRAP((yylsp[(1) - (2)]), new (MEMMGR) FTContent(FTContent::ENTIRE_CONTENT, MEMMGR));
   }
@@ -10940,7 +10944,7 @@ yyreduce:
   case 698:
 
 /* Line 1455 of yacc.c  */
-#line 5176 "../src/parser/XQParser.y"
+#line 5180 "../src/parser/XQParser.y"
     {
     (yyval.ftunit) = FTOption::WORDS;
   }
@@ -10949,7 +10953,7 @@ yyreduce:
   case 699:
 
 /* Line 1455 of yacc.c  */
-#line 5180 "../src/parser/XQParser.y"
+#line 5184 "../src/parser/XQParser.y"
     {
     (yyval.ftunit) = FTOption::SENTENCES;
   }
@@ -10958,7 +10962,7 @@ yyreduce:
   case 700:
 
 /* Line 1455 of yacc.c  */
-#line 5184 "../src/parser/XQParser.y"
+#line 5188 "../src/parser/XQParser.y"
     {
     (yyval.ftunit) = FTOption::PARAGRAPHS;
   }
@@ -10967,7 +10971,7 @@ yyreduce:
   case 701:
 
 /* Line 1455 of yacc.c  */
-#line 5192 "../src/parser/XQParser.y"
+#line 5196 "../src/parser/XQParser.y"
     {
     (yyval.ftunit) = FTOption::SENTENCES;
   }
@@ -10976,7 +10980,7 @@ yyreduce:
   case 702:
 
 /* Line 1455 of yacc.c  */
-#line 5196 "../src/parser/XQParser.y"
+#line 5200 "../src/parser/XQParser.y"
     {
     (yyval.ftunit) = FTOption::PARAGRAPHS;
   }
@@ -10985,7 +10989,7 @@ yyreduce:
   case 713:
 
 /* Line 1455 of yacc.c  */
-#line 5232 "../src/parser/XQParser.y"
+#line 5236 "../src/parser/XQParser.y"
     {
     CONTEXT->setFTCase(StaticContext::CASE_INSENSITIVE);
   }
@@ -10994,7 +10998,7 @@ yyreduce:
   case 714:
 
 /* Line 1455 of yacc.c  */
-#line 5236 "../src/parser/XQParser.y"
+#line 5240 "../src/parser/XQParser.y"
     {
     CONTEXT->setFTCase(StaticContext::CASE_SENSITIVE);
   }
@@ -11003,7 +11007,7 @@ yyreduce:
   case 715:
 
 /* Line 1455 of yacc.c  */
-#line 5240 "../src/parser/XQParser.y"
+#line 5244 "../src/parser/XQParser.y"
     {
     CONTEXT->setFTCase(StaticContext::LOWERCASE);
   }
@@ -11012,7 +11016,7 @@ yyreduce:
   case 716:
 
 /* Line 1455 of yacc.c  */
-#line 5244 "../src/parser/XQParser.y"
+#line 5248 "../src/parser/XQParser.y"
     {
     CONTEXT->setFTCase(StaticContext::UPPERCASE);
   }
@@ -11021,7 +11025,7 @@ yyreduce:
   case 717:
 
 /* Line 1455 of yacc.c  */
-#line 5253 "../src/parser/XQParser.y"
+#line 5257 "../src/parser/XQParser.y"
     {
     std::cerr << "diacritics insensitive" << std::endl;
   }
@@ -11030,7 +11034,7 @@ yyreduce:
   case 718:
 
 /* Line 1455 of yacc.c  */
-#line 5257 "../src/parser/XQParser.y"
+#line 5261 "../src/parser/XQParser.y"
     {
     std::cerr << "diacritics sensitive" << std::endl;
   }
@@ -11039,7 +11043,7 @@ yyreduce:
   case 719:
 
 /* Line 1455 of yacc.c  */
-#line 5265 "../src/parser/XQParser.y"
+#line 5269 "../src/parser/XQParser.y"
     {
     std::cerr << "using stemming" << std::endl;
   }
@@ -11048,7 +11052,7 @@ yyreduce:
   case 720:
 
 /* Line 1455 of yacc.c  */
-#line 5269 "../src/parser/XQParser.y"
+#line 5273 "../src/parser/XQParser.y"
     {
     std::cerr << "no stemming" << std::endl;
   }
@@ -11057,7 +11061,7 @@ yyreduce:
   case 721:
 
 /* Line 1455 of yacc.c  */
-#line 5279 "../src/parser/XQParser.y"
+#line 5283 "../src/parser/XQParser.y"
     {
     std::cerr << "using thesaurus" << std::endl;
   }
@@ -11066,7 +11070,7 @@ yyreduce:
   case 722:
 
 /* Line 1455 of yacc.c  */
-#line 5283 "../src/parser/XQParser.y"
+#line 5287 "../src/parser/XQParser.y"
     {
     std::cerr << "using thesaurus default" << std::endl;
   }
@@ -11075,7 +11079,7 @@ yyreduce:
   case 723:
 
 /* Line 1455 of yacc.c  */
-#line 5287 "../src/parser/XQParser.y"
+#line 5291 "../src/parser/XQParser.y"
     {
     std::cerr << "using thesaurus ()" << std::endl;
   }
@@ -11084,7 +11088,7 @@ yyreduce:
   case 724:
 
 /* Line 1455 of yacc.c  */
-#line 5291 "../src/parser/XQParser.y"
+#line 5295 "../src/parser/XQParser.y"
     {
     std::cerr << "using thesaurus (default)" << std::endl;
   }
@@ -11093,7 +11097,7 @@ yyreduce:
   case 725:
 
 /* Line 1455 of yacc.c  */
-#line 5295 "../src/parser/XQParser.y"
+#line 5299 "../src/parser/XQParser.y"
     {
     std::cerr << "no thesaurus" << std::endl;
   }
@@ -11102,7 +11106,7 @@ yyreduce:
   case 726:
 
 /* Line 1455 of yacc.c  */
-#line 5302 "../src/parser/XQParser.y"
+#line 5306 "../src/parser/XQParser.y"
     {
   }
     break;
@@ -11110,7 +11114,7 @@ yyreduce:
   case 727:
 
 /* Line 1455 of yacc.c  */
-#line 5305 "../src/parser/XQParser.y"
+#line 5309 "../src/parser/XQParser.y"
     {
   }
     break;
@@ -11118,7 +11122,7 @@ yyreduce:
   case 728:
 
 /* Line 1455 of yacc.c  */
-#line 5312 "../src/parser/XQParser.y"
+#line 5316 "../src/parser/XQParser.y"
     {
     std::cerr << "at StringLiteral" << std::endl;
   }
@@ -11127,7 +11131,7 @@ yyreduce:
   case 729:
 
 /* Line 1455 of yacc.c  */
-#line 5316 "../src/parser/XQParser.y"
+#line 5320 "../src/parser/XQParser.y"
     {
     std::cerr << "at StringLiteral relationship StringLiteral" << std::endl;
   }
@@ -11136,7 +11140,7 @@ yyreduce:
   case 730:
 
 /* Line 1455 of yacc.c  */
-#line 5320 "../src/parser/XQParser.y"
+#line 5324 "../src/parser/XQParser.y"
     {
     std::cerr << "at StringLiteral levels" << std::endl;
   }
@@ -11145,7 +11149,7 @@ yyreduce:
   case 731:
 
 /* Line 1455 of yacc.c  */
-#line 5324 "../src/parser/XQParser.y"
+#line 5328 "../src/parser/XQParser.y"
     {
     std::cerr << "at StringLiteral relationship StringLiteral levels" << std::endl;
   }
@@ -11154,7 +11158,7 @@ yyreduce:
   case 732:
 
 /* Line 1455 of yacc.c  */
-#line 5334 "../src/parser/XQParser.y"
+#line 5338 "../src/parser/XQParser.y"
     {
     yyerror((yylsp[(1) - (4)]), "FTStopWordOption is not supported. [err:FTST0006]");
   }
@@ -11163,7 +11167,7 @@ yyreduce:
   case 733:
 
 /* Line 1455 of yacc.c  */
-#line 5338 "../src/parser/XQParser.y"
+#line 5342 "../src/parser/XQParser.y"
     {
     yyerror((yylsp[(1) - (3)]), "FTStopWordOption is not supported. [err:FTST0006]");
   }
@@ -11172,7 +11176,7 @@ yyreduce:
   case 734:
 
 /* Line 1455 of yacc.c  */
-#line 5342 "../src/parser/XQParser.y"
+#line 5346 "../src/parser/XQParser.y"
     {
     yyerror((yylsp[(1) - (4)]), "FTStopWordOption is not supported. [err:FTST0006]");
   }
@@ -11181,7 +11185,7 @@ yyreduce:
   case 735:
 
 /* Line 1455 of yacc.c  */
-#line 5349 "../src/parser/XQParser.y"
+#line 5353 "../src/parser/XQParser.y"
     {
   }
     break;
@@ -11189,7 +11193,7 @@ yyreduce:
   case 736:
 
 /* Line 1455 of yacc.c  */
-#line 5352 "../src/parser/XQParser.y"
+#line 5356 "../src/parser/XQParser.y"
     {
   }
     break;
@@ -11197,7 +11201,7 @@ yyreduce:
   case 737:
 
 /* Line 1455 of yacc.c  */
-#line 5360 "../src/parser/XQParser.y"
+#line 5364 "../src/parser/XQParser.y"
     {
     std::cerr << "at URILiteral" << std::endl;
   }
@@ -11206,7 +11210,7 @@ yyreduce:
   case 738:
 
 /* Line 1455 of yacc.c  */
-#line 5364 "../src/parser/XQParser.y"
+#line 5368 "../src/parser/XQParser.y"
     {
     std::cerr << "()" << std::endl;
   }
@@ -11215,7 +11219,7 @@ yyreduce:
   case 739:
 
 /* Line 1455 of yacc.c  */
-#line 5371 "../src/parser/XQParser.y"
+#line 5375 "../src/parser/XQParser.y"
     {
     std::cerr << "StringLiteral" << std::endl;
   }
@@ -11224,7 +11228,7 @@ yyreduce:
   case 740:
 
 /* Line 1455 of yacc.c  */
-#line 5375 "../src/parser/XQParser.y"
+#line 5379 "../src/parser/XQParser.y"
     {
     std::cerr << ", StringLiteral" << std::endl;
   }
@@ -11233,7 +11237,7 @@ yyreduce:
   case 741:
 
 /* Line 1455 of yacc.c  */
-#line 5383 "../src/parser/XQParser.y"
+#line 5387 "../src/parser/XQParser.y"
     {
     std::cerr << "union" << std::endl;
   }
@@ -11242,7 +11246,7 @@ yyreduce:
   case 742:
 
 /* Line 1455 of yacc.c  */
-#line 5387 "../src/parser/XQParser.y"
+#line 5391 "../src/parser/XQParser.y"
     {
     std::cerr << "except" << std::endl;
   }
@@ -11251,7 +11255,7 @@ yyreduce:
   case 743:
 
 /* Line 1455 of yacc.c  */
-#line 5395 "../src/parser/XQParser.y"
+#line 5399 "../src/parser/XQParser.y"
     {
     std::cerr << "language StringLiteral" << std::endl;
   }
@@ -11260,7 +11264,7 @@ yyreduce:
   case 744:
 
 /* Line 1455 of yacc.c  */
-#line 5403 "../src/parser/XQParser.y"
+#line 5407 "../src/parser/XQParser.y"
     {
     std::cerr << "using wildcards" << std::endl;
   }
@@ -11269,7 +11273,7 @@ yyreduce:
   case 745:
 
 /* Line 1455 of yacc.c  */
-#line 5407 "../src/parser/XQParser.y"
+#line 5411 "../src/parser/XQParser.y"
     {
     std::cerr << "no wildcards" << std::endl;
   }
@@ -11278,7 +11282,7 @@ yyreduce:
   case 746:
 
 /* Line 1455 of yacc.c  */
-#line 5415 "../src/parser/XQParser.y"
+#line 5419 "../src/parser/XQParser.y"
     {
 }
     break;
@@ -11286,7 +11290,7 @@ yyreduce:
   case 747:
 
 /* Line 1455 of yacc.c  */
-#line 5422 "../src/parser/XQParser.y"
+#line 5426 "../src/parser/XQParser.y"
     {
     (yyval.astNode) = (yyvsp[(3) - (3)].astNode);
   }
@@ -11295,7 +11299,7 @@ yyreduce:
   case 748:
 
 /* Line 1455 of yacc.c  */
-#line 5430 "../src/parser/XQParser.y"
+#line 5434 "../src/parser/XQParser.y"
     {
     CHECK_SPECIFIED((yylsp[(1) - (3)]), BIT_REVALIDATION_SPECIFIED, "revalidation", "XUST0003");
     CONTEXT->setRevalidationMode(DocumentCache::VALIDATION_STRICT);
@@ -11305,7 +11309,7 @@ yyreduce:
   case 749:
 
 /* Line 1455 of yacc.c  */
-#line 5435 "../src/parser/XQParser.y"
+#line 5439 "../src/parser/XQParser.y"
     {
     CHECK_SPECIFIED((yylsp[(1) - (3)]), BIT_REVALIDATION_SPECIFIED, "revalidation", "XUST0003");
     CONTEXT->setRevalidationMode(DocumentCache::VALIDATION_LAX);
@@ -11315,7 +11319,7 @@ yyreduce:
   case 750:
 
 /* Line 1455 of yacc.c  */
-#line 5440 "../src/parser/XQParser.y"
+#line 5444 "../src/parser/XQParser.y"
     {
     CHECK_SPECIFIED((yylsp[(1) - (3)]), BIT_REVALIDATION_SPECIFIED, "revalidation", "XUST0003");
     CONTEXT->setRevalidationMode(DocumentCache::VALIDATION_SKIP);
@@ -11325,7 +11329,7 @@ yyreduce:
   case 751:
 
 /* Line 1455 of yacc.c  */
-#line 5452 "../src/parser/XQParser.y"
+#line 5456 "../src/parser/XQParser.y"
     {
     (yyval.astNode) = WRAP((yylsp[(1) - (6)]), new (MEMMGR) UInsertAsFirst((yyvsp[(2) - (6)].astNode), (yyvsp[(6) - (6)].astNode), MEMMGR));
   }
@@ -11334,7 +11338,7 @@ yyreduce:
   case 752:
 
 /* Line 1455 of yacc.c  */
-#line 5456 "../src/parser/XQParser.y"
+#line 5460 "../src/parser/XQParser.y"
     {
     (yyval.astNode) = WRAP((yylsp[(1) - (6)]), new (MEMMGR) UInsertAsLast((yyvsp[(2) - (6)].astNode), (yyvsp[(6) - (6)].astNode), MEMMGR));
   }
@@ -11343,7 +11347,7 @@ yyreduce:
   case 753:
 
 /* Line 1455 of yacc.c  */
-#line 5460 "../src/parser/XQParser.y"
+#line 5464 "../src/parser/XQParser.y"
     {
     (yyval.astNode) = WRAP((yylsp[(1) - (4)]), new (MEMMGR) UInsertInto((yyvsp[(2) - (4)].astNode), (yyvsp[(4) - (4)].astNode), MEMMGR));
   }
@@ -11352,7 +11356,7 @@ yyreduce:
   case 754:
 
 /* Line 1455 of yacc.c  */
-#line 5464 "../src/parser/XQParser.y"
+#line 5468 "../src/parser/XQParser.y"
     {
     (yyval.astNode) = WRAP((yylsp[(1) - (4)]), new (MEMMGR) UInsertAfter((yyvsp[(2) - (4)].astNode), (yyvsp[(4) - (4)].astNode), MEMMGR));
   }
@@ -11361,7 +11365,7 @@ yyreduce:
   case 755:
 
 /* Line 1455 of yacc.c  */
-#line 5468 "../src/parser/XQParser.y"
+#line 5472 "../src/parser/XQParser.y"
     {
     (yyval.astNode) = WRAP((yylsp[(1) - (4)]), new (MEMMGR) UInsertBefore((yyvsp[(2) - (4)].astNode), (yyvsp[(4) - (4)].astNode), MEMMGR));
   }
@@ -11370,7 +11374,7 @@ yyreduce:
   case 758:
 
 /* Line 1455 of yacc.c  */
-#line 5479 "../src/parser/XQParser.y"
+#line 5483 "../src/parser/XQParser.y"
     {
     (yyval.astNode) = WRAP((yylsp[(1) - (2)]), new (MEMMGR) UDelete((yyvsp[(2) - (2)].astNode), MEMMGR));
   }
@@ -11379,7 +11383,7 @@ yyreduce:
   case 761:
 
 /* Line 1455 of yacc.c  */
-#line 5490 "../src/parser/XQParser.y"
+#line 5494 "../src/parser/XQParser.y"
     {
     (yyval.astNode) = WRAP((yylsp[(1) - (7)]), new (MEMMGR) UReplaceValueOf((yyvsp[(5) - (7)].astNode), (yyvsp[(7) - (7)].astNode), MEMMGR));
   }
@@ -11388,7 +11392,7 @@ yyreduce:
   case 762:
 
 /* Line 1455 of yacc.c  */
-#line 5494 "../src/parser/XQParser.y"
+#line 5498 "../src/parser/XQParser.y"
     {
     (yyval.astNode) = WRAP((yylsp[(1) - (5)]), new (MEMMGR) UReplace((yyvsp[(3) - (5)].astNode), (yyvsp[(5) - (5)].astNode), MEMMGR));
   }
@@ -11397,7 +11401,7 @@ yyreduce:
   case 763:
 
 /* Line 1455 of yacc.c  */
-#line 5504 "../src/parser/XQParser.y"
+#line 5508 "../src/parser/XQParser.y"
     {
     (yyval.astNode) = WRAP((yylsp[(1) - (5)]), new (MEMMGR) URename((yyvsp[(3) - (5)].astNode), (yyvsp[(5) - (5)].astNode), MEMMGR));
   }
@@ -11406,7 +11410,7 @@ yyreduce:
   case 764:
 
 /* Line 1455 of yacc.c  */
-#line 5512 "../src/parser/XQParser.y"
+#line 5516 "../src/parser/XQParser.y"
     {
     (yyval.astNode) = WRAP((yylsp[(1) - (6)]), new (MEMMGR) UTransform((yyvsp[(2) - (6)].copyBindingList), (yyvsp[(4) - (6)].astNode), (yyvsp[(6) - (6)].astNode), MEMMGR));
   }
@@ -11415,7 +11419,7 @@ yyreduce:
   case 765:
 
 /* Line 1455 of yacc.c  */
-#line 5519 "../src/parser/XQParser.y"
+#line 5523 "../src/parser/XQParser.y"
     {
     (yyvsp[(1) - (3)].copyBindingList)->push_back((yyvsp[(3) - (3)].copyBinding));
     (yyval.copyBindingList) = (yyvsp[(1) - (3)].copyBindingList);
@@ -11425,7 +11429,7 @@ yyreduce:
   case 766:
 
 /* Line 1455 of yacc.c  */
-#line 5524 "../src/parser/XQParser.y"
+#line 5528 "../src/parser/XQParser.y"
     {
     (yyval.copyBindingList) = new (MEMMGR) VectorOfCopyBinding(XQillaAllocator<CopyBinding*>(MEMMGR));
     (yyval.copyBindingList)->push_back((yyvsp[(1) - (1)].copyBinding));
@@ -11435,7 +11439,7 @@ yyreduce:
   case 767:
 
 /* Line 1455 of yacc.c  */
-#line 5532 "../src/parser/XQParser.y"
+#line 5536 "../src/parser/XQParser.y"
     {
     (yyval.copyBinding) = WRAP((yylsp[(1) - (4)]), new (MEMMGR) CopyBinding(MEMMGR, (yyvsp[(2) - (4)].str), (yyvsp[(4) - (4)].astNode)));
   }
@@ -11444,7 +11448,7 @@ yyreduce:
   case 768:
 
 /* Line 1455 of yacc.c  */
-#line 5541 "../src/parser/XQParser.y"
+#line 5545 "../src/parser/XQParser.y"
     {
     (yyval.astNode) = WRAP((yylsp[(1) - (1)]), new (MEMMGR) XQLiteral(
                   SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
@@ -11457,7 +11461,7 @@ yyreduce:
   case 769:
 
 /* Line 1455 of yacc.c  */
-#line 5553 "../src/parser/XQParser.y"
+#line 5557 "../src/parser/XQParser.y"
     {
     (yyval.astNode) = WRAP((yylsp[(1) - (1)]), new (MEMMGR) XQLiteral(
                   SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
@@ -11470,7 +11474,7 @@ yyreduce:
   case 770:
 
 /* Line 1455 of yacc.c  */
-#line 5565 "../src/parser/XQParser.y"
+#line 5569 "../src/parser/XQParser.y"
     {
     (yyval.astNode) = WRAP((yylsp[(1) - (1)]), new (MEMMGR) XQLiteral(
                   SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
@@ -11483,7 +11487,7 @@ yyreduce:
   case 771:
 
 /* Line 1455 of yacc.c  */
-#line 5578 "../src/parser/XQParser.y"
+#line 5582 "../src/parser/XQParser.y"
     {
     (yyval.astNode) = WRAP((yylsp[(1) - (1)]), new (MEMMGR) XQLiteral(
                   SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
@@ -11496,7 +11500,7 @@ yyreduce:
   case 772:
 
 /* Line 1455 of yacc.c  */
-#line 5589 "../src/parser/XQParser.y"
+#line 5593 "../src/parser/XQParser.y"
     {
     // Check for a colon
     for(XMLCh *tmp = (yyvsp[(1) - (1)].str); *tmp; ++tmp)
@@ -11507,7 +11511,7 @@ yyreduce:
   case 773:
 
 /* Line 1455 of yacc.c  */
-#line 5598 "../src/parser/XQParser.y"
+#line 5602 "../src/parser/XQParser.y"
     {
     (yyval.qName) = new (MEMMGR) QualifiedName((yyvsp[(1) - (1)].str),MEMMGR);
   }
@@ -11516,7 +11520,7 @@ yyreduce:
   case 774:
 
 /* Line 1455 of yacc.c  */
-#line 5610 "../src/parser/XQParser.y"
+#line 5614 "../src/parser/XQParser.y"
     {
     FunctionSignature *signature = new (MEMMGR) FunctionSignature(MEMMGR);
     (yyval.functDecl) = WRAP((yylsp[(1) - (5)]), new (MEMMGR) XQUserFunction((yyvsp[(4) - (5)].str), 0, signature, (yyvsp[(5) - (5)].astNode), MEMMGR));
@@ -11526,7 +11530,7 @@ yyreduce:
   case 775:
 
 /* Line 1455 of yacc.c  */
-#line 5615 "../src/parser/XQParser.y"
+#line 5619 "../src/parser/XQParser.y"
     {
     FunctionSignature *signature = new (MEMMGR) FunctionSignature((yyvsp[(5) - (7)].argSpecs), (yyvsp[(6) - (7)].sequenceType), MEMMGR);
     (yyval.functDecl) = WRAP((yylsp[(1) - (7)]), new (MEMMGR) XQUserFunction((yyvsp[(4) - (7)].str), 0, signature, (yyvsp[(7) - (7)].astNode), MEMMGR));
@@ -11536,7 +11540,7 @@ yyreduce:
   case 776:
 
 /* Line 1455 of yacc.c  */
-#line 5620 "../src/parser/XQParser.y"
+#line 5624 "../src/parser/XQParser.y"
     {
     FunctionSignature *signature = new (MEMMGR) FunctionSignature(MEMMGR);
     (yyval.functDecl) = WRAP((yylsp[(1) - (8)]), new (MEMMGR) XQUserFunction((yyvsp[(4) - (8)].str), (yyvsp[(7) - (8)].itemList), signature, (yyvsp[(8) - (8)].astNode), MEMMGR));
@@ -11547,7 +11551,7 @@ yyreduce:
   case 777:
 
 /* Line 1455 of yacc.c  */
-#line 5626 "../src/parser/XQParser.y"
+#line 5630 "../src/parser/XQParser.y"
     {
     FunctionSignature *signature = new (MEMMGR) FunctionSignature((yyvsp[(8) - (10)].argSpecs), (yyvsp[(9) - (10)].sequenceType), MEMMGR);
     (yyval.functDecl) = WRAP((yylsp[(1) - (10)]), new (MEMMGR) XQUserFunction((yyvsp[(4) - (10)].str), (yyvsp[(7) - (10)].itemList), signature, (yyvsp[(10) - (10)].astNode), MEMMGR));
@@ -11558,7 +11562,7 @@ yyreduce:
   case 778:
 
 /* Line 1455 of yacc.c  */
-#line 5632 "../src/parser/XQParser.y"
+#line 5636 "../src/parser/XQParser.y"
     {
     FunctionSignature *signature = new (MEMMGR) FunctionSignature(MEMMGR);
     (yyval.functDecl) = WRAP((yylsp[(1) - (6)]), new (MEMMGR) XQUserFunction(0, (yyvsp[(5) - (6)].itemList), signature, (yyvsp[(6) - (6)].astNode), MEMMGR));
@@ -11569,7 +11573,7 @@ yyreduce:
   case 779:
 
 /* Line 1455 of yacc.c  */
-#line 5638 "../src/parser/XQParser.y"
+#line 5642 "../src/parser/XQParser.y"
     {
     FunctionSignature *signature = new (MEMMGR) FunctionSignature((yyvsp[(6) - (8)].argSpecs), (yyvsp[(7) - (8)].sequenceType), MEMMGR);
     (yyval.functDecl) = WRAP((yylsp[(1) - (8)]), new (MEMMGR) XQUserFunction(0, (yyvsp[(5) - (8)].itemList), signature, (yyvsp[(8) - (8)].astNode), MEMMGR));
@@ -11580,7 +11584,7 @@ yyreduce:
   case 780:
 
 /* Line 1455 of yacc.c  */
-#line 5647 "../src/parser/XQParser.y"
+#line 5651 "../src/parser/XQParser.y"
     {
     (yyval.sequenceType) = 0;
   }
@@ -11589,7 +11593,7 @@ yyreduce:
   case 781:
 
 /* Line 1455 of yacc.c  */
-#line 5651 "../src/parser/XQParser.y"
+#line 5655 "../src/parser/XQParser.y"
     {
     (yyval.sequenceType) = (yyvsp[(2) - (2)].sequenceType);
   }
@@ -11598,7 +11602,7 @@ yyreduce:
   case 782:
 
 /* Line 1455 of yacc.c  */
-#line 5659 "../src/parser/XQParser.y"
+#line 5663 "../src/parser/XQParser.y"
     {
     (yyval.argSpecs) = 0;
   }
@@ -11607,7 +11611,7 @@ yyreduce:
   case 783:
 
 /* Line 1455 of yacc.c  */
-#line 5663 "../src/parser/XQParser.y"
+#line 5667 "../src/parser/XQParser.y"
     {
     (yyval.argSpecs) = (yyvsp[(2) - (3)].argSpecs);
   }
@@ -11616,7 +11620,7 @@ yyreduce:
   case 784:
 
 /* Line 1455 of yacc.c  */
-#line 5670 "../src/parser/XQParser.y"
+#line 5674 "../src/parser/XQParser.y"
     {
     (yyval.modeList) = new (MEMMGR) XQUserFunction::ModeList(XQillaAllocator<XQUserFunction::Mode*>(MEMMGR));
     (yyval.modeList)->push_back(WRAP((yyloc), new (MEMMGR) XQUserFunction::Mode(XQUserFunction::Mode::DEFAULT)));
@@ -11626,7 +11630,7 @@ yyreduce:
   case 785:
 
 /* Line 1455 of yacc.c  */
-#line 5675 "../src/parser/XQParser.y"
+#line 5679 "../src/parser/XQParser.y"
     {
     (yyval.modeList) = (yyvsp[(2) - (2)].modeList);
   }
@@ -11635,7 +11639,7 @@ yyreduce:
   case 786:
 
 /* Line 1455 of yacc.c  */
-#line 5683 "../src/parser/XQParser.y"
+#line 5687 "../src/parser/XQParser.y"
     {
     (yyval.modeList) = new (MEMMGR) XQUserFunction::ModeList(XQillaAllocator<XQUserFunction::Mode*>(MEMMGR));
     (yyval.modeList)->push_back((yyvsp[(1) - (1)].mode));
@@ -11645,7 +11649,7 @@ yyreduce:
   case 787:
 
 /* Line 1455 of yacc.c  */
-#line 5688 "../src/parser/XQParser.y"
+#line 5692 "../src/parser/XQParser.y"
     {
     (yyvsp[(1) - (3)].modeList)->push_back((yyvsp[(3) - (3)].mode));
     (yyval.modeList) = (yyvsp[(1) - (3)].modeList);
@@ -11655,7 +11659,7 @@ yyreduce:
   case 788:
 
 /* Line 1455 of yacc.c  */
-#line 5697 "../src/parser/XQParser.y"
+#line 5701 "../src/parser/XQParser.y"
     {
     (yyval.mode) = WRAP((yylsp[(1) - (1)]), new (MEMMGR) XQUserFunction::Mode((yyvsp[(1) - (1)].str)));
   }
@@ -11664,7 +11668,7 @@ yyreduce:
   case 789:
 
 /* Line 1455 of yacc.c  */
-#line 5701 "../src/parser/XQParser.y"
+#line 5705 "../src/parser/XQParser.y"
     {
     (yyval.mode) = WRAP((yylsp[(1) - (1)]), new (MEMMGR) XQUserFunction::Mode(XQUserFunction::Mode::DEFAULT));
   }
@@ -11673,7 +11677,7 @@ yyreduce:
   case 790:
 
 /* Line 1455 of yacc.c  */
-#line 5705 "../src/parser/XQParser.y"
+#line 5709 "../src/parser/XQParser.y"
     {
     (yyval.mode) = WRAP((yylsp[(1) - (1)]), new (MEMMGR) XQUserFunction::Mode(XQUserFunction::Mode::ALL));
   }
@@ -11682,7 +11686,7 @@ yyreduce:
   case 791:
 
 /* Line 1455 of yacc.c  */
-#line 5713 "../src/parser/XQParser.y"
+#line 5717 "../src/parser/XQParser.y"
     {
     (yyval.astNode) = WRAP((yylsp[(1) - (3)]), new (MEMMGR) XQCallTemplate((yyvsp[(3) - (3)].str), 0, MEMMGR));
   }
@@ -11691,7 +11695,7 @@ yyreduce:
   case 792:
 
 /* Line 1455 of yacc.c  */
-#line 5717 "../src/parser/XQParser.y"
+#line 5721 "../src/parser/XQParser.y"
     {
     (yyval.astNode) = WRAP((yylsp[(1) - (7)]), new (MEMMGR) XQCallTemplate((yyvsp[(3) - (7)].str), (yyvsp[(6) - (7)].templateArgs), MEMMGR));
   }
@@ -11700,7 +11704,7 @@ yyreduce:
   case 793:
 
 /* Line 1455 of yacc.c  */
-#line 5725 "../src/parser/XQParser.y"
+#line 5729 "../src/parser/XQParser.y"
     {
     (yyval.astNode) = WRAP((yylsp[(1) - (3)]), new (MEMMGR) XQApplyTemplates((yyvsp[(3) - (3)].astNode), 0, 0, MEMMGR));
   }
@@ -11709,7 +11713,7 @@ yyreduce:
   case 794:
 
 /* Line 1455 of yacc.c  */
-#line 5729 "../src/parser/XQParser.y"
+#line 5733 "../src/parser/XQParser.y"
     {
     (yyval.astNode) = WRAP((yylsp[(1) - (7)]), new (MEMMGR) XQApplyTemplates((yyvsp[(3) - (7)].astNode), (yyvsp[(6) - (7)].templateArgs), 0, MEMMGR));
   }
@@ -11718,7 +11722,7 @@ yyreduce:
   case 795:
 
 /* Line 1455 of yacc.c  */
-#line 5733 "../src/parser/XQParser.y"
+#line 5737 "../src/parser/XQParser.y"
     {
     (yyval.astNode) = WRAP((yylsp[(1) - (5)]), new (MEMMGR) XQApplyTemplates((yyvsp[(3) - (5)].astNode), 0, (yyvsp[(5) - (5)].mode), MEMMGR));
   }
@@ -11727,7 +11731,7 @@ yyreduce:
   case 796:
 
 /* Line 1455 of yacc.c  */
-#line 5737 "../src/parser/XQParser.y"
+#line 5741 "../src/parser/XQParser.y"
     {
     (yyval.astNode) = WRAP((yylsp[(1) - (9)]), new (MEMMGR) XQApplyTemplates((yyvsp[(3) - (9)].astNode), (yyvsp[(8) - (9)].templateArgs), (yyvsp[(5) - (9)].mode), MEMMGR));
   }
@@ -11736,7 +11740,7 @@ yyreduce:
   case 797:
 
 /* Line 1455 of yacc.c  */
-#line 5745 "../src/parser/XQParser.y"
+#line 5749 "../src/parser/XQParser.y"
     {
     (yyval.mode) = WRAP((yylsp[(1) - (1)]), new (MEMMGR) XQUserFunction::Mode((yyvsp[(1) - (1)].str)));
   }
@@ -11745,7 +11749,7 @@ yyreduce:
   case 798:
 
 /* Line 1455 of yacc.c  */
-#line 5749 "../src/parser/XQParser.y"
+#line 5753 "../src/parser/XQParser.y"
     {
     (yyval.mode) = WRAP((yylsp[(1) - (1)]), new (MEMMGR) XQUserFunction::Mode(XQUserFunction::Mode::DEFAULT));
   }
@@ -11754,7 +11758,7 @@ yyreduce:
   case 799:
 
 /* Line 1455 of yacc.c  */
-#line 5753 "../src/parser/XQParser.y"
+#line 5757 "../src/parser/XQParser.y"
     {
     (yyval.mode) = WRAP((yylsp[(1) - (1)]), new (MEMMGR) XQUserFunction::Mode(XQUserFunction::Mode::CURRENT));
   }
@@ -11763,7 +11767,7 @@ yyreduce:
   case 800:
 
 /* Line 1455 of yacc.c  */
-#line 5761 "../src/parser/XQParser.y"
+#line 5765 "../src/parser/XQParser.y"
     {
     (yyval.templateArgs) = new (MEMMGR) TemplateArguments(XQillaAllocator<XQTemplateArgument*>(MEMMGR));
     (yyval.templateArgs)->push_back((yyvsp[(1) - (1)].templateArg));
@@ -11773,7 +11777,7 @@ yyreduce:
   case 801:
 
 /* Line 1455 of yacc.c  */
-#line 5766 "../src/parser/XQParser.y"
+#line 5770 "../src/parser/XQParser.y"
     {
     (yyval.templateArgs) = (yyvsp[(1) - (3)].templateArgs);
     (yyval.templateArgs)->push_back((yyvsp[(3) - (3)].templateArg));
@@ -11783,7 +11787,7 @@ yyreduce:
   case 802:
 
 /* Line 1455 of yacc.c  */
-#line 5776 "../src/parser/XQParser.y"
+#line 5780 "../src/parser/XQParser.y"
     {
     if((yyvsp[(3) - (5)].sequenceType) != 0)
       (yyvsp[(5) - (5)].astNode) = (yyvsp[(3) - (5)].sequenceType)->convertFunctionArg((yyvsp[(5) - (5)].astNode), CONTEXT, /*numericfunction*/false, (yyvsp[(3) - (5)].sequenceType));
@@ -11794,7 +11798,7 @@ yyreduce:
   case 805:
 
 /* Line 1455 of yacc.c  */
-#line 5793 "../src/parser/XQParser.y"
+#line 5797 "../src/parser/XQParser.y"
     {
     (yyval.astNode) = WRAP((yylsp[(1) - (3)]), new (MEMMGR) XQFunctionRef((yyvsp[(1) - (3)].str), atoi(UTF8((yyvsp[(3) - (3)].str))), MEMMGR));
   }
@@ -11803,7 +11807,7 @@ yyreduce:
   case 806:
 
 /* Line 1455 of yacc.c  */
-#line 5801 "../src/parser/XQParser.y"
+#line 5805 "../src/parser/XQParser.y"
     {
     FunctionSignature *signature = new (MEMMGR) FunctionSignature((yyvsp[(2) - (4)].argSpecs), (yyvsp[(3) - (4)].sequenceType), MEMMGR);
     XQUserFunction *func = WRAP((yylsp[(1) - (4)]), new (MEMMGR) XQUserFunction(0, signature, (yyvsp[(4) - (4)].astNode), false, MEMMGR));
@@ -11814,7 +11818,7 @@ yyreduce:
   case 807:
 
 /* Line 1455 of yacc.c  */
-#line 5812 "../src/parser/XQParser.y"
+#line 5816 "../src/parser/XQParser.y"
     {
     REJECT_NOT_VERSION11(DynamicFunctionInvocation, (yylsp[(1) - (3)]));
     (yyval.astNode) = WRAP((yylsp[(2) - (3)]), new (MEMMGR) XQFunctionDeref((yyvsp[(1) - (3)].astNode), new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR)), MEMMGR));
@@ -11824,7 +11828,7 @@ yyreduce:
   case 808:
 
 /* Line 1455 of yacc.c  */
-#line 5817 "../src/parser/XQParser.y"
+#line 5821 "../src/parser/XQParser.y"
     {
     REJECT_NOT_VERSION11(DynamicFunctionInvocation, (yylsp[(1) - (4)]));
 
@@ -11850,34 +11854,34 @@ yyreduce:
   case 811:
 
 /* Line 1455 of yacc.c  */
-#line 5845 "../src/parser/XQParser.y"
+#line 5849 "../src/parser/XQParser.y"
     {
-    (yyval.itemType) = new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_FUNCTION);
+    (yyval.itemType) = WRAP((yylsp[(1) - (4)]), new (MEMMGR) ItemType(ItemType::TEST_FUNCTION));
   }
     break;
 
   case 812:
 
 /* Line 1455 of yacc.c  */
-#line 5853 "../src/parser/XQParser.y"
+#line 5857 "../src/parser/XQParser.y"
     {
-    (yyval.itemType) = new (MEMMGR) SequenceType::ItemType(new (MEMMGR) VectorOfSequenceTypes(XQillaAllocator<SequenceType*>(MEMMGR)), (yyvsp[(5) - (5)].sequenceType));
+    (yyval.itemType) = WRAP((yylsp[(1) - (5)]), new (MEMMGR) ItemType(new (MEMMGR) VectorOfSequenceTypes(XQillaAllocator<SequenceType*>(MEMMGR)), (yyvsp[(5) - (5)].sequenceType)));
   }
     break;
 
   case 813:
 
 /* Line 1455 of yacc.c  */
-#line 5857 "../src/parser/XQParser.y"
+#line 5861 "../src/parser/XQParser.y"
     {
-    (yyval.itemType) = new (MEMMGR) SequenceType::ItemType((yyvsp[(3) - (6)].sequenceTypes), (yyvsp[(6) - (6)].sequenceType));
+    (yyval.itemType) = WRAP((yylsp[(1) - (6)]), new (MEMMGR) ItemType((yyvsp[(3) - (6)].sequenceTypes), (yyvsp[(6) - (6)].sequenceType)));
   }
     break;
 
   case 814:
 
 /* Line 1455 of yacc.c  */
-#line 5864 "../src/parser/XQParser.y"
+#line 5868 "../src/parser/XQParser.y"
     {
     (yyval.sequenceTypes) = new (MEMMGR) VectorOfSequenceTypes(XQillaAllocator<SequenceType*>(MEMMGR));
     (yyval.sequenceTypes)->push_back((yyvsp[(1) - (1)].sequenceType));
@@ -11887,7 +11891,7 @@ yyreduce:
   case 815:
 
 /* Line 1455 of yacc.c  */
-#line 5869 "../src/parser/XQParser.y"
+#line 5873 "../src/parser/XQParser.y"
     {
     (yyval.sequenceTypes) = (yyvsp[(1) - (3)].sequenceTypes);
     (yyval.sequenceTypes)->push_back((yyvsp[(3) - (3)].sequenceType));
@@ -11897,7 +11901,7 @@ yyreduce:
   case 816:
 
 /* Line 1455 of yacc.c  */
-#line 5878 "../src/parser/XQParser.y"
+#line 5882 "../src/parser/XQParser.y"
     {
     (yyval.itemType) = (yyvsp[(2) - (3)].itemType);
   }
@@ -11906,7 +11910,7 @@ yyreduce:
 
 
 /* Line 1455 of yacc.c  */
-#line 11910 "../src/parser/XQParser.cpp"
+#line 11914 "../src/parser/XQParser.cpp"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);
@@ -12125,7 +12129,7 @@ yyreturn:
 
 
 /* Line 1675 of yacc.c  */
-#line 5913 "../src/parser/XQParser.y"
+#line 5917 "../src/parser/XQParser.y"
 
 
 }  // namespace XQParser

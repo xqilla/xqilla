@@ -117,7 +117,7 @@ typedef union {
   QualifiedName *qName;
   SequenceType* sequenceType;
   SequenceType::OccurrenceIndicator occurrence;
-  SequenceType::ItemType* itemType;
+  ItemType* itemType;
   VectorOfSequenceTypes *sequenceTypes;
   VectorOfASTNodes* itemList;
   VectorOfPredicates* predicates;

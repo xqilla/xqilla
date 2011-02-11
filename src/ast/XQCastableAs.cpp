@@ -70,20 +70,20 @@ ASTNode* XQCastableAs::staticResolution(StaticContext *context)
 
   _exprType->staticResolution(context);
 
-  const SequenceType::ItemType* itemType = _exprType->getItemType();
+  const ItemType* itemType = _exprType->getItemType();
   if(XPath2Utils::equals(itemType->getTypeURI(), SchemaSymbols::fgURI_SCHEMAFORSCHEMA) &&
-     (XPath2Utils::equals(itemType->getType()->getName(), XMLUni::fgNotationString) ||
-      XPath2Utils::equals(itemType->getType()->getName(), AnyAtomicType::fgDT_ANYATOMICTYPE)))
+     (XPath2Utils::equals(itemType->getTypeName(), XMLUni::fgNotationString) ||
+      XPath2Utils::equals(itemType->getTypeName(), AnyAtomicType::fgDT_ANYATOMICTYPE)))
     XQThrow(TypeErrorException,X("XQCastableAs::staticResolution"),
             X("The target type of a castable expression must be an atomic type that is in the in-scope schema types "
               "and is not xs:NOTATION or xdt:anyAtomicType [err:XPST0080]"));
 
-  if(_exprType->getItemTestType() != SequenceType::ItemType::TEST_ATOMIC_TYPE)
+  if(_exprType->getItemTestType() != ItemType::TEST_ATOMIC_TYPE)
     XQThrow(TypeErrorException,X("XQCastableAs::staticResolution"),X("Cannot cast to a non atomic type"));
 
   _typeIndex = context->getItemFactory()->
-    getPrimitiveTypeIndex(_exprType->getTypeURI(),
-                          _exprType->getConstrainingType()->getName(), _isPrimitive);
+    getPrimitiveTypeIndex(_exprType->getItemType()->getTypeURI(),
+                          _exprType->getItemType()->getTypeName(), _isPrimitive);
 
   // If this is a cast to xs:QName or xs:NOTATION and the argument is a string literal
   // evaluate immediately, since they aren't allowed otherwise
@@ -102,8 +102,8 @@ ASTNode* XQCastableAs::staticResolution(StaticContext *context)
       }
       else {
         ((AnyAtomicType*)_expr->createResult(dContext)->next(dContext).get())->
-          castAsNoCheck(_typeIndex, _exprType->getTypeURI(),
-                        _exprType->getConstrainingType()->getName(), dContext);
+          castAsNoCheck(_typeIndex, _exprType->getItemType()->getTypeURI(),
+                        _exprType->getItemType()->getTypeName(), dContext);
       }
       result = true;
     }
@@ -181,8 +181,8 @@ Item::Ptr XQCastableAs::CastableAsResult::getSingleResult(DynamicContext *contex
       }
       else {
         result = ((const AnyAtomicType::Ptr)first)->castable(_di->getTypeIndex(),
-                                                             _di->getSequenceType()->getTypeURI(),
-                                                             _di->getSequenceType()->getConstrainingType()->getName(),
+                                                             _di->getSequenceType()->getItemType()->getTypeURI(),
+                                                             _di->getSequenceType()->getItemType()->getTypeName(),
                                                              context);
       }
     }

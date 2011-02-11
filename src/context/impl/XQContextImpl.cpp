@@ -716,7 +716,9 @@ ASTNode *XQContextImpl::lookUpFunction(const XMLCh *uri, const XMLCh* name, cons
 
   XPath2MemoryManager *mm = getMemoryManager();
 
-  SequenceType *seqType = new (mm) SequenceType(uri, name, SequenceType::QUESTION_MARK, mm);
+  ItemType *itemType = new (mm) ItemType(uri, name);
+  itemType->setLocationInfo(location);
+  SequenceType *seqType = new (mm) SequenceType(itemType, SequenceType::QUESTION_MARK);
   seqType->setLocationInfo(location);
 
   functionImpl = new (mm) XQCastAs(v[0], seqType, mm);

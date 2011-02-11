@@ -50,7 +50,7 @@ Item::Ptr Axis::next(DynamicContext *context)
 
     if(nodeTest_ == 0) return factory_.createNode(node, context);
 
-    SequenceType::ItemType *itemType = nodeTest_->getItemType();
+    ItemType *itemType = nodeTest_->getItemType();
     if(itemType != 0)
     {
       Node::Ptr result = factory_.createNode(node, context);

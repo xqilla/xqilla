@@ -39,8 +39,9 @@ ASTNode *UDelete::staticResolution(StaticContext *context)
 {
   XPath2MemoryManager *mm = context->getMemoryManager();
 
-  SequenceType *seqType = new (mm) SequenceType(new (mm) SequenceType::ItemType(SequenceType::ItemType::TEST_NODE),
-                                                SequenceType::STAR);
+  ItemType *itemType = new (mm) ItemType(ItemType::TEST_NODE);
+  itemType->setLocationInfo(this);
+  SequenceType *seqType = new (mm) SequenceType(itemType, SequenceType::STAR);
   seqType->setLocationInfo(this);
 
   expr_ = new (mm) XQTreatAs(expr_, seqType, mm, err_XUTY0007);

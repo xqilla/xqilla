@@ -53,8 +53,9 @@ ASTNode* Union::staticResolution(StaticContext *context)
   }
 
   for(VectorOfASTNodes::iterator i = _args.begin(); i != _args.end(); ++i) {
-    SequenceType *seqType = new (mm) SequenceType(new (mm) SequenceType::ItemType(SequenceType::ItemType::TEST_NODE),
-                                                  SequenceType::STAR);
+    ItemType *itemType = new (mm) ItemType(ItemType::TEST_NODE);
+    itemType->setLocationInfo(this);
+    SequenceType *seqType = new (mm) SequenceType(itemType, SequenceType::STAR);
     seqType->setLocationInfo(this);
 
     *i = new (mm) XQTreatAs(*i, seqType, mm);

@@ -74,8 +74,8 @@ ASTNode* XQFunctionCoercion::staticResolution(StaticContext *context)
   bool isExact;
   _exprType->getStaticType(_treatType, context, isExact, this);
 
-  const SequenceType::ItemType *type = _exprType->getItemType();
-  if(!type || type->getItemTestType() != SequenceType::ItemType::TEST_FUNCTION ||
+  const ItemType *type = _exprType->getItemType();
+  if(!type || type->getItemTestType() != ItemType::TEST_FUNCTION ||
      type->getReturnType() == 0)
     return substitute(_expr);
 
@@ -146,7 +146,7 @@ class FunctionConversionResult : public ResultImpl
 {
 public:
   FunctionConversionResult(const Result &parent, const ASTNode *funcConvert,
-                           const SequenceType::ItemType *itemType, const LocationInfo *location)
+                           const ItemType *itemType, const LocationInfo *location)
     : ResultImpl(location),
       parent_(parent),
       funcConvert_(funcConvert),
@@ -179,7 +179,7 @@ public:
 private:
   Result parent_;
   const ASTNode *funcConvert_;
-  const SequenceType::ItemType *itemType_;
+  const ItemType *itemType_;
 };
 
 Result XQFunctionCoercion::createResult(DynamicContext* context, int flags) const

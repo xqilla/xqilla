@@ -241,9 +241,10 @@ ASTNode *FunctionRefImpl::createInstance(const XMLCh *uri, const XMLCh *name, un
     cast->setExpression(var);
 
     // Create a signature for the constructor function
-    SequenceType *argType = new (mm) SequenceType(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-                                                  AnyAtomicType::fgDT_ANYATOMICTYPE,
-                                                  SequenceType::QUESTION_MARK, mm);
+    ItemType *itemType = new (mm) ItemType(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
+                                           AnyAtomicType::fgDT_ANYATOMICTYPE);
+    itemType->setLocationInfo(location);
+    SequenceType *argType = new (mm) SequenceType(itemType, SequenceType::QUESTION_MARK);
     argType->setLocationInfo(location);
 
     ArgumentSpec *arg = new (mm) ArgumentSpec(constructorArgName, argType, mm);

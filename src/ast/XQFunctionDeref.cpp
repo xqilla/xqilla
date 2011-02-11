@@ -40,8 +40,9 @@ ASTNode *XQFunctionDeref::staticResolution(StaticContext *context)
 {
   XPath2MemoryManager *mm = context->getMemoryManager();
 
-  SequenceType *seqType = new (mm) SequenceType(new (mm) SequenceType::ItemType(SequenceType::ItemType::TEST_FUNCTION),
-                                                SequenceType::EXACTLY_ONE);
+  ItemType *itemType = new (mm) ItemType(ItemType::TEST_FUNCTION);
+  itemType->setLocationInfo(this);
+  SequenceType *seqType = new (mm) SequenceType(itemType, SequenceType::EXACTLY_ONE);
   seqType->setLocationInfo(this);
 
   expr_ = new (mm) XQTreatAs(expr_, seqType, mm);

@@ -621,7 +621,7 @@ void ASTToXML::optimizeNodeTest(const NodeTest *step)
   static const XMLCh s_asterisk[] = { '*', 0 };
   static const XMLCh s_nodeType[] = { 'n', 'o', 'd', 'e', 'T', 'y', 'p', 'e', 0 };
 
-  SequenceType::ItemType *type = step->getItemType();
+  ItemType *type = step->getItemType();
   if(type) {
     XMLBuffer buf;
     type->toBuffer(buf);

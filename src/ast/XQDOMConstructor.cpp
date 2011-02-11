@@ -194,8 +194,9 @@ ASTNode* XQNameExpression::staticResolution(StaticContext *context)
 
   expr_ = new (mm) XQAtomize(expr_, mm);
   expr_->setLocationInfo(this);
-  SequenceType *seqType = new (mm) SequenceType(new (mm) SequenceType::ItemType(SequenceType::ItemType::TEST_ANYTHING),
-                                                SequenceType::EXACTLY_ONE);
+  ItemType *itemType = new (mm) ItemType(ItemType::TEST_ANYTHING);
+  itemType->setLocationInfo(this);
+  SequenceType *seqType = new (mm) SequenceType(itemType, SequenceType::EXACTLY_ONE);
   seqType->setLocationInfo(this);
   expr_ = new (mm) XQTreatAs(expr_, seqType, mm);
   expr_->setLocationInfo(this);

@@ -244,11 +244,12 @@ am_xmarkRunner_OBJECTS = xmark.$(OBJEXT)
 xmarkRunner_OBJECTS = $(am_xmarkRunner_OBJECTS)
 xmarkRunner_LDADD = $(LDADD)
 xmarkRunner_DEPENDENCIES = libxqilla.la
-am_xqc_basic_OBJECTS = xqc-basic.$(OBJEXT)
+am_xqc_basic_OBJECTS = xqc-basic.$(OBJEXT) dummy.$(OBJEXT)
 xqc_basic_OBJECTS = $(am_xqc_basic_OBJECTS)
 xqc_basic_LDADD = $(LDADD)
 xqc_basic_DEPENDENCIES = libxqilla.la
-am_xqc_context_item_OBJECTS = xqc-context-item.$(OBJEXT)
+am_xqc_context_item_OBJECTS = xqc-context-item.$(OBJEXT) \
+	dummy.$(OBJEXT)
 xqc_context_item_OBJECTS = $(am_xqc_context_item_OBJECTS)
 xqc_context_item_LDADD = $(LDADD)
 xqc_context_item_DEPENDENCIES = libxqilla.la
@@ -286,10 +287,8 @@ SOURCES = $(libxqilla_la_SOURCES) $(compile_delayed_module_SOURCES) \
 	$(dom_basic_SOURCES) $(dom_context_item_SOURCES) \
 	$(dom_resolver_SOURCES) $(simple_basic_SOURCES) \
 	$(simple_context_item_SOURCES) $(xmarkRunner_SOURCES) \
-	$(xqc_basic_SOURCES) $(nodist_EXTRA_xqc_basic_SOURCES) \
-	$(xqc_context_item_SOURCES) \
-	$(nodist_EXTRA_xqc_context_item_SOURCES) $(xqilla_SOURCES) \
-	$(xqtsRunner_SOURCES)
+	$(xqc_basic_SOURCES) $(xqc_context_item_SOURCES) \
+	$(xqilla_SOURCES) $(xqtsRunner_SOURCES)
 DIST_SOURCES = $(libxqilla_la_SOURCES) \
 	$(compile_delayed_module_SOURCES) $(dom_basic_SOURCES) \
 	$(dom_context_item_SOURCES) $(dom_resolver_SOURCES) \
@@ -1041,15 +1040,17 @@ src/samples/dom-api/dom-resolver.cpp
 
 
 # Dummy C++ source to cause C++ linking.
-nodist_EXTRA_xqc_basic_SOURCES = dummy.cpp
+# nodist_EXTRA_xqc_basic_SOURCES = dummy.cpp
 xqc_basic_SOURCES = \
-src/samples/xqc-api/xqc-basic.c
+src/samples/xqc-api/xqc-basic.c \
+src/samples/xqc-api/dummy.cpp
 
 
 # Dummy C++ source to cause C++ linking.
-nodist_EXTRA_xqc_context_item_SOURCES = dummy.cpp
+# nodist_EXTRA_xqc_context_item_SOURCES = dummy.cpp
 xqc_context_item_SOURCES = \
-src/samples/xqc-api/xqc-context-item.c
+src/samples/xqc-api/xqc-context-item.c \
+src/samples/xqc-api/dummy.cpp
 
 compile_delayed_module_SOURCES = \
 src/tools/compile-delayed-module.cpp
@@ -4484,6 +4485,20 @@ xmark.obj: tests/xmark/xmark.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='tests/xmark/xmark.cpp' object='xmark.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o xmark.obj `if test -f 'tests/xmark/xmark.cpp'; then $(CYGPATH_W) 'tests/xmark/xmark.cpp'; else $(CYGPATH_W) '$(srcdir)/tests/xmark/xmark.cpp'; fi`
+
+dummy.o: src/samples/xqc-api/dummy.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT dummy.o -MD -MP -MF $(DEPDIR)/dummy.Tpo -c -o dummy.o `test -f 'src/samples/xqc-api/dummy.cpp' || echo '$(srcdir)/'`src/samples/xqc-api/dummy.cpp
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/dummy.Tpo $(DEPDIR)/dummy.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/samples/xqc-api/dummy.cpp' object='dummy.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o dummy.o `test -f 'src/samples/xqc-api/dummy.cpp' || echo '$(srcdir)/'`src/samples/xqc-api/dummy.cpp
+
+dummy.obj: src/samples/xqc-api/dummy.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT dummy.obj -MD -MP -MF $(DEPDIR)/dummy.Tpo -c -o dummy.obj `if test -f 'src/samples/xqc-api/dummy.cpp'; then $(CYGPATH_W) 'src/samples/xqc-api/dummy.cpp'; else $(CYGPATH_W) '$(srcdir)/src/samples/xqc-api/dummy.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/dummy.Tpo $(DEPDIR)/dummy.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/samples/xqc-api/dummy.cpp' object='dummy.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o dummy.obj `if test -f 'src/samples/xqc-api/dummy.cpp'; then $(CYGPATH_W) 'src/samples/xqc-api/dummy.cpp'; else $(CYGPATH_W) '$(srcdir)/src/samples/xqc-api/dummy.cpp'; fi`
 
 xqilla-commandline.o: src/samples/xqilla/xqilla-commandline.cpp
 @am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT xqilla-commandline.o -MD -MP -MF $(DEPDIR)/xqilla-commandline.Tpo -c -o xqilla-commandline.o `test -f 'src/samples/xqilla/xqilla-commandline.cpp' || echo '$(srcdir)/'`src/samples/xqilla/xqilla-commandline.cpp

@@ -35,108 +35,97 @@ class FunctionSignature;
 
 typedef std::vector<SequenceType*, XQillaAllocator<SequenceType*> > VectorOfSequenceTypes;
 
+class XQILLA_API ItemType : public LocationInfo
+{
+public:
+  /**
+   * The type of item that this sequence can hold.
+   */
+  typedef enum {
+    TEST_ELEMENT,      ///< element node
+    TEST_ATTRIBUTE,    ///< attribute node
+    TEST_SCHEMA_ELEMENT,      ///< element node
+    TEST_SCHEMA_ATTRIBUTE,    ///< attribute node
+    TEST_SCHEMA_DOCUMENT,     ///< document node
+    TEST_NODE,         ///< node
+    TEST_PI,           ///< processing instruction node
+    TEST_COMMENT,      ///< comment node
+    TEST_TEXT,         ///< text node
+    TEST_DOCUMENT,     ///< document node
+    TEST_NAMESPACE,    ///< namespace node
+    TEST_ANYTHING,     ///< any item
+    TEST_ATOMIC_TYPE,  ///< the named atomic type
+    TEST_FUNCTION      ///< function
+  } ItemTestType;
+
+  // Normal constructor
+  ItemType(ItemTestType test, QualifiedName* name=NULL, QualifiedName* type=NULL);
+  // Constructor for an atomic type
+  ItemType(const XMLCh *typeURI, const XMLCh *typeName);
+  // Constructor for a function
+  ItemType(VectorOfSequenceTypes *argTypes, SequenceType *returnType);
+
+  ~ItemType();
+
+  /**
+   * Getter for m_nTestType
+   */
+  ItemTestType getItemTestType() const;
+  void setItemTestType(ItemTestType t);
+
+  void setAllowNilled(bool value);
+  bool getAllowNilled() const;
+
+  const XMLCh *getTypePrefix() const { return m_TypePrefix; }
+  const XMLCh *getTypeURI() const { return m_TypeURI; }
+  const XMLCh *getTypeName() const { return m_TypeName; }
+  const XMLCh *getNamePrefix() const { return m_NamePrefix; }
+  const XMLCh *getNameURI() const { return m_NameURI; }
+  const XMLCh *getNameName() const { return m_NameName; }
+
+  VectorOfSequenceTypes *getArgumentTypes() const { return argTypes_; }
+  SequenceType *getReturnType() const { return returnType_; }
+
+  void getStaticType(StaticType &st, const StaticContext *context,
+                     bool &isExact, const LocationInfo *location) const;
+
+  bool matches(const Item::Ptr &toBeTested, DynamicContext* context) const;
+  bool matches(const Node::Ptr &toBeTested, DynamicContext* context) const;
+  bool matches(const FunctionRef::Ptr &toBeTested, DynamicContext* context) const;
+  bool matches(const FunctionSignature *sig, DynamicContext* context) const;
+  bool matchesNameType(const Item::Ptr &toBeTested, const DynamicContext* context) const;
+  bool matchesSchemaElement(const Node::Ptr &toBeTested, const DynamicContext* context) const;
+
+  bool isSubtypeOf(const ItemType *toBeTested, const StaticContext* context) const;
+
+  void staticResolution(StaticContext *context, const LocationInfo *location);
+
+  void toBuffer(XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer &buffer, bool addBrackets = false) const;
+
+private:
+  bool isSubtypeOfNameType(const ItemType *toBeTested, const StaticContext* context) const;
+
+  // The ItemTestType of this ItemType
+  ItemTestType m_nTestType;
+
+  // The name and type to match
+  const XMLCh *m_NamePrefix, *m_NameURI, *m_NameName;
+  const XMLCh *m_TypePrefix, *m_TypeURI, *m_TypeName;
+
+  // allow elements having the xsi:nil="true" attribute
+  bool m_bAllowNil;
+
+  // The number of arguments the function should take
+  VectorOfSequenceTypes *argTypes_;
+  // The return type of the function
+  SequenceType *returnType_;
+
+  bool staticallyResolved_;
+};
+
 class XQILLA_API SequenceType : public LocationInfo
 {
 public:
-
-  class XQILLA_API ItemType
-  {
-  public:
-
-    /**
-     * The type of item that this sequence can hold.
-     */
-    typedef enum {
-      TEST_ELEMENT,      ///< element node
-      TEST_ATTRIBUTE,    ///< attribute node
-      TEST_SCHEMA_ELEMENT,      ///< element node
-      TEST_SCHEMA_ATTRIBUTE,    ///< attribute node
-      TEST_SCHEMA_DOCUMENT,     ///< document node
-      TEST_NODE,         ///< node
-      TEST_PI,           ///< processing instruction node
-      TEST_COMMENT,      ///< comment node
-      TEST_TEXT,         ///< text node
-      TEST_DOCUMENT,     ///< document node
-      TEST_NAMESPACE,    ///< namespace node
-      TEST_ANYTHING,     ///< any item
-      TEST_ATOMIC_TYPE,  ///< the named atomic type
-      TEST_FUNCTION      ///< function
-    } ItemTestType;
-
-    // Normal constructor
-    ItemType(ItemTestType test, QualifiedName* name=NULL, QualifiedName* type=NULL);
-    // Constructor for an atomic type
-    ItemType(const XMLCh *typeURI,const XMLCh *typeName, XPath2MemoryManager *mm);
-    // Constructor for a function
-    ItemType(VectorOfSequenceTypes *argTypes, SequenceType *returnType);
-
-    /**
-     * Destructor.
-     */
-    ~ItemType();
-
-    /**
-     * Getter for m_nTestType
-     */
-    ItemTestType getItemTestType() const;
-    void setItemTestType(ItemTestType t);
-
-    void setAllowNilled(bool value);
-    bool getAllowNilled() const;
-
-    QualifiedName *getName() const;
-    QualifiedName *getType() const;
-
-    void setName(QualifiedName * name);
-    void setType(QualifiedName * type);
-
-    const XMLCh* getTypeURI() const;
-    const XMLCh* getNameURI() const;
-
-    VectorOfSequenceTypes *getArgumentTypes() const { return argTypes_; }
-    SequenceType *getReturnType() const { return returnType_; }
-
-    void getStaticType(StaticType &st, const StaticContext *context,
-                       bool &isExact, const LocationInfo *location) const;
-
-    bool matches(const Item::Ptr &toBeTested, DynamicContext* context) const;
-    bool matches(const Node::Ptr &toBeTested, DynamicContext* context) const;
-    bool matches(const FunctionRef::Ptr &toBeTested, DynamicContext* context) const;
-    bool matches(const FunctionSignature *sig, DynamicContext* context) const;
-    bool matchesNameType(const Item::Ptr &toBeTested, const DynamicContext* context) const;
-    bool matchesSchemaElement(const Node::Ptr &toBeTested, const DynamicContext* context) const;
-
-    bool isSubtypeOf(const ItemType *toBeTested, const StaticContext* context) const;
-
-    void staticResolution(StaticContext *context, const LocationInfo *location);
-
-    void toBuffer(XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer &buffer, bool addBrackets = false) const;
-
-  protected:
-    bool isSubtypeOfNameType(const ItemType *toBeTested, const StaticContext* context) const;
-
-    // The ItemTestType of this ItemType
-    ItemTestType m_nTestType;
-
-    // The name and type to match
-    QualifiedName *m_pName, *m_pType;
-
-    // The forced URIs for name and type
-    const XMLCh *m_NameURI, *m_TypeURI;
-
-    // allow elements having the xsi:nil="true" attribute
-    bool m_bAllowNil;
-
-    // The number of arguments the function should take
-    VectorOfSequenceTypes *argTypes_;
-    // The return type of the function
-    SequenceType *returnType_;
-
-    bool staticallyResolved_;
-  };
-
-
-
   /**
    * Number of occurrences of the ItemType.
    * STAR specifies zero or more occurrences.
@@ -150,11 +139,6 @@ public:
     PLUS=2,
     QUESTION_MARK=3
   } OccurrenceIndicator;
-
-  /**
-   * Constructor for atomic types
-   */
-  SequenceType(const XMLCh* typeURI,const XMLCh* typeName, OccurrenceIndicator occur, XPath2MemoryManager *mm);
 
   /**
    * Generic constructor.
@@ -181,10 +165,6 @@ public:
    */
   void setOccurrence(OccurrenceIndicator nOccurrence);
 
-  //Return a URI, firstly the overriding URI string, if not, the URI bond to the QName prefix
-  const XMLCh *getTypeURI() const;
-  const XMLCh *getNameURI() const;
-
   /**
    * Returns a Result that will throw an XPath2TypeMatchException if
    * the toBeTested Result doesn't match this SequenceType.
@@ -197,9 +177,6 @@ public:
                             const LocationInfo *location, const XMLCh *errorCode);
   ASTNode *convertFunctionArg(ASTNode *arg, StaticContext *context, bool numericFunction,
                               const LocationInfo *location);
-
-  QualifiedName *getConstrainingType() const;
-  QualifiedName *getConstrainingName() const;
 
   /**
    * Getter for m_pItemType.

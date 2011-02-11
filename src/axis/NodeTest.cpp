@@ -271,14 +271,14 @@ void NodeTest::staticResolution(StaticContext *context, const LocationInfo *loca
     _itemType->staticResolution(context, location);
 
     switch(_itemType->getItemTestType()) {
-    case SequenceType::ItemType::TEST_NODE:
+    case ItemType::TEST_NODE:
       _wildcardType = true;
       _wildcardNamespace = true;
       _wildcardName = true;
       _itemType = 0;
       break;
-    case SequenceType::ItemType::TEST_DOCUMENT:
-      if(_itemType->getName() == 0 && _itemType->getType() == 0) {
+    case ItemType::TEST_DOCUMENT:
+      if(_itemType->getNameName() == 0 && _itemType->getTypeName() == 0) {
         _wildcardType = false;
         _type = Node::document_string;
         _wildcardNamespace = true;
@@ -286,60 +286,60 @@ void NodeTest::staticResolution(StaticContext *context, const LocationInfo *loca
         _itemType = 0;
       }
       break;
-    case SequenceType::ItemType::TEST_TEXT:
+    case ItemType::TEST_TEXT:
       _wildcardType = false;
       _type = Node::text_string;
       _wildcardNamespace = true;
       _wildcardName = true;
       _itemType = 0;
       break;
-    case SequenceType::ItemType::TEST_COMMENT:
+    case ItemType::TEST_COMMENT:
       _wildcardType = false;
       _type = Node::comment_string;
       _wildcardNamespace = true;
       _wildcardName = true;
       _itemType = 0;
       break;
-    case SequenceType::ItemType::TEST_PI:
+    case ItemType::TEST_PI:
       _wildcardType = false;
       _type = Node::processing_instruction_string;
       _wildcardNamespace = true;
-      if(_itemType->getName() == 0) {
+      if(_itemType->getNameName() == 0) {
         _wildcardName = true;
       } else {
         _wildcardName = false;
-        _name = _itemType->getName()->getName();
+        _name = _itemType->getNameName();
       }
       _itemType = 0;
       break;
-    case SequenceType::ItemType::TEST_ATTRIBUTE:
-      if(_itemType->getType() == 0) {
+    case ItemType::TEST_ATTRIBUTE:
+      if(_itemType->getTypeName() == 0) {
         _wildcardType = false;
         _type = Node::attribute_string;
-        if(_itemType->getName() == 0) {
+        if(_itemType->getNameName() == 0) {
           _wildcardNamespace = true;
           _wildcardName = true;
         } else {
           _wildcardNamespace = false;
-          _uri = context->getUriBoundToPrefix(_itemType->getName()->getPrefix(), location);
+          _uri = context->getUriBoundToPrefix(_itemType->getNamePrefix(), location);
           _wildcardName = false;
-          _name = _itemType->getName()->getName();
+          _name = _itemType->getNameName();
         }
         _itemType = 0;
       }
       break;
-    case SequenceType::ItemType::TEST_ELEMENT:
-      if(_itemType->getType() == 0) {
+    case ItemType::TEST_ELEMENT:
+      if(_itemType->getTypeName() == 0) {
         _wildcardType = false;
         _type = Node::element_string;
-        if(_itemType->getName() == 0) {
+        if(_itemType->getNameName() == 0) {
           _wildcardNamespace = true;
           _wildcardName = true;
         } else {
           _wildcardNamespace = false;
-          _uri = context->getUriBoundToPrefix(_itemType->getName()->getPrefix(), location);
+          _uri = context->getUriBoundToPrefix(_itemType->getNamePrefix(), location);
           _wildcardName = false;
-          _name = _itemType->getName()->getName();
+          _name = _itemType->getNameName();
         }
         _itemType = 0;
       }
@@ -353,11 +353,11 @@ bool NodeTest::isNodePrefixSet() const {
   return _usePrefix;
 }
 
-SequenceType::ItemType* NodeTest::getItemType() const {
+ItemType* NodeTest::getItemType() const {
   return _itemType;
 }
 
-void NodeTest::setItemType(SequenceType::ItemType* type) {
+void NodeTest::setItemType(ItemType* type) {
   _itemType=type;
 }
 

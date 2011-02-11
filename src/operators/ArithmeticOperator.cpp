@@ -64,8 +64,9 @@ ASTNode* ArithmeticOperator::staticResolution(StaticContext *context)
     //        Otherwise, a type error is raised.
 
     if(!context->getXPath1CompatibilityMode()) {
-      SequenceType *seqType = new (mm) SequenceType(new (mm) SequenceType::ItemType(SequenceType::ItemType::TEST_ANYTHING),
-                                                    SequenceType::QUESTION_MARK);
+      ItemType *itemType = new (mm) ItemType(ItemType::TEST_ANYTHING);
+      itemType->setLocationInfo(*i);
+      SequenceType *seqType = new (mm) SequenceType(itemType, SequenceType::QUESTION_MARK);
       seqType->setLocationInfo(*i);
 
       *i = new (mm) XQTreatAs(*i, seqType, mm);

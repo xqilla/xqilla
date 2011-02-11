@@ -558,7 +558,7 @@ static inline Item::Ptr testNode(const FastXDMDocument::Ptr &document, const Fas
 {
   if(nodeTest == 0) return new FastXDMNodeImpl(document, node);
 
-  SequenceType::ItemType *itemType = nodeTest->getItemType();
+  ItemType *itemType = nodeTest->getItemType();
   if(itemType != 0) {
     Node::Ptr result = new FastXDMNodeImpl(document, node);
     if(itemType->matches(result, context)) {
@@ -607,7 +607,7 @@ static inline Item::Ptr testNode(const FastXDMDocument::Ptr &document, const Fas
 static inline Item::Ptr testAttribute(const FastXDMDocument::Ptr &document, const FastXDMDocument::Attribute *attr, const NodeTest *nodeTest, DynamicContext *context)
 {
   if(nodeTest != 0) {
-      SequenceType::ItemType *itemType = nodeTest->getItemType();
+      ItemType *itemType = nodeTest->getItemType();
       if(itemType != 0) {
         Node::Ptr result = new FastXDMAttributeNodeImpl(document, attr);
         if(itemType->matches(result, context)) {

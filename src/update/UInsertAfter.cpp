@@ -53,12 +53,14 @@ ASTNode* UInsertAfter::staticResolution(StaticContext *context)
   source_->setLocationInfo(this);
   source_ = source_->staticResolution(context);
 
-  SequenceType *targetType1 = new (mm) SequenceType(new (mm) SequenceType::ItemType(SequenceType::ItemType::TEST_ANYTHING),
-                                                    SequenceType::PLUS);
+  ItemType *itemType1 = new (mm) ItemType(ItemType::TEST_ANYTHING);
+  itemType1->setLocationInfo(this);
+  SequenceType *targetType1 = new (mm) SequenceType(itemType1, SequenceType::PLUS);
   targetType1->setLocationInfo(this);
 
-  SequenceType *targetType2 = new (mm) SequenceType(new (mm) SequenceType::ItemType(SequenceType::ItemType::TEST_NODE),
-                                                    SequenceType::EXACTLY_ONE);
+  ItemType *itemType2 = new (mm) ItemType(ItemType::TEST_NODE);
+  itemType2->setLocationInfo(this);
+  SequenceType *targetType2 = new (mm) SequenceType(itemType2, SequenceType::EXACTLY_ONE);
   targetType2->setLocationInfo(this);
 
   target_ = new (mm) XQTreatAs(target_, targetType1, mm, err_XUDY0027);

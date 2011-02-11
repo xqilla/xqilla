@@ -872,7 +872,7 @@ DM_FunctionDecl:
 
     const XMLCh *localname = XPath2NSUtils::getLocalName($4);
 
-    printf("  {\n    \"%s\", %d, %s, %d, %d,\n", UTF8(localname), ($5 ? $5->size() : 0),
+    printf("  {\n    \"%s\", %d, %s, %d, %d,\n", UTF8(localname), (int)($5 ? $5->size() : 0),
            $2->privateOption == FunctionSignature::OP_TRUE ? "true" : "false", @1.first_line, @1.first_column);
     printf("    \"");
     const XMLCh *ptr = ((XQLexer*)QP->_lexer)->getQueryString() + @1.first_offset;
@@ -904,10 +904,10 @@ DM_FunctionDecl:
 Start_XSLT:
     Stylesheet_XSLT
   {
+    ItemType *itemType = WRAP(@1, new (MEMMGR) ItemType(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
+        AnyAtomicType::fgDT_ANYATOMICTYPE));
     SequenceType *optionalString =
-      WRAP(@1, new (MEMMGR) SequenceType(SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
-                                         AnyAtomicType::fgDT_ANYATOMICTYPE,
-                                         SequenceType::QUESTION_MARK, MEMMGR));
+      WRAP(@1, new (MEMMGR) SequenceType(itemType, SequenceType::QUESTION_MARK));
 
     XQGlobalVariable *nameVar =
       WRAP(@1, new (MEMMGR) XQGlobalVariable(0, optionalString,
@@ -1120,7 +1120,7 @@ Param_XSLT:
     }
 
     if($$->getType() == 0) {
-      $$->setType(WRAP(@1, new (MEMMGR) SequenceType(new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_ANYTHING), SequenceType::STAR)));
+      $$->setType(WRAP(@1, new (MEMMGR) SequenceType(WRAP(@1, new (MEMMGR) ItemType(ItemType::TEST_ANYTHING)), SequenceType::STAR)));
     }
 
     // TBD default parameter values - jpcs
@@ -3338,7 +3338,7 @@ OrderExpr:
   ExprSingle
   {
     SequenceType *zero_or_one = WRAP(@1, new (MEMMGR)
-      SequenceType(new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_ANYTHING),
+      SequenceType(WRAP(@1, new (MEMMGR) ItemType(ItemType::TEST_ANYTHING)),
                    SequenceType::QUESTION_MARK));
 
     $$ = $1;
@@ -3850,7 +3850,7 @@ PathExpr:
     FunctionRoot *root = WRAP(@1, new (MEMMGR) FunctionRoot(args, MEMMGR));
 
     SequenceType *documentNode = WRAP(@1, new (MEMMGR)
-      SequenceType(new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_DOCUMENT)));
+      SequenceType(WRAP(@1, new (MEMMGR) ItemType(ItemType::TEST_DOCUMENT))));
 
     nav->addStep(WRAP(@1, new (MEMMGR) XQTreatAs(root, documentNode, MEMMGR)));
 
@@ -3873,7 +3873,7 @@ LeadingSlash:
     FunctionRoot *root = WRAP(@1, new (MEMMGR) FunctionRoot(args, MEMMGR));
 
     SequenceType *documentNode = WRAP(@1, new (MEMMGR)
-      SequenceType(new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_DOCUMENT)));
+      SequenceType(WRAP(@1, new (MEMMGR) ItemType(ItemType::TEST_DOCUMENT))));
 
     $$ = WRAP(@1, new (MEMMGR) XQTreatAs(root, documentNode, MEMMGR));
   }
@@ -4005,8 +4005,8 @@ AbbrevForwardStep:
   | NodeTest
   {
     XQStep::Axis axis = XQStep::CHILD;
-    SequenceType::ItemType *itemtype = $1->getItemType();
-    if(itemtype != 0 && itemtype->getItemTestType() == SequenceType::ItemType::TEST_ATTRIBUTE) {
+    ItemType *itemtype = $1->getItemType();
+    if(itemtype != 0 && itemtype->getItemTestType() == ItemType::TEST_ATTRIBUTE) {
       axis = XQStep::ATTRIBUTE;
     }
     else if(!$1->isNodeTypeSet()) {
@@ -4653,7 +4653,7 @@ SingleType:
   AtomicType SingleTypeOccurrence
   {
     SequenceType* seq = WRAP(@1, new (MEMMGR) SequenceType());
-    seq->setItemType(new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_ATOMIC_TYPE, NULL, $1));
+    seq->setItemType(WRAP(@1, new (MEMMGR) ItemType(ItemType::TEST_ATOMIC_TYPE, NULL, $1)));
     seq->setOccurrence($2);
     $$ = seq;
   }
@@ -4674,7 +4674,7 @@ SingleTypeOccurrence:
 TypeDeclaration:
   /* empty */
   {
-    $$ = WRAP(@$, new (MEMMGR) SequenceType(new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_ANYTHING), SequenceType::STAR));
+    $$ = WRAP(@$, new (MEMMGR) SequenceType(WRAP(@$, new (MEMMGR) ItemType(ItemType::TEST_ANYTHING)), SequenceType::STAR));
   }
   | _AS_ SequenceType
   {
@@ -4716,11 +4716,11 @@ OccurrenceIndicator:
 ItemType:
     AtomicType 
   {
-    $$ = new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_ATOMIC_TYPE, NULL, $1);
+    $$ = WRAP(@1, new (MEMMGR) ItemType(ItemType::TEST_ATOMIC_TYPE, NULL, $1));
   }
   | _ITEM_ _LPAR_ _RPAR_
   {
-    $$ = new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_ANYTHING);
+    $$ = WRAP(@1, new (MEMMGR) ItemType(ItemType::TEST_ANYTHING));
   }
   | KindTest
   | FunctionTest
@@ -4756,7 +4756,7 @@ KindTest:
 AnyKindTest:
   _NODE_ _LPAR_ _RPAR_
   {
-    $$ = new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_NODE);
+    $$ = WRAP(@1, new (MEMMGR) ItemType(ItemType::TEST_NODE));
   }
   ;
 
@@ -4764,17 +4764,21 @@ AnyKindTest:
 DocumentTest:
   _DOCUMENT_NODE_ _LPAR_ _RPAR_ 
   {
-    $$ = new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_DOCUMENT);
+    $$ = WRAP(@1, new (MEMMGR) ItemType(ItemType::TEST_DOCUMENT));
   }
   | _DOCUMENT_NODE_ _LPAR_ ElementTest _RPAR_ 
   {
     $$ = $3;
-    $$->setItemTestType(SequenceType::ItemType::TEST_DOCUMENT);
+    $$->setItemTestType(ItemType::TEST_DOCUMENT);
+    LOCATION(@1, loc);
+    $$->setLocationInfo(&loc);
   }
   | _DOCUMENT_NODE_ _LPAR_ SchemaElementTest _RPAR_ 
   {
     $$ = $3;
-    $$->setItemTestType(SequenceType::ItemType::TEST_SCHEMA_DOCUMENT);
+    $$->setItemTestType(ItemType::TEST_SCHEMA_DOCUMENT);
+    LOCATION(@1, loc);
+    $$->setLocationInfo(&loc);
   }
   ;
   
@@ -4782,7 +4786,7 @@ DocumentTest:
 TextTest:
   _TEXT_ _LPAR_ _RPAR_
   {
-    $$ = new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_TEXT);
+    $$ = WRAP(@1, new (MEMMGR) ItemType(ItemType::TEST_TEXT));
   }
   ;
 
@@ -4790,7 +4794,7 @@ TextTest:
 CommentTest: 
   _COMMENT_ _LPAR_ _RPAR_
   {
-    $$ = new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_COMMENT);
+    $$ = WRAP(@1, new (MEMMGR) ItemType(ItemType::TEST_COMMENT));
   }
   ;
 
@@ -4799,7 +4803,7 @@ NamespaceNodeTest:
   _NAMESPACE_NODE_ _LPAR_ _RPAR_
   {
     REJECT_NOT_VERSION11(NamespaceNodeTest, @1);
-    $$ = new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_NAMESPACE);
+    $$ = WRAP(@1, new (MEMMGR) ItemType(ItemType::TEST_NAMESPACE));
   }
   ;
 
@@ -4807,15 +4811,15 @@ NamespaceNodeTest:
 PITest:
   _PROCESSING_INSTRUCTION_ _LPAR_ _RPAR_
   {
-    $$ = new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_PI);
+    $$ = WRAP(@1, new (MEMMGR) ItemType(ItemType::TEST_PI));
   }
   | _PROCESSING_INSTRUCTION_ _LPAR_ NCName _RPAR_
   {
-    $$ = new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_PI, new (MEMMGR) QualifiedName($3, MEMMGR));
+    $$ = WRAP(@1, new (MEMMGR) ItemType(ItemType::TEST_PI, new (MEMMGR) QualifiedName($3, MEMMGR)));
   }
   | _PROCESSING_INSTRUCTION_ _LPAR_ _STRING_LITERAL_ _RPAR_
   {
-    $$ = new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_PI, new (MEMMGR) QualifiedName($3, MEMMGR));
+    $$ = WRAP(@1, new (MEMMGR) ItemType(ItemType::TEST_PI, new (MEMMGR) QualifiedName($3, MEMMGR)));
   }
   ;
 
@@ -4823,15 +4827,15 @@ PITest:
 AttributeTest:
   _ATTRIBUTE_ _LPAR_ _RPAR_ 
   {
-    $$ = new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_ATTRIBUTE);
+    $$ = WRAP(@1, new (MEMMGR) ItemType(ItemType::TEST_ATTRIBUTE));
   }
   | _ATTRIBUTE_ _LPAR_ AttribNameOrWildcard _RPAR_ 
   {
-    $$ = new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_ATTRIBUTE,$3);
+    $$ = WRAP(@1, new (MEMMGR) ItemType(ItemType::TEST_ATTRIBUTE,$3));
   }
   | _ATTRIBUTE_ _LPAR_ AttribNameOrWildcard _COMMA_ TypeName _RPAR_ 
   {
-    $$ = new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_ATTRIBUTE,$3,$5);
+    $$ = WRAP(@1, new (MEMMGR) ItemType(ItemType::TEST_ATTRIBUTE,$3,$5));
   }
   ;
 
@@ -4848,7 +4852,7 @@ AttribNameOrWildcard:
 SchemaAttributeTest:
   _SCHEMA_ATTRIBUTE_ _LPAR_ AttributeDeclaration _RPAR_
   {
-    $$ = new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_SCHEMA_ATTRIBUTE,$3);
+    $$ = WRAP(@1, new (MEMMGR) ItemType(ItemType::TEST_SCHEMA_ATTRIBUTE,$3));
   }
   ;
 
@@ -4861,19 +4865,19 @@ AttributeDeclaration:
 ElementTest:
   _ELEMENT_ _LPAR_ _RPAR_ 
   {
-    $$ = new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_ELEMENT);
+    $$ = WRAP(@1, new (MEMMGR) ItemType(ItemType::TEST_ELEMENT));
   }
   | _ELEMENT_ _LPAR_ ElementNameOrWildcard _RPAR_ 
   {
-    $$ = new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_ELEMENT,$3);
+    $$ = WRAP(@1, new (MEMMGR) ItemType(ItemType::TEST_ELEMENT,$3));
   }
   | _ELEMENT_ _LPAR_ ElementNameOrWildcard _COMMA_ TypeName _RPAR_ 
   {
-    $$ = new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_ELEMENT,$3,$5);
+    $$ = WRAP(@1, new (MEMMGR) ItemType(ItemType::TEST_ELEMENT,$3,$5));
   }
   | _ELEMENT_ _LPAR_ ElementNameOrWildcard _COMMA_ TypeName _QUESTION_MARK_ _RPAR_ 
   {
-    $$ = new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_ELEMENT,$3,$5);
+    $$ = WRAP(@1, new (MEMMGR) ItemType(ItemType::TEST_ELEMENT,$3,$5));
     $$->setAllowNilled(true);
   }
   ;
@@ -4891,7 +4895,7 @@ ElementNameOrWildcard:
 SchemaElementTest:
   _SCHEMA_ELEMENT_ _LPAR_ ElementDeclaration _RPAR_
   {
-    $$ = new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_SCHEMA_ELEMENT,$3);
+    $$ = WRAP(@1, new (MEMMGR) ItemType(ItemType::TEST_SCHEMA_ELEMENT,$3));
   }
   ;
 
@@ -5843,7 +5847,7 @@ FunctionTest: AnyFunctionTest | TypedFunctionTest;
 AnyFunctionTest:
     _FUNCTION_EXT_ _LPAR_ _ASTERISK_ _RPAR_
   {
-    $$ = new (MEMMGR) SequenceType::ItemType(SequenceType::ItemType::TEST_FUNCTION);
+    $$ = WRAP(@1, new (MEMMGR) ItemType(ItemType::TEST_FUNCTION));
   }
   ;
 
@@ -5851,11 +5855,11 @@ AnyFunctionTest:
 TypedFunctionTest:
     _FUNCTION_EXT_ _LPAR_ _RPAR_ _AS_ SequenceType
   {
-    $$ = new (MEMMGR) SequenceType::ItemType(new (MEMMGR) VectorOfSequenceTypes(XQillaAllocator<SequenceType*>(MEMMGR)), $5);
+    $$ = WRAP(@1, new (MEMMGR) ItemType(new (MEMMGR) VectorOfSequenceTypes(XQillaAllocator<SequenceType*>(MEMMGR)), $5));
   }
   | _FUNCTION_EXT_ _LPAR_ FunctionTypeArguments _RPAR_ _AS_ SequenceType
   {
-    $$ = new (MEMMGR) SequenceType::ItemType($3, $6);
+    $$ = WRAP(@1, new (MEMMGR) ItemType($3, $6));
   }
   ;
 

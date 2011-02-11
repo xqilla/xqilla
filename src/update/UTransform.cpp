@@ -89,8 +89,9 @@ ASTNode *UTransform::staticResolution(StaticContext* context)
       (*it0)->uri_ = context->getUriBoundToPrefix(prefix, this);
     (*it0)->name_ = XPath2NSUtils::getLocalName((*it0)->qname_);
 
-    SequenceType *copyType = new (mm) SequenceType(new (mm) SequenceType::ItemType(SequenceType::ItemType::TEST_NODE),
-                                                   SequenceType::EXACTLY_ONE);
+    ItemType *itemType = new (mm) ItemType(ItemType::TEST_NODE);
+    itemType->setLocationInfo(this);
+    SequenceType *copyType = new (mm) SequenceType(itemType, SequenceType::EXACTLY_ONE);
     copyType->setLocationInfo(this);
 
     // call static resolution on the value
