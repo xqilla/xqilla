@@ -21,6 +21,8 @@ Document projection for recursive functions
 pull event execution
 Remove and free unused global variables
 Better static typing esp. for higher order functions
+Batched iterator execution
+Execute method for singleton results
 
 
 Infrastructure

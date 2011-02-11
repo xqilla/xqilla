@@ -528,11 +528,6 @@ ASTNode *ASTToXML::optimize(ASTNode *item)
   // events_->attributeEvent(0, 0, s_static_analysis, X(item->getStaticAnalysis().toString().c_str()), 0, 0);
 #endif
 
-  // static XMLCh s_static_type[] = { 's', 't', 'a', 't', 'i', 'c', '-', 't', 'y', 'p', 'e', 0 };
-  // XMLBuffer type_buf;
-  // item->getStaticAnalysis().getStaticType().typeToBuf(type_buf);
-  // events_->attributeEvent(0, 0, s_static_type, type_buf.getRawBuffer(), 0, 0);
-
   if(item) {
     AutoReset<unsigned int> resetIndent(indent_);
     ++indent_;

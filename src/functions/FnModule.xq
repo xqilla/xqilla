@@ -351,11 +351,13 @@ declare function reverse($seq as item()*) as item()*
   else (reverse(tail($seq)), head($seq))
 };
 
+(: TBD %inline - jpcs:)
 declare function subsequence($sourceSeq as item()*, $startingLoc as xs:double) as item()*
 {
   subsequence-helper($sourceSeq, round($startingLoc))
 };
 
+(: TBD %inline - jpcs:)
 declare function subsequence($sourceSeq as item()*, $startingLoc as xs:double,
   $length as xs:double) as item()*
 {
@@ -363,12 +365,15 @@ declare function subsequence($sourceSeq as item()*, $startingLoc as xs:double,
   return subsequence-helper($sourceSeq, $start, $start + round($length))
 };
 
+(: TBD %xqilla:type("($A*, xs:double) as $A*") - jpcs:)
 declare %private function subsequence-helper($seq as item()*, $start as xs:double) as item()*
 {
   if($start le 1) then $seq
   else subsequence-helper(tail($seq), $start - 1)
 };
 
+(: TBD %xqilla:type("($A*, xs:double, xs:double, xs:double) as $A*") - jpcs:)
+(: TBD %xqilla:inline-if-constant("start","end") - jpcs :)
 declare %private function subsequence-helper($seq as item()*, $start as xs:double,
   $end as xs:double) as item()*
 {
@@ -808,7 +813,10 @@ declare function map($f as function(item()) as item()*, $seq as item()*) as item
 };
 
 declare option rw:rule "fn:MapMapFusion:
-map(~f, map(~g, ~e)) -> map(function($a) { ~f(~g($a)) }, ~e)";
+map(~f, map(~g, ~e)) -> map(function($a) { map(~f,~g($a)) }, ~e)";
+
+declare option rw:rule "fn:MapSingleton:
+map(~f, ~e) where rw:subtype(~e, 'item()') -> ~f(~e)";
 
 declare function filter($f as function(item()) as xs:boolean, $seq as item()*) as item()*
 {
