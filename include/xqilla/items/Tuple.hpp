@@ -20,26 +20,27 @@
 
 #include <vector>
 
-#include <xqilla/items/Item.hpp>
+#include <xqilla/items/FunctionRef.hpp>
 #include <xqilla/items/ATQNameOrDerived.hpp>
 #include <xqilla/runtime/Result.hpp>
 
 class DynamicContext;
 
-class XQILLA_API Tuple : public Item
+class XQILLA_API Tuple : public FunctionRef
 {
 public:
   typedef RefCountPointer<const Tuple> Ptr;
 
   virtual Type getType() const { return TUPLE; }
 
-  virtual const XMLCh *getTypeURI() const { return 0; }
-  virtual const XMLCh *getTypeName() const { return 0; }
+  virtual Result get(const XMLCh *uri, const XMLCh *name, const DynamicContext *context) const = 0;
+  virtual void getInScopeVariables(std::vector<std::pair<const XMLCh*, const XMLCh*> > &variables) const = 0;
 
-  virtual Result get(const XMLCh *uriname) const = 0;
-  virtual Result get(const XMLCh *uri, const XMLCh *name) const = 0;
-  virtual void getInScopeVariables(std::vector<std::pair<const XMLCh*, const XMLCh*> > &variables,
-                                   XPath2MemoryManager *mm) const = 0;
+  virtual Result get(const AnyAtomicType::Ptr &key) const = 0;
+  virtual bool contains(const AnyAtomicType::Ptr &key) const = 0;
+  virtual Result entries(const LocationInfo *location) const = 0;
+  virtual Tuple::Ptr put(const AnyAtomicType::Ptr &key, const Result &value) const = 0;
+  virtual Tuple::Ptr remove(const AnyAtomicType::Ptr &key) const = 0;
 
   virtual size_t size() const = 0;
 

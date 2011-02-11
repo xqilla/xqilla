@@ -482,6 +482,13 @@ void XQLexer::undoLessThan()
     RECOGNIZE_VALUE(_QNAME_, yytext);
   }
 }
+<INITIAL>"map" {
+  if(isExtensions()) {
+    RECOGNIZE_VALUE(_MAP_, yytext);
+  } else {
+    RECOGNIZE_VALUE(_QNAME_, yytext);
+  }
+}
 <INITIAL>"type-alias" {
   if(isExtensions()) {
     RECOGNIZE_VALUE(_TYPE_ALIAS_, yytext);

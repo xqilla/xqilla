@@ -186,7 +186,7 @@ public:
   virtual void createTuple(DynamicContext *context, size_t capacity, TupleImpl::Ptr &result) const
   {
     parent_->createTuple(context, capacity + 1, result);
-    result->add(ast_->getVar()->getURIName(), values_.createResult());
+    result->add(ast_->getVar()->getURI(), ast_->getVar()->getName(), values_.createResult(), context);
   }
 
 private:

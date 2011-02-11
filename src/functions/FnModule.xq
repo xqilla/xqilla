@@ -723,9 +723,43 @@ declare private function dayTimeDuration-min($arg as xs:anyAtomicType*, $result 
 };
 
 (:----------------------------------------------------------------------------------------------------:)
-(: XQuery 1.1 functions :)
+(: Map functions :)
 
-(: TBD These should probably only be imported if we're parsing XQuery 1.1 - jpcs :)
+declare function map-get($map as map(), $key as xs:anyAtomicType) as item()*
+{
+  $map($key)
+};
+
+declare function map-keys($map as map()) as xs:anyAtomicType*
+{
+  map(map-get(?, "key"), map-entries($map))
+};
+
+declare function map-fold(
+  $f as function(item()*, xs:anyAtomicType, item()*) as item()*,
+  $z as item()*,
+  $map as map()
+) as item()*
+{
+  fold-left(function($r, $e as map()) { $f($r, $e("key"), $e("value")) },
+    $z, map-entries($map))
+};
+
+declare function map-put($map as map(), $entry as map()) as map()
+{
+  map-put($map, $entry("key"), $entry("value"))
+};
+
+declare function map-entry($key as xs:anyAtomicType, $value as item()*) as map()
+{
+  map-put(
+    map-put(empty-map(),
+      "key", $key),
+    "value", $value)
+};
+
+(:----------------------------------------------------------------------------------------------------:)
+(: XQuery 1.1 functions :)
 
 declare function map($f as function(item()) as item()*, $seq as item()*) as item()*
 {

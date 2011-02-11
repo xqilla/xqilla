@@ -76,9 +76,11 @@ ASTNode *FunctionDistinctValues::staticTypingImpl(StaticContext *context)
   return this;
 }
 
-static inline int compareAtomics(const AnyAtomicType::Ptr &a, const AnyAtomicType::Ptr &b,
-                                 const Collation *collation, const DynamicContext *context)
+int AnyAtomicType::compare(const AnyAtomicType::Ptr &b, const Collation *collation,
+  const DynamicContext *context) const
 {
+  const AnyAtomicType *a = this;
+
   AnyAtomicType::AtomicObjectType atype = a->getSortType();
   AnyAtomicType::AtomicObjectType btype = b->getSortType();
 
@@ -89,35 +91,35 @@ static inline int compareAtomics(const AnyAtomicType::Ptr &a, const AnyAtomicTyp
   case AnyAtomicType::STRING:
     return collation->compare(a->asString(context), b->asString(context));
   case AnyAtomicType::DOUBLE:
-    return ((const Numeric *)a.get())->compare((const Numeric *)b.get(), context);
+    return ((const Numeric *)a)->compare((const Numeric *)b.get(), context);
   case AnyAtomicType::DURATION:
-    return ((const ATDurationOrDerived *)a.get())->compare((const ATDurationOrDerived *)b.get(), context);
+    return ((const ATDurationOrDerived *)a)->compare((const ATDurationOrDerived *)b.get(), context);
   case AnyAtomicType::BASE_64_BINARY:
-    return ((const ATBase64BinaryOrDerived *)a.get())->compare((const ATBase64BinaryOrDerived *)b.get(), context);
+    return ((const ATBase64BinaryOrDerived *)a)->compare((const ATBase64BinaryOrDerived *)b.get(), context);
   case AnyAtomicType::BOOLEAN:
-    return ((const ATBooleanOrDerived *)a.get())->compare((const ATBooleanOrDerived *)b.get(), context);
+    return ((const ATBooleanOrDerived *)a)->compare((const ATBooleanOrDerived *)b.get(), context);
   case AnyAtomicType::DATE:
-    return ((const ATDateOrDerived *)a.get())->compare((const ATDateOrDerived *)b.get(), context);
+    return ((const ATDateOrDerived *)a)->compare((const ATDateOrDerived *)b.get(), context);
   case AnyAtomicType::DATE_TIME:
-    return ((const ATDateTimeOrDerived *)a.get())->compare((const ATDateTimeOrDerived *)b.get(), context);
+    return ((const ATDateTimeOrDerived *)a)->compare((const ATDateTimeOrDerived *)b.get(), context);
   case AnyAtomicType::G_DAY:
-    return ((const ATGDayOrDerived *)a.get())->compare((const ATGDayOrDerived *)b.get(), context);
+    return ((const ATGDayOrDerived *)a)->compare((const ATGDayOrDerived *)b.get(), context);
   case AnyAtomicType::G_MONTH:
-    return ((const ATGMonthOrDerived *)a.get())->compare((const ATGMonthOrDerived *)b.get(), context);
+    return ((const ATGMonthOrDerived *)a)->compare((const ATGMonthOrDerived *)b.get(), context);
   case AnyAtomicType::G_MONTH_DAY:
-    return ((const ATGMonthDayOrDerived *)a.get())->compare((const ATGMonthDayOrDerived *)b.get(), context);
+    return ((const ATGMonthDayOrDerived *)a)->compare((const ATGMonthDayOrDerived *)b.get(), context);
   case AnyAtomicType::G_YEAR:
-    return ((const ATGYearOrDerived *)a.get())->compare((const ATGYearOrDerived *)b.get(), context);
+    return ((const ATGYearOrDerived *)a)->compare((const ATGYearOrDerived *)b.get(), context);
   case AnyAtomicType::G_YEAR_MONTH:
-    return ((const ATGYearMonthOrDerived *)a.get())->compare((const ATGYearMonthOrDerived *)b.get(), context);
+    return ((const ATGYearMonthOrDerived *)a)->compare((const ATGYearMonthOrDerived *)b.get(), context);
   case AnyAtomicType::HEX_BINARY:
-    return ((const ATHexBinaryOrDerived *)a.get())->compare((const ATHexBinaryOrDerived *)b.get(), context);
+    return ((const ATHexBinaryOrDerived *)a)->compare((const ATHexBinaryOrDerived *)b.get(), context);
   case AnyAtomicType::NOTATION:
-    return ((const ATNotationOrDerived *)a.get())->compare((const ATNotationOrDerived *)b.get(), context);
+    return ((const ATNotationOrDerived *)a)->compare((const ATNotationOrDerived *)b.get(), context);
   case AnyAtomicType::QNAME:
-    return ((const ATQNameOrDerived *)a.get())->compare((const ATQNameOrDerived *)b.get(), context);
+    return ((const ATQNameOrDerived *)a)->compare((const ATQNameOrDerived *)b.get(), context);
   case AnyAtomicType::TIME:
-    return ((const ATTimeOrDerived *)a.get())->compare((const ATTimeOrDerived *)b.get(), context);
+    return ((const ATTimeOrDerived *)a)->compare((const ATTimeOrDerived *)b.get(), context);
   default: break;
   }
 
@@ -132,7 +134,7 @@ struct dvCompare
 
   bool operator()(const AnyAtomicType::Ptr &a, const AnyAtomicType::Ptr &b) const
   {
-    return compareAtomics(a, b, collation_, context_) < 0;
+    return a->compare(b, collation_, context_) < 0;
   }
 
   const Collation *collation_;
@@ -220,7 +222,7 @@ static Result atomicCompare(const VectorOfASTNodes &args, DynamicContext *contex
     next(context)->asString(context), info);
   else collation = context->getDefaultCollation(info);
 
-  int cmp = compareAtomics(item1, item2, collation, context);
+  int cmp = ((AnyAtomicType*)item1.get())->compare(item2, collation, context);
   return (Item::Ptr)context->getMemoryManager()->createInteger(cmp < 0 ? -1 : cmp > 0 ? 1 : 0);
 }
 

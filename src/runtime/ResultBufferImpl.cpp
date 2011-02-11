@@ -60,7 +60,7 @@ Result ResultBufferImpl::createResult()
 Item::Ptr ResultBufferImpl::item(unsigned int index, DynamicContext *context)
 {
   while(!_result.isNull() && index >= _items.size()) {
-    const Item::Ptr item = _result->next(context);
+    Item::Ptr item = _result->next(context);
     if(item.isNull()) {
       _result = 0;
     }
@@ -93,9 +93,4 @@ ResultBufferImpl *BufferedResult::toResultBuffer(unsigned int readCount)
 {
   _impl->increaseMaxReadCount(readCount);
   return _impl;
-}
-
-std::string BufferedResult::asString(DynamicContext *context, int indent) const
-{
-  return "bufferedresult";
 }

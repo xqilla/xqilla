@@ -35,8 +35,7 @@ XQTupleMember::XQTupleMember(const XMLCh *qname, XPath2MemoryManager *mm)
   : ASTNodeImpl(TUPLE_MEMBER, mm),
     qname_(qname),
     uri_(0),
-    name_(0),
-    uriname_(1023, mm)
+    name_(0)
 {
 }
 
@@ -44,17 +43,8 @@ XQTupleMember::XQTupleMember(const XMLCh *qname, const XMLCh *uri, const XMLCh *
   : ASTNodeImpl(TUPLE_MEMBER, mm),
     qname_(qname),
     uri_(uri),
-    name_(name),
-    uriname_(1023, mm)
+    name_(name)
 {
-  setURINameHash();
-}
-
-void XQTupleMember::setURINameHash()
-{
-  uriname_.set(name_);
-  uriname_.append(':');
-  uriname_.append(uri_);
 }
 
 ASTNode* XQTupleMember::staticResolution(StaticContext *context)
@@ -62,7 +52,6 @@ ASTNode* XQTupleMember::staticResolution(StaticContext *context)
   if(name_ == 0) {
     uri_ = context->getUriBoundToPrefix(XPath2NSUtils::getPrefix(qname_, context->getMemoryManager()), this);
     name_ = XPath2NSUtils::getLocalName(qname_);
-    setURINameHash();
   }
   return this;
 }
@@ -84,7 +73,14 @@ ASTNode *XQTupleMember::staticTypingImpl(StaticContext *context)
   const StaticType::ItemTypes &types = context->getContextItemType().getTypes();
   StaticType::ItemTypes::const_iterator i = types.begin();
   for(; i != types.end(); ++i) {
-    if((*i)->getItemTestType() == ItemType::TEST_TUPLE) {
+    if((*i)->getItemTestType() == ItemType::TEST_MAP) {
+      if((*i)->getValueType()) {
+        StaticType tmp((*i)->getValueType(), BasicMemoryManager::get());
+        tmp.multiply(0,1);
+        _src.getStaticType().typeUnion(tmp);
+        continue;
+      }
+    } else if((*i)->getItemTestType() == ItemType::TEST_TUPLE) {
       const TupleMembers *members = (*i)->getTupleMembers();
       if(members) {
         XMLBuffer buf;
@@ -132,7 +128,7 @@ public:
                 X("Context item is not a tuple while executing a tuple member expression [err:TBD]"));
       }
 
-      stepResult_ = ((Tuple*)item.get())->get(step_->getURINameHash());
+      stepResult_ = ((Tuple*)item.get())->get(step_->getURI(), step_->getName(), context);
     }
 
     return result;

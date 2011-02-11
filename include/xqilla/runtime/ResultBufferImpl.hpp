@@ -71,9 +71,8 @@ class BufferedResult : public ResultImpl
 {
 public:
   BufferedResult(ResultBufferImpl *impl);
-  Item::Ptr next(DynamicContext *context);
-  ResultBufferImpl *toResultBuffer(unsigned int readCount);
-  std::string asString(DynamicContext *context, int indent) const;
+  virtual Item::Ptr next(DynamicContext *context);
+  virtual ResultBufferImpl *toResultBuffer(unsigned int readCount);
 private:
   ResultBufferImpl::Ptr _impl;
   unsigned int _pos;

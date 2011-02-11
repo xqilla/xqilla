@@ -583,6 +583,7 @@ namespace XQParser {
 %token <str> _TEMPLATE_                                       "template"
 %token <str> _MATCHES_                                        "matches"
 %token <str> _TUPLE_                                          "tuple"
+%token <str> _MAP_                                            "map"
 %token <str> _NAME_                                           "name"
 %token <str> _CALL_                                           "call"
 %token <str> _APPLY_                                          "apply"
@@ -724,11 +725,11 @@ namespace XQParser {
 %type <predicates>      PatternStepPredicateList_XSLT
 %type <axis>            ForwardAxis ReverseAxis
 %type <nodeTest>        NodeTest NameTest Wildcard PatternAxis_XSLT
-%type <qName>           QName AtomicType TypeName ElementName AttributeName ElementNameOrWildcard AttribNameOrWildcard AttributeDeclaration ElementDeclaration
+%type <qName>           QName TypeName ElementName AttributeName ElementNameOrWildcard AttribNameOrWildcard AttributeDeclaration ElementDeclaration
 %type <sequenceType>    SequenceType TypeDeclaration SingleType TemplateSequenceType FunctionDeclReturnType
 %type <occurrence>      OccurrenceIndicator SingleTypeOccurrence
 %type <itemType>        ItemType KindTest AttributeTest SchemaAttributeTest PITest CommentTest TextTest AnyKindTest ElementTest DocumentTest SchemaElementTest
-%type <itemType>        FunctionTest AnyFunctionTest TypedFunctionTest ParenthesizedItemType NamespaceNodeTest TupleTest
+%type <itemType>        FunctionTest AnyFunctionTest TypedFunctionTest ParenthesizedItemType NamespaceNodeTest TupleTest MapTest AtomicType
 %type <copyBinding>     TransformBinding
 %type <copyBindingList> TransformBindingList
 %type <templateArg>     TemplateArgument WithParamAttrs_XSLT WithParam_XSLT
@@ -4673,7 +4674,7 @@ CompPIConstructorContent:
 SingleType:
   AtomicType SingleTypeOccurrence
   {
-    $$ = WRAP(@1, new (MEMMGR) SequenceType(WRAP(@1, new (MEMMGR) ItemType(ItemType::TEST_ATOMIC_TYPE, NULL, $1)), $2));
+    $$ = WRAP(@1, new (MEMMGR) SequenceType($1, $2));
   }
   ;
 
@@ -4729,21 +4730,23 @@ OccurrenceIndicator:
 
 // ItemType ::= KindTest | "item" "(" ")" | AtomicType | FunctionTest | ParenthesizedItemType
 ItemType:
-    AtomicType 
-  {
-    $$ = WRAP(@1, new (MEMMGR) ItemType(ItemType::TEST_ATOMIC_TYPE, NULL, $1));
-  }
-  | _ITEM_ _LPAR_ _RPAR_
+    _ITEM_ _LPAR_ _RPAR_
   {
     $$ = WRAP(@1, new (MEMMGR) ItemType(ItemType::TEST_ANYTHING));
   }
+  | AtomicType 
   | KindTest
   | FunctionTest
   | ParenthesizedItemType
   ;
 
 // [125]    AtomicType    ::=    QName 
-AtomicType: QName;
+AtomicType:
+    QName
+  {
+    $$ = WRAP(@1, new (MEMMGR) ItemType(ItemType::TEST_ATOMIC_TYPE, NULL, $1));
+  }
+  ;
 
 // [126]    KindTest    ::=    DocumentTest
 //              |  ElementTest
@@ -5886,7 +5889,7 @@ ParenthesizedItemType:
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Tuples
 
-ItemType: TupleTest;
+ItemType: TupleTest | MapTest;
 
 // TupleTest ::= "tuple" "(" (TupleTestEntry ("," TupleTestEntry)*)? ")"
 TupleTest:
@@ -5920,6 +5923,19 @@ TupleTestEntry:
     QNameValue TypeDeclaration
   {
     $$ = WRAP(@1, new (MEMMGR) ArgumentSpec($1, $2, MEMMGR));
+  }
+  ;
+
+// MapTest ::= "map" "(" (AtomicType "," SequenceType)? ")"
+MapTest:
+    _MAP_ _LPAR_ AtomicType _COMMA_ SequenceType _RPAR_
+  {
+    $$ = WRAP(@1, new (MEMMGR) ItemType(WRAP(@3, new (MEMMGR)
+          SequenceType($3, SequenceType::EXACTLY_ONE)), $5, 0));
+  }
+  | _MAP_ _LPAR_ _RPAR_
+  {
+    $$ = WRAP(@1, new (MEMMGR) ItemType(ItemType::TEST_MAP));
   }
   ;
 
@@ -5999,8 +6015,8 @@ _DIFFERENT_ | _LOWERCASE_ | _UPPERCASE_ | _RELATIONSHIP_ | _LEVELS_ | _LANGUAGE_
 _EXACTLY_ | _FROM_ | _WORDS_ | _SENTENCES_ | _PARAGRAPHS_ | _SENTENCE_ | _PARAGRAPH_ | _REPLACE_ | _MODIFY_ | _FIRST_ |
 _INSERT_ | _BEFORE_ | _AFTER_ | _REVALIDATION_ | _WITH_ | _NODES_ | _RENAME_ | _LAST_ | _DELETE_ | _INTO_ | _UPDATING_ |
 _ORDERED_ | _UNORDERED_ | _ID_ | _KEY_ | _TEMPLATE_ | _MATCHES_ | _NAME_ | _CALL_ | _APPLY_ | _TEMPLATES_ | _MODE_ |
-_FTOR_ | _FTAND_ | _FTNOT_ | _PRIVATE_ | _PUBLIC_ | _DETERMINISTIC_ | _NONDETERMINISTIC_ | _TUPLE_ |
-_TYPE_ALIAS_
+_FTOR_ | _FTAND_ | _FTNOT_ | _PRIVATE_ | _PUBLIC_ | _DETERMINISTIC_ | _NONDETERMINISTIC_ | _TUPLE_ | _TYPE_ALIAS_ |
+_MAP_
   ;
 
 /* _XQUERY_ | */

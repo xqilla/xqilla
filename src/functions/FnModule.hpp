@@ -842,7 +842,50 @@ static const DelayedModule::FuncDef fn_functions[] = {
     "}\n"
   },
   {
-    "map", 2, false, 730, 1,
+    "map-get", 2, false, 728, 1,
+    "declare function map-get($map as map(), $key as xs:anyAtomicType) as item()*\n"
+    "{\n"
+    "  $map($key)\n"
+    "}\n"
+  },
+  {
+    "map-keys", 1, false, 733, 1,
+    "declare function map-keys($map as map()) as xs:anyAtomicType*\n"
+    "{\n"
+    "  map(map-get(?, \"key\"), map-entries($map))\n"
+    "}\n"
+  },
+  {
+    "map-fold", 3, false, 738, 1,
+    "declare function map-fold(\n"
+    "  $f as function(item()*, xs:anyAtomicType, item()*) as item()*,\n"
+    "  $z as item()*,\n"
+    "  $map as map()\n"
+    ") as item()*\n"
+    "{\n"
+    "  fold-left(function($r, $e as map()) { $f($r, $e(\"key\"), $e(\"value\")) },\n"
+    "    $z, map-entries($map))\n"
+    "}\n"
+  },
+  {
+    "map-put", 2, false, 748, 1,
+    "declare function map-put($map as map(), $entry as map()) as map()\n"
+    "{\n"
+    "  map-put($map, $entry(\"key\"), $entry(\"value\"))\n"
+    "}\n"
+  },
+  {
+    "map-entry", 2, false, 753, 1,
+    "declare function map-entry($key as xs:anyAtomicType, $value as item()*) as map()\n"
+    "{\n"
+    "  map-put(\n"
+    "    map-put(empty-map(),\n"
+    "      \"key\", $key),\n"
+    "    \"value\", $value)\n"
+    "}\n"
+  },
+  {
+    "map", 2, false, 764, 1,
     "declare function map($f as function(item()) as item()*, $seq as item()*) as item()*\n"
     "{\n"
     "  if(empty($seq)) then ()\n"
@@ -850,7 +893,7 @@ static const DelayedModule::FuncDef fn_functions[] = {
     "}\n"
   },
   {
-    "filter", 2, false, 736, 1,
+    "filter", 2, false, 770, 1,
     "declare function filter($f as function(item()) as xs:boolean, $seq as item()*) as item()*\n"
     "{\n"
     "  if(empty($seq)) then ()\n"
@@ -861,7 +904,7 @@ static const DelayedModule::FuncDef fn_functions[] = {
     "}\n"
   },
   {
-    "fold-left", 3, false, 745, 1,
+    "fold-left", 3, false, 779, 1,
     "declare function fold-left($f as function(item()*, item()) as item()*, $zero as item()*,\n"
     "  $seq as item()*) as item()*\n"
     "{\n"
@@ -870,7 +913,7 @@ static const DelayedModule::FuncDef fn_functions[] = {
     "}\n"
   },
   {
-    "fold-right", 3, false, 752, 1,
+    "fold-right", 3, false, 786, 1,
     "declare function fold-right($f as function(item(), item()*) as item()*, $zero as item()*,\n"
     "  $seq as item()*) as item()*\n"
     "{\n"
@@ -879,7 +922,7 @@ static const DelayedModule::FuncDef fn_functions[] = {
     "}\n"
   },
   {
-    "map-pairs", 3, false, 759, 1,
+    "map-pairs", 3, false, 793, 1,
     "declare function map-pairs($f as function(item(), item()) as item()*, $seq1 as item()*,\n"
     "  $seq2 as item()*) as item()*\n"
     "{\n"

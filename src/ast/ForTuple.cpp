@@ -182,9 +182,9 @@ public:
   virtual void createTuple(DynamicContext *context, size_t capacity, TupleImpl::Ptr &result) const
   {
     parent_->createTuple(context, capacity + (ast_->getPosName() ? 2 : 1), result);
-    result->add(XPath2NSUtils::makeURIName(ast_->getVarURI(), ast_->getVarName(), context->getMemoryManager()), item_);
+    result->add(ast_->getVarURI(), ast_->getVarName(), item_, context);
     if(ast_->getPosName())
-      result->add(XPath2NSUtils::makeURIName(ast_->getPosURI(), ast_->getPosName(), context->getMemoryManager()), posItem_);
+      result->add(ast_->getPosURI(), ast_->getPosName(), posItem_, context);
   }
 
 private:

@@ -29,10 +29,7 @@ class XQILLA_API ATQNameOrDerivedImpl : public ATQNameOrDerived
 {
 
 public:
-
-  /* constructor */
   ATQNameOrDerivedImpl(const XMLCh* typeURI, const XMLCh* typeName, const XMLCh* value, const StaticContext* context);
-
   ATQNameOrDerivedImpl(const XMLCh* typeURI, const XMLCh* typeName, const XMLCh* uri, const XMLCh* prefix, const XMLCh* name, const StaticContext* context);
   
   virtual void *getInterface(const XMLCh *name) const;
@@ -104,4 +101,4 @@ private:
  
 };
 
-#endif // _ATQNAMEORDERIVEDIMPL_HPP
+#endif

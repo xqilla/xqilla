@@ -105,6 +105,7 @@ public:
    * in the context of the datatype), false otherwise */
   virtual bool equals(const AnyAtomicType::Ptr &target, const DynamicContext* context) const = 0;
 
+  int compare(const AnyAtomicType::Ptr &b, const Collation *collation, const DynamicContext *context) const;
   virtual size_t hash(const Collation *collation, const DynamicContext *context) const;
 
   /* Returns true if this typeName and uri match the given typeName and uri */

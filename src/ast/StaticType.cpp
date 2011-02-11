@@ -131,7 +131,8 @@ static inline TypeFlags::Enum flagsForItemType(const ItemType *type)
   case ItemType::TEST_FUNCTION:
     return TypeFlags::FUNCTION;
   case ItemType::TEST_TUPLE:
-    return TypeFlags::TUPLE;
+  case ItemType::TEST_MAP:
+    return (TypeFlags::Enum)TypeFlags::TUPLE|TypeFlags::FUNCTION;
   }
 
   return TypeFlags::EMPTY;

@@ -31,11 +31,9 @@ public:
 
   const XMLCh *getQName() const { return qname_; }
   const XMLCh *getURI() const { return uri_; }
-  void setURI(const XMLCh *uri) { uri_ = uri; setURINameHash(); }
+  void setURI(const XMLCh *uri) { uri_ = uri; }
   const XMLCh *getName() const { return name_; }
-  void setName(const XMLCh *name) { name_ = name; setURINameHash(); }
-
-  const XMLCh *getURINameHash() const { return uriname_.getRawBuffer(); }
+  void setName(const XMLCh *name) { name_ = name; }
 
   virtual ASTNode *staticResolution(StaticContext *context);
   virtual ASTNode *staticTypingImpl(StaticContext *context);
@@ -43,10 +41,7 @@ public:
   virtual Result iterateResult(const Result &contextItems, DynamicContext* context) const;
 
 private:
-  void setURINameHash();
-
   const XMLCh *qname_, *uri_, *name_;
-  XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer uriname_;
 };
 
 #endif

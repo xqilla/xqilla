@@ -227,8 +227,9 @@ private:
   }
 
 public:
-  HashMap(bool resizable, XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *mm
-          = BasicMemoryManager::get())
+  HashMap(bool resizable,
+          XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *mm = BasicMemoryManager::get(),
+          const HASH &hash = HASH(), const EQUALS &equals = EQUALS())
     : mm_(mm),
       buckets_((Bucket*)inlineBuckets_),
       capacity_(UNALLOCATED_SIZE),
@@ -237,8 +238,8 @@ public:
       count_(0),
       deleted_(0),
       resizable_(resizable),
-      hash_(),
-      equals_()
+      hash_(hash),
+      equals_(equals)
   {
     for(size_t i = 0; i < capacity_; ++i) {
       new (buckets_ + i) Bucket();
@@ -246,8 +247,8 @@ public:
   }
 
   HashMap(size_t initialCapacity, bool resizable,
-          XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *mm
-          = BasicMemoryManager::get())
+          XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *mm = BasicMemoryManager::get(),
+          const HASH &hash = HASH(), const EQUALS &equals = EQUALS())
     : mm_(mm),
       buckets_(createBuckets(initialCapacity)),
       capacity_(bucketsSize(initialCapacity)),
@@ -256,8 +257,8 @@ public:
       count_(0),
       deleted_(0),
       resizable_(resizable),
-      hash_(),
-      equals_()
+      hash_(hash),
+      equals_(equals)
   {
     for(size_t i = 0; i < capacity_; ++i) {
       new (buckets_ + i) Bucket();
@@ -440,14 +441,14 @@ public:
 
   inline void resize(size_t newCapacity)
   {
-    HashMap tmp(newCapacity, resizable_, mm_);
+    HashMap tmp(newCapacity, resizable_, mm_, hash_, equals_);
     tmp.insert(buckets_, buckets_ + capacity_, /*overwrite*/false);
     swap(tmp);
   }
 
   inline void removeAll()
   {
-    HashMap tmp(capacity_, resizable_, mm_);
+    HashMap tmp(capacity_, resizable_, mm_, hash_, equals_);
     swap(tmp);
   }
 

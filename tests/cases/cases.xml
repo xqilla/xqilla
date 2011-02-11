@@ -494,4 +494,16 @@
 
   </test-group>
 
+  <test-group name="maps">
+    <GroupInfo>
+      <title>Tests for proposed XSLT 3.0 maps</title>
+    </GroupInfo>
+
+    <test-case name="maps1" FilePath="maps">
+      <query name="maps1"/>
+      <output-file compare="Fragment">maps1.out</output-file>
+    </test-case>
+
+  </test-group>
+
 </test-suite>

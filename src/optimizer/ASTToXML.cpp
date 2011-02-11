@@ -765,6 +765,8 @@ ASTNode *ASTToXML::optimizeUserFunction(XQUserFunctionInstance *item)
 
 ASTNode *ASTToXML::optimizeTypeswitch(XQTypeswitch *item)
 {
+  optimize(const_cast<ASTNode *>(item->getExpression()));
+
   const XQTypeswitch::Cases *cases = item->getCases();
   for(XQTypeswitch::Cases::const_iterator i = cases->begin(); i != cases->end(); ++i) {
     optimizeCase(*i);

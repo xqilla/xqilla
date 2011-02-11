@@ -1,0 +1,42 @@
+<result>aardvark</result>
+<result>antelope</result>
+<result>elephant</result>
+<result>eagle</result>
+<result>false</result>
+<result>true</result>
+<result>false</result>
+<result>tuple{key: a, value: aardvark}</result>
+<result>tuple{key: z, value: zebra}</result>
+<result>tuple{key: e, value: (elephant, eagle)}</result>
+<result>tuple{key: o, value: osterich}</result>
+<result>tuple{key: t, value: terrapin}</result>
+<result>z</result>
+<result>e</result>
+<result>o</result>
+<result>a</result>
+<result>key: z, value: (zebra)</result>
+<result>key: e, value: (elephant, eagle)</result>
+<result>key: o, value: (osterich)</result>
+<result>key: a, value: (antelope)</result>
+<result>true</result>
+<result>true</result>
+<result>false</result>
+<result>false</result>
+<result>true</result>
+<result>false</result>
+<result>true</result>
+<result>10</result>
+<result>true</result>
+<result>true</result>
+<result>false</result>
+<result>true</result>
+<result>tuple{key: 1, value: 3}</result>
+<result>tuple{key: 2, value: 4}</result>
+<result>tuple{key: 3, value: 5}</result>
+<result>tuple{key: 4, value: 6}</result>
+<result>tuple{key: 5, value: 7}</result>
+<result>tuple{key: 6, value: 8}</result>
+<result>tuple{key: 7, value: 9}</result>
+<result>tuple{key: 8, value: 10}</result>
+<result>tuple{key: 9, value: 11}</result>
+<result>tuple{key: 10, value: 12}</result>

@@ -62,8 +62,6 @@ ASTNode* XQTypeswitch::staticResolution(StaticContext *context)
   return this;
 }
 
-static const XMLCh no_err[] = { 0 };
-
 ASTNode *XQTypeswitch::staticTypingImpl(StaticContext *context)
 {
   _src.clear();
@@ -275,14 +273,10 @@ const XQTypeswitch::Case *XQTypeswitch::chooseCase(DynamicContext *context, Sequ
 
   // find the effective case
   for(Cases::const_iterator it = cases_->begin(); it != cases_->end(); ++it) {
-    try {
-//       (*it)->getSequenceType()->matches(value.createResult(), (*it)->getSequenceType(), no_err)->toSequence(context);
-      (*it)->getSequenceType()->matches(value, (*it)->getSequenceType(), no_err)->toSequence(context);
+    // if((*it)->getSequenceType()->matches(value.createResult(), context)) {
+    if((*it)->getSequenceType()->matches(value, context)) {
       cse = *it;
       break;
-    }
-    catch(const XPath2TypeMatchException &ex) {
-      // Well, it doesn't match that one then...
     }
   }
 

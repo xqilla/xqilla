@@ -42,9 +42,7 @@ ASTNode *XQFunctionDeref::staticResolution(StaticContext *context)
 {
   XPath2MemoryManager *mm = context->getMemoryManager();
 
-  ItemType *itemType = new (mm) ItemType(ItemType::TEST_FUNCTION);
-  itemType->setLocationInfo(this);
-  SequenceType *seqType = new (mm) SequenceType(itemType, SequenceType::EXACTLY_ONE);
+  SequenceType *seqType = new (mm) SequenceType((ItemType*)&ItemType::FUNCTION, SequenceType::EXACTLY_ONE);
   seqType->setLocationInfo(this);
 
   expr_ = new (mm) XQTreatAs(expr_, seqType, mm);
@@ -90,6 +88,27 @@ ASTNode *XQFunctionDeref::staticTypingImpl(StaticContext *context)
         _src.getStaticType() = StaticType::ITEM_STAR;
         break;
       }
+    } else if((*i)->getItemTestType() == ItemType::TEST_MAP) {
+      if((*i)->getValueType()) {
+        if(numArgs == 1) {
+          StaticType tmp((*i)->getValueType(), BasicMemoryManager::get());
+          _src.getStaticType().typeUnion(tmp);
+        }
+      } else {
+        _src.getStaticType() = StaticType::ITEM_STAR;
+        break;
+      }
+    } else if((*i)->getItemTestType() == ItemType::TEST_TUPLE) {
+      if(numArgs == 1) {
+        _src.getStaticType() = StaticType::ITEM_STAR;
+        break;
+      }
+    } else if(ItemType::TUPLE.isSubtypeOf(*i)) {
+      _src.getStaticType() = StaticType::ITEM_STAR;
+      break;
+    } else if(ItemType::MAP.isSubtypeOf(*i)) {
+      _src.getStaticType() = StaticType::ITEM_STAR;
+      break;
     } else if(ItemType::FUNCTION.isSubtypeOf(*i)) {
       _src.getStaticType() = StaticType::ITEM_STAR;
       break;
@@ -122,7 +141,6 @@ public:
         args.push_back(ClosureResult::create(*i, context));
       }
     }
-
     tail = func->execute(args, context, this);
     return 0;
   }

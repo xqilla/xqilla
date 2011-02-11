@@ -65,4 +65,4 @@ public:
   virtual AnyAtomicType::AtomicObjectType getPrimitiveTypeIndex() const = 0;
 };
 
-#endif //  _ATQNAMEORDERIVED_HPP
+#endif

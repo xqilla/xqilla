@@ -84,6 +84,7 @@ public:
 
   static const ItemType FUNCTION;
   static const ItemType TUPLE;
+  static const ItemType MAP;
 
   /**
    * The type of item that this sequence can hold.
@@ -103,7 +104,8 @@ public:
     TEST_ANYTHING,     ///< any item
     TEST_ATOMIC_TYPE,  ///< the named atomic type
     TEST_FUNCTION,     ///< function
-    TEST_TUPLE         ///< tuple
+    TEST_TUPLE,        ///< tuple
+    TEST_MAP           ///< map
   } ItemTestType;
 
   // Normal constructor
@@ -112,6 +114,8 @@ public:
   ItemType(FunctionSignature *signature, const DocumentCache *dc);
   // Constructor for a tuple
   ItemType(const TupleMembers *members, const DocumentCache *dc);
+  // Constructor for a map
+  ItemType(SequenceType *key, SequenceType *value, const DocumentCache *dc);
 
   // Constructor for static const ItemTypes
   ItemType(ItemTestType test, const DocumentCache *dc);
@@ -142,6 +146,8 @@ public:
 
   FunctionSignature *getFunctionSignature() const;
   const TupleMembers *getTupleMembers() const;
+  SequenceType *getKeyType() const;
+  SequenceType *getValueType() const;
   const DocumentCache *getDocumentCache() const;
 
   bool matches(const Item::Ptr &toBeTested, DynamicContext* context) const;
@@ -150,7 +156,7 @@ public:
   bool matches(const Tuple::Ptr &tuple, DynamicContext* context) const;
   bool matches(const FunctionSignature *sig) const;
 
-  bool isSubtypeOf(const ItemType *toBeTested) const;
+  bool isSubtypeOf(const ItemType *toBeTested, bool forStaticType = false) const;
   bool intersects(const ItemType *toBeTested) const;
 
   ItemType *staticResolution(StaticContext *context, const LocationInfo *location);
@@ -186,6 +192,10 @@ private:
   // The tuple members
   const TupleMembers *tupleMembers_;
 
+  // Key and value type of map
+  SequenceType *key_;
+  SequenceType *value_;
+
   const DocumentCache *dc_;
   bool staticallyResolved_;
 };
@@ -193,6 +203,9 @@ private:
 class XQILLA_API SequenceType : public LocationInfo
 {
 public:
+  static const SequenceType ANY_ATOMIC_TYPE;
+  static const SequenceType ITEM_STAR;
+
   /**
    * Number of occurrences of the ItemType.
    * STAR specifies zero or more occurrences.
@@ -231,6 +244,7 @@ public:
    * Returns a Result that will throw an XPath2TypeMatchException if
    * the toBeTested Result doesn't match this SequenceType.
    */
+  bool matches(const Result &toBeTested, DynamicContext *context) const;
   Result matches(const Result &toBeTested, const LocationInfo *location, const XMLCh *errorCode) const;
   Result occurrenceMatches(const Result &toBeTested, const LocationInfo *location, const XMLCh *errorCode) const;
   Result typeMatches(const Result &toBeTested, const LocationInfo *location, const XMLCh *errorCode) const;
@@ -266,11 +280,11 @@ public:
 
   const ItemType *getItemType() const;
 
-  bool isSubtypeOf(const SequenceType *toBeTested) const;
+  bool isSubtypeOf(const SequenceType *toBeTested, bool forStaticType = false) const;
 
   void staticResolution(StaticContext* context);
 
-  void toBuffer(XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer &buffer) const;
+  void toBuffer(XERCES_CPP_NAMESPACE_QUALIFIER XMLBuffer &buffer, bool forStaticType = false) const;
 
 protected:
 

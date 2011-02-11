@@ -101,6 +101,10 @@ const ItemType ItemType::NAMESPACE(ItemType::TEST_NAMESPACE, staticDocumentCache
 
 const ItemType ItemType::FUNCTION(ItemType::TEST_FUNCTION, staticDocumentCache());
 const ItemType ItemType::TUPLE(ItemType::TEST_TUPLE, staticDocumentCache());
+const ItemType ItemType::MAP(ItemType::TEST_MAP, staticDocumentCache());
+
+const SequenceType SequenceType::ANY_ATOMIC_TYPE((ItemType*)&ItemType::ANY_ATOMIC_TYPE);
+const SequenceType SequenceType::ITEM_STAR((ItemType*)&ItemType::ITEM, SequenceType::STAR);
 
 SequenceType::SequenceType(ItemType* test, OccurrenceIndicator occur)
   : m_pItemType(test),
@@ -116,8 +120,6 @@ SequenceType::SequenceType()
 
 SequenceType::~SequenceType()
 {
-  if(m_pItemType)
-    delete m_pItemType;
 }
 
 Result SequenceType::occurrenceMatches(const Result &toBeTested, const LocationInfo *location, const XMLCh *errorCode) const
@@ -133,6 +135,32 @@ Result SequenceType::typeMatches(const Result &toBeTested, const LocationInfo *l
 Result SequenceType::matches(const Result &toBeTested, const LocationInfo *location, const XMLCh *errorCode) const
 {
   return typeMatches(occurrenceMatches(toBeTested, location, errorCode), location, errorCode);
+}
+
+bool SequenceType::matches(const Result &toBeTested, DynamicContext *context) const
+{
+  if(m_nOccurrence == STAR && m_pItemType && m_pItemType->getItemTestType() == ItemType::TEST_ANYTHING)
+    return true;
+
+  Result result(toBeTested);
+
+  // First item
+  Item::Ptr item = result->next(context);
+  if(item.isNull())
+    return m_pItemType == 0 || m_nOccurrence == STAR || m_nOccurrence == QUESTION_MARK;
+  if(m_pItemType == 0 || !m_pItemType->matches(item, context)) return false;
+
+  // Second item
+  item = result->next(context);
+  if(item.isNull()) return true;
+  if(m_nOccurrence == EXACTLY_ONE || m_nOccurrence == QUESTION_MARK)
+    return false;
+  if(!m_pItemType->matches(item, context)) return false;
+
+  // The rest of the sequence
+  while((item = result->next(context)).notNull())
+    if(!m_pItemType->matches(item, context)) return false;
+  return true;
 }
 
 SequenceType::TypeMatch SequenceType::matches(const StaticType &actual) const
@@ -174,7 +202,7 @@ SequenceType::TypeMatch SequenceType::matches(const StaticType &actual) const
   bool foundMatch = false;
   StaticType::ItemTypes::const_iterator i = actual.getTypes().begin();
   for(; i != actual.getTypes().end(); ++i) {
-    if((*i)->isSubtypeOf(m_pItemType)) {
+    if((*i)->isSubtypeOf(m_pItemType, /*forStaticType*/true)) {
       // Good to go
       foundMatch = true;
     }
@@ -325,6 +353,11 @@ ItemType *ItemType::staticResolution(StaticContext *context, const LocationInfo 
     const_cast<TupleMembers*>(tupleMembers_)->swap(newMembers);
   }
 
+  if(key_)
+    key_->staticResolution(context);
+  if(value_)
+    value_->staticResolution(context);
+
   return this;
 }
 
@@ -342,6 +375,8 @@ ItemType::ItemType(ItemTestType test, QualifiedName* name, QualifiedName* type)
     m_bAllowNil(false),
     signature_(0),
     tupleMembers_(0),
+    key_(0),
+    value_(0),
     dc_(0),
     staticallyResolved_(false)
 {
@@ -361,6 +396,8 @@ ItemType::ItemType(ItemTestType test, const DocumentCache *dc)
     m_bAllowNil(false),
     signature_(0),
     tupleMembers_(0),
+    key_(0),
+    value_(0),
     dc_(dc),
     staticallyResolved_(dc != 0)
 {
@@ -381,6 +418,8 @@ ItemType::ItemType(AnyAtomicType::AtomicObjectType primitiveType, bool primitive
     m_bAllowNil(false),
     signature_(0),
     tupleMembers_(0),
+    key_(0),
+    value_(0),
     dc_(dc),
     staticallyResolved_(primitiveType != AnyAtomicType::NumAtomicObjectTypes && dc != 0)
 {
@@ -400,6 +439,8 @@ ItemType::ItemType(FunctionSignature *sig, const DocumentCache *dc)
     m_bAllowNil(false),
     signature_(sig),
     tupleMembers_(0),
+    key_(0),
+    value_(0),
     dc_(dc),
     staticallyResolved_(dc != 0)
 {
@@ -419,6 +460,29 @@ ItemType::ItemType(const TupleMembers *members, const DocumentCache *dc)
     m_bAllowNil(false),
     signature_(0),
     tupleMembers_(members),
+    key_(0),
+    value_(0),
+    dc_(dc),
+    staticallyResolved_(dc != 0)
+{
+}
+
+ItemType::ItemType(SequenceType *key, SequenceType *value, const DocumentCache *dc)
+  : alias_(0),
+    m_nTestType(TEST_MAP),
+    m_primitiveType(AnyAtomicType::NumAtomicObjectTypes),
+    m_primitive(false),
+    m_NamePrefix(0),
+    m_NameURI(0),
+    m_NameName(0),
+    m_TypePrefix(0),
+    m_TypeURI(0),
+    m_TypeName(0),
+    m_bAllowNil(false),
+    signature_(0),
+    tupleMembers_(0),
+    key_(key),
+    value_(value),
     dc_(dc),
     staticallyResolved_(dc != 0)
 {
@@ -457,6 +521,16 @@ FunctionSignature *ItemType::getFunctionSignature() const
 const TupleMembers *ItemType::getTupleMembers() const
 {
   return alias_ ? alias_->getType()->getTupleMembers() : tupleMembers_;
+}
+
+SequenceType *ItemType::getKeyType() const
+{
+  return alias_ ? alias_->getType()->getKeyType() : key_;
+}
+
+SequenceType *ItemType::getValueType() const
+{
+  return alias_ ? alias_->getType()->getValueType() : value_;
 }
 
 const DocumentCache *ItemType::getDocumentCache() const
@@ -503,7 +577,7 @@ const XMLCh *ItemType::getNameName() const
   return alias_ ? alias_->getType()->getNameName() : m_NameName;
 }
 
-void SequenceType::toBuffer(XMLBuffer &buffer) const
+void SequenceType::toBuffer(XMLBuffer &buffer, bool forStaticType) const
 {
   if(this == 0) {
     buffer.append(X("item()*"));
@@ -511,7 +585,7 @@ void SequenceType::toBuffer(XMLBuffer &buffer) const
     buffer.append(X("empty-sequence()"));
   }
   else {
-    m_pItemType->toBuffer(buffer, /*forStaticType*/false, m_nOccurrence != EXACTLY_ONE);
+    m_pItemType->toBuffer(buffer, forStaticType, m_nOccurrence != EXACTLY_ONE);
 
     switch(m_nOccurrence) {
     case EXACTLY_ONE: break;
@@ -716,6 +790,16 @@ void ItemType::toBuffer(XMLBuffer &buffer, bool forStaticType, bool addBrackets)
         else
           i.getValue()->getType()->toBuffer(buffer);
       }
+    }
+    buffer.append(')');
+    break;
+  }
+  case TEST_MAP: {
+    buffer.append(X("map("));
+    if(key_) {
+      key_->toBuffer(buffer, forStaticType);
+      buffer.append(',');
+      value_->toBuffer(buffer, forStaticType);
     }
     buffer.append(')');
     break;
@@ -942,6 +1026,7 @@ bool ItemType::matches(const Node::Ptr &toBeTested, DynamicContext* context) con
     case TEST_ATOMIC_TYPE:
     case TEST_FUNCTION:
     case TEST_TUPLE:
+    case TEST_MAP:
     {
         return false;
     }
@@ -973,6 +1058,7 @@ bool ItemType::matches(const FunctionSignature *sig) const
     case TEST_NAMESPACE:
     case TEST_ATOMIC_TYPE:
     case TEST_TUPLE:
+    case TEST_MAP:
     {
       return false;
     }
@@ -1005,6 +1091,9 @@ bool ItemType::matches(const FunctionSignature *sig) const
   return true;
 }
 
+static const XMLCh s_key[] = { 'k', 'e', 'y', 0 };
+static const XMLCh s_value[] = { 'v', 'a', 'l', 'u', 'e', 0 };
+
 bool ItemType::matches(const Tuple::Ptr &tuple, DynamicContext* context) const
 {
   if(alias_) return alias_->getType()->matches(tuple, context);
@@ -1022,7 +1111,6 @@ bool ItemType::matches(const Tuple::Ptr &tuple, DynamicContext* context) const
     case TEST_SCHEMA_DOCUMENT:
     case TEST_NAMESPACE:
     case TEST_ATOMIC_TYPE:
-    case TEST_FUNCTION:
     {
       return false;
     }
@@ -1032,29 +1120,41 @@ bool ItemType::matches(const Tuple::Ptr &tuple, DynamicContext* context) const
       return true;
     }
 
+    case TEST_FUNCTION:
+    {
+      if(signature_ == 0) return true;
+      if(signature_->numArgs() != 1) return false;
+      return matches(tuple->getSignature());
+    }
+
+    case TEST_MAP:
+    {
+      if(key_ == 0) return true;
+
+      Item::Ptr key = context->getItemFactory()->createString(s_key, context);
+      Item::Ptr value = context->getItemFactory()->createString(s_value, context);
+
+      Result entries = tuple->entries(this);
+      Item::Ptr item;
+      while((item = entries->next(context)).notNull()) {
+        if(!key_->matches(((Tuple*)item.get())->get(key), context) ||
+           !value_->matches(((Tuple*)item.get())->get(value), context))
+          return false;
+      }
+      return true;
+    }
     case TEST_TUPLE:
     {
-      // TBD implement this properly - jpcs
+      if(tupleMembers_ == 0) return true;
+
+      TupleMembers::iterator i = const_cast<TupleMembers*>(tupleMembers_)->begin();
+      for(; i != const_cast<TupleMembers*>(tupleMembers_)->end(); ++i) {
+        if(!i.getValue()->getType()->matches(tuple->get(i.getValue()->getURI(),
+              i.getValue()->getName(), context), context))
+          return false;
+      }
+
       return true;
-
-      // // A TupleTest matches an item if it is a tuple, and the function
-      // // item's type signature is a subtype of the TypedFunctionTest.
-      // size_t numArgs = sig->argSpecs ? sig->argSpecs->size() : 0;
-      // if(numArgs != argTypes_->size()) return false;
-
-      // if(sig->argSpecs) {
-      //   ArgumentSpecs::const_iterator aa_i = sig->argSpecs->begin();
-      //   ArgumentSpecs::const_iterator ba_i = argTypes_->begin();
-      //   for(; aa_i != sig->argSpecs->end() && ba_i != argTypes_->end(); ++aa_i, ++ba_i) {
-      //     if(!(*ba_i)->getType()->isSubtypeOf((*aa_i)->getType(), context)) return false;
-      //   }
-      // }
-
-      // if(sig->returnType)
-      //   return sig->returnType->isSubtypeOf(returnType_, context);
-
-      // return returnType_->m_nOccurrence == STAR && returnType_->m_pItemType &&
-      //   returnType_->m_pItemType->getItemTestType() == TEST_ANYTHING;
     }
   }
   return true;
@@ -1089,6 +1189,7 @@ bool ItemType::matches(const Item::Ptr &toBeTested, DynamicContext* context) con
     case TEST_NAMESPACE:
     case TEST_FUNCTION:
     case TEST_TUPLE:
+    case TEST_MAP:
     {
       return false;
     }
@@ -1108,7 +1209,7 @@ bool ItemType::matches(const Item::Ptr &toBeTested, DynamicContext* context) con
   return true;
 }
 
-bool SequenceType::isSubtypeOf(const SequenceType *b) const
+bool SequenceType::isSubtypeOf(const SequenceType *b, bool forStaticType) const
 {
   const SequenceType *a = this;
 
@@ -1137,7 +1238,7 @@ bool SequenceType::isSubtypeOf(const SequenceType *b) const
     break;
   }
 
-  return a->m_pItemType->isSubtypeOf(b->m_pItemType);
+  return a->m_pItemType->isSubtypeOf(b->m_pItemType, forStaticType);
 }
 
 bool ItemType::isSubtypeOfNameType(const ItemType *b) const
@@ -1160,12 +1261,10 @@ bool ItemType::isSubtypeOfNameType(const ItemType *b) const
   return true;
 }
 
-bool ItemType::isSubtypeOf(const ItemType *b) const
+bool ItemType::isSubtypeOf(const ItemType *b, bool forStaticType) const
 {
-  if(alias_) return alias_->getType()->isSubtypeOf(b);
-
   const ItemType *a = this;
-
+  while(a->alias_) a = a->alias_->getType();
   while(b->alias_) b = b->alias_->getType();
 
   switch(b->m_nTestType) {
@@ -1274,6 +1373,14 @@ bool ItemType::isSubtypeOf(const ItemType *b) const
   }
 
   case TEST_FUNCTION: {
+    if(a->m_nTestType == TEST_MAP || a->m_nTestType == TEST_TUPLE) {
+      if(b->signature_ == 0) return true;
+      if(b->signature_->numArgs() != 1) return false;
+      if(!(*b->signature_->argSpecs)[0]->getType()->
+        isSubtypeOf(&SequenceType::ANY_ATOMIC_TYPE)) return false;
+      return SequenceType::ITEM_STAR.isSubtypeOf(b->signature_->returnType);
+    }
+
     // Bi is function(*), and Ai is a FunctionTest.
     if(a->m_nTestType != TEST_FUNCTION) return false;
     if(b->signature_ == 0) return true;
@@ -1295,8 +1402,47 @@ bool ItemType::isSubtypeOf(const ItemType *b) const
   }
 
   case TEST_TUPLE: {
-    // TBD Do this properly - jpcs
-    return false;
+    // Bi is tuple(), and Ai is a MapTest
+    if(a->m_nTestType == TEST_MAP) return b->tupleMembers_ == 0;
+    if(a->m_nTestType != TEST_TUPLE) return false;
+
+    // Bi is tuple(), and Ai is a TupleTest
+    if(b->tupleMembers_ == 0) return true;
+
+    // Bi is tuple(Bn_1 as Bt_1, ... Bn_N as Bt_N), Ai is tuple(An_1 as At_1, ... An_M as At_M)
+    // and for I between 1 and N, subtype(type(Ai, Bn_I), type(Bi, Bn_I))
+    // where type(T, N) return the type of the member name N from the TupleTest T, or item()* if not specified
+    TupleMembers::iterator i = const_cast<TupleMembers*>(b->tupleMembers_)->begin();
+    for(; i != const_cast<TupleMembers*>(b->tupleMembers_)->end(); ++i) {
+      ArgumentSpec* const *spec = a->tupleMembers_ == 0 ? 0 : a->tupleMembers_->get(i.getKey());
+      if(forStaticType) {
+        const StaticType &a_type = spec == 0 ? StaticType::ITEM_STAR : (*spec)->getStaticType();
+        SequenceType::TypeMatch match = i.getValue()->getType()->matches(a_type);
+        if(match.type != SequenceType::ALWAYS || match.cardinality != SequenceType::ALWAYS)
+          return false;
+      } else {
+        const SequenceType *a_type = spec == 0 ? &SequenceType::ITEM_STAR : (*spec)->getType();
+        if(!a_type->isSubtypeOf(i.getValue()->getType())) return false;
+      }
+    }
+    return true;
+  }
+  case TEST_MAP: {
+    // Bi is map(), and Ai is a TupleTest
+    if(a->m_nTestType == TEST_TUPLE) return b->key_ == 0;
+    if(a->m_nTestType != TEST_MAP) return false;
+
+    // Bi is map(), and Ai is a MapTest
+    if(b->key_ == 0) return true;
+
+    // Bi is map(Bk, Bv), Ai is map(), subtype(xs:anyAtomicType, Bk), and subtype(item()*, Bv)
+    if(a->key_ == 0)
+      return SequenceType::ANY_ATOMIC_TYPE.isSubtypeOf(b->key_, forStaticType) &&
+        SequenceType::ITEM_STAR.isSubtypeOf(b->value_, forStaticType);
+
+    // Bi is map(Bk, Bv), Ai is map(Ak, Av), subtype(Ak, Bk), and subtype(Av, Bv)
+    return a->key_->isSubtypeOf(b->key_, forStaticType) &&
+      a->value_->isSubtypeOf(b->value_, forStaticType);
   }
   }
   return true;

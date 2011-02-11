@@ -126,7 +126,7 @@ public:
       toDo_(true),
       tuples_(),
       tupleIt_(tuples_.begin()),
-      mm_(context->getMemoryManager())
+      context_(context)
   {
   }
 
@@ -140,12 +140,12 @@ public:
 
   virtual Result getVar(const XMLCh *namespaceURI, const XMLCh *name) const
   {
-    return (*tupleIt_)->tuple->get(namespaceURI, name);
+    return (*tupleIt_)->tuple->get(namespaceURI, name, context_);
   }
 
   virtual void getInScopeVariables(std::vector<std::pair<const XMLCh*, const XMLCh*> > &variables) const
   {
-    (*tupleIt_)->tuple->getInScopeVariables(variables, mm_);
+    (*tupleIt_)->tuple->getInScopeVariables(variables);
   }
 
   virtual bool next(DynamicContext *context)
@@ -180,7 +180,7 @@ public:
 
   virtual void createTuple(DynamicContext *context, size_t capacity, TupleImpl::Ptr &result) const
   {
-    result = new TupleImpl((*tupleIt_)->tuple, capacity, context);
+    result = new TupleImpl((*tupleIt_)->tuple);
   }
 
 private:
@@ -254,7 +254,7 @@ private:
   vector<OrderPair*> tuples_;
   vector<OrderPair*>::iterator tupleIt_;
 
-  XPath2MemoryManager *mm_;
+  DynamicContext *context_;
 };
 
 TupleResult::Ptr OrderByTuple::createResult(DynamicContext* context) const
