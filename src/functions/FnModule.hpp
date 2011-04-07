@@ -958,24 +958,32 @@ static const DelayedModule::Decl fn_declarations[] = {
     "}"
   },
   {
-    DelayedModule::Decl::FUNCTION, "map-put", 2, false, 815, 1,
-    "declare function map-put($map as map(), $entry as map()) as map()\n"
+    DelayedModule::Decl::FUNCTION, "map-put", 2, true, 815, 1,
+    "declare %private \n"
+    "function map-put($map as map(), $entry as map()) as map()\n"
     "{\n"
     "  map-put($map, $entry(\"key\"), $entry(\"value\"))\n"
     "}"
   },
   {
-    DelayedModule::Decl::FUNCTION, "map-entry", 2, false, 820, 1,
-    "declare function map-entry($key as xs:anyAtomicType, $value as item()*) as map()\n"
+    DelayedModule::Decl::FUNCTION, "map-new", 1, false, 821, 1,
+    "declare %xqilla:inline\n"
+    "function map-new($maps as map()*) as map()\n"
     "{\n"
-    "  map-put(\n"
-    "    map-put(empty-map(),\n"
-    "      \"key\", $key),\n"
-    "    \"value\", $value)\n"
+    "  if(empty($maps)) then empty-map() else\n"
+    "  fold-left(map-put#2, head($maps), map(map-entries#1, tail($maps)))\n"
     "}"
   },
   {
-    DelayedModule::Decl::FUNCTION, "map", 2, false, 831, 1,
+    DelayedModule::Decl::FUNCTION, "map-new", 2, false, 828, 1,
+    "declare %xqilla:inline\n"
+    "function map-new($maps as map()*, $collation as xs:string) as map()\n"
+    "{\n"
+    "  fold-left(map-put#2, empty-map($collation), map(map-entries#1, $maps))\n"
+    "}"
+  },
+  {
+    DelayedModule::Decl::FUNCTION, "map", 2, false, 837, 1,
     "declare function map($f as function(item()) as item()*, $seq as item()*) as item()*\n"
     "{\n"
     "  if(empty($seq)) then ()\n"
@@ -983,17 +991,17 @@ static const DelayedModule::Decl fn_declarations[] = {
     "}"
   },
   {
-    DelayedModule::Decl::REWRITE_RULE, "", 0, false, 837, 25,
+    DelayedModule::Decl::REWRITE_RULE, "", 0, false, 843, 25,
     "fn:MapMapFusion:\n"
     "map(~f, map(~g, ~e)) -> map(function($a) { map(~f,~g($a)) }, ~e)"
   },
   {
-    DelayedModule::Decl::REWRITE_RULE, "", 0, false, 840, 25,
+    DelayedModule::Decl::REWRITE_RULE, "", 0, false, 846, 25,
     "fn:MapSingleton:\n"
     "map(~f, ~e) where rw:subtype(~e, 'item()') -> ~f(~e)"
   },
   {
-    DelayedModule::Decl::FUNCTION, "filter", 2, false, 843, 1,
+    DelayedModule::Decl::FUNCTION, "filter", 2, false, 849, 1,
     "declare function filter($f as function(item()) as xs:boolean, $seq as item()*) as item()*\n"
     "{\n"
     "  if(empty($seq)) then ()\n"
@@ -1004,7 +1012,7 @@ static const DelayedModule::Decl fn_declarations[] = {
     "}"
   },
   {
-    DelayedModule::Decl::FUNCTION, "fold-left", 3, false, 852, 1,
+    DelayedModule::Decl::FUNCTION, "fold-left", 3, false, 858, 1,
     "declare function fold-left($f as function(item()*, item()) as item()*, $zero as item()*,\n"
     "  $seq as item()*) as item()*\n"
     "{\n"
@@ -1013,7 +1021,7 @@ static const DelayedModule::Decl fn_declarations[] = {
     "}"
   },
   {
-    DelayedModule::Decl::FUNCTION, "fold-right", 3, false, 859, 1,
+    DelayedModule::Decl::FUNCTION, "fold-right", 3, false, 865, 1,
     "declare function fold-right($f as function(item(), item()*) as item()*, $zero as item()*,\n"
     "  $seq as item()*) as item()*\n"
     "{\n"
@@ -1022,7 +1030,7 @@ static const DelayedModule::Decl fn_declarations[] = {
     "}"
   },
   {
-    DelayedModule::Decl::FUNCTION, "map-pairs", 3, false, 866, 1,
+    DelayedModule::Decl::FUNCTION, "map-pairs", 3, false, 872, 1,
     "declare function map-pairs($f as function(item(), item()) as item()*, $seq1 as item()*,\n"
     "  $seq2 as item()*) as item()*\n"
     "{\n"

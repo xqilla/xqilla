@@ -44,8 +44,8 @@ $map(xs:QName("b")),
 map-contains($map, xs:QName("a")),
 $map instance of tuple(a as xs:integer),
 $map instance of tuple(a as xs:string),
-$map instance of tuple(a as xs:decimal, d as xs:date?)
-),
-map(function($a) { map-entry($a, $a + 2) }, 1 to 10)
+$map instance of tuple(a as xs:decimal, d as xs:date?),
+map-new(($map, tuple { c := 99, a := "moo" }))
+)
 
 ) return (<result>{$a}</result>, "&#10;")

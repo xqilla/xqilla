@@ -30,13 +30,4 @@
 <result>true</result>
 <result>false</result>
 <result>true</result>
-<result>tuple{key: 1, value: 3}</result>
-<result>tuple{key: 2, value: 4}</result>
-<result>tuple{key: 3, value: 5}</result>
-<result>tuple{key: 4, value: 6}</result>
-<result>tuple{key: 5, value: 7}</result>
-<result>tuple{key: 6, value: 8}</result>
-<result>tuple{key: 7, value: 9}</result>
-<result>tuple{key: 8, value: 10}</result>
-<result>tuple{key: 9, value: 11}</result>
-<result>tuple{key: 10, value: 12}</result>
+<result>tuple{b: 10, c: 99, a: moo}</result>

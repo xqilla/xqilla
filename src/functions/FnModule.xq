@@ -812,17 +812,23 @@ declare function map-fold(
     $z, map-entries($map))
 };
 
-declare function map-put($map as map(), $entry as map()) as map()
+declare %private 
+function map-put($map as map(), $entry as map()) as map()
 {
   map-put($map, $entry("key"), $entry("value"))
 };
 
-declare function map-entry($key as xs:anyAtomicType, $value as item()*) as map()
+declare %xqilla:inline
+function map-new($maps as map()*) as map()
 {
-  map-put(
-    map-put(empty-map(),
-      "key", $key),
-    "value", $value)
+  if(empty($maps)) then empty-map() else
+  fold-left(map-put#2, head($maps), map(map-entries#1, tail($maps)))
+};
+
+declare %xqilla:inline
+function map-new($maps as map()*, $collation as xs:string) as map()
+{
+  fold-left(map-put#2, empty-map($collation), map(map-entries#1, $maps))
 };
 
 (:----------------------------------------------------------------------------------------------------:)
