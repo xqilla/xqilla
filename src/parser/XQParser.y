@@ -721,7 +721,7 @@ namespace XQParser {
 %type <astNode>      ForwardStep ReverseStep AbbrevForwardStep AbbrevReverseStep OrderExpr CompPIConstructorContent
 %type <astNode>      PathPattern_XSLT IdValue_XSLT KeyValue_XSLT CallTemplateExpr ApplyTemplatesExpr
 %type <astNode>      DynamicFunctionInvocation InlineFunction LiteralFunctionItem FunctionItemExpr
-%type <astNode>      TupleConstructor TupleMemberExpr
+%type <astNode>      TupleConstructor TupleMemberExpr MapConstructor MapEntryList MapEntry
 %type <astNode>      ForwardStepPredicateList ReverseStepPredicateList Argument FunctionBody CompNamespaceConstructor
 %type <astNode>      LiteralResultElement_XSLT ValueOf_XSLT ValueOfAttrs_XSLT Text_XSLT TextNode_XSLT ApplyTemplates_XSLT
 %type <astNode>      ApplyTemplatesAttrs_XSLT CallTemplate_XSLT CallTemplateAttrs_XSLT Sequence_XSLT Choose_XSLT If_XSLT
@@ -6003,7 +6003,7 @@ MapTest:
   }
   ;
 
-PrimaryExpr: TupleConstructor;
+PrimaryExpr: TupleConstructor | MapConstructor;
 
 // TupleConstructor ::= "tuple" "{" (TupleEntry ("," TupleEntry)*)? "}"
 TupleConstructor:
@@ -6035,6 +6035,49 @@ TupleEntry:
   {
     // TBD LetTuple doesn't give us the correct in-scope vars for the initializer - jpcs
     $$ = WRAP(@1, new (MEMMGR) LetTuple(0, $1, WRAP(@2, new (MEMMGR) XQTreatAs($4, $2, MEMMGR)), MEMMGR));
+  }
+  ;
+
+// MapConstructor ::= "map" "{" (MapEntry ("," MapEntry)*)? "}"
+MapConstructor:
+    _MAP_ _LBRACE_ MapEntryList _RBRACE_
+  {
+    $$ = $3;
+  }
+  | _MAP_ _LBRACE_ _RBRACE_
+  {
+    $$ = WRAP(@1, new (MEMMGR) XQFunctionCall(0, XQFunction::XMLChFunctionURI,
+        MEMMGR->getPooledString("empty-map"), 0, MEMMGR));
+  }
+  ;
+
+MapEntryList:
+    MapEntry
+  {
+    XQFunctionCall *func = (XQFunctionCall*)$1;
+    const_cast<VectorOfASTNodes&>(*func->getArguments())[0] =
+      WRAP(@1, new (MEMMGR) XQFunctionCall(0, XQFunction::XMLChFunctionURI,
+          MEMMGR->getPooledString("empty-map"), 0, MEMMGR));
+    $$ = func;
+  }
+  | MapEntryList _COMMA_ MapEntry
+  {
+    XQFunctionCall *func = (XQFunctionCall*)$3;
+    const_cast<VectorOfASTNodes&>(*func->getArguments())[0] = $1;
+    $$ = func;
+  }
+  ;
+
+// MapEntry ::= ExprSingle ":=" ExprSingle
+MapEntry:
+    ExprSingle _COLON_EQUALS_ ExprSingle
+  {
+    VectorOfASTNodes *args = new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR));
+    args->push_back(0);
+    args->push_back($1);
+    args->push_back($3);
+    $$ = WRAP(@1, new (MEMMGR) XQFunctionCall(0, XQFunction::XMLChFunctionURI,
+        MEMMGR->getPooledString("map-put"), args, MEMMGR));
   }
   ;
 
