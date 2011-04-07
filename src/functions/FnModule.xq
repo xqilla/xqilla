@@ -894,5 +894,38 @@ function round-half-to-even($arg as xs:anyAtomicType?, $precision as xs:integer)
   return round-half-to-even($arg * $factor) div $factor
 };
 
+declare %xqilla:inline
+function has-children($node as node()?) as xs:boolean
+{
+  exists($node/child::node())
+};
+
+declare %xqilla:inline
+function innermost($nodes as node()*) as node()*
+{
+  $nodes except $nodes/ancestor::node()
+};
+
+declare %xqilla:inline
+function outermost($nodes as node()*) as node()*
+{
+  $nodes[not(ancestor::node() intersect $nodes)]
+};
+
+(: TBD needs default argument of context item - jpcs :)
+(: declare %xqilla:inline :)
+(: function element-with-id($arg as xs:string*) as element()* :)
+(: { :)
+(: }; :)
+
+declare %xqilla:inline
+function element-with-id($arg as xs:string*, $node as node()) as element()*
+{
+  for $e in id($arg, $node)
+  return typeswitch($e)
+    case element(*, xs:ID) return $e/..
+    default return $e
+};
+
 (:----------------------------------------------------------------------------------------------------:)
 

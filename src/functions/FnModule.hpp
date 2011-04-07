@@ -1063,6 +1063,41 @@ static const DelayedModule::Decl fn_declarations[] = {
     "  return round-half-to-even($arg * $factor) div $factor\n"
     "}"
   },
+  {
+    DelayedModule::Decl::FUNCTION, "has-children", 1, false, 897, 1,
+    "declare %xqilla:inline\n"
+    "function has-children($node as node()?) as xs:boolean\n"
+    "{\n"
+    "  exists($node/child::node())\n"
+    "}"
+  },
+  {
+    DelayedModule::Decl::FUNCTION, "innermost", 1, false, 903, 1,
+    "declare %xqilla:inline\n"
+    "function innermost($nodes as node()*) as node()*\n"
+    "{\n"
+    "  $nodes except $nodes/ancestor::node()\n"
+    "}"
+  },
+  {
+    DelayedModule::Decl::FUNCTION, "outermost", 1, false, 909, 1,
+    "declare %xqilla:inline\n"
+    "function outermost($nodes as node()*) as node()*\n"
+    "{\n"
+    "  $nodes[not(ancestor::node() intersect $nodes)]\n"
+    "}"
+  },
+  {
+    DelayedModule::Decl::FUNCTION, "element-with-id", 2, false, 921, 1,
+    "declare %xqilla:inline\n"
+    "function element-with-id($arg as xs:string*, $node as node()) as element()*\n"
+    "{\n"
+    "  for $e in id($arg, $node)\n"
+    "  return typeswitch($e)\n"
+    "    case element(*, xs:ID) return $e/..\n"
+    "    default return $e\n"
+    "}"
+  },
   { DelayedModule::Decl::NONE, 0, 0, 0, 0, 0 }
 };
 
