@@ -1466,7 +1466,7 @@ ASTNode *QueryPathTreeGenerator::optimizeInlineFunction(XQInlineFunction *item)
     }
   }
 
-  generate(item->getInstance());
+  generate(item->getInstance()).markSubtreeResult();
 
   if(params) {
     delete varStore_.popScope();
