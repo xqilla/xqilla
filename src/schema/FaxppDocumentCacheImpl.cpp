@@ -208,7 +208,7 @@ void FaxppDocumentCacheImpl::parseDocument(InputSource &srcToUse, EventHandler *
   XPath2MemoryManager *mm = context->getMemoryManager();
 
   if(validator_ == 0) {
-    validator_ = new (memMgr_) SchemaValidatorFilter(/*strictValidation*/false, 0, grammarResolver_, memMgr_, 0);
+    validator_ = new (memMgr_) SchemaValidatorFilter(/*strictValidation*/false, 0, getGrammarResolver(), memMgr_, 0);
   }
 
   if(doPSVI_) {
@@ -338,10 +338,10 @@ void FaxppDocumentCacheImpl::parseDocument(InputSource &srcToUse, EventHandler *
 DocumentCache *FaxppDocumentCacheImpl::createDerivedCache(MemoryManager *memMgr) const
 {
   // lock the grammar pool, so we can share it across threads
-  grammarResolver_->getGrammarPool()->lockPool();
+  getGrammarResolver()->getGrammarPool()->lockPool();
 
   // Construct a new FaxppDocumentCacheImpl, based on this one
-  return new (memMgr) FaxppDocumentCacheImpl(memMgr, grammarResolver_->getGrammarPool());
+  return new (memMgr) FaxppDocumentCacheImpl(memMgr, getGrammarResolver()->getGrammarPool());
 }
 
 #endif
