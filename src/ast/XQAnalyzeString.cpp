@@ -116,6 +116,58 @@ AnalyzeStringResult::AnalyzeStringResult(const LocationInfo *info)
 {
 }
 
+void AnalyzeStringResult::getMatches(const XMLCh *input, const XMLCh *pattern, const XMLCh *options,
+                                     MemoryManager *mm, const LocationInfo *location,
+                                     RefVectorOf<Match> &matches)
+{
+  //Check that the options are valid - throw an exception if not (can have s,m,i and x)
+  //Note: Are allowed to duplicate the letters.
+  const XMLCh* cursor = options;
+  for(; *cursor != 0; ++cursor){
+    switch(*cursor) {
+    case chLatin_s:
+    case chLatin_m:
+    case chLatin_i:
+    case chLatin_x:
+      break;
+    default:
+      XQThrow3(ASTException, X("AnalyzeStringResult::getMatches"),
+               X("Invalid regular expression flags [err:XTDE1145]."), location);
+    }
+  }
+
+  // Always turn off head character optimisation, since it is broken
+  XMLBuffer optionsBuf;
+  optionsBuf.set(options);
+  optionsBuf.append(chLatin_H);
+
+  size_t length = XMLString::stringLen(input);
+  try {
+    // Parse and execute the regular expression
+    RegularExpression regEx(pattern, optionsBuf.getRawBuffer(), mm);
+
+    if(regEx.matches(XMLUni::fgZeroLenString))
+      XQThrow3(ASTException, X("AnalyzeStringResult::getMatches"),
+               X("The pattern matches the zero-length string [err:XTDE1150]"), location);
+
+    regEx.allMatches(input, 0, length, &matches);
+  }
+  catch (ParseException &e){ 
+    XMLBuffer buf;
+    buf.set(X("Invalid regular expression: "));
+    buf.append(e.getMessage());
+    buf.append(X(" [err:XTDE1140]"));
+    XQThrow3(ASTException, X("AnalyzeStringResult::getMatches"), buf.getRawBuffer(), location);
+  }
+  catch (RuntimeException &e){ 
+    if(e.getCode()==XMLExcepts::Regex_RepPatMatchesZeroString)
+      XQThrow3(ASTException, X("AnalyzeStringResult::getMatches"),
+               X("The pattern matches the zero-length string [err:XTDE1150]"), location);
+    else 
+      XQThrow3(ASTException, X("AnalyzeStringResult::getMatches"), e.getMessage(), location);
+  }
+}
+
 Item::Ptr AnalyzeStringResult::next(DynamicContext *context)
 {
 #ifdef HAVE_ALLMATCHES
@@ -123,54 +175,7 @@ Item::Ptr AnalyzeStringResult::next(DynamicContext *context)
 
   if(input_ == 0) {
     input_ = getInput(context);
-    const XMLCh *pattern = getPattern(context);
-    const XMLCh *options = getFlags(context);
-  
-    //Check that the options are valid - throw an exception if not (can have s,m,i and x)
-    //Note: Are allowed to duplicate the letters.
-    const XMLCh* cursor = options;
-    for(; *cursor != 0; ++cursor){
-      switch(*cursor) {
-      case chLatin_s:
-      case chLatin_m:
-      case chLatin_i:
-      case chLatin_x:
-        break;
-      default:
-        XQThrow(ASTException, X("AnalyzeStringResult::next"),X("Invalid regular expression flags [err:XTDE1145]."));
-      }
-    }
-
-    mm_ = mm;
-
-    // Always turn off head character optimisation, since it is broken
-    XMLBuffer optionsBuf;
-    optionsBuf.set(options);
-    optionsBuf.append(chLatin_H);
-
-    size_t length = XMLString::stringLen(input_);
-    try {
-      // Parse and execute the regular expression
-      RegularExpression regEx(pattern, optionsBuf.getRawBuffer(), mm);
-
-      if(regEx.matches(XMLUni::fgZeroLenString))
-        XQThrow(ASTException, X("AnalyzeStringResult::next"), X("The pattern matches the zero-length string [err:XTDE1150]"));
-
-      regEx.allMatches(input_, 0, length, &matches_);
-    }
-    catch (ParseException &e){ 
-      XMLBuffer buf;
-      buf.set(X("Invalid regular expression: "));
-      buf.append(e.getMessage());
-      buf.append(X(" [err:XTDE1140]"));
-      XQThrow(ASTException, X("AnalyzeStringResult::next"), buf.getRawBuffer());
-    }
-    catch (RuntimeException &e){ 
-      if(e.getCode()==XMLExcepts::Regex_RepPatMatchesZeroString)
-        XQThrow(ASTException, X("AnalyzeStringResult::next"), X("The pattern matches the zero-length string [err:XTDE1150]"));
-      else 
-        XQThrow(ASTException, X("AnalyzeStringResult::next"), e.getMessage());
-    }
+    getMatches(input_, getPattern(context), getFlags(context), mm, this, matches_);
 
     int tokStart = 0;
 
@@ -191,6 +196,7 @@ Item::Ptr AnalyzeStringResult::next(DynamicContext *context)
       tokStart = matchEnd;
     }
 
+    size_t length = XMLString::stringLen(input_);
     if(tokStart < (int) length) {
       const XMLCh *str = XPath2Utils::subString(input_, tokStart,
                                                 (unsigned int)(length - tokStart), mm);

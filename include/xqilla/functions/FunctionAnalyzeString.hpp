@@ -22,14 +22,14 @@
 
 #include "XQillaFunction.hpp"
 
-class XQILLA_API FunctionAnalyzeString : public XQillaFunction
+class XQILLA_API FunctionXQillaAnalyzeString : public XQillaFunction
 {
 public:
   static const XMLCh name[];
   static const unsigned int minArgs;
   static const unsigned int maxArgs;
 
-  FunctionAnalyzeString(const VectorOfASTNodes &args, XPath2MemoryManager *memMgr);
+  FunctionXQillaAnalyzeString(const VectorOfASTNodes &args, XPath2MemoryManager *memMgr);
   
   virtual ASTNode *staticTypingImpl(StaticContext *context);
   virtual Result createResult(DynamicContext* context, int flags=0) const;

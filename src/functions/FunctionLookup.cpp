@@ -424,7 +424,7 @@ static void initGlobalTable(FunctionLookup *t, XPath2MemoryManager *memMgr)
   t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionParseJSON>(memMgr));
   t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionSerializeJSON>(memMgr));
   t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionTime>(memMgr));
-  t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionAnalyzeString>(memMgr));
+  t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionXQillaAnalyzeString>(memMgr));
   t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionCaseFold>(memMgr));
   t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionWords>(memMgr));
   t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionSentences>(memMgr));

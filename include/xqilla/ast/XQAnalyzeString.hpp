@@ -68,6 +68,10 @@ public:
 
   virtual Item::Ptr next(DynamicContext *context);
 
+  static void getMatches(const XMLCh *input, const XMLCh *pattern, const XMLCh *options,
+                         XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager *mm, const LocationInfo *location,
+                         XERCES_CPP_NAMESPACE_QUALIFIER RefVectorOf<XERCES_CPP_NAMESPACE_QUALIFIER Match> &matches);
+
 private:
   virtual const XMLCh *getGroup(int index) const;
 
