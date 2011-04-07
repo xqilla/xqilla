@@ -221,9 +221,7 @@ const ExternalFunction *FunctionLookup::lookUpGlobalExternalFunction(
 }
 
 #include "FuncFactoryTemplate.hpp"
-#include <xqilla/functions/FunctionAbs.hpp>
 #include <xqilla/functions/FunctionBaseURI.hpp>
-#include <xqilla/functions/FunctionCeiling.hpp>
 #include <xqilla/functions/FunctionCollection.hpp>
 #include <xqilla/functions/FunctionCompare.hpp>
 #include <xqilla/functions/FunctionConcat.hpp>
@@ -238,7 +236,6 @@ const ExternalFunction *FunctionLookup::lookUpGlobalExternalFunction(
 #include <xqilla/functions/FunctionEmpty.hpp>
 #include <xqilla/functions/FunctionEndsWith.hpp>
 #include <xqilla/functions/FunctionError.hpp>
-#include <xqilla/functions/FunctionFloor.hpp>
 #include <xqilla/functions/FunctionId.hpp>
 #include <xqilla/functions/FunctionIdref.hpp>
 #include <xqilla/functions/FunctionImplicitTimezone.hpp>
@@ -259,8 +256,6 @@ const ExternalFunction *FunctionLookup::lookUpGlobalExternalFunction(
 #include <xqilla/functions/FunctionReplace.hpp>
 #include <xqilla/functions/FunctionResolveURI.hpp>
 #include <xqilla/functions/FunctionRoot.hpp>
-#include <xqilla/functions/FunctionRound.hpp>
-#include <xqilla/functions/FunctionRoundHalfToEven.hpp>
 #include <xqilla/functions/FunctionStartsWith.hpp>
 #include <xqilla/functions/FunctionStaticBaseURI.hpp>
 #include <xqilla/functions/FunctionString.hpp>
@@ -293,17 +288,6 @@ const ExternalFunction *FunctionLookup::lookUpGlobalExternalFunction(
 // Higher Order Functions extension functions
 #include <xqilla/functions/FunctionFunctionArity.hpp>
 #include <xqilla/functions/FunctionFunctionName.hpp>
-//exslt math functions
-#include <xqilla/functions/FunctionSqrt.hpp>
-#include <xqilla/functions/FunctionSin.hpp>
-#include <xqilla/functions/FunctionCos.hpp>
-#include <xqilla/functions/FunctionTan.hpp>
-#include <xqilla/functions/FunctionAcos.hpp>
-#include <xqilla/functions/FunctionAsin.hpp>
-#include <xqilla/functions/FunctionAtan.hpp>
-#include <xqilla/functions/FunctionLog.hpp>
-#include <xqilla/functions/FunctionExp.hpp>
-#include <xqilla/functions/FunctionPower.hpp>
 
 void FunctionLookup::insertUpdateFunctions(XPath2MemoryManager *memMgr)
 {
@@ -334,18 +318,6 @@ static void initGlobalTable(FunctionLookup *t, XPath2MemoryManager *memMgr)
   t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionError>(memMgr));
   //   fn:trace
   t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionTrace>(memMgr));
-
-  // Functions on numeric values:
-  //   fn:abs
-  t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionAbs>(memMgr));
-  //   fn:ceiling
-  t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionCeiling>(memMgr));
-  //   fn:floor
-  t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionFloor>(memMgr));
-  //   fn:round
-  t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionRound>(memMgr));
-  //   fn:round-half-to-even
-  t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionRoundHalfToEven>(memMgr));
 
   // Functions on strings
   //   fn:codepoints-to-string
@@ -465,19 +437,6 @@ static void initGlobalTable(FunctionLookup *t, XPath2MemoryManager *memMgr)
   // Higher Order Functions extension functions
   t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionFunctionArity>(memMgr));
   t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionFunctionName>(memMgr));
-
-  //exslt math functions
-  t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionAbs>(EXSLTMathFunction::XMLChFunctionURI, FunctionAbs::name, 1, 1, memMgr));
-  t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionSqrt>(memMgr));
-  t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionSin>(memMgr));
-  t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionCos>(memMgr));
-  t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionTan>(memMgr));
-  t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionAcos>(memMgr));
-  t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionAsin>(memMgr));
-  t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionAtan>(memMgr));
-  t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionLog>(memMgr));
-  t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionExp>(memMgr));
-  t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionPower>(memMgr));
 
   try {
     const SimpleBuiltinFactory *sbf = SimpleBuiltinFactory::getAll();

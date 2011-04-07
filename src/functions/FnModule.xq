@@ -22,6 +22,7 @@ xquery version "3.0";
 module namespace fn = "http://www.w3.org/2005/xpath-functions";
 
 declare namespace rw = "http://xqilla.sourceforge.net/rewrite";
+declare namespace math = "http://www.w3.org/2005/xpath-functions/math";
 
 declare function data($a as item()*) as xs:anyAtomicType*
 {
@@ -879,6 +880,19 @@ declare function map-pairs($f as function(item(), item()) as item()*, $seq1 as i
    )
 };
 
+declare %xqilla:inline
+function round($arg as xs:anyAtomicType?, $precision as xs:integer) as xs:anyAtomicType?
+{
+  let $factor := math:exp10($precision)
+  return round($arg * $factor) div $factor
+};
+
+declare %xqilla:inline
+function round-half-to-even($arg as xs:anyAtomicType?, $precision as xs:integer) as xs:anyAtomicType?
+{
+  let $factor := math:exp10($precision)
+  return round-half-to-even($arg * $factor) div $factor
+};
 
 (:----------------------------------------------------------------------------------------------------:)
 

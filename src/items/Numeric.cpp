@@ -31,6 +31,10 @@
 #include <xqilla/context/ItemFactory.hpp>
 #include <xqilla/utils/XPath2Utils.hpp>
 #include <xqilla/utils/lookup3.hpp>
+#include <xqilla/exceptions/XPath2TypeMatchException.hpp>
+#include <xqilla/functions/FuncFactory.hpp>
+#include <xqilla/runtime/Result.hpp>
+#include <xqilla/ast/XQFunction.hpp>
 
 #include <xercesc/util/XMLUniDefs.hpp>
 #include <xercesc/validators/schema/SchemaSymbols.hpp>
@@ -420,3 +424,457 @@ int Numeric::asInt() const
 {
   return (int)asMAPM().toDouble();
 }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/* http://exslt.org/math */
+const XMLCh exsltMathURI[] =
+{ 'h', 't', 't', 'p', ':', '/', '/', 'e', 'x', 's', 'l', 't', '.', 'o', 'r', 'g', '/', 'm', 'a', 't', 'h', 0 };
+
+// http://www.w3.org/2005/xpath-functions/math
+static const XMLCh mathURI[] =
+{ 'h', 't', 't', 'p', ':', '/', '/', 'w', 'w', 'w', '.', 'w', '3', '.', 'o', 'r', 'g', '/', '2',
+  '0', '0', '5', '/', 'x', 'p', 'a', 't', 'h', '-', 'f', 'u', 'n', 'c', 't', 'i', 'o', 'n', 's',
+  '/', 'm', 'a', 't', 'h', 0 };
+
+static Numeric::Ptr numericParam(ASTNode *arg, DynamicContext *context, const LocationInfo *info)
+{
+  Item::Ptr item = arg->createResult(context)->next(context);
+  if(item.notNull() && (item->getType() != Item::ATOMIC || !((const AnyAtomicType *)item.get())->isNumericValue()))
+    XQThrow3(XPath2TypeMatchException, X("numericParam"),
+             X("Non-numeric argument in numeric function [err:XPTY0004]"), info);
+  return (Numeric*)item.get();
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+static Result abs(const VectorOfASTNodes &args, DynamicContext *context,
+                      const LocationInfo *info)
+{
+  Numeric::Ptr num = numericParam(args[0], context, info);
+  if(num.isNull()) return 0;
+  return (Item::Ptr)num->abs(context);
+}
+
+static const XMLCh absName[] =
+{ 'a', 'b', 's', 0 };
+
+static SimpleBuiltinFactory absFactory(
+  XQFunction::XMLChFunctionURI, absName, 1,
+  "($arg as xs:anyAtomicType?) as xs:anyAtomicType?", abs,
+  0, SimpleBuiltinFactory::NUMERIC
+);
+
+static SimpleBuiltinFactory absEXSLTFactory(
+  exsltMathURI, absName, 1,
+  "($arg as xs:anyAtomicType?) as xs:anyAtomicType?", abs,
+  0, SimpleBuiltinFactory::NUMERIC
+);
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+static Result ceiling(const VectorOfASTNodes &args, DynamicContext *context,
+                      const LocationInfo *info)
+{
+  Numeric::Ptr num = numericParam(args[0], context, info);
+  if(num.isNull()) return 0;
+  return (Item::Ptr)num->ceiling(context);
+}
+
+static const XMLCh ceilingName[] =
+{ 'c', 'e', 'i', 'l', 'i', 'n', 'g', 0 };
+
+static SimpleBuiltinFactory ceilingFactory(
+  XQFunction::XMLChFunctionURI, ceilingName, 1,
+  "($arg as xs:anyAtomicType?) as xs:anyAtomicType?", ceiling,
+  0, SimpleBuiltinFactory::NUMERIC
+);
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+static Result floor(const VectorOfASTNodes &args, DynamicContext *context,
+                      const LocationInfo *info)
+{
+  Numeric::Ptr num = numericParam(args[0], context, info);
+  if(num.isNull()) return 0;
+  return (Item::Ptr)num->floor(context);
+}
+
+static const XMLCh floorName[] =
+{ 'f', 'l', 'o', 'o', 'r', 0 };
+
+static SimpleBuiltinFactory floorFactory(
+  XQFunction::XMLChFunctionURI, floorName, 1,
+  "($arg as xs:anyAtomicType?) as xs:anyAtomicType?", floor,
+  0, SimpleBuiltinFactory::NUMERIC
+);
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+static Result round(const VectorOfASTNodes &args, DynamicContext *context,
+                      const LocationInfo *info)
+{
+  Numeric::Ptr num = numericParam(args[0], context, info);
+  if(num.isNull()) return 0;
+  return (Item::Ptr)num->round(context);
+}
+
+static const XMLCh roundName[] =
+{ 'r', 'o', 'u', 'n', 'd', 0 };
+
+static SimpleBuiltinFactory roundFactory(
+  XQFunction::XMLChFunctionURI, roundName, 1,
+  "($arg as xs:anyAtomicType?) as xs:anyAtomicType?", round,
+  0, SimpleBuiltinFactory::NUMERIC
+);
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+static Result roundHalfToEven(const VectorOfASTNodes &args, DynamicContext *context,
+                      const LocationInfo *info)
+{
+  Numeric::Ptr numericArg = numericParam(args[0], context, info);
+  if(numericArg.isNull()) return 0;
+
+  ATDecimalOrDerived::Ptr precision;
+  if(args.size() > 1)
+    precision = (ATDecimalOrDerived*)args[1]->createResult(context)->next(context).get();
+  else precision = context->getMemoryManager()->createInteger(0);
+  
+  return (Item::Ptr)numericArg->roundHalfToEven(precision, context);
+}
+
+static const XMLCh roundHalfToEvenName[] =
+{ 'r', 'o', 'u', 'n', 'd', '-', 'h', 'a', 'l', 'f', '-', 't', 'o', '-', 'e', 'v', 'e', 'n', 0 };
+
+static SimpleBuiltinFactory roundHalfToEvenFactory(
+  XQFunction::XMLChFunctionURI, roundHalfToEvenName, 1,
+  "($arg as xs:anyAtomicType?) as xs:anyAtomicType?", roundHalfToEven,
+  0, SimpleBuiltinFactory::NUMERIC
+);
+static SimpleBuiltinFactory roundHalfToEvenFactory2(
+  XQFunction::XMLChFunctionURI, roundHalfToEvenName, 2,
+  "($arg as xs:anyAtomicType?, $precision as xs:integer) as xs:anyAtomicType?", roundHalfToEven,
+  0, SimpleBuiltinFactory::NUMERIC
+);
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+static Result mathSin(const VectorOfASTNodes &args, DynamicContext *context,
+                      const LocationInfo *info)
+{
+  Numeric::Ptr num = numericParam(args[0], context, info);
+  if(num.isNull()) return 0;
+  return (Item::Ptr)num->sin(context);
+}
+
+static const XMLCh mathSinName[] =
+{ 's', 'i', 'n', 0 };
+
+static SimpleBuiltinFactory mathSinEXSLTFactory(
+  exsltMathURI, mathSinName, 1,
+  "($arg as xs:anyAtomicType?) as xs:anyAtomicType?", mathSin,
+  0, SimpleBuiltinFactory::NUMERIC
+);
+
+static SimpleBuiltinFactory mathSinFactory(
+  mathURI, mathSinName, 1,
+  "($arg as xs:double?) as xs:double?", mathSin
+);
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+static Result mathCos(const VectorOfASTNodes &args, DynamicContext *context,
+                      const LocationInfo *info)
+{
+  Numeric::Ptr num = numericParam(args[0], context, info);
+  if(num.isNull()) return 0;
+  return (Item::Ptr)num->cos(context);
+}
+
+static const XMLCh mathCosName[] =
+{ 'c', 'o', 's', 0 };
+
+static SimpleBuiltinFactory mathCosEXSLTFactory(
+  exsltMathURI, mathCosName, 1,
+  "($arg as xs:anyAtomicType?) as xs:anyAtomicType?", mathCos,
+  0, SimpleBuiltinFactory::NUMERIC
+);
+
+static SimpleBuiltinFactory mathCosFactory(
+  mathURI, mathCosName, 1,
+  "($arg as xs:double?) as xs:double?", mathCos
+);
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+static Result mathTan(const VectorOfASTNodes &args, DynamicContext *context,
+                      const LocationInfo *info)
+{
+  Numeric::Ptr num = numericParam(args[0], context, info);
+  if(num.isNull()) return 0;
+  return (Item::Ptr)num->tan(context);
+}
+
+static const XMLCh mathTanName[] =
+{ 't', 'a', 'n', 0 };
+
+static SimpleBuiltinFactory mathTanEXSLTFactory(
+  exsltMathURI, mathTanName, 1,
+  "($arg as xs:anyAtomicType?) as xs:anyAtomicType?", mathTan,
+  0, SimpleBuiltinFactory::NUMERIC
+);
+
+static SimpleBuiltinFactory mathTanFactory(
+  mathURI, mathTanName, 1,
+  "($arg as xs:double?) as xs:double?", mathTan
+);
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+static Result mathAsin(const VectorOfASTNodes &args, DynamicContext *context,
+                      const LocationInfo *info)
+{
+  Numeric::Ptr num = numericParam(args[0], context, info);
+  if(num.isNull()) return 0;
+  return (Item::Ptr)num->asin(context);
+}
+
+static const XMLCh mathAsinName[] =
+{ 'a', 's', 'i', 'n', 0 };
+
+static SimpleBuiltinFactory mathAsinEXSLTFactory(
+  exsltMathURI, mathAsinName, 1,
+  "($arg as xs:anyAtomicType?) as xs:anyAtomicType?", mathAsin,
+  0, SimpleBuiltinFactory::NUMERIC
+);
+
+static SimpleBuiltinFactory mathAsinFactory(
+  mathURI, mathAsinName, 1,
+  "($arg as xs:double?) as xs:double?", mathAsin
+);
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+static Result mathAcos(const VectorOfASTNodes &args, DynamicContext *context,
+                      const LocationInfo *info)
+{
+  Numeric::Ptr num = numericParam(args[0], context, info);
+  if(num.isNull()) return 0;
+  return (Item::Ptr)num->acos(context);
+}
+
+static const XMLCh mathAcosName[] =
+{ 'a', 'c', 'o', 's', 0 };
+
+static SimpleBuiltinFactory mathAcosEXSLTFactory(
+  exsltMathURI, mathAcosName, 1,
+  "($arg as xs:anyAtomicType?) as xs:anyAtomicType?", mathAcos,
+  0, SimpleBuiltinFactory::NUMERIC
+);
+
+static SimpleBuiltinFactory mathAcosFactory(
+  mathURI, mathAcosName, 1,
+  "($arg as xs:double?) as xs:double?", mathAcos
+);
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+static Result mathAtan(const VectorOfASTNodes &args, DynamicContext *context,
+                      const LocationInfo *info)
+{
+  Numeric::Ptr num = numericParam(args[0], context, info);
+  if(num.isNull()) return 0;
+  return (Item::Ptr)num->atan(context);
+}
+
+static const XMLCh mathAtanName[] =
+{ 'a', 't', 'a', 'n', 0 };
+
+static SimpleBuiltinFactory mathAtanEXSLTFactory(
+  exsltMathURI, mathAtanName, 1,
+  "($arg as xs:anyAtomicType?) as xs:anyAtomicType?", mathAtan,
+  0, SimpleBuiltinFactory::NUMERIC
+);
+
+static SimpleBuiltinFactory mathAtanFactory(
+  mathURI, mathAtanName, 1,
+  "($arg as xs:double?) as xs:double?", mathAtan
+);
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+static Result mathSqrt(const VectorOfASTNodes &args, DynamicContext *context,
+                      const LocationInfo *info)
+{
+  Numeric::Ptr num = numericParam(args[0], context, info);
+  if(num.isNull()) return 0;
+  return (Item::Ptr)num->sqrt(context);
+}
+
+static const XMLCh mathSqrtName[] =
+{ 's', 'q', 'r', 't', 0 };
+
+static SimpleBuiltinFactory mathSqrtEXSLTFactory(
+  exsltMathURI, mathSqrtName, 1,
+  "($arg as xs:anyAtomicType?) as xs:anyAtomicType?", mathSqrt,
+  0, SimpleBuiltinFactory::NUMERIC
+);
+
+static SimpleBuiltinFactory mathSqrtFactory(
+  mathURI, mathSqrtName, 1,
+  "($arg as xs:double?) as xs:double?", mathSqrt
+);
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+static Result mathLog(const VectorOfASTNodes &args, DynamicContext *context,
+                      const LocationInfo *info)
+{
+  Numeric::Ptr num = numericParam(args[0], context, info);
+  if(num.isNull()) return 0;
+  return (Item::Ptr)num->log(context);
+}
+
+static const XMLCh mathLogName[] =
+{ 'l', 'o', 'g', 0 };
+
+static SimpleBuiltinFactory mathLogEXSLTFactory(
+  exsltMathURI, mathLogName, 1,
+  "($arg as xs:anyAtomicType?) as xs:anyAtomicType?", mathLog,
+  0, SimpleBuiltinFactory::NUMERIC
+);
+
+static SimpleBuiltinFactory mathLogFactory(
+  mathURI, mathLogName, 1,
+  "($arg as xs:double?) as xs:double?", mathLog
+);
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+static Result mathExp(const VectorOfASTNodes &args, DynamicContext *context,
+                      const LocationInfo *info)
+{
+  Numeric::Ptr num = numericParam(args[0], context, info);
+  if(num.isNull()) return 0;
+  return (Item::Ptr)num->exp(context);
+}
+
+static const XMLCh mathExpName[] =
+{ 'e', 'x', 'p', 0 };
+
+static SimpleBuiltinFactory mathExpEXSLTFactory(
+  exsltMathURI, mathExpName, 1,
+  "($arg as xs:anyAtomicType?) as xs:anyAtomicType?", mathExp,
+  0, SimpleBuiltinFactory::NUMERIC
+);
+
+static SimpleBuiltinFactory mathExpFactory(
+  mathURI, mathExpName, 1,
+  "($arg as xs:double?) as xs:double?", mathExp
+);
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+static Result mathPow(const VectorOfASTNodes &args, DynamicContext *context,
+                      const LocationInfo *info)
+{
+  Numeric::Ptr base = numericParam(args[0], context, info);
+  if(base.isNull()) return 0;
+  Numeric::Ptr pow = numericParam(args[1], context, info);
+  if(pow.isNull()) return 0;
+  return (Item::Ptr)base->power(pow, context);
+}
+
+static const XMLCh mathPowerName[] =
+{ 'p', 'o', 'w', 'e', 'r', 0 };
+
+static const XMLCh mathPowName[] =
+{ 'p', 'o', 'w', 0 };
+
+static SimpleBuiltinFactory mathPowerEXSLTFactory(
+  exsltMathURI, mathPowerName, 2,
+  "($arg as xs:anyAtomicType?, $arg2 as xs:anyAtomicType?) as xs:anyAtomicType?", mathPow,
+  0, SimpleBuiltinFactory::NUMERIC
+);
+
+static SimpleBuiltinFactory mathPowFactory(
+  mathURI, mathPowName, 2,
+  "($x as xs:double?, $y as xs:anyAtomicType) as xs:double?", mathPow,
+  0, SimpleBuiltinFactory::NUMERIC
+);
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+static const XMLCh s_pi[] =
+{ '3', '.', '1', '4', '1', '5', '9', '2', '6', '5', '3', '5', '8', '9', '7', '9', '3', 'e', '0', 0 };
+
+static Result mathPi(const VectorOfASTNodes &args, DynamicContext *context,
+                      const LocationInfo *info)
+{
+  return (Item::Ptr)context->getItemFactory()->createDouble(s_pi, context);
+}
+
+static const XMLCh mathPiName[] =
+{ 'p', 'i', 0 };
+
+static SimpleBuiltinFactory mathPiFactory(
+  mathURI, mathPiName, 0,
+  "() as xs:double", mathPi
+);
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+static Result mathAtan2(const VectorOfASTNodes &args, DynamicContext *context,
+                      const LocationInfo *info)
+{
+  Item::Ptr y = args[0]->createResult(context)->next(context);
+  Item::Ptr x = args[1]->createResult(context)->next(context);
+  MAPM result = ((Numeric*)y.get())->asMAPM().atan2(((Numeric*)x.get())->asMAPM());
+  return (Item::Ptr)context->getItemFactory()->createDouble(result, context);
+}
+
+static const XMLCh mathAtan2Name[] =
+{ 'a', 't', 'a', 'n', '2', 0 };
+
+static SimpleBuiltinFactory mathAtan2Factory(
+  mathURI, mathAtan2Name, 2,
+  "($y as xs:double, $x as xs:double) as xs:double", mathAtan2
+);
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+static Result mathLog10(const VectorOfASTNodes &args, DynamicContext *context,
+                      const LocationInfo *info)
+{
+  Item::Ptr item = args[0]->createResult(context)->next(context);
+  if(item.isNull()) return 0;
+  return (Item::Ptr)context->getItemFactory()->createDouble(((Numeric*)item.get())->asMAPM().log10(), context);
+}
+
+static const XMLCh mathLog10Name[] =
+{ 'l', 'o', 'g', '1', '0', 0 };
+
+static SimpleBuiltinFactory mathLog10Factory(
+  mathURI, mathLog10Name, 1,
+  "($arg as xs:double?) as xs:double?", mathLog10
+);
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+static Result mathExp10(const VectorOfASTNodes &args, DynamicContext *context,
+                      const LocationInfo *info)
+{
+  Item::Ptr item = args[0]->createResult(context)->next(context);
+  if(item.isNull()) return 0;
+  return (Item::Ptr)context->getItemFactory()->createDouble(MAPM(10).pow(((Numeric*)item.get())->asMAPM()), context);
+}
+
+static const XMLCh mathExp10Name[] =
+{ 'e', 'x', 'p', '1', '0', 0 };
+
+static SimpleBuiltinFactory mathExp10Factory(
+  mathURI, mathExp10Name, 1,
+  "($arg as xs:double?) as xs:double?", mathExp10
+);
+

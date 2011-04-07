@@ -70,12 +70,13 @@ void FuncFactory::setURIName(const XMLCh *uri, const XMLCh *name, XPath2MemoryMa
 
 SimpleBuiltinFactory::SimpleBuiltinFactory(const XMLCh *uri, const XMLCh *name,
   unsigned args, const char *signature, ResultFunc result,
-  unsigned staticAnalysisFlags)
+  unsigned staticAnalysisFlags, unsigned flags)
   : FuncFactory(uri, name, args, args, (const XMLCh*)0),
     buf_(1023, BasicMemoryManager::get()),
     signature_(signature),
     result_(result),
     staticAnalysisFlags_(staticAnalysisFlags),
+    flags_(flags),
     next_(getAll())
 {
   XPath2NSUtils::makeURIName(uri, name, buf_);
@@ -100,6 +101,12 @@ public:
       sbf_(sbf)
   {
     uri_ = sbf->uri_;
+  }
+
+  virtual ASTNode *staticResolution(StaticContext *context)
+  {
+    resolveArguments(context, sbf_->flags_ & SimpleBuiltinFactory::NUMERIC);
+    return this;
   }
 
   virtual ASTNode *staticTypingImpl(StaticContext *context)

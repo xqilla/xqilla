@@ -57,12 +57,17 @@ protected:
 class XQILLA_API SimpleBuiltinFactory : public FuncFactory
 {
 public:
+  enum Flags {
+    NUMERIC = 1<<0
+  };
+
   typedef Result (*ResultFunc) (const VectorOfASTNodes &args, DynamicContext *context,
                                 const LocationInfo *info);
 
   SimpleBuiltinFactory(const XMLCh *uri, const XMLCh *name, unsigned args,
                        const char *signature, ResultFunc result,
-                       unsigned staticAnalysisFlags = 0);
+                       unsigned staticAnalysisFlags = 0,
+                       unsigned flags = 0);
 
   virtual ASTNode *createInstance(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr) const;
 
@@ -74,6 +79,7 @@ protected:
   const char *signature_;
   ResultFunc result_;
   unsigned staticAnalysisFlags_;
+  unsigned flags_;
 
   const SimpleBuiltinFactory *next_;
 
