@@ -19,7 +19,8 @@ xquery version "3.0";
 
 module namespace core = "http://xqilla.sourceforge.net/core";
 
-declare function core:to($a as xs:integer?, $b as xs:integer?) as xs:decimal*
+declare %xqilla:inline
+function core:to($a as xs:integer?, $b as xs:integer?) as xs:decimal*
 {
   if(empty($a) or empty($b)) then ()
   else core:to_helper($a treat as xs:decimal, $b treat as xs:decimal)

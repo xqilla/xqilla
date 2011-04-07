@@ -31,12 +31,14 @@ declare function data($a as item()*) as xs:anyAtomicType*
 (:----------------------------------------------------------------------------------------------------:)
 (: String functions :)
 
-declare function string-join($seq as xs:string*) as xs:string
+declare %xqilla:inline
+function string-join($seq as xs:string*) as xs:string
 {
   string-join($seq, "")
 };
 
-declare function string-join($seq as xs:string*, $join as xs:string) as xs:string
+declare %xqilla:inline
+function string-join($seq as xs:string*, $join as xs:string) as xs:string
 {
   if(empty($seq)) then ""
   else string-join-helper($seq, $join)
@@ -48,7 +50,8 @@ declare %private function string-join-helper($seq as xs:string*, $join as xs:str
   else concat(head($seq), $join, string-join-helper(tail($seq), $join))
 };
 
-declare function substring-before($arg1 as xs:string?, $arg2 as xs:string?) as xs:string
+declare %xqilla:inline
+function substring-before($arg1 as xs:string?, $arg2 as xs:string?) as xs:string
 {
   substring-before($arg1, $arg2, default-collation())
 };
@@ -64,7 +67,8 @@ declare function substring-before($arg1 as xs:string?, $arg2 as xs:string?, $col
       string-index-of($arg1, 1, 1 + string-length($arg1) - $arg2len, $arg2, $arg2len, $collation) - 1)
 };
 
-declare function substring-after($arg1 as xs:string?, $arg2 as xs:string?) as xs:string
+declare %xqilla:inline
+function substring-after($arg1 as xs:string?, $arg2 as xs:string?) as xs:string
 {
   substring-after($arg1, $arg2, default-collation())
 };
@@ -88,7 +92,8 @@ declare %private function string-index-of($str as xs:string, $index as xs:decima
   else string-index-of($str, $index + 1, $endindex, $tofind, $tofindlen, $collation)
 };
 
-declare function codepoint-equal($arg1 as xs:string?, $arg2 as xs:string?) as xs:boolean?
+declare %xqilla:inline
+function codepoint-equal($arg1 as xs:string?, $arg2 as xs:string?) as xs:boolean?
 {
   compare($arg1, $arg2, "http://www.w3.org/2005/xpath-functions/collation/codepoint") eq 0
 };
@@ -233,17 +238,20 @@ declare function in-scope-prefixes($element as element()) as xs:string*
 (:----------------------------------------------------------------------------------------------------:)
 (: Boolean functions :)
 
-declare function true() as xs:boolean
+declare %xqilla:inline
+function true() as xs:boolean
 {
   xs:boolean("1")
 };
 
-declare function false() as xs:boolean
+declare %xqilla:inline
+function false() as xs:boolean
 {
   xs:boolean("0")
 };
 
-declare function boolean($arg as item()*) as xs:boolean
+declare %xqilla:inline
+function boolean($arg as item()*) as xs:boolean
 {
   $arg and true()
 };
@@ -253,7 +261,8 @@ declare option rw:rule "fn:EBVFold: boolean(~e)
 -> exists(~e) where rw:subtype(~e, 'node()*')
 -> ~e where rw:subtype(~e, 'xs:boolean')";
 
-declare function exists($arg as item()*) as xs:boolean
+declare %xqilla:inline
+function exists($arg as item()*) as xs:boolean
 {
   not(empty($arg))
 };
@@ -312,13 +321,15 @@ declare function exactly-one($arg as item()*) as item()
   default return error(xs:QName("err:FORG0005"), "Sequence contains more then one item")
 };
 
-declare function index-of($seq as xs:anyAtomicType*, $search as xs:anyAtomicType) as xs:integer*
+declare %xqilla:inline
+function index-of($seq as xs:anyAtomicType*, $search as xs:anyAtomicType) as xs:integer*
 {
   (: Check for NaN :)
   if($search ne $search) then () else index-of-helper($seq, $search, default-collation())
 };
 
-declare function index-of($seq as xs:anyAtomicType*, $search as xs:anyAtomicType,
+declare %xqilla:inline
+function index-of($seq as xs:anyAtomicType*, $search as xs:anyAtomicType,
    $collation as xs:string) as xs:integer*
 {
   (: Check for NaN :)
@@ -340,7 +351,8 @@ declare function insert-before($target as item()*, $position as xs:integer, $ins
   else (head($target), insert-before(tail($target), $position - 1, $inserts))
 };
 
-declare function remove($target as item()*, $position as xs:integer) as item()*
+declare %xqilla:inline
+function remove($target as item()*, $position as xs:integer) as item()*
 {
   $target[position() ne $position]
 };
@@ -351,14 +363,15 @@ declare function reverse($seq as item()*) as item()*
   else (reverse(tail($seq)), head($seq))
 };
 
-(: TBD %inline - jpcs:)
-declare function subsequence($sourceSeq as item()*, $startingLoc as xs:double) as item()*
+
+declare %xqilla:inline
+function subsequence($sourceSeq as item()*, $startingLoc as xs:double) as item()*
 {
   subsequence-helper($sourceSeq, round($startingLoc))
 };
 
-(: TBD %inline - jpcs:)
-declare function subsequence($sourceSeq as item()*, $startingLoc as xs:double,
+declare %xqilla:inline
+function subsequence($sourceSeq as item()*, $startingLoc as xs:double,
   $length as xs:double) as item()*
 {
   let $start := round($startingLoc)
@@ -366,15 +379,16 @@ declare function subsequence($sourceSeq as item()*, $startingLoc as xs:double,
 };
 
 (: TBD %xqilla:type("($A*, xs:double) as $A*") - jpcs:)
-declare %private function subsequence-helper($seq as item()*, $start as xs:double) as item()*
+declare %private (: %xqilla:inline-if-constant("start") :)
+function subsequence-helper($seq as item()*, $start as xs:double) as item()*
 {
   if($start le 1) then $seq
   else subsequence-helper(tail($seq), $start - 1)
 };
 
 (: TBD %xqilla:type("($A*, xs:double, xs:double, xs:double) as $A*") - jpcs:)
-(: TBD %xqilla:inline-if-constant("start","end") - jpcs :)
-declare %private function subsequence-helper($seq as item()*, $start as xs:double,
+declare %private (: %xqilla:inline-if-constant("start","end") :)
+function subsequence-helper($seq as item()*, $start as xs:double,
   $end as xs:double) as item()*
 {
   if($end le 1) then ()
@@ -384,7 +398,8 @@ declare %private function subsequence-helper($seq as item()*, $start as xs:doubl
   )
 };
 
-declare function deep-equal($parameter1 as item()*, $parameter2 as item()*) as xs:boolean
+declare %xqilla:inline
+function deep-equal($parameter1 as item()*, $parameter2 as item()*) as xs:boolean
 {
   deep-equal($parameter1, $parameter2, default-collation())
 };
@@ -419,12 +434,14 @@ declare function deep-equal($p1 as item()*, $p2 as item()*, $collation as xs:str
     default return deep-equal-error()
 };
 
-declare %private function deep-equal-error()
+declare %private %xqilla:inline
+function deep-equal-error()
 {
   error(xs:QName("err:FOTY0015"), "An argument to fn:deep-equal() contains a function item")
 };
 
-declare %private function deep-equal-nodes($p1 as node()*, $p2 as node()*, $collation as xs:string) as xs:boolean
+declare %private
+function deep-equal-nodes($p1 as node()*, $p2 as node()*, $collation as xs:string) as xs:boolean
 {
   if(empty($p1)) then empty($p2) else
   if(empty($p2)) then false() else
@@ -499,12 +516,14 @@ declare %private function deep-equal-nodes($p1 as node()*, $p2 as node()*, $coll
 (:----------------------------------------------------------------------------------------------------:)
 (: Aggregate functions :)
 
-declare function avg($arg as xs:anyAtomicType*) as xs:anyAtomicType?
+declare %xqilla:inline
+function avg($arg as xs:anyAtomicType*) as xs:anyAtomicType?
 {
   sum($arg, ()) div count($arg)
 };
 
-declare function sum($arg as xs:anyAtomicType*) as xs:anyAtomicType
+declare %xqilla:inline
+function sum($arg as xs:anyAtomicType*) as xs:anyAtomicType
 {
   sum($arg, 0)
 };
@@ -547,7 +566,8 @@ declare %private function dayTimeDuration-sum($arg as xs:anyAtomicType*, $result
   default return error(xs:QName("err:FORG0006"), "Invalid argument to fn:sum() function")
 };
 
-declare function max($arg as xs:anyAtomicType*) as xs:anyAtomicType?
+declare %xqilla:inline
+function max($arg as xs:anyAtomicType*) as xs:anyAtomicType?
 {
   max($arg, default-collation())
 };
@@ -657,7 +677,8 @@ declare %private function dayTimeDuration-max($arg as xs:anyAtomicType*, $result
   default return error(xs:QName("err:FORG0006"), "Uncomparable items in argument to fn:max() function")
 };
 
-declare function min($arg as xs:anyAtomicType*) as xs:anyAtomicType?
+declare %xqilla:inline
+function min($arg as xs:anyAtomicType*) as xs:anyAtomicType?
 {
   min($arg, default-collation())
 };
@@ -770,7 +791,8 @@ declare %private function dayTimeDuration-min($arg as xs:anyAtomicType*, $result
 (:----------------------------------------------------------------------------------------------------:)
 (: Map functions :)
 
-declare function map-get($map as map(), $key as xs:anyAtomicType) as item()*
+declare %xqilla:inline
+function map-get($map as map(), $key as xs:anyAtomicType) as item()*
 {
   $map($key)
 };

@@ -20,7 +20,6 @@ faster modifiable data model
 Document projection for recursive functions
 pull event execution
 Remove and free unused global variables
-Better static typing esp. for higher order functions
 Batched iterator execution
 Execute method for singleton results
 
@@ -28,7 +27,6 @@ Execute method for singleton results
 Infrastructure
 --------------
 
-query plan output using event API
 string pool that returns numeric identifier
 support for UTF-8 execution?
 extract basic schema types from Xerces-C
@@ -45,7 +43,6 @@ QA
 
 fix UTF-16 bugs
 fix XQTS bugs
-new test suite
 test XQuery Fulltext
 Fix ATDoubleOrDerivedImpl and ATFloatOrDerivedImpl to use double and float types
 Make xs:decimal infinite length

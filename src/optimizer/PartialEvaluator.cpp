@@ -23,6 +23,7 @@
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/context/ContextHelpers.hpp>
 #include <xqilla/utils/XPath2Utils.hpp>
+#include <xqilla/utils/XPath2NSUtils.hpp>
 #include <xqilla/ast/XQSequence.hpp>
 #include <xqilla/exceptions/XQException.hpp>
 #include <xqilla/schema/SequenceType.hpp>
@@ -30,6 +31,7 @@
 #include <xqilla/functions/FunctionCount.hpp>
 #include <xqilla/functions/FunctionEmpty.hpp>
 #include <xqilla/functions/FunctionFunctionArity.hpp>
+#include <xqilla/functions/XQillaFunction.hpp>
 
 #include <xqilla/operators/Plus.hpp>
 #include <xqilla/operators/Minus.hpp>
@@ -282,6 +284,20 @@ bool PartialEvaluator::checkSizeLimit(const ASTNode *oldAST, const ASTNode *newA
 
 ASTNode *PartialEvaluator::optimize(ASTNode *item)
 {
+  // Apply rewrite rules
+  if(rules_) {
+    RulesMap::iterator i = rules_->find(item->getType());
+    for(; i != rules_->end(); ++i) {
+      ASTNode *apply = i.getValue()->apply(item, context_);
+      if(apply) {
+        redoTyping_ = true;
+        apply = optimize(apply);
+        item->release();
+        return apply;
+      }
+    }
+  }
+
   bool retype;
   {
     AutoReset<bool> reset(redoTyping_);
@@ -851,34 +867,80 @@ ASTNode *PartialEvaluator::inlineFunction(const XQUserFunctionInstance *item, Dy
   return result;
 }
 
+static const XMLCh s_inline[] = { 'i', 'n', 'l', 'i', 'n', 'e', 0 };
+static const XMLCh s_inline_if_constant[] = { 'i', 'n', 'l', 'i', 'n', 'e', '-', 'i', 'f', '-',
+  'c', 'o', 'n', 's', 't', 'a', 'n', 't', 0 };
+
 ASTNode *PartialEvaluator::optimizeUserFunction(XQUserFunctionInstance *item)
 {
   VectorOfASTNodes &args = const_cast<VectorOfASTNodes &>(item->getArguments());
-  bool constantArg = args.empty();
-  for(VectorOfASTNodes::iterator i = args.begin(); i != args.end(); ++i) {
+  VectorOfASTNodes::iterator i;
+  for(i = args.begin(); i != args.end(); ++i) {
     *i = optimize(*i);
-    if((*i)->isConstant()) constantArg = true;
   }
 
   const XQUserFunction *funcDef = item->getFunctionDefinition();
 
   // TBD Maybe make this dependant on the number of times the function is called in the query as well? - jpcs
-//   if(funcDef->getFunctionBody() && functionInlineLimit_ > 0 && (!funcDef->isRecursive() || constantArg)) {
-  if(funcDef->getFunctionBody() && functionInlineLimit_ > 0 && !funcDef->isRecursive()) {
-    AutoReset<size_t> reset(functionInlineLimit_);
-    --functionInlineLimit_;
-
-    ASTNode *result = inlineFunction(item, context_);
-
-    if(checkSizeLimit(item, result)) {
+  if(funcDef->getFunctionBody()) {
+    // %inline annotation
+    XMLBuffer buf;
+    XPath2NSUtils::makeURIName(XQillaFunction::XMLChFunctionURI, s_inline, buf);
+    if(funcDef->getSignature()->annotationMap.contains(buf.getRawBuffer())) {
+      // std::cerr << "%inline - " << UTF8(funcDef->getURIName()) << "#" << args.size() << "\n";
+      ASTNode *result = inlineFunction(item, context_);
       redoTyping_ = true;
       result = optimize(result->staticTyping(0, 0));
       item->release();
       return result;
     }
-    else {
-      result->release();
-      return item;
+
+    // %inline-if-constant(arg1, ....) annotation
+    buf.reset();
+    XPath2NSUtils::makeURIName(XQillaFunction::XMLChFunctionURI, s_inline_if_constant, buf);
+    Annotation* const *annotation = funcDef->getSignature()->annotationMap.get(buf.getRawBuffer());
+    if(annotation && funcDef->getSignature()->argSpecs) {
+      bool constantArgs = true;
+      Result result = (*annotation)->getExpression()->createResult(context_);
+      Item::Ptr value;
+      while(constantArgs && (value = result->next(context_)).notNull()) {
+        value = ((AnyAtomicType*)value.get())->castAs(AnyAtomicType::QNAME, context_);
+        ArgumentSpecs::const_iterator specIt = funcDef->getSignature()->argSpecs->begin();
+        for(i = args.begin(); i != args.end(); ++i, ++specIt) {
+          if(XPath2Utils::equals((*specIt)->getName(), ((ATQNameOrDerived*)value.get())->getName()) &&
+             XPath2Utils::equals((*specIt)->getURI(), ((ATQNameOrDerived*)value.get())->getURI())) {
+            constantArgs = constantArgs && (*i)->isConstant();
+            break;
+          }
+        }
+        if(i == args.end()) constantArgs = false;
+      }
+      if(constantArgs) {
+        // std::cerr << "%inline-if-constant - " << UTF8(funcDef->getURIName()) << "#" << args.size() << "\n";
+        ASTNode *result = inlineFunction(item, context_);
+        redoTyping_ = true;
+        result = optimize(result->staticTyping(0, 0));
+        item->release();
+        return result;
+      }
+    }
+
+    if(functionInlineLimit_ > 0 && !funcDef->isRecursive()) {
+      AutoReset<size_t> reset(functionInlineLimit_);
+      --functionInlineLimit_;
+
+      ASTNode *result = inlineFunction(item, context_);
+
+      if(checkSizeLimit(item, result)) {
+        redoTyping_ = true;
+        result = optimize(result->staticTyping(0, 0));
+        item->release();
+        return result;
+      }
+      else {
+        result->release();
+        return item;
+      }
     }
   }
 

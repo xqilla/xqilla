@@ -13,14 +13,15 @@ static const XMLCh core_uri[] = { 104, 116, 116, 112, 58, 47, 47, 120, 113, 105,
 static const DelayedModule::Decl core_declarations[] = {
   {
     DelayedModule::Decl::FUNCTION, "to", 2, false, 22, 1,
-    "declare function core:to($a as xs:integer?, $b as xs:integer?) as xs:decimal*\n"
+    "declare %xqilla:inline\n"
+    "function core:to($a as xs:integer?, $b as xs:integer?) as xs:decimal*\n"
     "{\n"
     "  if(empty($a) or empty($b)) then ()\n"
     "  else core:to_helper($a treat as xs:decimal, $b treat as xs:decimal)\n"
     "}"
   },
   {
-    DelayedModule::Decl::FUNCTION, "to_helper", 2, true, 28, 1,
+    DelayedModule::Decl::FUNCTION, "to_helper", 2, true, 29, 1,
     "declare %private function core:to_helper($a as xs:decimal, $b as xs:decimal) as xs:decimal*\n"
     "{\n"
     "  if($a gt $b) then () else ($a, core:to_helper($a + 1, $b))\n"

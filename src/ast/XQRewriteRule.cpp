@@ -399,17 +399,26 @@ bool RewritePattern::matches(const ASTNode *ast, DynamicContext *context,
   }
 
   case ASTNode::LITERAL: {
+    Item::Ptr lit;
     if(ast->getType() == ASTNode::LITERAL) {
       if(((XQLiteral*)ast)->getItemType()->getPrimitiveType() != primitiveType)
         return false;
+      lit = ast->createResult(context)->next(context);
     }
     else if(ast->getType() == ASTNode::NUMERIC_LITERAL) {
       if(((XQNumericLiteral*)ast)->getItemType()->getPrimitiveType() != primitiveType)
         return false;
+      lit = ast->createResult(context)->next(context);
+    }
+    else if(ast->isConstant()) {
+      Result result = ast->createResult(context);
+      lit = result->next(context);
+      if(lit.isNull() || result->next(context).notNull() || lit->getType() != Item::ATOMIC ||
+         ((AnyAtomicType*)lit.get())->getPrimitiveTypeIndex() != primitiveType)
+        return false;
     }
     else return false;
 
-    Item::Ptr lit = ast->createResult(context)->next(context);
     AnyAtomicType::Ptr myval = context->getItemFactory()->
       createDerivedFromAtomicType(primitiveType, value, context).get();
     return myval->equals((AnyAtomicType*)lit.get(), context);
