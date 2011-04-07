@@ -24,6 +24,8 @@
 #include <xqilla/utils/XPath2NSUtils.hpp>
 #include <xqilla/ast/XQFunction.hpp>
 #include <xqilla/framework/BasicMemoryManager.hpp>
+#include <xqilla/context/StaticContext.hpp>
+#include <xqilla/context/ContextHelpers.hpp>
 
 #include <stdlib.h>
 
@@ -126,8 +128,37 @@ private:
   const SimpleBuiltinFactory *sbf_;
 };
 
+class NamespaceSensitiveBuiltin : public SimpleBuiltin
+{
+public:
+  NamespaceSensitiveBuiltin(const SimpleBuiltinFactory *sbf, const VectorOfASTNodes &args,
+                            XPath2MemoryManager *mm)
+    : SimpleBuiltin(sbf, args, mm),
+      resolver_(0)
+  {
+  }
+
+  virtual ASTNode *staticResolution(StaticContext *context)
+  {
+    SimpleBuiltin::staticResolution(context);
+    resolver_ = const_cast<DOMXPathNSResolver*>(context->getNSResolver());
+    return this;
+  }
+
+  virtual Result createResult(DynamicContext* context, int flags) const
+  {
+    AutoNsScopeReset jan(context, resolver_);
+    return SimpleBuiltin::createResult(context, flags);
+  }
+
+private:
+  DOMXPathNSResolver *resolver_;
+};
+
 ASTNode *SimpleBuiltinFactory::createInstance(const VectorOfASTNodes &args,
   XPath2MemoryManager* memMgr) const
 {
+  if(flags_ & NAMESPACE_SENSITIVE)
+    return new (memMgr) NamespaceSensitiveBuiltin(this, args, memMgr);
   return new (memMgr) SimpleBuiltin(this, args, memMgr);
 }

@@ -58,7 +58,8 @@ class XQILLA_API SimpleBuiltinFactory : public FuncFactory
 {
 public:
   enum Flags {
-    NUMERIC = 1<<0
+    NUMERIC             = 1<<0,
+    NAMESPACE_SENSITIVE = 1<<1
   };
 
   typedef Result (*ResultFunc) (const VectorOfASTNodes &args, DynamicContext *context,

@@ -27,6 +27,9 @@
 #include <xqilla/items/ATUntypedAtomic.hpp>
 #include <xqilla/utils/XPath2Utils.hpp>
 #include <xqilla/exceptions/StaticErrorException.hpp>
+#include <xqilla/functions/BuiltInModules.hpp>
+#include <xqilla/dom-api/impl/XQillaNSResolverImpl.hpp>
+#include <xqilla/context/ContextHelpers.hpp>
 
 #include "../lexer/XQLexer.hpp"
 
@@ -116,7 +119,13 @@ void XQFunction::parseSignature(StaticContext *context)
     XQParserArgs args(&lexer);
     XQParser::yyparse(&args);
     signature_ = args._signature;
-    signature_->staticResolution(context);
+
+    {
+      XQillaNSResolverImpl newNSScope(context->getMemoryManager(), context->getNSResolver());
+      BuiltInModules::addNamespaces(&newNSScope);
+      AutoNsScopeReset jan(context,&newNSScope);
+      signature_->staticResolution(context);
+    }
 
     if(signature_->argSpecs) {
       // If the signature has too many arguments, remove some

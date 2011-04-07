@@ -24,6 +24,7 @@
 
 class StaticContext;
 class XQQuery;
+class XQillaNSResolver;
 
 class XQILLA_API BuiltInModules
 {
@@ -33,6 +34,7 @@ public:
   static const DelayedModule &rw;
 
   static void addNamespaces(StaticContext *context);
+  static void addNamespaces(XQillaNSResolver *resolver);
   static void addModules(XQQuery *query);
 };
 

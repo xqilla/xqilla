@@ -24,6 +24,7 @@
 #include <xqilla/functions/FunctionError.hpp>
 #include <xqilla/context/StaticContext.hpp>
 #include <xqilla/simple-api/XQQuery.hpp>
+#include <xqilla/dom-api/XQillaNSResolver.hpp>
 
 #include <xercesc/validators/schema/SchemaSymbols.hpp>
 
@@ -50,6 +51,16 @@ void BuiltInModules::addNamespaces(StaticContext *context)
   context->setNamespaceBinding(XMLChLOCAL, XQUserFunction::XMLChXQueryLocalFunctionsURI);
   context->setNamespaceBinding(XMLChERR, FunctionError::XMLChXQueryErrorURI);
   context->setNamespaceBinding(XQillaFunction::XQillaPrefix, XQillaFunction::XMLChFunctionURI);
+}
+
+void BuiltInModules::addNamespaces(XQillaNSResolver *resolver)
+{
+  resolver->addNamespaceBinding(XMLChXS, SchemaSymbols::fgURI_SCHEMAFORSCHEMA);
+  resolver->addNamespaceBinding(XMLChXSI, SchemaSymbols::fgURI_XSI);
+  resolver->addNamespaceBinding(fn.prefix, fn.uri);
+  resolver->addNamespaceBinding(XMLChLOCAL, XQUserFunction::XMLChXQueryLocalFunctionsURI);
+  resolver->addNamespaceBinding(XMLChERR, FunctionError::XMLChXQueryErrorURI);
+  resolver->addNamespaceBinding(XQillaFunction::XQillaPrefix, XQillaFunction::XMLChFunctionURI);
 }
 
 void BuiltInModules::addModules(XQQuery *query)

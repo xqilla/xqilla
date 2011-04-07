@@ -134,7 +134,8 @@ static const XMLCh exprSubtypeName[] =
 { 's', 'u', 'b', 't', 'y', 'p', 'e', 0 };
 
 static SimpleBuiltinFactory exprSubtypeFactory(XQRewriteRule::URI, exprSubtypeName, 2,
-  "($e as rw:expression, $type as xs:string) as xs:boolean", exprSubtype);
+  "($e as rw:expression, $type as xs:string) as xs:boolean", exprSubtype, 0,
+  SimpleBuiltinFactory::NAMESPACE_SENSITIVE);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -150,5 +151,6 @@ static const XMLCh exprNeverSubtypeName[] =
 { 'n', 'e', 'v', 'e', 'r', '-', 's', 'u', 'b', 't', 'y', 'p', 'e', 0 };
 
 static SimpleBuiltinFactory exprNeverSubtypeFactory(XQRewriteRule::URI, exprNeverSubtypeName, 2,
-  "($e as rw:expression, $type as xs:string) as xs:boolean", exprNeverSubtype);
+  "($e as rw:expression, $type as xs:string) as xs:boolean", exprNeverSubtype, 0,
+  SimpleBuiltinFactory::NAMESPACE_SENSITIVE);
 
