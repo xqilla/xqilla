@@ -346,6 +346,12 @@ static void DM_outputDecl(const char *type, const char *name, int size, bool pri
       printf("%s\\\"", UTF8(buf.getRawBuffer()));
       start = ptr + 1;
     }
+    else if(*ptr == '\\') {
+      if((ptr - start) == 0) buf.reset();
+      else buf.set(start, ptr - start);
+      printf("%s\\\\", UTF8(buf.getRawBuffer()));
+      start = ptr + 1;
+    }
     else if(*ptr == '\n') {
       if((ptr - start) == 0) buf.reset();
       else buf.set(start, ptr - start);
