@@ -276,8 +276,6 @@ const ExternalFunction *FunctionLookup::lookUpGlobalExternalFunction(
 #include <xqilla/functions/FunctionRegexGroup.hpp>
 // XQilla extension functions
 #include <xqilla/functions/FunctionParseXML.hpp>
-#include <xqilla/functions/FunctionParseJSON.hpp>
-#include <xqilla/functions/FunctionSerializeJSON.hpp>
 #include <xqilla/functions/FunctionParseHTML.hpp>
 #include <xqilla/functions/FunctionTime.hpp>
 #include <xqilla/functions/FunctionAnalyzeString.hpp>
@@ -421,8 +419,6 @@ static void initGlobalTable(FunctionLookup *t, XPath2MemoryManager *memMgr)
 
   // XQilla extension functions
   t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionParseXML>(memMgr));
-  t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionParseJSON>(memMgr));
-  t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionSerializeJSON>(memMgr));
   t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionTime>(memMgr));
   t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionXQillaAnalyzeString>(memMgr));
   t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionCaseFold>(memMgr));

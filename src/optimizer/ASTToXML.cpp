@@ -36,7 +36,6 @@
 #include <xqilla/functions/FunctionDocument.hpp>
 #include <xqilla/functions/FunctionCollection.hpp>
 #include <xqilla/functions/FunctionParseXML.hpp>
-#include <xqilla/functions/FunctionParseJSON.hpp>
 #include <xqilla/functions/FunctionSignature.hpp>
 
 #include <xqilla/operators/OrderComparison.hpp>
@@ -572,9 +571,6 @@ ASTNode *ASTToXML::optimizeFunction(XQFunction *item)
 //   else if(funUri == XQillaFunction::XMLChFunctionURI) {
 //     if(funName == FunctionParseXML::name) {
 //       queryPathTree = ((FunctionParseXML*)item)->getQueryPathTree();
-//     }
-//     else if(funName == FunctionParseJSON::name) {
-//       queryPathTree = ((FunctionParseJSON*)item)->getQueryPathTree();
 //     }
 //     else if(funName == FunctionExplain::name) {
 //       queryPathTree = ((FunctionExplain*)item)->getQueryPathTree();

@@ -222,8 +222,6 @@ src/functions/FunctionUnordered.cpp \
 src/functions/FunctionUnparsedText.cpp \
 src/functions/FunctionUpperCase.cpp \
 src/functions/FunctionWords.cpp \
-src/functions/FunctionParseJSON.cpp \
-src/functions/FunctionSerializeJSON.cpp \
 src/functions/FunctionParseHTML.cpp \
 src/functions/FunctionExplain.cpp \
 src/functions/FunctionAnalyzeString.cpp \
@@ -435,19 +433,6 @@ src/optimizer/StaticTyper.cpp \
 src/optimizer/QueryPathNode.cpp \
 src/optimizer/QueryPathTreeGenerator.cpp \
 src/optimizer/ASTToXML.cpp \
-src/yajl/yajl_buf.c \
-src/yajl/yajl_buf.h \
-src/yajl/yajl.c \
-src/yajl/yajl_encode.c \
-src/yajl/yajl_encode.h \
-src/yajl/yajl_gen.c \
-src/yajl/yajl_lex.c \
-src/yajl/yajl_lex.h \
-src/yajl/yajl_parser.c \
-src/yajl/yajl_parser.h \
-src/yajl/yajl_common.h \
-src/yajl/yajl_gen.h \
-src/yajl/yajl_parse.h \
 src/xqc/XQillaXQCImplementation.cpp \
 src/xqc/XQillaXQCImplementation.hpp \
 src/xqc/XQillaXQCStaticContext.cpp \
@@ -472,6 +457,7 @@ src/samples/simple-api/foo.xml \
 src/functions/CoreModule.xq \
 src/functions/FnModule.xq \
 src/functions/RwModule.xq \
+src/functions/XQillaModule.xq \
 LICENSE \
 TODO \
 README \
@@ -578,6 +564,9 @@ $(top_srcdir)/src/functions/FnModule.hpp: $(top_srcdir)/src/functions/FnModule.x
 
 $(top_srcdir)/src/functions/RwModule.hpp: $(top_srcdir)/src/functions/RwModule.xq
 	./compile-delayed-module $(top_srcdir)/src/functions/RwModule.xq >$(top_srcdir)/src/functions/RwModule.hpp
+
+$(top_srcdir)/src/functions/XQillaModule.hpp: $(top_srcdir)/src/functions/XQillaModule.xq
+	./compile-delayed-module $(top_srcdir)/src/functions/XQillaModule.xq >$(top_srcdir)/src/functions/XQillaModule.hpp
 
 LEXERFILE   = $(top_srcdir)/src/lexer/XQLexer.cpp
 LEXTEMPLATE = $(top_srcdir)/src/lexer/XQLexer.l

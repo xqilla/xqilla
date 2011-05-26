@@ -32,6 +32,7 @@ public:
   static const DelayedModule &core;
   static const DelayedModule &fn;
   static const DelayedModule &rw;
+  static const DelayedModule &xqilla;
 
   static void addNamespaces(StaticContext *context);
   static void addNamespaces(XQillaNSResolver *resolver);

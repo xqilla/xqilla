@@ -19,7 +19,6 @@
 
 #include "../config/xqilla_config.h"
 #include <xqilla/functions/BuiltInModules.hpp>
-#include <xqilla/functions/XQillaFunction.hpp>
 #include <xqilla/functions/XQUserFunction.hpp>
 #include <xqilla/functions/FunctionError.hpp>
 #include <xqilla/context/StaticContext.hpp>
@@ -31,12 +30,14 @@
 #include "CoreModule.hpp"
 #include "FnModule.hpp"
 #include "RwModule.hpp"
+#include "XQillaModule.hpp"
 
 XERCES_CPP_NAMESPACE_USE;
 
 const DelayedModule &BuiltInModules::core = core_module;
 const DelayedModule &BuiltInModules::fn = fn_module;
 const DelayedModule &BuiltInModules::rw = rw_module;
+const DelayedModule &BuiltInModules::xqilla = xqilla_module;
 
 static const XMLCh XMLChXS[]    = { chLatin_x, chLatin_s, chNull };
 static const XMLCh XMLChXSI[]   = { chLatin_x, chLatin_s, chLatin_i, chNull };
@@ -50,7 +51,7 @@ void BuiltInModules::addNamespaces(StaticContext *context)
   context->setNamespaceBinding(fn.prefix, fn.uri);
   context->setNamespaceBinding(XMLChLOCAL, XQUserFunction::XMLChXQueryLocalFunctionsURI);
   context->setNamespaceBinding(XMLChERR, FunctionError::XMLChXQueryErrorURI);
-  context->setNamespaceBinding(XQillaFunction::XQillaPrefix, XQillaFunction::XMLChFunctionURI);
+  context->setNamespaceBinding(xqilla.prefix, xqilla.uri);
 }
 
 void BuiltInModules::addNamespaces(XQillaNSResolver *resolver)
@@ -60,12 +61,19 @@ void BuiltInModules::addNamespaces(XQillaNSResolver *resolver)
   resolver->addNamespaceBinding(fn.prefix, fn.uri);
   resolver->addNamespaceBinding(XMLChLOCAL, XQUserFunction::XMLChXQueryLocalFunctionsURI);
   resolver->addNamespaceBinding(XMLChERR, FunctionError::XMLChXQueryErrorURI);
-  resolver->addNamespaceBinding(XQillaFunction::XQillaPrefix, XQillaFunction::XMLChFunctionURI);
+  resolver->addNamespaceBinding(xqilla.prefix, xqilla.uri);
 }
 
 void BuiltInModules::addModules(XQQuery *query)
 {
-  core.importModuleInto(query);
   fn.importModuleInto(query);
-  rw.importModuleInto(query);
+  if(!XPath2Utils::equals(query->getModuleTargetNamespace(), fn.uri)) {
+    rw.importModuleInto(query);
+    if(!XPath2Utils::equals(query->getModuleTargetNamespace(), rw.uri)) {
+      core.importModuleInto(query);
+      if(!XPath2Utils::equals(query->getModuleTargetNamespace(), core.uri)) {
+        xqilla.importModuleInto(query);
+      }
+    }
+  }
 }

@@ -518,4 +518,15 @@
     </test-case>
   </test-group>
 
+  <test-group name="json">
+    <GroupInfo>
+      <title>Tests for JSON parsing and serialization</title>
+    </GroupInfo>
+
+    <test-case name="json1" FilePath="json">
+      <query name="json1"/>
+      <output-file compare="Fragment">json1.out</output-file>
+    </test-case>
+  </test-group>
+
 </test-suite>
