@@ -117,10 +117,11 @@ static Result analyze_string(const VectorOfASTNodes &args, DynamicContext *conte
     for(int j = 0; j < match->getNoGroups(); ++j) {
       int matchStart = match->getStartPos(j);
       int matchEnd = match->getEndPos(j);
-      if(tokStart < matchStart)
+      if(matchStart < 0) continue;
+      if(j == 0 && tokStart < matchStart)
         regions.insert(AnalyzeRegion(tokStart, matchStart, -1));
       regions.insert(AnalyzeRegion(matchStart, matchEnd, j));
-      tokStart = matchEnd;
+      if(matchEnd > tokStart) tokStart = matchEnd;
     }
   }
   int length = (int)XMLString::stringLen(input);
