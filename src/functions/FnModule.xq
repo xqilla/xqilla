@@ -3,7 +3,7 @@ xquery version "3.0";
 (:
  : Copyright (c) 2004-2009
  :     Oracle. All rights reserved.
- : Copyright (c) 2010
+ : Copyright (c) 2010-2011
  :     John Snelson. All rights reserved.
  :
  : Licensed under the Apache License, Version 2.0 (the "License");
