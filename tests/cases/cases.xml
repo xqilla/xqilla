@@ -145,6 +145,11 @@
       <query name="bug6"/>
       <output-file compare="Fragment">bug6.out</output-file>
     </test-case>
+    <test-case name="bug7" FilePath="bugs/">
+      <!-- Check removing of typeswitch case clauses due to bad static typing (of min()?) -->
+      <query name="bug7"/>
+      <output-file compare="Fragment">bug7.out</output-file>
+    </test-case>
   </test-group>
 
   <test-group name="unicode">
