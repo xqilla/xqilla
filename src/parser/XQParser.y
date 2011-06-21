@@ -762,12 +762,23 @@ namespace XQParser {
 
 // Select the language we parse, based on the (fake) first token from the lexer
 SelectLanguage:
-    _LANG_XPATH2_ QueryBody
+    _LANG_XPATH2_ XPathBuiltinNamespaces QueryBody
+  | _LANG_XQUERY_ XQueryBuiltinNamespaces Module
+  | _LANG_FUNCDECL_ XQueryBuiltinNamespaces Start_FunctionDecl
+  | _LANG_XSLT2_ Start_XSLT
+  | _LANG_DELAYEDMODULE_ Start_DelayedModule
+  | _LANG_FUNCTION_SIGNATURE_ Start_FunctionSignature
+  ;
+
+XPathBuiltinNamespaces:
+  /* empty */
   {
     SET_BUILT_IN_NAMESPACE(XQillaFunction::XQillaPrefix, XQillaFunction::XMLChFunctionURI);
   }
+  ;
 
-  | XQueryLanguage
+XQueryBuiltinNamespaces:
+  /* empty */
   {
     SET_BUILT_IN_NAMESPACE(XMLChXS, SchemaSymbols::fgURI_SCHEMAFORSCHEMA);
     SET_BUILT_IN_NAMESPACE(XMLChXSI, SchemaSymbols::fgURI_XSI);
@@ -776,16 +787,6 @@ SelectLanguage:
     SET_BUILT_IN_NAMESPACE(XMLChERR, FunctionError::XMLChXQueryErrorURI);
     SET_BUILT_IN_NAMESPACE(XQillaFunction::XQillaPrefix, XQillaFunction::XMLChFunctionURI);
   }
-
-  | _LANG_XSLT2_ Start_XSLT
-
-  | _LANG_DELAYEDMODULE_ Start_DelayedModule
-  | _LANG_FUNCTION_SIGNATURE_ Start_FunctionSignature
-  ;
-
-XQueryLanguage:
-    _LANG_XQUERY_ Module
-  | _LANG_FUNCDECL_ Start_FunctionDecl
   ;
 
 Start_FunctionDecl:
@@ -873,7 +874,7 @@ DM_FunctionDecl:
 
     const XMLCh *localname = XPath2NSUtils::getLocalName($4);
 
-    printf("  {\n    \"%s\", %d, %s, %d, %d,\n", UTF8(localname), ($5 ? $5->size() : 0),
+    printf("  {\n    \"%s\", %d, %s, %d, %d,\n", UTF8(localname), (int)($5 ? $5->size() : 0),
            $2->privateOption == FunctionSignature::OP_TRUE ? "true" : "false", @1.first_line, @1.first_column);
     printf("    \"");
     const XMLCh *ptr = ((XQLexer*)QP->_lexer)->getQueryString() + @1.first_offset;
