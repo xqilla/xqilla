@@ -1,5 +1,20 @@
 XQilla: an XQuery and XPath 2.0 library and command line interpreter.
 
+
+version 2.2.4 (2010.03.01):
+	* Modified to build against Xerces-C 3.1.0
+	* Modified the DOM 3 API to only orphan grammars if PSVI is enabled.
+	* Fixed computed attribute constructors not to use the default element
+	  namespace for names.
+	* Modified node serialization to generate prefixes for attributes with
+	  no prefix but in a namespace.
+	* Modified node serialization to use existing prefixes if possible.
+	* Fixed an unknown exception during certain update operations.
+	* Build fix for Sun Workshop 6 compiler.
+	* Build fix for older GCC.
+	* Added maintainer mode (--enable-maintainer-mode) to rebuild build
+	  related files.
+
 version 2.2.3 (2009.11.12):
 	* Work around for a Xerces-C bug in DOMDocument::importNode() that
 	  resulted in badly copied prefixes using XQuery Update.
@@ -12,19 +27,19 @@ version 2.2.3 (2009.11.12):
 	* Fixed query/module static-typing to also (re-)static type the modules
 	  it imports.
 	* Fixed a bug in fn:codepoint-equal().
-	
+
 version 2.2.2 (2009.07.02):
-	* Fixed XQillaDocumentImpl::cloneNode() to return an instance of 
+	* Fixed XQillaDocumentImpl::cloneNode() to return an instance of
 	  XQillaDocumentImpl.
-	* Fixed XPath 2.0 so that it doesn't recognize entities in 
+	* Fixed XPath 2.0 so that it doesn't recognize entities in
 	  string literals.
 	* Fixed a bug in the constant folding identity transforms for
 	  arithmetic expressions.
 	* Fixed a bug in the undefined context item check.
-	* Fixed the transform expression to copy document nodes rather than 
+	* Fixed the transform expression to copy document nodes rather than
 	  dissolving them.
-	* Fixed a bug in the static typing of external functions. 
-	* Fixed a bug in fn:matches()with a zero-length string as the first 
+	* Fixed a bug in the static typing of external functions.
+	* Fixed a bug in fn:matches()with a zero-length string as the first
 	  argument.
 	* Fixed a couple of bugs in the debug API, and made it report exit() and
 	  end() events correctly.
@@ -36,14 +51,14 @@ version 2.2.2 (2009.07.02):
 	  deleting a mutex.
 	* Fixed a bug related to unsigned int/XMLSize_t type difference between
 	  Xerces-C 2.8 and 3.0.
-	* Fixed alignment on sparc architectures that could cause a SIGBUS 
+	* Fixed alignment on sparc architectures that could cause a SIGBUS
 	  crash.
 	* Fixed a Windows memory bug involving the URI used in resolving a
 	  document or collection.
 	* Fixed Windows compile warnings related to Xerces-C types.
 	* Updated libtool version to 2.2.6.
 	* Fixed some compiler issues related to the xlC compiler.
-	
+
 version 2.2.0 (2009.01.05):
 	* Added a debugging API, and a command line debugger invoked by passing
 	  a "-d" flag to the command line tool.
@@ -71,7 +86,7 @@ version 2.2.0 (2009.01.05):
 	  document-node(schema-element(XX)).
 	* Fixed a bug in re-writing documents to disk after updating them, when
 	  they have a space in their document URIs.
-	
+
 version 2.1.4 (2008.07.31):
 	* Fixed a bug in XQTreatAs that removed type checking under
 	  circumstances where it was still needed.
@@ -82,7 +97,7 @@ version 2.1.3 (2008.07.29):
 	* Changed the code so that compilation against a patched version of
 	  Xerces-C 2.8 is no longer required. XQilla will build with reduced
 	  functionality without the patches.
-	* Workaround a Windows optimizer issue that caused instance of 
+	* Workaround a Windows optimizer issue that caused instance of
 	  queries to fail in a release build on Windows.
 	* Fixed another Solaris compilation bug.
 
@@ -94,7 +109,7 @@ version 2.1.2 (2008.04.28):
 	  the DOM 3 API with certain schemas.
 	* Fixed a 64 bit compilation problem.
 	* Fixed a Solaris compilation problem.
-	
+
 version 2.1.1 (2008.04.08):
 	* Added the xqilla:parse-json() and xqilla:serialize-json() extension
 	  functions to parse and serialize JSON.
@@ -143,7 +158,7 @@ version 2.0.0 (2007.12.12):
 	  xs:dayTimeDuration to or from an xs:date.
 	* Fixed a bug in XercesNodeImpl which caused a segfault if the node was
 	  created as a value of a global variable in another module.
-	
+
 version 1.1.0 (2007.08.31):
 	* Added support for XQuery Update (Last Call Working Draft, 28 August
 	  2007).
@@ -181,7 +196,7 @@ version 1.1.0 (2007.08.31):
 	* Fixed possible segmentation faults and memory leaks when using the
 	  DOM3 API
 	* A number of other miscellaneous minor bug fixes.
-	
+
 version 1.0.1 (2007.02.12):
 	* Fixed fn:concat() to accept more than 51 arguments.
 	* Fixed module parsing, to use the correct language enumeration when
