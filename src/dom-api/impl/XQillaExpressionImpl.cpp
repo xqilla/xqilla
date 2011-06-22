@@ -65,8 +65,7 @@ XQillaExpressionImpl::XQillaExpressionImpl(const XMLCh *expression,
 		    getPooledString(nsr->lookupNamespaceURI(XMLUni::fgZeroLenString));
 	    _staticContext->setDefaultElementAndTypeNS(defaultElementNS);
     }
-    _compiledExpression = XQilla::parse(expression, _staticContext, NULL, XQilla::NO_ADOPT_CONTEXT,
-                                        _createdWith);
+    _compiledExpression = XQilla::parse(expression, _staticContext, NULL, 0, _createdWith);
   }
   catch(XQException &e) {
     if(XQillaException::getDebug()) {
@@ -78,7 +77,6 @@ XQillaExpressionImpl::XQillaExpressionImpl(const XMLCh *expression,
 
 XQillaExpressionImpl::~XQillaExpressionImpl() 
 {
-  delete _staticContext;
   delete _compiledExpression;
 }
 
