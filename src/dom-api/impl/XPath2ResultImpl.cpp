@@ -76,7 +76,7 @@ XPath2ResultImpl::XPath2ResultImpl(DOMNode* contextNode,
                                    MemoryManager* memMgr,
                                    XQillaExpressionImpl *exprImpl)
   : _createdWith(memMgr),
-    _context(staticContext->createDynamicContext(_createdWith)),
+    _context(exprImpl != 0 ? staticContext : staticContext->createDynamicContext(_createdWith)),
     _currentItem(0),
     _exprToDelete(exprImpl)
 {
@@ -96,8 +96,8 @@ XPath2ResultImpl::XPath2ResultImpl(DOMNode* contextNode,
 
 XPath2ResultImpl::~XPath2ResultImpl() { 
   _currentItem = 0;
-  delete _context;
   if(_exprToDelete) _exprToDelete->release();
+  else delete _context;
 }
 
 const DOMTypeInfo *XPath2ResultImpl::getTypeInfo() const
