@@ -48,7 +48,6 @@
 #include <xercesc/dom/DOMAttr.hpp>
 #include <xercesc/dom/DOMNode.hpp>
 #include <xercesc/validators/schema/SchemaSymbols.hpp>
-#include <xercesc/util/XMLString.hpp>
 #include <xercesc/dom/impl/DOMDocumentImpl.hpp>
 #include <xercesc/util/XMLDOMMsg.hpp>
 
@@ -148,7 +147,7 @@ const XMLCh* XPath2ResultImpl::getNamespace() const
 int XPath2ResultImpl::getIntegerValue() const
 {
   if(_currentItem.isNull()) {
-    throw XQillaException(DOMException::INVALID_STATE_ERR, XMLString::transcode("There is no current result in the result")); 
+    throw XQillaException(DOMException::INVALID_STATE_ERR, X("There is no current result in the result")); 
   }
 
   return FunctionNumber::number(_currentItem, _context, 0)->asInt();
@@ -157,7 +156,7 @@ int XPath2ResultImpl::getIntegerValue() const
 double XPath2ResultImpl::getNumberValue() const
 {
   if(_currentItem.isNull()) {
-    throw XQillaException(DOMException::INVALID_STATE_ERR, XMLString::transcode("There is no current result in the result"));
+    throw XQillaException(DOMException::INVALID_STATE_ERR, X("There is no current result in the result"));
   }
 
   return FunctionNumber::number(_currentItem, _context, 0)->asDouble();
@@ -166,7 +165,7 @@ double XPath2ResultImpl::getNumberValue() const
 const XMLCh* XPath2ResultImpl::getStringValue() const
 {
   if(_currentItem.isNull()) {
-    throw XQillaException(DOMException::INVALID_STATE_ERR, XMLString::transcode("There is no current result in the result"));
+    throw XQillaException(DOMException::INVALID_STATE_ERR, X("There is no current result in the result"));
   }
 
   return FunctionString::string(_currentItem, _context);
@@ -175,7 +174,7 @@ const XMLCh* XPath2ResultImpl::getStringValue() const
 bool XPath2ResultImpl::getBooleanValue() const
 {
   if(_currentItem.isNull()) {
-    throw XQillaException(DOMException::INVALID_STATE_ERR, XMLString::transcode("There is no current result in the result"));
+    throw XQillaException(DOMException::INVALID_STATE_ERR, X("There is no current result in the result"));
   }
 
   if(!_currentItem->isAtomicValue()) {
@@ -195,7 +194,7 @@ bool XPath2ResultImpl::getBooleanValue() const
 DOMNode* XPath2ResultImpl::getNodeValue() const
 {
   if(_currentItem.isNull()) {
-    throw XQillaException(DOMException::INVALID_STATE_ERR, XMLString::transcode("There is no current result in the result"));
+    throw XQillaException(DOMException::INVALID_STATE_ERR, X("There is no current result in the result"));
   }
 
   if(!_currentItem->isNode()) {
@@ -482,7 +481,7 @@ bool XPath2IteratorResultImpl::iterateNext()
 {
   // check for document changes
   if(getInvalidIteratorState()) {
-    throw XQillaException(DOMException::INVALID_STATE_ERR, XMLString::transcode("Document has changed"));
+    throw XQillaException(DOMException::INVALID_STATE_ERR, X("Document has changed"));
   }
 
   try {
