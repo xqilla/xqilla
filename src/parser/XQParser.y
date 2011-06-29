@@ -429,6 +429,8 @@ namespace XQParser {
 %token _COLON_                 ":"
 %token _TILDE_                 "~"
 %token _MINUS_GREATER_THAN_    "->"
+%token _BAR_BAR_               "||"
+
 
 %token <str> _INTEGER_LITERAL_ "<integer literal>"
 %token <str> _DECIMAL_LITERAL_ "<decimal literal>"
@@ -722,7 +724,7 @@ namespace XQParser {
 %type <astNode>      CastableExpr Constructor ComputedConstructor DirElemConstructor DirCommentConstructor DirPIConstructor  
 %type <astNode>      CompElemConstructor CompTextConstructor CompPIConstructor CompCommentConstructor OrderedExpr UnorderedExpr
 %type <astNode>      CompAttrConstructor CompDocConstructor DoubleLiteral InstanceofExpr DirectConstructor 
-%type <astNode>      ExtensionExpr FTContainsExpr FTIgnoreOption VarDeclValue LeadingSlash CompPINCName
+%type <astNode>      ExtensionExpr FTContainsExpr FTIgnoreOption VarDeclValue LeadingSlash CompPINCName StringConcatExpr
 %type <astNode>      InsertExpr DeleteExpr RenameExpr ReplaceExpr TransformExpr CompElementName CompAttrName
 %type <astNode>      ForwardStep ReverseStep AbbrevForwardStep AbbrevReverseStep OrderExpr CompPIConstructorContent
 %type <astNode>      PathPattern_XSLT IdValue_XSLT KeyValue_XSLT CallTemplateExpr ApplyTemplatesExpr
@@ -3723,13 +3725,24 @@ ComparisonExpr:
 
 // [51]    FTContainsExpr    ::=    RangeExpr ( "contains" "text" FTSelection FTIgnoreOption? )?
 FTContainsExpr:
-  RangeExpr _CONTAINS_ _TEXT_ FTSelection
+  StringConcatExpr _CONTAINS_ _TEXT_ FTSelection
   {
     $$ = WRAP(@2, new (MEMMGR) FTContains($1, $4, NULL, MEMMGR));
   }
-  | RangeExpr _CONTAINS_ _TEXT_ FTSelection FTIgnoreOption
+  | StringConcatExpr _CONTAINS_ _TEXT_ FTSelection FTIgnoreOption
   {
     $$ = WRAP(@2, new (MEMMGR) FTContains($1, $4, $5, MEMMGR));
+  }
+  | StringConcatExpr
+  ;
+
+StringConcatExpr:
+  StringConcatExpr _BAR_BAR_ RangeExpr
+  {
+    VectorOfASTNodes *args = new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR));
+    args->push_back($1);
+    args->push_back($3);
+    $$ = WRAP(@2, new (MEMMGR) XQFunctionCall(0, BuiltInModules::fn.uri, MEMMGR->getPooledString("concat"), args, MEMMGR));
   }
   | RangeExpr
   ;
