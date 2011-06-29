@@ -37,6 +37,7 @@
 #include <xqilla/context/ItemFactory.hpp>
 #include <xqilla/utils/ContextUtils.hpp>
 #include <xqilla/utils/XPath2Utils.hpp>
+#include <xqilla/utils/NumUtils.hpp>
 #include <xqilla/exceptions/XPath2TypeCastException.hpp>
 
 #include <xercesc/util/Mutexes.hpp>
@@ -148,7 +149,7 @@ int DateUtils::asInt(MAPM num)
   if(num < INT_MIN || num > INT_MAX) {
     XQThrow2(XPath2TypeCastException, X("DateUtils::asInt"), X("Invalid representation of an int [err:FORG0001]"));
   } else {
-    return (int)num.toDouble();
+    return NumUtils::MAPMtoInt(num);
   }
 }
 
