@@ -255,160 +255,160 @@ int yyFlexLexer::yylex()
 	*yy_cp = (YY_CHAR) '\0'; \
 	yy_c_buf_p = yy_cp;
 
-#define YY_NUM_RULES 273
-#define YY_END_OF_BUFFER 274
+#define YY_NUM_RULES 274
+#define YY_END_OF_BUFFER 275
 static yyconst short int yy_accept[1364] =
     {   0,
         0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
-        0,    0,    0,    0,  231,  231,  225,  225,  228,  228,
-        0,    0,    0,    0,  248,  248,    0,    0,  223,  223,
-        0,    0,    0,    0,    0,    0,  274,  272,    6,  272,
-      272,  181,   15,  182,  272,   17,   18,   19,   11,   14,
-       10,   30,  251,    1,   34,   13,  219,   12,   23,   33,
-       28,  254,   31,   32,  254,  254,  254,  254,  254,  254,
-      254,  254,  254,  254,  254,  254,  254,  254,  254,  254,
-      254,  254,  254,  254,  254,  215,   20,  217,   35,  254,
-      254,    8,    8,    8,    8,  236,  272,  237,  237,  237,
+        0,    0,    0,    0,  232,  232,  226,  226,  229,  229,
+        0,    0,    0,    0,  249,  249,    0,    0,  224,  224,
+        0,    0,    0,    0,    0,    0,  275,  273,    6,  184,
+      273,  181,   15,  182,  273,   17,   18,   19,   11,   14,
+       10,   30,  252,    1,   34,   13,  220,   12,   23,   33,
+       28,  255,   31,   32,  255,  255,  255,  255,  255,  255,
+      255,  255,  255,  255,  255,  255,  255,  255,  255,  255,
+      255,  255,  255,  255,  255,  216,   20,  218,   35,  255,
+      255,    8,    8,    8,    8,  237,  273,  238,  238,  238,
 
-      239,  272,  272,  272,  272,  257,  224,  227,  272,  234,
-      221,  254,  254,  254,  254,  222,  230,  231,  218,  219,
-      215,  216,  231,  225,  226,  218,  220,  215,  216,  225,
-      228,  218,  229,  215,  216,  228,  244,  272,  243,  243,
-      243,  243,  243,  272,  272,  272,  248,  272,  248,  214,
-        6,  214,  213,  213,  213,  223,  215,  216,  272,  223,
-      262,  272,  258,  258,  258,  268,  267,  267,  267,  267,
-      267,  267,  270,  269,  269,  269,    6,   21,    0,    4,
-        0,    0,    0,    0,    0,    0,    4,  235,    7,    0,
-       36,   29,    2,  252,    2,    1,  271,  271,   27,   16,
+      240,  273,  273,  273,  273,  258,  225,  228,  273,  235,
+      222,  255,  255,  255,  255,  223,  231,  232,  219,  220,
+      216,  217,  232,  226,  227,  219,  221,  216,  217,  226,
+      229,  219,  230,  216,  217,  229,  245,  273,  244,  244,
+      244,  244,  244,  273,  273,  273,  249,  273,  249,  215,
+        6,  215,  214,  214,  214,  224,  216,  217,  273,  224,
+      263,  273,  259,  259,  259,  269,  268,  268,  268,  268,
+      268,  268,  271,  270,  270,  270,    6,   21,    0,    4,
+        0,    0,    0,    0,    0,    0,    4,  236,    7,    0,
+       36,   29,    2,  253,    2,    1,  272,  272,   27,   16,
 
-        0,   25,   22,  241,   24,   26,  254,  254,    0,  254,
-      254,  254,  254,  254,  254,  254,  254,   73,  209,  254,
-      254,  254,   79,  254,  254,  254,  254,  254,  254,  254,
-      254,  254,   99,  254,  254,  254,  254,  254,  254,  254,
-      104,  254,  103,  165,   44,  254,   78,  105,  254,  254,
-      254,  102,  254,  101,  254,  254,  254,  100,  167,  254,
-       95,  254,   85,  254,  254,  254,  254,  254,  254,  254,
-      254,  254,  254,  254,  254,  254,   87,  254,  254,  254,
-      254,  254,  254,  254,  254,  254,  254,  254,  254,  254,
-      183,    9,  236,  237,  237,    0,  237,  237,  237,  237,
+        0,   25,   22,  242,   24,   26,  255,  255,    0,  255,
+      255,  255,  255,  255,  255,  255,  255,   73,  210,  255,
+      255,  255,   79,  255,  255,  255,  255,  255,  255,  255,
+      255,  255,   99,  255,  255,  255,  255,  255,  255,  255,
+      104,  255,  103,  165,   44,  255,   78,  105,  255,  255,
+      255,  102,  255,  101,  255,  255,  255,  100,  167,  255,
+       95,  255,   85,  255,  255,  255,  255,  255,  255,  255,
+      255,  255,  255,  255,  255,  255,   87,  255,  255,  255,
+      255,  255,  255,  255,  255,  255,  255,  255,  255,  255,
+      183,    9,  237,  238,  238,    0,  238,  238,  238,  238,
 
-      239,  238,    0,    0,    0,    0,    0,  240,    0,  257,
-      232,  254,  254,    0,  254,  254,  254,  254,  254,  230,
-      231,    0,    0,    0,    0,  231,    0,    0,    0,    0,
-        0,    0,  233,  231,  225,    0,    0,    0,    0,  225,
-      225,    0,    0,    0,    0,    0,  228,    0,    0,    0,
-        0,  228,    0,    0,    0,    0,    0,  228,  244,  245,
-      243,  243,  243,  243,  243,  243,  243,  243,  243,  243,
-        0,    0,    0,    0,  246,    0,    0,  248,    0,  248,
-      248,  249,  248,  213,  213,    0,  213,  213,  213,  213,
-      223,    0,    0,    0,  223,  223,    0,  262,  258,  258,
+      240,  239,    0,    0,    0,    0,    0,  241,    0,  258,
+      233,  255,  255,    0,  255,  255,  255,  255,  255,  231,
+      232,    0,    0,    0,    0,  232,    0,    0,    0,    0,
+        0,    0,  234,  232,  226,    0,    0,    0,    0,  226,
+      226,    0,    0,    0,    0,    0,  229,    0,    0,    0,
+        0,  229,    0,    0,    0,    0,    0,  229,  245,  246,
+      244,  244,  244,  244,  244,  244,  244,  244,  244,  244,
+        0,    0,    0,    0,  247,    0,    0,  249,    0,  249,
+      249,  250,  249,  214,  214,    0,  214,  214,  214,  214,
+      224,    0,    0,    0,  224,  224,    0,  263,  259,  259,
 
-        0,  258,  258,  258,  258,  268,  267,  267,    0,  267,
-      267,  267,  267,  267,  267,  267,  267,  270,  269,  269,
-        0,  269,  269,  269,  269,    0,    5,    0,    0,    0,
+        0,  259,  259,  259,  259,  269,  268,  268,    0,  268,
+      268,  268,  268,  268,  268,  268,  268,  271,  270,  270,
+        0,  270,  270,  270,  270,    0,    5,    0,    0,    0,
         0,    0,    0,    0,    0,    0,    0,    5,    0,    0,
-        0,    0,  256,  256,  256,    2,  271,    0,    3,    0,
-      255,  254,  254,  254,  254,  137,  254,   86,  136,  254,
-      254,  254,  254,  254,  254,  254,  254,  254,  254,  254,
-      254,  254,  254,  254,  254,  254,  254,  254,  254,  254,
-       88,  254,  254,  254,  254,  254,  154,  254,  254,  254,
-      254,  254,  254,  254,   77,  254,  254,  254,  254,  254,
+        0,    0,  257,  257,  257,    2,  272,    0,    3,    0,
+      256,  255,  255,  255,  255,  137,  255,   86,  136,  255,
+      255,  255,  255,  255,  255,  255,  255,  255,  255,  255,
+      255,  255,  255,  255,  255,  255,  255,  255,  255,  255,
+       88,  255,  255,  255,  255,  255,  154,  255,  255,  255,
+      255,  255,  255,  255,   77,  255,  255,  255,  255,  255,
 
-      254,  254,  254,  254,  254,  254,  254,  254,  166,  254,
-      254,   74,  254,  186,  254,  254,  178,  254,   90,  254,
-      254,  254,  254,  120,  254,  254,  254,  254,  254,  254,
-      254,  254,  254,  254,  254,  254,  254,  254,  254,  254,
-      254,  254,  254,  254,  254,  254,  254,  254,  254,  254,
-      254,  254,  254,  254,  254,  254,  254,  254,  254,  254,
-      254,  254,  254,  254,  254,  254,  254,  254,  254,  254,
-      237,  237,  237,    0,  240,    0,  254,    0,    0,    0,
+      255,  255,  255,  255,  255,  255,  255,  255,  166,  255,
+      255,   74,  255,  187,  255,  255,  178,  255,   90,  255,
+      255,  255,  255,  120,  255,  255,  255,  255,  255,  255,
+      255,  255,  255,  255,  255,  255,  255,  255,  255,  255,
+      255,  255,  255,  255,  255,  255,  255,  255,  255,  255,
+      255,  255,  255,  255,  255,  255,  255,  255,  255,  255,
+      255,  255,  255,  255,  255,  255,  255,  255,  255,  255,
+      238,  238,  238,    0,  241,    0,  255,    0,    0,    0,
         0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
-        0,    0,    0,    0,    0,    0,    0,  242,    0,  246,
+        0,    0,    0,    0,    0,    0,    0,  243,    0,  247,
 
-        0,  250,  213,  213,  213,    0,  258,  258,  258,  267,
-      267,  267,  267,  267,  267,  263,  269,  269,  269,    0,
-        0,    0,    0,    0,    0,  260,    0,    0,    0,    0,
-        0,    0,    0,    0,  256,  256,  256,  256,  256,  256,
-        3,  271,  247,  254,  254,  254,  254,  254,  254,  254,
-      254,  254,  254,  254,  254,  254,  254,  173,  207,   98,
-      254,  254,  254,  254,  254,  203,  254,  254,  254,  254,
-      254,  254,  254,  254,  254,  254,   84,  254,  254,  254,
-      254,  254,  254,  254,  254,  254,  141,  254,  254,  254,
-      194,  254,  254,   89,  254,  254,  254,  254,  254,  160,
+        0,  251,  214,  214,  214,    0,  259,  259,  259,  268,
+      268,  268,  268,  268,  268,  264,  270,  270,  270,    0,
+        0,    0,    0,    0,    0,  261,    0,    0,    0,    0,
+        0,    0,    0,    0,  257,  257,  257,  257,  257,  257,
+        3,  272,  248,  255,  255,  255,  255,  255,  255,  255,
+      255,  255,  255,  255,  255,  255,  255,  173,  208,   98,
+      255,  255,  255,  255,  255,  204,  255,  255,  255,  255,
+      255,  255,  255,  255,  255,  255,   84,  255,  255,  255,
+      255,  255,  255,  255,  255,  255,  141,  255,  255,  255,
+      195,  255,  255,   89,  255,  255,  255,  255,  255,  160,
 
-       45,  254,  159,  254,  254,  254,  254,  176,  254,  254,
-      155,  172,  254,  254,   46,  254,  254,  254,  254,  254,
-      254,  254,  254,  254,  254,  254,  254,  254,  254,  146,
-      254,  254,  254,  109,  254,  254,  156,   80,  254,  254,
-      254,  130,  254,  254,   49,   83,  254,  254,  254,  254,
-      152,  254,  254,  254,  254,  254,  254,  254,  254,  254,
-      254,  254,  254,  254,  168,  139,  254,  237,  237,  237,
-      237,  237,  237,  254,    0,    0,    0,    0,    0,    0,
-        0,    0,    0,    0,  213,  213,  213,  213,  213,  213,
-      258,  258,  258,  258,  258,  258,  267,  267,  267,  267,
+       45,  255,  159,  255,  255,  255,  255,  176,  255,  255,
+      155,  172,  255,  255,   46,  255,  255,  255,  255,  255,
+      255,  255,  255,  255,  255,  255,  255,  255,  255,  146,
+      255,  255,  255,  109,  255,  255,  156,   80,  255,  255,
+      255,  130,  255,  255,   49,   83,  255,  255,  255,  255,
+      152,  255,  255,  255,  255,  255,  255,  255,  255,  255,
+      255,  255,  255,  255,  168,  139,  255,  238,  238,  238,
+      238,  238,  238,  255,    0,    0,    0,    0,    0,    0,
+        0,    0,    0,    0,  214,  214,  214,  214,  214,  214,
+      259,  259,  259,  259,  259,  259,  268,  268,  268,  268,
 
-      267,  267,  264,  266,  267,  269,  269,  269,  269,  269,
-      269,    0,    0,    0,    0,    0,    0,    0,    0,  161,
-      254,  174,  254,  254,  254,  254,  254,  254,  107,  254,
-      254,  254,  254,  254,  254,  184,  254,  254,  254,  254,
-      254,  254,  254,  254,  254,   62,  254,  254,   81,  254,
-      254,  254,  158,  254,  254,  195,  196,  254,  254,  254,
-      254,  254,  254,  254,  254,  254,   41,  254,  254,  254,
-      254,  254,  254,  254,  254,  164,  254,  254,  188,  254,
-      254,  254,  254,  254,  254,  254,  254,  254,  254,  254,
-      254,  254,  192,  254,  254,  254,  153,  254,  254,   56,
+      268,  268,  265,  267,  268,  270,  270,  270,  270,  270,
+      270,    0,    0,    0,    0,    0,    0,    0,    0,  161,
+      255,  174,  255,  255,  255,  255,  255,  255,  107,  255,
+      255,  255,  255,  255,  255,  185,  255,  255,  255,  255,
+      255,  255,  255,  255,  255,   62,  255,  255,   81,  255,
+      255,  255,  158,  255,  255,  196,  197,  255,  255,  255,
+      255,  255,  255,  255,  255,  255,   41,  255,  255,  255,
+      255,  255,  255,  255,  255,  164,  255,  255,  189,  255,
+      255,  255,  255,  255,  255,  255,  255,  255,  255,  255,
+      255,  255,  193,  255,  255,  255,  153,  255,  255,   56,
 
-      254,  254,  145,   96,  177,  254,  254,   91,  254,  254,
-      254,  208,  254,  157,  254,  254,  254,  187,  254,  254,
-      254,  131,  254,  253,    0,  265,    0,    0,  254,  254,
-      254,  254,  162,  254,  254,  254,  254,  254,  254,  254,
-      254,  254,  254,  200,  254,  254,  254,  254,  254,  254,
-      254,  254,  134,  254,   93,  254,  254,  254,  254,  254,
-       69,  254,  254,  199,  254,  254,  254,  129,  254,  254,
-      163,  205,  254,  254,  254,  144,   58,  254,  254,  254,
-      113,  138,  254,  254,  254,  254,  202,  254,   76,  254,
-      254,   70,  254,  254,  189,  254,   75,  254,  254,  254,
+      255,  255,  145,   96,  177,  255,  255,   91,  255,  255,
+      255,  209,  255,  157,  255,  255,  255,  188,  255,  255,
+      255,  131,  255,  254,    0,  266,    0,    0,  255,  255,
+      255,  255,  162,  255,  255,  255,  255,  255,  255,  255,
+      255,  255,  255,  201,  255,  255,  255,  255,  255,  255,
+      255,  255,  134,  255,   93,  255,  255,  255,  255,  255,
+       69,  255,  255,  200,  255,  255,  255,  129,  255,  255,
+      163,  206,  255,  255,  255,  144,   58,  255,  255,  255,
+      113,  138,  255,  255,  255,  255,  203,  255,   76,  255,
+      255,   70,  255,  255,  190,  255,   75,  255,  255,  255,
 
-      254,  254,  254,  254,  254,  254,  254,  119,  254,  143,
-      254,  204,    0,    0,    0,    0,  254,  254,  254,  254,
-      254,  254,  254,   42,  254,  254,  135,  254,   53,   57,
-      254,  254,  254,  254,  254,  210,  254,  254,  140,  254,
-      254,  254,  254,  254,   65,  254,  254,  254,  254,  254,
-      171,  254,  254,  254,   60,  254,  254,  254,  254,  254,
-      254,  201,  254,  254,  254,  254,  254,  254,  254,  254,
-      254,  254,  254,  254,  254,  254,  254,   51,  254,  206,
-      253,  253,  253,    0,  261,  259,  114,  254,  254,   68,
-      254,   97,  254,  254,  193,  254,  254,  254,  254,  254,
+      255,  255,  255,  255,  255,  255,  255,  119,  255,  143,
+      255,  205,    0,    0,    0,    0,  255,  255,  255,  255,
+      255,  255,  255,   42,  255,  255,  135,  255,   53,   57,
+      255,  255,  255,  255,  255,  211,  255,  255,  140,  255,
+      255,  255,  255,  255,   65,  255,  255,  255,  255,  255,
+      171,  255,  255,  255,   60,  255,  255,  255,  255,  255,
+      255,  202,  255,  255,  255,  255,  255,  255,  255,  255,
+      255,  255,  255,  255,  255,  255,  255,   51,  255,  207,
+      254,  254,  254,    0,  262,  260,  114,  255,  255,   68,
+      255,   97,  255,  255,  194,  255,  255,  255,  255,  255,
 
-      142,  118,  254,   52,   37,  254,  254,  180,   40,  254,
-       94,  254,  132,  254,  254,  254,  254,   59,  254,  254,
-       55,  254,  254,  254,  254,  254,  254,  254,  150,  126,
-      170,  254,  254,  254,  254,  198,  254,  106,   71,  254,
-      253,  253,  253,  253,  253,  253,    0,  254,   38,  211,
-      254,   67,  254,  254,  254,  254,  254,  147,  254,  254,
-      112,  191,  254,   92,  121,  169,  254,  254,  151,  116,
-      254,  254,  254,   82,  254,  254,  123,  148,  175,  127,
-      254,  254,   61,  122,  133,    0,  254,  254,  254,  254,
-      108,   39,  125,  254,  254,  254,  254,  254,   66,  254,
+      142,  118,  255,   52,   37,  255,  255,  180,   40,  255,
+       94,  255,  132,  255,  255,  255,  255,   59,  255,  255,
+       55,  255,  255,  255,  255,  255,  255,  255,  150,  126,
+      170,  255,  255,  255,  255,  199,  255,  106,   71,  255,
+      254,  254,  254,  254,  254,  254,    0,  255,   38,  212,
+      255,   67,  255,  255,  255,  255,  255,  147,  255,  255,
+      112,  192,  255,   92,  121,  169,  255,  255,  151,  116,
+      255,  255,  255,   82,  255,  255,  123,  148,  175,  127,
+      255,  255,   61,  122,  133,    0,  255,  255,  255,  255,
+      108,   39,  125,  255,  255,  255,  255,  255,   66,  255,
 
-      149,  254,  254,  254,  254,  254,  254,  179,  190,    0,
-        0,    0,  254,  254,  254,  254,  254,  254,  254,  254,
-      124,  254,   64,  254,  254,  254,  254,  254,  254,    0,
-        0,    0,  254,  254,   72,  254,  254,  254,  254,  254,
-      254,  254,  254,  128,  197,  254,  254,    0,    0,    0,
-      254,  254,  254,  254,   43,  254,  254,  254,  254,  254,
-      254,  254,    0,  231,    0,    0,  254,   54,  254,  254,
-       50,  254,  185,  254,  254,  254,   48,  231,    0,    0,
-      231,    0,    0,  231,    0,  231,    0,  254,   63,  254,
-      254,  254,  254,  254,    0,    0,    0,    0,    0,    0,
+      149,  255,  255,  255,  255,  255,  255,  179,  191,    0,
+        0,    0,  255,  255,  255,  255,  255,  255,  255,  255,
+      124,  255,   64,  255,  255,  255,  255,  255,  255,    0,
+        0,    0,  255,  255,   72,  255,  255,  255,  255,  255,
+      255,  255,  255,  128,  198,  255,  255,    0,    0,    0,
+      255,  255,  255,  255,   43,  255,  255,  255,  255,  255,
+      255,  255,    0,  232,    0,    0,  255,   54,  255,  255,
+       50,  255,  186,  255,  255,  255,   48,  232,    0,    0,
+      232,    0,    0,  232,    0,  232,    0,  255,   63,  255,
+      255,  255,  255,  255,    0,    0,    0,    0,    0,    0,
 
-      231,    0,    0,  231,    0,    0,  231,  117,  254,  254,
-      254,  254,   47,    0,    0,    0,    0,    0,    0,    0,
-      231,    0,    0,  231,  231,    0,    0,  231,  254,  111,
-      115,  254,    0,    0,    0,    0,  231,    0,    0,  231,
-      231,    0,    0,  231,  110,  254,    0,  231,    0,    0,
-      231,    0,    0,  231,  254,    0,  254,    0,  254,    0,
-      212,    0,    0
+      232,    0,    0,  232,    0,    0,  232,  117,  255,  255,
+      255,  255,   47,    0,    0,    0,    0,    0,    0,    0,
+      232,    0,    0,  232,  232,    0,    0,  232,  255,  111,
+      115,  255,    0,    0,    0,    0,  232,    0,    0,  232,
+      232,    0,    0,  232,  110,  255,    0,  232,    0,    0,
+      232,    0,    0,  232,  255,    0,  255,    0,  255,    0,
+      213,    0,    0
     } ;
 
 static yyconst unsigned short yy_ec[65536] =
@@ -15207,10 +15207,10 @@ case 184:
 YY_RULE_SETUP
 #line 530 "../src/lexer/XQLexer.l"
 {
-  if(isVersion11() && lookAhead() == _DOLLAR_) {
-    RECOGNIZE_VALUE(_COUNT_, yytext);
+  if(isVersion11()) {
+    RECOGNIZE(_BANG_);
   } else {
-    RECOGNIZE_VALUE(_QNAME_, yytext);
+    return error("Unrecognized token '!'");
   }
 }
 	YY_BREAK
@@ -15218,8 +15218,8 @@ case 185:
 YY_RULE_SETUP
 #line 537 "../src/lexer/XQLexer.l"
 {
-  if(isVersion11()) {
-    RECOGNIZE_VALUE(_NAMESPACE_NODE_, yytext);
+  if(isVersion11() && lookAhead() == _DOLLAR_) {
+    RECOGNIZE_VALUE(_COUNT_, yytext);
   } else {
     RECOGNIZE_VALUE(_QNAME_, yytext);
   }
@@ -15227,10 +15227,10 @@ YY_RULE_SETUP
 	YY_BREAK
 case 186:
 YY_RULE_SETUP
-#line 545 "../src/lexer/XQLexer.l"
+#line 544 "../src/lexer/XQLexer.l"
 {
-  if(isXQuery()) {
-    RECOGNIZE_VALUE(_LET_, yytext);
+  if(isVersion11()) {
+    RECOGNIZE_VALUE(_NAMESPACE_NODE_, yytext);
   } else {
     RECOGNIZE_VALUE(_QNAME_, yytext);
   }
@@ -15241,7 +15241,7 @@ YY_RULE_SETUP
 #line 552 "../src/lexer/XQLexer.l"
 {
   if(isXQuery()) {
-    RECOGNIZE_VALUE(_WHERE_, yytext);
+    RECOGNIZE_VALUE(_LET_, yytext);
   } else {
     RECOGNIZE_VALUE(_QNAME_, yytext);
   }
@@ -15252,7 +15252,7 @@ YY_RULE_SETUP
 #line 559 "../src/lexer/XQLexer.l"
 {
   if(isXQuery()) {
-    RECOGNIZE_VALUE(_ORDER_, yytext);
+    RECOGNIZE_VALUE(_WHERE_, yytext);
   } else {
     RECOGNIZE_VALUE(_QNAME_, yytext);
   }
@@ -15263,7 +15263,7 @@ YY_RULE_SETUP
 #line 566 "../src/lexer/XQLexer.l"
 {
   if(isXQuery()) {
-    RECOGNIZE_VALUE(_STABLE_, yytext);
+    RECOGNIZE_VALUE(_ORDER_, yytext);
   } else {
     RECOGNIZE_VALUE(_QNAME_, yytext);
   }
@@ -15274,7 +15274,7 @@ YY_RULE_SETUP
 #line 573 "../src/lexer/XQLexer.l"
 {
   if(isXQuery()) {
-    RECOGNIZE_VALUE(_TYPESWITCH_, yytext);
+    RECOGNIZE_VALUE(_STABLE_, yytext);
   } else {
     RECOGNIZE_VALUE(_QNAME_, yytext);
   }
@@ -15282,10 +15282,10 @@ YY_RULE_SETUP
 	YY_BREAK
 case 191:
 YY_RULE_SETUP
-#line 581 "../src/lexer/XQLexer.l"
+#line 580 "../src/lexer/XQLexer.l"
 {
-  if(isFullText()) {
-    RECOGNIZE_VALUE(_FT_OPTION_, yytext);
+  if(isXQuery()) {
+    RECOGNIZE_VALUE(_TYPESWITCH_, yytext);
   } else {
     RECOGNIZE_VALUE(_QNAME_, yytext);
   }
@@ -15296,7 +15296,7 @@ YY_RULE_SETUP
 #line 588 "../src/lexer/XQLexer.l"
 {
   if(isFullText()) {
-    RECOGNIZE_VALUE(_SCORE_, yytext);
+    RECOGNIZE_VALUE(_FT_OPTION_, yytext);
   } else {
     RECOGNIZE_VALUE(_QNAME_, yytext);
   }
@@ -15307,7 +15307,7 @@ YY_RULE_SETUP
 #line 595 "../src/lexer/XQLexer.l"
 {
   if(isFullText()) {
-    RECOGNIZE_VALUE(_CONTAINS_, yytext);
+    RECOGNIZE_VALUE(_SCORE_, yytext);
   } else {
     RECOGNIZE_VALUE(_QNAME_, yytext);
   }
@@ -15318,7 +15318,7 @@ YY_RULE_SETUP
 #line 602 "../src/lexer/XQLexer.l"
 {
   if(isFullText()) {
-    RECOGNIZE_VALUE(_FTOR_, yytext);
+    RECOGNIZE_VALUE(_CONTAINS_, yytext);
   } else {
     RECOGNIZE_VALUE(_QNAME_, yytext);
   }
@@ -15329,7 +15329,7 @@ YY_RULE_SETUP
 #line 609 "../src/lexer/XQLexer.l"
 {
   if(isFullText()) {
-    RECOGNIZE_VALUE(_FTAND_, yytext);
+    RECOGNIZE_VALUE(_FTOR_, yytext);
   } else {
     RECOGNIZE_VALUE(_QNAME_, yytext);
   }
@@ -15340,7 +15340,7 @@ YY_RULE_SETUP
 #line 616 "../src/lexer/XQLexer.l"
 {
   if(isFullText()) {
-    RECOGNIZE_VALUE(_FTNOT_, yytext);
+    RECOGNIZE_VALUE(_FTAND_, yytext);
   } else {
     RECOGNIZE_VALUE(_QNAME_, yytext);
   }
@@ -15348,10 +15348,10 @@ YY_RULE_SETUP
 	YY_BREAK
 case 197:
 YY_RULE_SETUP
-#line 624 "../src/lexer/XQLexer.l"
+#line 623 "../src/lexer/XQLexer.l"
 {
-  if(isUpdate()) {
-    RECOGNIZE_VALUE(_REVALIDATION_, yytext);
+  if(isFullText()) {
+    RECOGNIZE_VALUE(_FTNOT_, yytext);
   } else {
     RECOGNIZE_VALUE(_QNAME_, yytext);
   }
@@ -15362,7 +15362,7 @@ YY_RULE_SETUP
 #line 631 "../src/lexer/XQLexer.l"
 {
   if(isUpdate()) {
-    RECOGNIZE_VALUE(_UPDATING_, yytext);
+    RECOGNIZE_VALUE(_REVALIDATION_, yytext);
   } else {
     RECOGNIZE_VALUE(_QNAME_, yytext);
   }
@@ -15373,7 +15373,7 @@ YY_RULE_SETUP
 #line 638 "../src/lexer/XQLexer.l"
 {
   if(isUpdate()) {
-    RECOGNIZE_VALUE(_INSERT_, yytext);
+    RECOGNIZE_VALUE(_UPDATING_, yytext);
   } else {
     RECOGNIZE_VALUE(_QNAME_, yytext);
   }
@@ -15384,7 +15384,7 @@ YY_RULE_SETUP
 #line 645 "../src/lexer/XQLexer.l"
 {
   if(isUpdate()) {
-    RECOGNIZE_VALUE(_DELETE_, yytext);
+    RECOGNIZE_VALUE(_INSERT_, yytext);
   } else {
     RECOGNIZE_VALUE(_QNAME_, yytext);
   }
@@ -15395,7 +15395,7 @@ YY_RULE_SETUP
 #line 652 "../src/lexer/XQLexer.l"
 {
   if(isUpdate()) {
-    RECOGNIZE_VALUE(_REPLACE_, yytext);
+    RECOGNIZE_VALUE(_DELETE_, yytext);
   } else {
     RECOGNIZE_VALUE(_QNAME_, yytext);
   }
@@ -15406,7 +15406,7 @@ YY_RULE_SETUP
 #line 659 "../src/lexer/XQLexer.l"
 {
   if(isUpdate()) {
-    RECOGNIZE_VALUE(_RENAME_, yytext);
+    RECOGNIZE_VALUE(_REPLACE_, yytext);
   } else {
     RECOGNIZE_VALUE(_QNAME_, yytext);
   }
@@ -15417,7 +15417,7 @@ YY_RULE_SETUP
 #line 666 "../src/lexer/XQLexer.l"
 {
   if(isUpdate()) {
-    RECOGNIZE_VALUE(_COPY_, yytext);
+    RECOGNIZE_VALUE(_RENAME_, yytext);
   } else {
     RECOGNIZE_VALUE(_QNAME_, yytext);
   }
@@ -15425,7 +15425,18 @@ YY_RULE_SETUP
 	YY_BREAK
 case 204:
 YY_RULE_SETUP
-#line 674 "../src/lexer/XQLexer.l"
+#line 673 "../src/lexer/XQLexer.l"
+{
+  if(isUpdate()) {
+    RECOGNIZE_VALUE(_COPY_, yytext);
+  } else {
+    RECOGNIZE_VALUE(_QNAME_, yytext);
+  }
+}
+	YY_BREAK
+case 205:
+YY_RULE_SETUP
+#line 681 "../src/lexer/XQLexer.l"
 {
   int tok = lookAhead();
   if(tok == _VERSION_ || (isVersion11() && tok == _ENCODING_)) {
@@ -15435,9 +15446,9 @@ YY_RULE_SETUP
   }
 }
 	YY_BREAK
-case 205:
+case 206:
 YY_RULE_SETUP
-#line 682 "../src/lexer/XQLexer.l"
+#line 689 "../src/lexer/XQLexer.l"
 {
   int tok = lookAhead();
   if(tok == _NAMESPACE_ || tok == _STRING_LITERAL_) {
@@ -15447,9 +15458,9 @@ YY_RULE_SETUP
   }
 }
 	YY_BREAK
-case 206:
+case 207:
 YY_RULE_SETUP
-#line 690 "../src/lexer/XQLexer.l"
+#line 697 "../src/lexer/XQLexer.l"
 {
   if(lookAhead() == _CONTENT_) {
     RECOGNIZE_VALUE(_WITHOUT_C_, yytext);
@@ -15458,9 +15469,9 @@ YY_RULE_SETUP
   }
 }
 	YY_BREAK
-case 207:
+case 208:
 YY_RULE_SETUP
-#line 697 "../src/lexer/XQLexer.l"
+#line 704 "../src/lexer/XQLexer.l"
 {
   int tok = lookAhead();
   if(tok == _SENSITIVE_ || tok == _INSENSITIVE_) {
@@ -15470,9 +15481,9 @@ YY_RULE_SETUP
   }
 }
 	YY_BREAK
-case 208:
+case 209:
 YY_RULE_SETUP
-#line 705 "../src/lexer/XQLexer.l"
+#line 712 "../src/lexer/XQLexer.l"
 {
   if(isFullText()) {
     RECOGNIZE_VALUE(_USING_, yytext);
@@ -15481,9 +15492,9 @@ YY_RULE_SETUP
   }
 }
 	YY_BREAK
-case 209:
+case 210:
 YY_RULE_SETUP
-#line 712 "../src/lexer/XQLexer.l"
+#line 719 "../src/lexer/XQLexer.l"
 {
   int tok = lookAhead();
   if(tok == _LEAST_ || tok == _MOST_) {
@@ -15493,24 +15504,24 @@ YY_RULE_SETUP
   }
 }
 	YY_BREAK
-case 210:
-YY_RULE_SETUP
-#line 721 "../src/lexer/XQLexer.l"
-CHANGE_STATE(COMPUTED_CONSTRUCTOR); RECOGNIZE_VALUE(_ELEMENT_, yytext);
-	YY_BREAK
 case 211:
 YY_RULE_SETUP
-#line 722 "../src/lexer/XQLexer.l"
-CHANGE_STATE(COMPUTED_CONSTRUCTOR); RECOGNIZE_VALUE(_ATTRIBUTE_, yytext);
+#line 728 "../src/lexer/XQLexer.l"
+CHANGE_STATE(COMPUTED_CONSTRUCTOR); RECOGNIZE_VALUE(_ELEMENT_, yytext);
 	YY_BREAK
 case 212:
 YY_RULE_SETUP
-#line 723 "../src/lexer/XQLexer.l"
-CHANGE_STATE(COMPUTED_CONSTRUCTOR); RECOGNIZE_VALUE(_PROCESSING_INSTRUCTION_, yytext);
+#line 729 "../src/lexer/XQLexer.l"
+CHANGE_STATE(COMPUTED_CONSTRUCTOR); RECOGNIZE_VALUE(_ATTRIBUTE_, yytext);
 	YY_BREAK
 case 213:
 YY_RULE_SETUP
-#line 724 "../src/lexer/XQLexer.l"
+#line 730 "../src/lexer/XQLexer.l"
+CHANGE_STATE(COMPUTED_CONSTRUCTOR); RECOGNIZE_VALUE(_PROCESSING_INSTRUCTION_, yytext);
+	YY_BREAK
+case 214:
+YY_RULE_SETUP
+#line 731 "../src/lexer/XQLexer.l"
 {
   CHANGE_STATE(INITIAL);
   if(lookAhead() == _LBRACE_) {
@@ -15521,319 +15532,319 @@ YY_RULE_SETUP
   }
 }
 	YY_BREAK
-case 214:
+case 215:
 YY_RULE_SETUP
-#line 733 "../src/lexer/XQLexer.l"
+#line 740 "../src/lexer/XQLexer.l"
 {
   CHANGE_STATE(INITIAL);
   undoUserAction();
   yyless(0);
 }
 	YY_BREAK
-case 215:
-YY_RULE_SETUP
-#line 740 "../src/lexer/XQLexer.l"
-PUSH_AND_CHANGE_STATE(INITIAL); RECOGNIZE(_LBRACE_);
-	YY_BREAK
 case 216:
 YY_RULE_SETUP
-#line 742 "../src/lexer/XQLexer.l"
-return error("It is an error for a right brace to appear in element or attribute content");
+#line 747 "../src/lexer/XQLexer.l"
+PUSH_AND_CHANGE_STATE(INITIAL); RECOGNIZE(_LBRACE_);
 	YY_BREAK
 case 217:
 YY_RULE_SETUP
-#line 743 "../src/lexer/XQLexer.l"
-POP(); RECOGNIZE(_RBRACE_);
+#line 749 "../src/lexer/XQLexer.l"
+return error("It is an error for a right brace to appear in element or attribute content");
 	YY_BREAK
 case 218:
 YY_RULE_SETUP
-#line 745 "../src/lexer/XQLexer.l"
-return error("It is an error for an ampersand to appear in element or attribute content");
+#line 750 "../src/lexer/XQLexer.l"
+POP(); RECOGNIZE(_RBRACE_);
 	YY_BREAK
 case 219:
 YY_RULE_SETUP
-#line 747 "../src/lexer/XQLexer.l"
-PUSH_AND_CHANGE_STATE(START_TAG); RECOGNIZE(_LESS_THAN_OP_OR_TAG_);
+#line 752 "../src/lexer/XQLexer.l"
+return error("It is an error for an ampersand to appear in element or attribute content");
 	YY_BREAK
 case 220:
 YY_RULE_SETUP
-#line 748 "../src/lexer/XQLexer.l"
-return error("It is an error for a left angle bracket to appear in attribute content");
+#line 754 "../src/lexer/XQLexer.l"
+PUSH_AND_CHANGE_STATE(START_TAG); RECOGNIZE(_LESS_THAN_OP_OR_TAG_);
 	YY_BREAK
 case 221:
 YY_RULE_SETUP
-#line 750 "../src/lexer/XQLexer.l"
-CHANGE_STATE(ELEMENT_CONTENT); RECOGNIZE(_START_TAG_CLOSE_);
+#line 755 "../src/lexer/XQLexer.l"
+return error("It is an error for a left angle bracket to appear in attribute content");
 	YY_BREAK
 case 222:
 YY_RULE_SETUP
-#line 751 "../src/lexer/XQLexer.l"
-POP(); RECOGNIZE(_END_TAG_CLOSE_);
+#line 757 "../src/lexer/XQLexer.l"
+CHANGE_STATE(ELEMENT_CONTENT); RECOGNIZE(_START_TAG_CLOSE_);
 	YY_BREAK
 case 223:
 YY_RULE_SETUP
-#line 753 "../src/lexer/XQLexer.l"
-RECOGNIZE_VALUE_UNESCAPE(_QUOT_ATTR_CONTENT_, yytext, yyleng, 0, true, false, false);
+#line 758 "../src/lexer/XQLexer.l"
+POP(); RECOGNIZE(_END_TAG_CLOSE_);
 	YY_BREAK
 case 224:
 YY_RULE_SETUP
-#line 755 "../src/lexer/XQLexer.l"
-CHANGE_STATE(QUOT_ATTRIBUTE_CONTENT); RECOGNIZE(_OPEN_QUOT_);
+#line 760 "../src/lexer/XQLexer.l"
+RECOGNIZE_VALUE_UNESCAPE(_QUOT_ATTR_CONTENT_, yytext, yyleng, 0, true, false, false);
 	YY_BREAK
 case 225:
 YY_RULE_SETUP
-#line 756 "../src/lexer/XQLexer.l"
-RECOGNIZE_VALUE_UNESCAPE(_QUOT_ATTR_CONTENT_, yytext, yyleng, '"', true, true, false);
+#line 762 "../src/lexer/XQLexer.l"
+CHANGE_STATE(QUOT_ATTRIBUTE_CONTENT); RECOGNIZE(_OPEN_QUOT_);
 	YY_BREAK
 case 226:
 YY_RULE_SETUP
-#line 757 "../src/lexer/XQLexer.l"
-CHANGE_STATE(START_TAG); RECOGNIZE(_CLOSE_QUOT_);
+#line 763 "../src/lexer/XQLexer.l"
+RECOGNIZE_VALUE_UNESCAPE(_QUOT_ATTR_CONTENT_, yytext, yyleng, '"', true, true, false);
 	YY_BREAK
 case 227:
 YY_RULE_SETUP
-#line 759 "../src/lexer/XQLexer.l"
-CHANGE_STATE(APOS_ATTRIBUTE_CONTENT); RECOGNIZE(_OPEN_APOS_);
+#line 764 "../src/lexer/XQLexer.l"
+CHANGE_STATE(START_TAG); RECOGNIZE(_CLOSE_QUOT_);
 	YY_BREAK
 case 228:
 YY_RULE_SETUP
-#line 760 "../src/lexer/XQLexer.l"
-RECOGNIZE_VALUE_UNESCAPE(_APOS_ATTR_CONTENT_, yytext, yyleng, '\'', true, true, false);
+#line 766 "../src/lexer/XQLexer.l"
+CHANGE_STATE(APOS_ATTRIBUTE_CONTENT); RECOGNIZE(_OPEN_APOS_);
 	YY_BREAK
 case 229:
 YY_RULE_SETUP
-#line 761 "../src/lexer/XQLexer.l"
-CHANGE_STATE(START_TAG); RECOGNIZE(_CLOSE_APOS_);
+#line 767 "../src/lexer/XQLexer.l"
+RECOGNIZE_VALUE_UNESCAPE(_APOS_ATTR_CONTENT_, yytext, yyleng, '\'', true, true, false);
 	YY_BREAK
 case 230:
 YY_RULE_SETUP
-#line 763 "../src/lexer/XQLexer.l"
-RECOGNIZE_VALUE(_WHITESPACE_ELEMENT_CONTENT_, yytext);
+#line 768 "../src/lexer/XQLexer.l"
+CHANGE_STATE(START_TAG); RECOGNIZE(_CLOSE_APOS_);
 	YY_BREAK
 case 231:
 YY_RULE_SETUP
-#line 764 "../src/lexer/XQLexer.l"
-RECOGNIZE_VALUE_UNESCAPE(_ELEMENT_CONTENT_, yytext, yyleng, 0, true, true, true);
+#line 770 "../src/lexer/XQLexer.l"
+RECOGNIZE_VALUE(_WHITESPACE_ELEMENT_CONTENT_, yytext);
 	YY_BREAK
 case 232:
 YY_RULE_SETUP
-#line 766 "../src/lexer/XQLexer.l"
-POP(); RECOGNIZE(_EMPTY_TAG_CLOSE_);
+#line 771 "../src/lexer/XQLexer.l"
+RECOGNIZE_VALUE_UNESCAPE(_ELEMENT_CONTENT_, yytext, yyleng, 0, true, true, true);
 	YY_BREAK
 case 233:
 YY_RULE_SETUP
-#line 768 "../src/lexer/XQLexer.l"
-CHANGE_STATE(END_TAG); RECOGNIZE(_END_TAG_OPEN_);
+#line 773 "../src/lexer/XQLexer.l"
+POP(); RECOGNIZE(_EMPTY_TAG_CLOSE_);
 	YY_BREAK
 case 234:
 YY_RULE_SETUP
-#line 770 "../src/lexer/XQLexer.l"
-RECOGNIZE(_VALUE_INDICATOR_);
+#line 775 "../src/lexer/XQLexer.l"
+CHANGE_STATE(END_TAG); RECOGNIZE(_END_TAG_OPEN_);
 	YY_BREAK
 case 235:
 YY_RULE_SETUP
-#line 772 "../src/lexer/XQLexer.l"
-CHANGE_STATE(PRAGMA); RECOGNIZE(_PRAGMA_OPEN_);
+#line 777 "../src/lexer/XQLexer.l"
+RECOGNIZE(_VALUE_INDICATOR_);
 	YY_BREAK
 case 236:
 YY_RULE_SETUP
-#line 773 "../src/lexer/XQLexer.l"
-RECOGNIZE(_WHITESPACE_);
+#line 779 "../src/lexer/XQLexer.l"
+CHANGE_STATE(PRAGMA); RECOGNIZE(_PRAGMA_OPEN_);
 	YY_BREAK
 case 237:
 YY_RULE_SETUP
-#line 774 "../src/lexer/XQLexer.l"
-CHANGE_STATE(PRAGMAWS); RECOGNIZE_VALUE(_QNAME_, yytext);
+#line 780 "../src/lexer/XQLexer.l"
+RECOGNIZE(_WHITESPACE_);
 	YY_BREAK
 case 238:
 YY_RULE_SETUP
-#line 775 "../src/lexer/XQLexer.l"
-CHANGE_STATE(INITIAL); RECOGNIZE_VALUE_LEN(_PRAGMA_CONTENT_, yytext, yyleng - 2);
+#line 781 "../src/lexer/XQLexer.l"
+CHANGE_STATE(PRAGMAWS); RECOGNIZE_VALUE(_QNAME_, yytext);
 	YY_BREAK
 case 239:
 YY_RULE_SETUP
-#line 776 "../src/lexer/XQLexer.l"
-CHANGE_STATE(PRAGMACONTENTS); RECOGNIZE(_WHITESPACE_);
+#line 782 "../src/lexer/XQLexer.l"
+CHANGE_STATE(INITIAL); RECOGNIZE_VALUE_LEN(_PRAGMA_CONTENT_, yytext, yyleng - 2);
 	YY_BREAK
 case 240:
 YY_RULE_SETUP
-#line 777 "../src/lexer/XQLexer.l"
-CHANGE_STATE(INITIAL); RECOGNIZE_VALUE_LEN(_PRAGMA_CONTENT_, yytext, yyleng - 2);
+#line 783 "../src/lexer/XQLexer.l"
+CHANGE_STATE(PRAGMACONTENTS); RECOGNIZE(_WHITESPACE_);
 	YY_BREAK
 case 241:
 YY_RULE_SETUP
-#line 779 "../src/lexer/XQLexer.l"
-PUSH_AND_CHANGE_STATE(PROCESSING_INSTRUCTION); RECOGNIZE(_PI_START_);
+#line 784 "../src/lexer/XQLexer.l"
+CHANGE_STATE(INITIAL); RECOGNIZE_VALUE_LEN(_PRAGMA_CONTENT_, yytext, yyleng - 2);
 	YY_BREAK
 case 242:
 YY_RULE_SETUP
-#line 780 "../src/lexer/XQLexer.l"
-return error("The target of a processing instruction must not be 'XML'");
+#line 786 "../src/lexer/XQLexer.l"
+PUSH_AND_CHANGE_STATE(PROCESSING_INSTRUCTION); RECOGNIZE(_PI_START_);
 	YY_BREAK
 case 243:
 YY_RULE_SETUP
-#line 781 "../src/lexer/XQLexer.l"
-RECOGNIZE_VALUE(_PI_TARGET_, yytext);
+#line 787 "../src/lexer/XQLexer.l"
+return error("The target of a processing instruction must not be 'XML'");
 	YY_BREAK
 case 244:
 YY_RULE_SETUP
-#line 782 "../src/lexer/XQLexer.l"
-CHANGE_STATE(PROCESSING_INSTRUCTION_CONTENT); RECOGNIZE(_WHITESPACE_);
+#line 788 "../src/lexer/XQLexer.l"
+RECOGNIZE_VALUE(_PI_TARGET_, yytext);
 	YY_BREAK
 case 245:
 YY_RULE_SETUP
-#line 783 "../src/lexer/XQLexer.l"
-POP(); RECOGNIZE_VALUE_LEN(_PI_CONTENT_, yytext, yyleng - 2);
+#line 789 "../src/lexer/XQLexer.l"
+CHANGE_STATE(PROCESSING_INSTRUCTION_CONTENT); RECOGNIZE(_WHITESPACE_);
 	YY_BREAK
 case 246:
 YY_RULE_SETUP
-#line 784 "../src/lexer/XQLexer.l"
+#line 790 "../src/lexer/XQLexer.l"
 POP(); RECOGNIZE_VALUE_LEN(_PI_CONTENT_, yytext, yyleng - 2);
 	YY_BREAK
 case 247:
 YY_RULE_SETUP
-#line 786 "../src/lexer/XQLexer.l"
-PUSH_AND_CHANGE_STATE(XML_COMMENT); RECOGNIZE(_XML_COMMENT_START_);
+#line 791 "../src/lexer/XQLexer.l"
+POP(); RECOGNIZE_VALUE_LEN(_PI_CONTENT_, yytext, yyleng - 2);
 	YY_BREAK
 case 248:
 YY_RULE_SETUP
-#line 787 "../src/lexer/XQLexer.l"
-RECOGNIZE_VALUE(_XML_COMMENT_CONTENT_, yytext);
+#line 793 "../src/lexer/XQLexer.l"
+PUSH_AND_CHANGE_STATE(XML_COMMENT); RECOGNIZE(_XML_COMMENT_START_);
 	YY_BREAK
 case 249:
 YY_RULE_SETUP
-#line 788 "../src/lexer/XQLexer.l"
-return error("It is an error for a double dash to appear in an XML comment");
+#line 794 "../src/lexer/XQLexer.l"
+RECOGNIZE_VALUE(_XML_COMMENT_CONTENT_, yytext);
 	YY_BREAK
 case 250:
 YY_RULE_SETUP
-#line 789 "../src/lexer/XQLexer.l"
-POP(); RECOGNIZE(_XML_COMMENT_END_);
+#line 795 "../src/lexer/XQLexer.l"
+return error("It is an error for a double dash to appear in an XML comment");
 	YY_BREAK
 case 251:
 YY_RULE_SETUP
-#line 791 "../src/lexer/XQLexer.l"
-RECOGNIZE(_SLASH_);
+#line 796 "../src/lexer/XQLexer.l"
+POP(); RECOGNIZE(_XML_COMMENT_END_);
 	YY_BREAK
 case 252:
 YY_RULE_SETUP
-#line 792 "../src/lexer/XQLexer.l"
-RECOGNIZE(_SLASH_SLASH_);
+#line 798 "../src/lexer/XQLexer.l"
+RECOGNIZE(_SLASH_);
 	YY_BREAK
 case 253:
 YY_RULE_SETUP
-#line 794 "../src/lexer/XQLexer.l"
-RECOGNIZE_VALUE(_XMLNS_QNAME_, yytext);
+#line 799 "../src/lexer/XQLexer.l"
+RECOGNIZE(_SLASH_SLASH_);
 	YY_BREAK
 case 254:
 YY_RULE_SETUP
-#line 795 "../src/lexer/XQLexer.l"
-RECOGNIZE_VALUE(_QNAME_, yytext);
+#line 801 "../src/lexer/XQLexer.l"
+RECOGNIZE_VALUE(_XMLNS_QNAME_, yytext);
 	YY_BREAK
 case 255:
-YY_RULE_SETUP
-#line 797 "../src/lexer/XQLexer.l"
-RECOGNIZE_VALUE_LEN(_NCNAME_COLON_STAR_, yytext, yyleng - 2);
-	YY_BREAK
-case 256:
-YY_RULE_SETUP
-#line 798 "../src/lexer/XQLexer.l"
-RECOGNIZE_VALUE(_STAR_COLON_NCNAME_, yytext + 2);
-	YY_BREAK
-case 257:
-YY_RULE_SETUP
-#line 800 "../src/lexer/XQLexer.l"
-RECOGNIZE(_WHITESPACE_);
-	YY_BREAK
-case 258:
 YY_RULE_SETUP
 #line 802 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_QNAME_, yytext);
 	YY_BREAK
+case 256:
+YY_RULE_SETUP
+#line 804 "../src/lexer/XQLexer.l"
+RECOGNIZE_VALUE_LEN(_NCNAME_COLON_STAR_, yytext, yyleng - 2);
+	YY_BREAK
+case 257:
+YY_RULE_SETUP
+#line 805 "../src/lexer/XQLexer.l"
+RECOGNIZE_VALUE(_STAR_COLON_NCNAME_, yytext + 2);
+	YY_BREAK
+case 258:
+YY_RULE_SETUP
+#line 807 "../src/lexer/XQLexer.l"
+RECOGNIZE(_WHITESPACE_);
+	YY_BREAK
 case 259:
 YY_RULE_SETUP
-#line 803 "../src/lexer/XQLexer.l"
-RECOGNIZE(_HASH_DEFAULT_);
+#line 809 "../src/lexer/XQLexer.l"
+RECOGNIZE_VALUE(_QNAME_, yytext);
 	YY_BREAK
 case 260:
 YY_RULE_SETUP
-#line 804 "../src/lexer/XQLexer.l"
-RECOGNIZE(_HASH_ALL_);
+#line 810 "../src/lexer/XQLexer.l"
+RECOGNIZE(_HASH_DEFAULT_);
 	YY_BREAK
 case 261:
 YY_RULE_SETUP
-#line 805 "../src/lexer/XQLexer.l"
-RECOGNIZE(_HASH_CURRENT_);
+#line 811 "../src/lexer/XQLexer.l"
+RECOGNIZE(_HASH_ALL_);
 	YY_BREAK
 case 262:
 YY_RULE_SETUP
-#line 806 "../src/lexer/XQLexer.l"
-/* Do nothing */
+#line 812 "../src/lexer/XQLexer.l"
+RECOGNIZE(_HASH_CURRENT_);
 	YY_BREAK
 case 263:
-YY_RULE_SETUP
-#line 808 "../src/lexer/XQLexer.l"
-RECOGNIZE_VALUE(_XML_, yytext);
-	YY_BREAK
-case 264:
-YY_RULE_SETUP
-#line 809 "../src/lexer/XQLexer.l"
-RECOGNIZE_VALUE(_HTML_, yytext);
-	YY_BREAK
-case 265:
-YY_RULE_SETUP
-#line 810 "../src/lexer/XQLexer.l"
-RECOGNIZE_VALUE(_XHTML_, yytext);
-	YY_BREAK
-case 266:
-YY_RULE_SETUP
-#line 811 "../src/lexer/XQLexer.l"
-RECOGNIZE_VALUE(_TEXT_, yytext);
-	YY_BREAK
-case 267:
-YY_RULE_SETUP
-#line 812 "../src/lexer/XQLexer.l"
-RECOGNIZE_VALUE(_QNAME_, yytext);
-	YY_BREAK
-case 268:
 YY_RULE_SETUP
 #line 813 "../src/lexer/XQLexer.l"
 /* Do nothing */
 	YY_BREAK
-case 269:
+case 264:
 YY_RULE_SETUP
 #line 815 "../src/lexer/XQLexer.l"
+RECOGNIZE_VALUE(_XML_, yytext);
+	YY_BREAK
+case 265:
+YY_RULE_SETUP
+#line 816 "../src/lexer/XQLexer.l"
+RECOGNIZE_VALUE(_HTML_, yytext);
+	YY_BREAK
+case 266:
+YY_RULE_SETUP
+#line 817 "../src/lexer/XQLexer.l"
+RECOGNIZE_VALUE(_XHTML_, yytext);
+	YY_BREAK
+case 267:
+YY_RULE_SETUP
+#line 818 "../src/lexer/XQLexer.l"
+RECOGNIZE_VALUE(_TEXT_, yytext);
+	YY_BREAK
+case 268:
+YY_RULE_SETUP
+#line 819 "../src/lexer/XQLexer.l"
 RECOGNIZE_VALUE(_QNAME_, yytext);
+	YY_BREAK
+case 269:
+YY_RULE_SETUP
+#line 820 "../src/lexer/XQLexer.l"
+/* Do nothing */
 	YY_BREAK
 case 270:
 YY_RULE_SETUP
-#line 816 "../src/lexer/XQLexer.l"
-/* Do nothing */
+#line 822 "../src/lexer/XQLexer.l"
+RECOGNIZE_VALUE(_QNAME_, yytext);
 	YY_BREAK
 case 271:
 YY_RULE_SETUP
-#line 818 "../src/lexer/XQLexer.l"
+#line 823 "../src/lexer/XQLexer.l"
+/* Do nothing */
+	YY_BREAK
+case 272:
+YY_RULE_SETUP
+#line 825 "../src/lexer/XQLexer.l"
 {
   std::ostringstream oss;
   oss << "Invalid literal found: " << UTF8((XMLCh*)yytext);
   return error(oss.str().c_str());
 }
 	YY_BREAK
-case 272:
+case 273:
 YY_RULE_SETUP
-#line 824 "../src/lexer/XQLexer.l"
+#line 831 "../src/lexer/XQLexer.l"
 { 
   std::ostringstream oss;
   oss << "Unrecognized character '" << UTF8((XMLCh*)yytext) << "' (" << yytext[0] << ")";
   return error(oss.str().c_str());
 }
 	YY_BREAK
-case 273:
+case 274:
 YY_RULE_SETUP
-#line 830 "../src/lexer/XQLexer.l"
+#line 837 "../src/lexer/XQLexer.l"
 YY_FATAL_ERROR( "flex scanner jammed" );
 	YY_BREAK
-#line 15837 "../src/lexer/XQLexer.cpp"
+#line 15848 "../src/lexer/XQLexer.cpp"
 case YY_STATE_EOF(INITIAL):
 case YY_STATE_EOF(EXPR_COMMENT):
 case YY_STATE_EOF(PRAGMA):
@@ -16650,5 +16661,5 @@ int main()
 	return 0;
 	}
 #endif
-#line 830 "../src/lexer/XQLexer.l"
+#line 837 "../src/lexer/XQLexer.l"
 

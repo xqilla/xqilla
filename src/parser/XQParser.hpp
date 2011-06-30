@@ -97,278 +97,279 @@
      _TILDE_ = 312,
      _MINUS_GREATER_THAN_ = 313,
      _BAR_BAR_ = 314,
-     _INTEGER_LITERAL_ = 315,
-     _DECIMAL_LITERAL_ = 316,
-     _DOUBLE_LITERAL_ = 317,
-     _ATTRIBUTE_ = 318,
-     _COMMENT_ = 319,
-     _DOCUMENT_NODE_ = 320,
-     _NAMESPACE_NODE_ = 321,
-     _NODE_ = 322,
-     _PROCESSING_INSTRUCTION_ = 323,
-     _SCHEMA_ATTRIBUTE_ = 324,
-     _SCHEMA_ELEMENT_ = 325,
-     _TEXT_ = 326,
-     _EMPTY_SEQUENCE_ = 327,
-     _BOUNDARY_SPACE_ = 328,
-     _FT_OPTION_ = 329,
-     _BASE_URI_ = 330,
-     _LAX_ = 331,
-     _STRICT_ = 332,
-     _IDIV_ = 333,
-     _CHILD_ = 334,
-     _DESCENDANT_ = 335,
-     _SELF_ = 336,
-     _DESCENDANT_OR_SELF_ = 337,
-     _FOLLOWING_SIBLING_ = 338,
-     _FOLLOWING_ = 339,
-     _PARENT_ = 340,
-     _ANCESTOR_ = 341,
-     _PRECEDING_SIBLING_ = 342,
-     _PRECEDING_ = 343,
-     _ANCESTOR_OR_SELF_ = 344,
-     _DOCUMENT_ = 345,
-     _NOT_ = 346,
-     _USING_ = 347,
-     _NO_ = 348,
-     _SENSITIVE_ = 349,
-     _INSENSITIVE_ = 350,
-     _DIACRITICS_ = 351,
-     _WITHOUT_ = 352,
-     _WITHOUT_C_ = 353,
-     _STEMMING_ = 354,
-     _THESAURUS_ = 355,
-     _STOP_ = 356,
-     _WILDCARDS_ = 357,
-     _ENTIRE_ = 358,
-     _CONTENT_ = 359,
-     _WORD_ = 360,
-     _TYPE_ = 361,
-     _START_ = 362,
-     _END_ = 363,
-     _MOST_ = 364,
-     _SKIP_ = 365,
-     _COPY_ = 366,
-     _VALUE_ = 367,
-     _WHITESPACE_ = 368,
-     _PI_CONTENT_ = 369,
-     _XML_COMMENT_CONTENT_ = 370,
-     _EQ_ = 371,
-     _NE_ = 372,
-     _LT_ = 373,
-     _LE_ = 374,
-     _GT_ = 375,
-     _GE_ = 376,
-     _AT_ = 377,
-     _QUOT_ATTR_CONTENT_ = 378,
-     _APOS_ATTR_CONTENT_ = 379,
-     _WHITESPACE_ELEMENT_CONTENT_ = 380,
-     _ELEMENT_CONTENT_ = 381,
-     _AT_LM_ = 382,
-     _ORDERED_ = 383,
-     _UNORDERED_ = 384,
-     _QNAME_ = 385,
-     _XMLNS_QNAME_ = 386,
-     _CONSTR_QNAME_ = 387,
-     _STRING_LITERAL_ = 388,
-     _VARIABLE_ = 389,
-     _NCNAME_COLON_STAR_ = 390,
-     _STAR_COLON_NCNAME_ = 391,
-     _PI_TARGET_ = 392,
-     _PRAGMA_CONTENT_ = 393,
-     _RETURN_ = 394,
-     _FOR_ = 395,
-     _IN_ = 396,
-     _LET_ = 397,
-     _WHERE_ = 398,
-     _COUNT_ = 399,
-     _BY_ = 400,
-     _ORDER_ = 401,
-     _STABLE_ = 402,
-     _ASCENDING_ = 403,
-     _DESCENDING_ = 404,
-     _EMPTY_ = 405,
-     _GREATEST_ = 406,
-     _LEAST_ = 407,
-     _COLLATION_ = 408,
-     _SOME_ = 409,
-     _EVERY_ = 410,
-     _SATISFIES_ = 411,
-     _TYPESWITCH_ = 412,
-     _CASE_ = 413,
-     _CASE_S_ = 414,
-     _AS_ = 415,
-     _IF_ = 416,
-     _THEN_ = 417,
-     _ELSE_ = 418,
-     _OR_ = 419,
-     _AND_ = 420,
-     _INSTANCE_ = 421,
-     _OF_ = 422,
-     _CASTABLE_ = 423,
-     _TO_ = 424,
-     _DIV_ = 425,
-     _MOD_ = 426,
-     _UNION_ = 427,
-     _INTERSECT_ = 428,
-     _EXCEPT_ = 429,
-     _VALIDATE_ = 430,
-     _CAST_ = 431,
-     _TREAT_ = 432,
-     _IS_ = 433,
-     _PRESERVE_ = 434,
-     _STRIP_ = 435,
-     _NAMESPACE_ = 436,
-     _ITEM_ = 437,
-     _EXTERNAL_ = 438,
-     _ENCODING_ = 439,
-     _NO_PRESERVE_ = 440,
-     _INHERIT_ = 441,
-     _NO_INHERIT_ = 442,
-     _DECLARE_ = 443,
-     _CONSTRUCTION_ = 444,
-     _ORDERING_ = 445,
-     _DEFAULT_ = 446,
-     _COPY_NAMESPACES_ = 447,
-     _OPTION_ = 448,
-     _XQUERY_ = 449,
-     _VERSION_ = 450,
-     _IMPORT_ = 451,
-     _SCHEMA_ = 452,
-     _MODULE_ = 453,
-     _ELEMENT_ = 454,
-     _FUNCTION_ = 455,
-     _FUNCTION_EXT_ = 456,
-     _SCORE_ = 457,
-     _CONTAINS_ = 458,
-     _WEIGHT_ = 459,
-     _WINDOW_ = 460,
-     _DISTANCE_ = 461,
-     _OCCURS_ = 462,
-     _TIMES_ = 463,
-     _SAME_ = 464,
-     _DIFFERENT_ = 465,
-     _LOWERCASE_ = 466,
-     _UPPERCASE_ = 467,
-     _RELATIONSHIP_ = 468,
-     _LEVELS_ = 469,
-     _LANGUAGE_ = 470,
-     _ANY_ = 471,
-     _ALL_ = 472,
-     _PHRASE_ = 473,
-     _EXACTLY_ = 474,
-     _FROM_ = 475,
-     _WORDS_ = 476,
-     _SENTENCES_ = 477,
-     _PARAGRAPHS_ = 478,
-     _SENTENCE_ = 479,
-     _PARAGRAPH_ = 480,
-     _REPLACE_ = 481,
-     _MODIFY_ = 482,
-     _FIRST_ = 483,
-     _INSERT_ = 484,
-     _BEFORE_ = 485,
-     _AFTER_ = 486,
-     _REVALIDATION_ = 487,
-     _WITH_ = 488,
-     _NODES_ = 489,
-     _RENAME_ = 490,
-     _LAST_ = 491,
-     _DELETE_ = 492,
-     _INTO_ = 493,
-     _UPDATING_ = 494,
-     _ID_ = 495,
-     _KEY_ = 496,
-     _TEMPLATE_ = 497,
-     _MATCHES_ = 498,
-     _TUPLE_ = 499,
-     _MAP_ = 500,
-     _NAME_ = 501,
-     _CALL_ = 502,
-     _APPLY_ = 503,
-     _TEMPLATES_ = 504,
-     _MODE_ = 505,
-     _FTOR_ = 506,
-     _FTAND_ = 507,
-     _FTNOT_ = 508,
-     _TYPE_ALIAS_ = 509,
-     _XSLT_END_ELEMENT_ = 510,
-     _XSLT_STYLESHEET_ = 511,
-     _XSLT_TEMPLATE_ = 512,
-     _XSLT_VALUE_OF_ = 513,
-     _XSLT_TEXT_ = 514,
-     _XSLT_APPLY_TEMPLATES_ = 515,
-     _XSLT_CALL_TEMPLATE_ = 516,
-     _XSLT_WITH_PARAM_ = 517,
-     _XSLT_SEQUENCE_ = 518,
-     _XSLT_PARAM_ = 519,
-     _XSLT_FUNCTION_ = 520,
-     _XSLT_CHOOSE_ = 521,
-     _XSLT_WHEN_ = 522,
-     _XSLT_OTHERWISE_ = 523,
-     _XSLT_IF_ = 524,
-     _XSLT_VARIABLE_ = 525,
-     _XSLT_COMMENT_ = 526,
-     _XSLT_PI_ = 527,
-     _XSLT_DOCUMENT_ = 528,
-     _XSLT_ATTRIBUTE_ = 529,
-     _XSLT_NAMESPACE_ = 530,
-     _XSLT_ELEMENT_ = 531,
-     _XSLT_ANALYZE_STRING_ = 532,
-     _XSLT_MATCHING_SUBSTRING_ = 533,
-     _XSLT_NON_MATCHING_SUBSTRING_ = 534,
-     _XSLT_COPY_OF_ = 535,
-     _XSLT_COPY_ = 536,
-     _XSLT_FOR_EACH_ = 537,
-     _XSLT_OUTPUT_ = 538,
-     _XSLT_IMPORT_SCHEMA_ = 539,
-     _XSLT_TYPE_ALIAS_ = 540,
-     _XSLT_VERSION_ = 541,
-     _XSLT_MODE_ = 542,
-     _XSLT_NAME_ = 543,
-     _XSLT_DOCTYPE_PUBLIC_ = 544,
-     _XSLT_DOCTYPE_SYSTEM_ = 545,
-     _XSLT_ENCODING_ = 546,
-     _XSLT_MEDIA_TYPE_ = 547,
-     _XSLT_NORMALIZATION_FORM_ = 548,
-     _XSLT_STANDALONE_ = 549,
-     _XSLT_EXCLUDE_RESULT_PREFIXES_ = 550,
-     _XSLT_NAMESPACE_STR_ = 551,
-     _XSLT_SCHEMA_LOCATION_ = 552,
-     _XSLT_TUNNEL_ = 553,
-     _XSLT_REQUIRED_ = 554,
-     _XSLT_OVERRIDE_ = 555,
-     _XSLT_COPY_NAMESPACES_ = 556,
-     _XSLT_INHERIT_NAMESPACES_ = 557,
-     _XSLT_BYTE_ORDER_MARK_ = 558,
-     _XSLT_ESCAPE_URI_ATTRIBUTES_ = 559,
-     _XSLT_INCLUDE_CONTENT_TYPE_ = 560,
-     _XSLT_INDENT_ = 561,
-     _XSLT_OMIT_XML_DECLARATION_ = 562,
-     _XSLT_UNDECLARE_PREFIXES_ = 563,
-     _XSLT_MATCH_ = 564,
-     _XSLT_AS_ = 565,
-     _XSLT_SELECT_ = 566,
-     _XSLT_PRIORITY_ = 567,
-     _XSLT_TEST_ = 568,
-     _XSLT_SEPARATOR_ = 569,
-     _XSLT_NAMESPACE_A_ = 570,
-     _XSLT_REGEX_ = 571,
-     _XSLT_FLAGS_ = 572,
-     _XSLT_METHOD_ = 573,
-     _XSLT_CDATA_SECTION_ELEMENTS_ = 574,
-     _XSLT_USE_CHARACTER_MAPS_ = 575,
-     _XSLT_ELEMENT_NAME_ = 576,
-     _XSLT_XMLNS_ATTR_ = 577,
-     _XSLT_ATTR_NAME_ = 578,
-     _XSLT_TEXT_NODE_ = 579,
-     _XSLT_WS_TEXT_NODE_ = 580,
-     _HASH_DEFAULT_ = 581,
-     _HASH_ALL_ = 582,
-     _HASH_CURRENT_ = 583,
-     _XML_ = 584,
-     _HTML_ = 585,
-     _XHTML_ = 586
+     _BANG_ = 315,
+     _INTEGER_LITERAL_ = 316,
+     _DECIMAL_LITERAL_ = 317,
+     _DOUBLE_LITERAL_ = 318,
+     _ATTRIBUTE_ = 319,
+     _COMMENT_ = 320,
+     _DOCUMENT_NODE_ = 321,
+     _NAMESPACE_NODE_ = 322,
+     _NODE_ = 323,
+     _PROCESSING_INSTRUCTION_ = 324,
+     _SCHEMA_ATTRIBUTE_ = 325,
+     _SCHEMA_ELEMENT_ = 326,
+     _TEXT_ = 327,
+     _EMPTY_SEQUENCE_ = 328,
+     _BOUNDARY_SPACE_ = 329,
+     _FT_OPTION_ = 330,
+     _BASE_URI_ = 331,
+     _LAX_ = 332,
+     _STRICT_ = 333,
+     _IDIV_ = 334,
+     _CHILD_ = 335,
+     _DESCENDANT_ = 336,
+     _SELF_ = 337,
+     _DESCENDANT_OR_SELF_ = 338,
+     _FOLLOWING_SIBLING_ = 339,
+     _FOLLOWING_ = 340,
+     _PARENT_ = 341,
+     _ANCESTOR_ = 342,
+     _PRECEDING_SIBLING_ = 343,
+     _PRECEDING_ = 344,
+     _ANCESTOR_OR_SELF_ = 345,
+     _DOCUMENT_ = 346,
+     _NOT_ = 347,
+     _USING_ = 348,
+     _NO_ = 349,
+     _SENSITIVE_ = 350,
+     _INSENSITIVE_ = 351,
+     _DIACRITICS_ = 352,
+     _WITHOUT_ = 353,
+     _WITHOUT_C_ = 354,
+     _STEMMING_ = 355,
+     _THESAURUS_ = 356,
+     _STOP_ = 357,
+     _WILDCARDS_ = 358,
+     _ENTIRE_ = 359,
+     _CONTENT_ = 360,
+     _WORD_ = 361,
+     _TYPE_ = 362,
+     _START_ = 363,
+     _END_ = 364,
+     _MOST_ = 365,
+     _SKIP_ = 366,
+     _COPY_ = 367,
+     _VALUE_ = 368,
+     _WHITESPACE_ = 369,
+     _PI_CONTENT_ = 370,
+     _XML_COMMENT_CONTENT_ = 371,
+     _EQ_ = 372,
+     _NE_ = 373,
+     _LT_ = 374,
+     _LE_ = 375,
+     _GT_ = 376,
+     _GE_ = 377,
+     _AT_ = 378,
+     _QUOT_ATTR_CONTENT_ = 379,
+     _APOS_ATTR_CONTENT_ = 380,
+     _WHITESPACE_ELEMENT_CONTENT_ = 381,
+     _ELEMENT_CONTENT_ = 382,
+     _AT_LM_ = 383,
+     _ORDERED_ = 384,
+     _UNORDERED_ = 385,
+     _QNAME_ = 386,
+     _XMLNS_QNAME_ = 387,
+     _CONSTR_QNAME_ = 388,
+     _STRING_LITERAL_ = 389,
+     _VARIABLE_ = 390,
+     _NCNAME_COLON_STAR_ = 391,
+     _STAR_COLON_NCNAME_ = 392,
+     _PI_TARGET_ = 393,
+     _PRAGMA_CONTENT_ = 394,
+     _RETURN_ = 395,
+     _FOR_ = 396,
+     _IN_ = 397,
+     _LET_ = 398,
+     _WHERE_ = 399,
+     _COUNT_ = 400,
+     _BY_ = 401,
+     _ORDER_ = 402,
+     _STABLE_ = 403,
+     _ASCENDING_ = 404,
+     _DESCENDING_ = 405,
+     _EMPTY_ = 406,
+     _GREATEST_ = 407,
+     _LEAST_ = 408,
+     _COLLATION_ = 409,
+     _SOME_ = 410,
+     _EVERY_ = 411,
+     _SATISFIES_ = 412,
+     _TYPESWITCH_ = 413,
+     _CASE_ = 414,
+     _CASE_S_ = 415,
+     _AS_ = 416,
+     _IF_ = 417,
+     _THEN_ = 418,
+     _ELSE_ = 419,
+     _OR_ = 420,
+     _AND_ = 421,
+     _INSTANCE_ = 422,
+     _OF_ = 423,
+     _CASTABLE_ = 424,
+     _TO_ = 425,
+     _DIV_ = 426,
+     _MOD_ = 427,
+     _UNION_ = 428,
+     _INTERSECT_ = 429,
+     _EXCEPT_ = 430,
+     _VALIDATE_ = 431,
+     _CAST_ = 432,
+     _TREAT_ = 433,
+     _IS_ = 434,
+     _PRESERVE_ = 435,
+     _STRIP_ = 436,
+     _NAMESPACE_ = 437,
+     _ITEM_ = 438,
+     _EXTERNAL_ = 439,
+     _ENCODING_ = 440,
+     _NO_PRESERVE_ = 441,
+     _INHERIT_ = 442,
+     _NO_INHERIT_ = 443,
+     _DECLARE_ = 444,
+     _CONSTRUCTION_ = 445,
+     _ORDERING_ = 446,
+     _DEFAULT_ = 447,
+     _COPY_NAMESPACES_ = 448,
+     _OPTION_ = 449,
+     _XQUERY_ = 450,
+     _VERSION_ = 451,
+     _IMPORT_ = 452,
+     _SCHEMA_ = 453,
+     _MODULE_ = 454,
+     _ELEMENT_ = 455,
+     _FUNCTION_ = 456,
+     _FUNCTION_EXT_ = 457,
+     _SCORE_ = 458,
+     _CONTAINS_ = 459,
+     _WEIGHT_ = 460,
+     _WINDOW_ = 461,
+     _DISTANCE_ = 462,
+     _OCCURS_ = 463,
+     _TIMES_ = 464,
+     _SAME_ = 465,
+     _DIFFERENT_ = 466,
+     _LOWERCASE_ = 467,
+     _UPPERCASE_ = 468,
+     _RELATIONSHIP_ = 469,
+     _LEVELS_ = 470,
+     _LANGUAGE_ = 471,
+     _ANY_ = 472,
+     _ALL_ = 473,
+     _PHRASE_ = 474,
+     _EXACTLY_ = 475,
+     _FROM_ = 476,
+     _WORDS_ = 477,
+     _SENTENCES_ = 478,
+     _PARAGRAPHS_ = 479,
+     _SENTENCE_ = 480,
+     _PARAGRAPH_ = 481,
+     _REPLACE_ = 482,
+     _MODIFY_ = 483,
+     _FIRST_ = 484,
+     _INSERT_ = 485,
+     _BEFORE_ = 486,
+     _AFTER_ = 487,
+     _REVALIDATION_ = 488,
+     _WITH_ = 489,
+     _NODES_ = 490,
+     _RENAME_ = 491,
+     _LAST_ = 492,
+     _DELETE_ = 493,
+     _INTO_ = 494,
+     _UPDATING_ = 495,
+     _ID_ = 496,
+     _KEY_ = 497,
+     _TEMPLATE_ = 498,
+     _MATCHES_ = 499,
+     _TUPLE_ = 500,
+     _MAP_ = 501,
+     _NAME_ = 502,
+     _CALL_ = 503,
+     _APPLY_ = 504,
+     _TEMPLATES_ = 505,
+     _MODE_ = 506,
+     _FTOR_ = 507,
+     _FTAND_ = 508,
+     _FTNOT_ = 509,
+     _TYPE_ALIAS_ = 510,
+     _XSLT_END_ELEMENT_ = 511,
+     _XSLT_STYLESHEET_ = 512,
+     _XSLT_TEMPLATE_ = 513,
+     _XSLT_VALUE_OF_ = 514,
+     _XSLT_TEXT_ = 515,
+     _XSLT_APPLY_TEMPLATES_ = 516,
+     _XSLT_CALL_TEMPLATE_ = 517,
+     _XSLT_WITH_PARAM_ = 518,
+     _XSLT_SEQUENCE_ = 519,
+     _XSLT_PARAM_ = 520,
+     _XSLT_FUNCTION_ = 521,
+     _XSLT_CHOOSE_ = 522,
+     _XSLT_WHEN_ = 523,
+     _XSLT_OTHERWISE_ = 524,
+     _XSLT_IF_ = 525,
+     _XSLT_VARIABLE_ = 526,
+     _XSLT_COMMENT_ = 527,
+     _XSLT_PI_ = 528,
+     _XSLT_DOCUMENT_ = 529,
+     _XSLT_ATTRIBUTE_ = 530,
+     _XSLT_NAMESPACE_ = 531,
+     _XSLT_ELEMENT_ = 532,
+     _XSLT_ANALYZE_STRING_ = 533,
+     _XSLT_MATCHING_SUBSTRING_ = 534,
+     _XSLT_NON_MATCHING_SUBSTRING_ = 535,
+     _XSLT_COPY_OF_ = 536,
+     _XSLT_COPY_ = 537,
+     _XSLT_FOR_EACH_ = 538,
+     _XSLT_OUTPUT_ = 539,
+     _XSLT_IMPORT_SCHEMA_ = 540,
+     _XSLT_TYPE_ALIAS_ = 541,
+     _XSLT_VERSION_ = 542,
+     _XSLT_MODE_ = 543,
+     _XSLT_NAME_ = 544,
+     _XSLT_DOCTYPE_PUBLIC_ = 545,
+     _XSLT_DOCTYPE_SYSTEM_ = 546,
+     _XSLT_ENCODING_ = 547,
+     _XSLT_MEDIA_TYPE_ = 548,
+     _XSLT_NORMALIZATION_FORM_ = 549,
+     _XSLT_STANDALONE_ = 550,
+     _XSLT_EXCLUDE_RESULT_PREFIXES_ = 551,
+     _XSLT_NAMESPACE_STR_ = 552,
+     _XSLT_SCHEMA_LOCATION_ = 553,
+     _XSLT_TUNNEL_ = 554,
+     _XSLT_REQUIRED_ = 555,
+     _XSLT_OVERRIDE_ = 556,
+     _XSLT_COPY_NAMESPACES_ = 557,
+     _XSLT_INHERIT_NAMESPACES_ = 558,
+     _XSLT_BYTE_ORDER_MARK_ = 559,
+     _XSLT_ESCAPE_URI_ATTRIBUTES_ = 560,
+     _XSLT_INCLUDE_CONTENT_TYPE_ = 561,
+     _XSLT_INDENT_ = 562,
+     _XSLT_OMIT_XML_DECLARATION_ = 563,
+     _XSLT_UNDECLARE_PREFIXES_ = 564,
+     _XSLT_MATCH_ = 565,
+     _XSLT_AS_ = 566,
+     _XSLT_SELECT_ = 567,
+     _XSLT_PRIORITY_ = 568,
+     _XSLT_TEST_ = 569,
+     _XSLT_SEPARATOR_ = 570,
+     _XSLT_NAMESPACE_A_ = 571,
+     _XSLT_REGEX_ = 572,
+     _XSLT_FLAGS_ = 573,
+     _XSLT_METHOD_ = 574,
+     _XSLT_CDATA_SECTION_ELEMENTS_ = 575,
+     _XSLT_USE_CHARACTER_MAPS_ = 576,
+     _XSLT_ELEMENT_NAME_ = 577,
+     _XSLT_XMLNS_ATTR_ = 578,
+     _XSLT_ATTR_NAME_ = 579,
+     _XSLT_TEXT_NODE_ = 580,
+     _XSLT_WS_TEXT_NODE_ = 581,
+     _HASH_DEFAULT_ = 582,
+     _HASH_ALL_ = 583,
+     _HASH_CURRENT_ = 584,
+     _XML_ = 585,
+     _HTML_ = 586,
+     _XHTML_ = 587
    };
 #endif
 /* Tokens.  */
@@ -430,278 +431,279 @@
 #define _TILDE_ 312
 #define _MINUS_GREATER_THAN_ 313
 #define _BAR_BAR_ 314
-#define _INTEGER_LITERAL_ 315
-#define _DECIMAL_LITERAL_ 316
-#define _DOUBLE_LITERAL_ 317
-#define _ATTRIBUTE_ 318
-#define _COMMENT_ 319
-#define _DOCUMENT_NODE_ 320
-#define _NAMESPACE_NODE_ 321
-#define _NODE_ 322
-#define _PROCESSING_INSTRUCTION_ 323
-#define _SCHEMA_ATTRIBUTE_ 324
-#define _SCHEMA_ELEMENT_ 325
-#define _TEXT_ 326
-#define _EMPTY_SEQUENCE_ 327
-#define _BOUNDARY_SPACE_ 328
-#define _FT_OPTION_ 329
-#define _BASE_URI_ 330
-#define _LAX_ 331
-#define _STRICT_ 332
-#define _IDIV_ 333
-#define _CHILD_ 334
-#define _DESCENDANT_ 335
-#define _SELF_ 336
-#define _DESCENDANT_OR_SELF_ 337
-#define _FOLLOWING_SIBLING_ 338
-#define _FOLLOWING_ 339
-#define _PARENT_ 340
-#define _ANCESTOR_ 341
-#define _PRECEDING_SIBLING_ 342
-#define _PRECEDING_ 343
-#define _ANCESTOR_OR_SELF_ 344
-#define _DOCUMENT_ 345
-#define _NOT_ 346
-#define _USING_ 347
-#define _NO_ 348
-#define _SENSITIVE_ 349
-#define _INSENSITIVE_ 350
-#define _DIACRITICS_ 351
-#define _WITHOUT_ 352
-#define _WITHOUT_C_ 353
-#define _STEMMING_ 354
-#define _THESAURUS_ 355
-#define _STOP_ 356
-#define _WILDCARDS_ 357
-#define _ENTIRE_ 358
-#define _CONTENT_ 359
-#define _WORD_ 360
-#define _TYPE_ 361
-#define _START_ 362
-#define _END_ 363
-#define _MOST_ 364
-#define _SKIP_ 365
-#define _COPY_ 366
-#define _VALUE_ 367
-#define _WHITESPACE_ 368
-#define _PI_CONTENT_ 369
-#define _XML_COMMENT_CONTENT_ 370
-#define _EQ_ 371
-#define _NE_ 372
-#define _LT_ 373
-#define _LE_ 374
-#define _GT_ 375
-#define _GE_ 376
-#define _AT_ 377
-#define _QUOT_ATTR_CONTENT_ 378
-#define _APOS_ATTR_CONTENT_ 379
-#define _WHITESPACE_ELEMENT_CONTENT_ 380
-#define _ELEMENT_CONTENT_ 381
-#define _AT_LM_ 382
-#define _ORDERED_ 383
-#define _UNORDERED_ 384
-#define _QNAME_ 385
-#define _XMLNS_QNAME_ 386
-#define _CONSTR_QNAME_ 387
-#define _STRING_LITERAL_ 388
-#define _VARIABLE_ 389
-#define _NCNAME_COLON_STAR_ 390
-#define _STAR_COLON_NCNAME_ 391
-#define _PI_TARGET_ 392
-#define _PRAGMA_CONTENT_ 393
-#define _RETURN_ 394
-#define _FOR_ 395
-#define _IN_ 396
-#define _LET_ 397
-#define _WHERE_ 398
-#define _COUNT_ 399
-#define _BY_ 400
-#define _ORDER_ 401
-#define _STABLE_ 402
-#define _ASCENDING_ 403
-#define _DESCENDING_ 404
-#define _EMPTY_ 405
-#define _GREATEST_ 406
-#define _LEAST_ 407
-#define _COLLATION_ 408
-#define _SOME_ 409
-#define _EVERY_ 410
-#define _SATISFIES_ 411
-#define _TYPESWITCH_ 412
-#define _CASE_ 413
-#define _CASE_S_ 414
-#define _AS_ 415
-#define _IF_ 416
-#define _THEN_ 417
-#define _ELSE_ 418
-#define _OR_ 419
-#define _AND_ 420
-#define _INSTANCE_ 421
-#define _OF_ 422
-#define _CASTABLE_ 423
-#define _TO_ 424
-#define _DIV_ 425
-#define _MOD_ 426
-#define _UNION_ 427
-#define _INTERSECT_ 428
-#define _EXCEPT_ 429
-#define _VALIDATE_ 430
-#define _CAST_ 431
-#define _TREAT_ 432
-#define _IS_ 433
-#define _PRESERVE_ 434
-#define _STRIP_ 435
-#define _NAMESPACE_ 436
-#define _ITEM_ 437
-#define _EXTERNAL_ 438
-#define _ENCODING_ 439
-#define _NO_PRESERVE_ 440
-#define _INHERIT_ 441
-#define _NO_INHERIT_ 442
-#define _DECLARE_ 443
-#define _CONSTRUCTION_ 444
-#define _ORDERING_ 445
-#define _DEFAULT_ 446
-#define _COPY_NAMESPACES_ 447
-#define _OPTION_ 448
-#define _XQUERY_ 449
-#define _VERSION_ 450
-#define _IMPORT_ 451
-#define _SCHEMA_ 452
-#define _MODULE_ 453
-#define _ELEMENT_ 454
-#define _FUNCTION_ 455
-#define _FUNCTION_EXT_ 456
-#define _SCORE_ 457
-#define _CONTAINS_ 458
-#define _WEIGHT_ 459
-#define _WINDOW_ 460
-#define _DISTANCE_ 461
-#define _OCCURS_ 462
-#define _TIMES_ 463
-#define _SAME_ 464
-#define _DIFFERENT_ 465
-#define _LOWERCASE_ 466
-#define _UPPERCASE_ 467
-#define _RELATIONSHIP_ 468
-#define _LEVELS_ 469
-#define _LANGUAGE_ 470
-#define _ANY_ 471
-#define _ALL_ 472
-#define _PHRASE_ 473
-#define _EXACTLY_ 474
-#define _FROM_ 475
-#define _WORDS_ 476
-#define _SENTENCES_ 477
-#define _PARAGRAPHS_ 478
-#define _SENTENCE_ 479
-#define _PARAGRAPH_ 480
-#define _REPLACE_ 481
-#define _MODIFY_ 482
-#define _FIRST_ 483
-#define _INSERT_ 484
-#define _BEFORE_ 485
-#define _AFTER_ 486
-#define _REVALIDATION_ 487
-#define _WITH_ 488
-#define _NODES_ 489
-#define _RENAME_ 490
-#define _LAST_ 491
-#define _DELETE_ 492
-#define _INTO_ 493
-#define _UPDATING_ 494
-#define _ID_ 495
-#define _KEY_ 496
-#define _TEMPLATE_ 497
-#define _MATCHES_ 498
-#define _TUPLE_ 499
-#define _MAP_ 500
-#define _NAME_ 501
-#define _CALL_ 502
-#define _APPLY_ 503
-#define _TEMPLATES_ 504
-#define _MODE_ 505
-#define _FTOR_ 506
-#define _FTAND_ 507
-#define _FTNOT_ 508
-#define _TYPE_ALIAS_ 509
-#define _XSLT_END_ELEMENT_ 510
-#define _XSLT_STYLESHEET_ 511
-#define _XSLT_TEMPLATE_ 512
-#define _XSLT_VALUE_OF_ 513
-#define _XSLT_TEXT_ 514
-#define _XSLT_APPLY_TEMPLATES_ 515
-#define _XSLT_CALL_TEMPLATE_ 516
-#define _XSLT_WITH_PARAM_ 517
-#define _XSLT_SEQUENCE_ 518
-#define _XSLT_PARAM_ 519
-#define _XSLT_FUNCTION_ 520
-#define _XSLT_CHOOSE_ 521
-#define _XSLT_WHEN_ 522
-#define _XSLT_OTHERWISE_ 523
-#define _XSLT_IF_ 524
-#define _XSLT_VARIABLE_ 525
-#define _XSLT_COMMENT_ 526
-#define _XSLT_PI_ 527
-#define _XSLT_DOCUMENT_ 528
-#define _XSLT_ATTRIBUTE_ 529
-#define _XSLT_NAMESPACE_ 530
-#define _XSLT_ELEMENT_ 531
-#define _XSLT_ANALYZE_STRING_ 532
-#define _XSLT_MATCHING_SUBSTRING_ 533
-#define _XSLT_NON_MATCHING_SUBSTRING_ 534
-#define _XSLT_COPY_OF_ 535
-#define _XSLT_COPY_ 536
-#define _XSLT_FOR_EACH_ 537
-#define _XSLT_OUTPUT_ 538
-#define _XSLT_IMPORT_SCHEMA_ 539
-#define _XSLT_TYPE_ALIAS_ 540
-#define _XSLT_VERSION_ 541
-#define _XSLT_MODE_ 542
-#define _XSLT_NAME_ 543
-#define _XSLT_DOCTYPE_PUBLIC_ 544
-#define _XSLT_DOCTYPE_SYSTEM_ 545
-#define _XSLT_ENCODING_ 546
-#define _XSLT_MEDIA_TYPE_ 547
-#define _XSLT_NORMALIZATION_FORM_ 548
-#define _XSLT_STANDALONE_ 549
-#define _XSLT_EXCLUDE_RESULT_PREFIXES_ 550
-#define _XSLT_NAMESPACE_STR_ 551
-#define _XSLT_SCHEMA_LOCATION_ 552
-#define _XSLT_TUNNEL_ 553
-#define _XSLT_REQUIRED_ 554
-#define _XSLT_OVERRIDE_ 555
-#define _XSLT_COPY_NAMESPACES_ 556
-#define _XSLT_INHERIT_NAMESPACES_ 557
-#define _XSLT_BYTE_ORDER_MARK_ 558
-#define _XSLT_ESCAPE_URI_ATTRIBUTES_ 559
-#define _XSLT_INCLUDE_CONTENT_TYPE_ 560
-#define _XSLT_INDENT_ 561
-#define _XSLT_OMIT_XML_DECLARATION_ 562
-#define _XSLT_UNDECLARE_PREFIXES_ 563
-#define _XSLT_MATCH_ 564
-#define _XSLT_AS_ 565
-#define _XSLT_SELECT_ 566
-#define _XSLT_PRIORITY_ 567
-#define _XSLT_TEST_ 568
-#define _XSLT_SEPARATOR_ 569
-#define _XSLT_NAMESPACE_A_ 570
-#define _XSLT_REGEX_ 571
-#define _XSLT_FLAGS_ 572
-#define _XSLT_METHOD_ 573
-#define _XSLT_CDATA_SECTION_ELEMENTS_ 574
-#define _XSLT_USE_CHARACTER_MAPS_ 575
-#define _XSLT_ELEMENT_NAME_ 576
-#define _XSLT_XMLNS_ATTR_ 577
-#define _XSLT_ATTR_NAME_ 578
-#define _XSLT_TEXT_NODE_ 579
-#define _XSLT_WS_TEXT_NODE_ 580
-#define _HASH_DEFAULT_ 581
-#define _HASH_ALL_ 582
-#define _HASH_CURRENT_ 583
-#define _XML_ 584
-#define _HTML_ 585
-#define _XHTML_ 586
+#define _BANG_ 315
+#define _INTEGER_LITERAL_ 316
+#define _DECIMAL_LITERAL_ 317
+#define _DOUBLE_LITERAL_ 318
+#define _ATTRIBUTE_ 319
+#define _COMMENT_ 320
+#define _DOCUMENT_NODE_ 321
+#define _NAMESPACE_NODE_ 322
+#define _NODE_ 323
+#define _PROCESSING_INSTRUCTION_ 324
+#define _SCHEMA_ATTRIBUTE_ 325
+#define _SCHEMA_ELEMENT_ 326
+#define _TEXT_ 327
+#define _EMPTY_SEQUENCE_ 328
+#define _BOUNDARY_SPACE_ 329
+#define _FT_OPTION_ 330
+#define _BASE_URI_ 331
+#define _LAX_ 332
+#define _STRICT_ 333
+#define _IDIV_ 334
+#define _CHILD_ 335
+#define _DESCENDANT_ 336
+#define _SELF_ 337
+#define _DESCENDANT_OR_SELF_ 338
+#define _FOLLOWING_SIBLING_ 339
+#define _FOLLOWING_ 340
+#define _PARENT_ 341
+#define _ANCESTOR_ 342
+#define _PRECEDING_SIBLING_ 343
+#define _PRECEDING_ 344
+#define _ANCESTOR_OR_SELF_ 345
+#define _DOCUMENT_ 346
+#define _NOT_ 347
+#define _USING_ 348
+#define _NO_ 349
+#define _SENSITIVE_ 350
+#define _INSENSITIVE_ 351
+#define _DIACRITICS_ 352
+#define _WITHOUT_ 353
+#define _WITHOUT_C_ 354
+#define _STEMMING_ 355
+#define _THESAURUS_ 356
+#define _STOP_ 357
+#define _WILDCARDS_ 358
+#define _ENTIRE_ 359
+#define _CONTENT_ 360
+#define _WORD_ 361
+#define _TYPE_ 362
+#define _START_ 363
+#define _END_ 364
+#define _MOST_ 365
+#define _SKIP_ 366
+#define _COPY_ 367
+#define _VALUE_ 368
+#define _WHITESPACE_ 369
+#define _PI_CONTENT_ 370
+#define _XML_COMMENT_CONTENT_ 371
+#define _EQ_ 372
+#define _NE_ 373
+#define _LT_ 374
+#define _LE_ 375
+#define _GT_ 376
+#define _GE_ 377
+#define _AT_ 378
+#define _QUOT_ATTR_CONTENT_ 379
+#define _APOS_ATTR_CONTENT_ 380
+#define _WHITESPACE_ELEMENT_CONTENT_ 381
+#define _ELEMENT_CONTENT_ 382
+#define _AT_LM_ 383
+#define _ORDERED_ 384
+#define _UNORDERED_ 385
+#define _QNAME_ 386
+#define _XMLNS_QNAME_ 387
+#define _CONSTR_QNAME_ 388
+#define _STRING_LITERAL_ 389
+#define _VARIABLE_ 390
+#define _NCNAME_COLON_STAR_ 391
+#define _STAR_COLON_NCNAME_ 392
+#define _PI_TARGET_ 393
+#define _PRAGMA_CONTENT_ 394
+#define _RETURN_ 395
+#define _FOR_ 396
+#define _IN_ 397
+#define _LET_ 398
+#define _WHERE_ 399
+#define _COUNT_ 400
+#define _BY_ 401
+#define _ORDER_ 402
+#define _STABLE_ 403
+#define _ASCENDING_ 404
+#define _DESCENDING_ 405
+#define _EMPTY_ 406
+#define _GREATEST_ 407
+#define _LEAST_ 408
+#define _COLLATION_ 409
+#define _SOME_ 410
+#define _EVERY_ 411
+#define _SATISFIES_ 412
+#define _TYPESWITCH_ 413
+#define _CASE_ 414
+#define _CASE_S_ 415
+#define _AS_ 416
+#define _IF_ 417
+#define _THEN_ 418
+#define _ELSE_ 419
+#define _OR_ 420
+#define _AND_ 421
+#define _INSTANCE_ 422
+#define _OF_ 423
+#define _CASTABLE_ 424
+#define _TO_ 425
+#define _DIV_ 426
+#define _MOD_ 427
+#define _UNION_ 428
+#define _INTERSECT_ 429
+#define _EXCEPT_ 430
+#define _VALIDATE_ 431
+#define _CAST_ 432
+#define _TREAT_ 433
+#define _IS_ 434
+#define _PRESERVE_ 435
+#define _STRIP_ 436
+#define _NAMESPACE_ 437
+#define _ITEM_ 438
+#define _EXTERNAL_ 439
+#define _ENCODING_ 440
+#define _NO_PRESERVE_ 441
+#define _INHERIT_ 442
+#define _NO_INHERIT_ 443
+#define _DECLARE_ 444
+#define _CONSTRUCTION_ 445
+#define _ORDERING_ 446
+#define _DEFAULT_ 447
+#define _COPY_NAMESPACES_ 448
+#define _OPTION_ 449
+#define _XQUERY_ 450
+#define _VERSION_ 451
+#define _IMPORT_ 452
+#define _SCHEMA_ 453
+#define _MODULE_ 454
+#define _ELEMENT_ 455
+#define _FUNCTION_ 456
+#define _FUNCTION_EXT_ 457
+#define _SCORE_ 458
+#define _CONTAINS_ 459
+#define _WEIGHT_ 460
+#define _WINDOW_ 461
+#define _DISTANCE_ 462
+#define _OCCURS_ 463
+#define _TIMES_ 464
+#define _SAME_ 465
+#define _DIFFERENT_ 466
+#define _LOWERCASE_ 467
+#define _UPPERCASE_ 468
+#define _RELATIONSHIP_ 469
+#define _LEVELS_ 470
+#define _LANGUAGE_ 471
+#define _ANY_ 472
+#define _ALL_ 473
+#define _PHRASE_ 474
+#define _EXACTLY_ 475
+#define _FROM_ 476
+#define _WORDS_ 477
+#define _SENTENCES_ 478
+#define _PARAGRAPHS_ 479
+#define _SENTENCE_ 480
+#define _PARAGRAPH_ 481
+#define _REPLACE_ 482
+#define _MODIFY_ 483
+#define _FIRST_ 484
+#define _INSERT_ 485
+#define _BEFORE_ 486
+#define _AFTER_ 487
+#define _REVALIDATION_ 488
+#define _WITH_ 489
+#define _NODES_ 490
+#define _RENAME_ 491
+#define _LAST_ 492
+#define _DELETE_ 493
+#define _INTO_ 494
+#define _UPDATING_ 495
+#define _ID_ 496
+#define _KEY_ 497
+#define _TEMPLATE_ 498
+#define _MATCHES_ 499
+#define _TUPLE_ 500
+#define _MAP_ 501
+#define _NAME_ 502
+#define _CALL_ 503
+#define _APPLY_ 504
+#define _TEMPLATES_ 505
+#define _MODE_ 506
+#define _FTOR_ 507
+#define _FTAND_ 508
+#define _FTNOT_ 509
+#define _TYPE_ALIAS_ 510
+#define _XSLT_END_ELEMENT_ 511
+#define _XSLT_STYLESHEET_ 512
+#define _XSLT_TEMPLATE_ 513
+#define _XSLT_VALUE_OF_ 514
+#define _XSLT_TEXT_ 515
+#define _XSLT_APPLY_TEMPLATES_ 516
+#define _XSLT_CALL_TEMPLATE_ 517
+#define _XSLT_WITH_PARAM_ 518
+#define _XSLT_SEQUENCE_ 519
+#define _XSLT_PARAM_ 520
+#define _XSLT_FUNCTION_ 521
+#define _XSLT_CHOOSE_ 522
+#define _XSLT_WHEN_ 523
+#define _XSLT_OTHERWISE_ 524
+#define _XSLT_IF_ 525
+#define _XSLT_VARIABLE_ 526
+#define _XSLT_COMMENT_ 527
+#define _XSLT_PI_ 528
+#define _XSLT_DOCUMENT_ 529
+#define _XSLT_ATTRIBUTE_ 530
+#define _XSLT_NAMESPACE_ 531
+#define _XSLT_ELEMENT_ 532
+#define _XSLT_ANALYZE_STRING_ 533
+#define _XSLT_MATCHING_SUBSTRING_ 534
+#define _XSLT_NON_MATCHING_SUBSTRING_ 535
+#define _XSLT_COPY_OF_ 536
+#define _XSLT_COPY_ 537
+#define _XSLT_FOR_EACH_ 538
+#define _XSLT_OUTPUT_ 539
+#define _XSLT_IMPORT_SCHEMA_ 540
+#define _XSLT_TYPE_ALIAS_ 541
+#define _XSLT_VERSION_ 542
+#define _XSLT_MODE_ 543
+#define _XSLT_NAME_ 544
+#define _XSLT_DOCTYPE_PUBLIC_ 545
+#define _XSLT_DOCTYPE_SYSTEM_ 546
+#define _XSLT_ENCODING_ 547
+#define _XSLT_MEDIA_TYPE_ 548
+#define _XSLT_NORMALIZATION_FORM_ 549
+#define _XSLT_STANDALONE_ 550
+#define _XSLT_EXCLUDE_RESULT_PREFIXES_ 551
+#define _XSLT_NAMESPACE_STR_ 552
+#define _XSLT_SCHEMA_LOCATION_ 553
+#define _XSLT_TUNNEL_ 554
+#define _XSLT_REQUIRED_ 555
+#define _XSLT_OVERRIDE_ 556
+#define _XSLT_COPY_NAMESPACES_ 557
+#define _XSLT_INHERIT_NAMESPACES_ 558
+#define _XSLT_BYTE_ORDER_MARK_ 559
+#define _XSLT_ESCAPE_URI_ATTRIBUTES_ 560
+#define _XSLT_INCLUDE_CONTENT_TYPE_ 561
+#define _XSLT_INDENT_ 562
+#define _XSLT_OMIT_XML_DECLARATION_ 563
+#define _XSLT_UNDECLARE_PREFIXES_ 564
+#define _XSLT_MATCH_ 565
+#define _XSLT_AS_ 566
+#define _XSLT_SELECT_ 567
+#define _XSLT_PRIORITY_ 568
+#define _XSLT_TEST_ 569
+#define _XSLT_SEPARATOR_ 570
+#define _XSLT_NAMESPACE_A_ 571
+#define _XSLT_REGEX_ 572
+#define _XSLT_FLAGS_ 573
+#define _XSLT_METHOD_ 574
+#define _XSLT_CDATA_SECTION_ELEMENTS_ 575
+#define _XSLT_USE_CHARACTER_MAPS_ 576
+#define _XSLT_ELEMENT_NAME_ 577
+#define _XSLT_XMLNS_ATTR_ 578
+#define _XSLT_ATTR_NAME_ 579
+#define _XSLT_TEXT_NODE_ 580
+#define _XSLT_WS_TEXT_NODE_ 581
+#define _HASH_DEFAULT_ 582
+#define _HASH_ALL_ 583
+#define _HASH_CURRENT_ 584
+#define _XML_ 585
+#define _HTML_ 586
+#define _XHTML_ 587
 
 
 

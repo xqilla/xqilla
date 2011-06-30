@@ -430,6 +430,7 @@ namespace XQParser {
 %token _TILDE_                 "~"
 %token _MINUS_GREATER_THAN_    "->"
 %token _BAR_BAR_               "||"
+%token _BANG_                  "!"
 
 
 %token <str> _INTEGER_LITERAL_ "<integer literal>"
@@ -4027,6 +4028,10 @@ RelativePathExpr:
     nav->addStep($3);
 
     $$ = nav;
+  }
+  | RelativePathExpr _BANG_ StepExpr
+  {
+    $$ = WRAP(@2, new (MEMMGR) XQMap($1, $3, MEMMGR));
   }
   | StepExpr
   ;
