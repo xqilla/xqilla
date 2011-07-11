@@ -26,21 +26,26 @@
 SequenceResult::SequenceResult(const LocationInfo *o, const Sequence &seq)
   : ResultImpl(o),
     seq_(seq),
-    it_(seq_.begin())
+    i_(0)
 {
 }
 
 Item::Ptr SequenceResult::nextOrTail(Result &tail, DynamicContext *context)
 {
-  if(it_ == seq_.end()) {
+  if(i_ >= seq_._itemList.size()) {
     tail = 0;
     return 0;
   }
-  return *(it_++);
+  return seq_._itemList[i_++];
 }
 
 Sequence SequenceResult::toSequence(DynamicContext *context)
 {
-  return Sequence(it_, seq_.end());
+  return Sequence(seq_, i_);
+}
+
+void SequenceResult::skip(unsigned count, DynamicContext *context)
+{
+  i_ += count;
 }
 

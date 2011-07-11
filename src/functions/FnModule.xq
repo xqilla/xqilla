@@ -313,22 +313,19 @@ declare function reverse($seq as item()*) as item()*
 
 declare function subsequence($sourceSeq as item()*, $startingLoc as xs:double) as item()*
 {
-  subsequence-helper($sourceSeq, round($startingLoc))
+  let $s := round($startingLoc)
+  return
+    if($s < 1) then $sourceSeq
+    else xqilla:drop($sourceSeq, $s - 1)
 };
 
 declare function subsequence($sourceSeq as item()*, $startingLoc as xs:double,
   $length as xs:double) as item()*
 {
   let $s := round($startingLoc)
-  let $l := if($s < 1) then round($length) + $s - 1 else round($length)
   return
-    take(subsequence-helper($sourceSeq, $s), $l)
-};
-
-declare private function subsequence-helper($seq as item()*, $start as xs:double) as item()*
-{
-  if($start le 1) then $seq
-  else subsequence-helper(tail($seq), $start - 1)
+    if($s < 1) then take($sourceSeq, round($length) + $s - 1)
+    else take(xqilla:drop($sourceSeq, $s - 1), round($length))
 };
 
 declare private function take($seq as item()*, $num as xs:double) as item()*

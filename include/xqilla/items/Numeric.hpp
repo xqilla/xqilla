@@ -147,6 +147,9 @@ public:
   /* Is this floating point value infinite? */
   virtual bool isInfinite() const = 0;
 
+  /* Is this floating point value infinite? */
+  virtual bool isInteger() const;
+
   virtual AnyAtomicType::AtomicObjectType getPrimitiveTypeIndex() const = 0;
 
   virtual const MAPM &asMAPM() const = 0;

@@ -21,6 +21,7 @@
 #include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/ast/XQFunction.hpp>
+#include <xqilla/functions/XQillaFunction.hpp>
 
 class XQILLA_API FunctionTail : public XQFunction
 {
@@ -30,6 +31,19 @@ public:
   static const unsigned int maxArgs;
 
   FunctionTail(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
+  
+  ASTNode *staticTypingImpl(StaticContext *context);
+  Result createResult(DynamicContext* context, int flags=0) const;
+};
+
+class XQILLA_API FunctionDrop : public XQillaFunction
+{
+public:
+  static const XMLCh name[];
+  static const unsigned int minArgs;
+  static const unsigned int maxArgs;
+
+  FunctionDrop(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
   
   ASTNode *staticTypingImpl(StaticContext *context);
   Result createResult(DynamicContext* context, int flags=0) const;

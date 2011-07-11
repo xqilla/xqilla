@@ -81,11 +81,7 @@ public:
   {
     if(_impl->getRefCount() == 1 && _pos >= _impl->_items.size()) {
       // Ditch the buffer if we're the only result for it
-      unsigned size = _impl->_items.size();
-      while(_pos > size) {
-        _impl->_result->next(context);
-        ++_pos;
-      }
+      _impl->_result->skip(_pos - _impl->_items.size(), context);
       tail = _impl->_result;
       return 0;
     }
@@ -100,6 +96,11 @@ public:
   {
     _impl->increaseMaxReadCount(readCount);
     buffer = ResultBuffer(_impl.get(), _pos);
+  }
+
+  virtual void skip(unsigned count, DynamicContext *context)
+  {
+    _pos += count;
   }
 
 private:

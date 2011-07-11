@@ -361,30 +361,25 @@ static const DelayedModule::FuncDef fn_functions[] = {
     "subsequence", 2, false, 314, 1,
     "declare function subsequence($sourceSeq as item()*, $startingLoc as xs:double) as item()*\n"
     "{\n"
-    "  subsequence-helper($sourceSeq, round($startingLoc))\n"
+    "  let $s := round($startingLoc)\n"
+    "  return\n"
+    "    if($s < 1) then $sourceSeq\n"
+    "    else xqilla:drop($sourceSeq, $s - 1)\n"
     "}\n"
   },
   {
-    "subsequence", 3, false, 319, 1,
+    "subsequence", 3, false, 322, 1,
     "declare function subsequence($sourceSeq as item()*, $startingLoc as xs:double,\n"
     "  $length as xs:double) as item()*\n"
     "{\n"
     "  let $s := round($startingLoc)\n"
-    "  let $l := if($s < 1) then round($length) + $s - 1 else round($length)\n"
     "  return\n"
-    "    take(subsequence-helper($sourceSeq, $s), $l)\n"
+    "    if($s < 1) then take($sourceSeq, round($length) + $s - 1)\n"
+    "    else take(xqilla:drop($sourceSeq, $s - 1), round($length))\n"
     "}\n"
   },
   {
-    "subsequence-helper", 2, true, 328, 1,
-    "declare private function subsequence-helper($seq as item()*, $start as xs:double) as item()*\n"
-    "{\n"
-    "  if($start le 1) then $seq\n"
-    "  else subsequence-helper(tail($seq), $start - 1)\n"
-    "}\n"
-  },
-  {
-    "take", 2, true, 334, 1,
+    "take", 2, true, 331, 1,
     "declare private function take($seq as item()*, $num as xs:double) as item()*\n"
     "{\n"
     "  if($num le 0 or empty($seq)) then ()\n"
@@ -392,14 +387,14 @@ static const DelayedModule::FuncDef fn_functions[] = {
     "}\n"
   },
   {
-    "deep-equal", 2, false, 340, 1,
+    "deep-equal", 2, false, 337, 1,
     "declare function deep-equal($parameter1 as item()*, $parameter2 as item()*) as xs:boolean\n"
     "{\n"
     "  deep-equal($parameter1, $parameter2, default-collation())\n"
     "}\n"
   },
   {
-    "deep-equal", 3, false, 345, 1,
+    "deep-equal", 3, false, 342, 1,
     "declare function deep-equal($p1 as item()*, $p2 as item()*, $collation as xs:string) as xs:boolean\n"
     "{\n"
     "  if(empty($p1)) then empty($p2) else\n"
@@ -431,14 +426,14 @@ static const DelayedModule::FuncDef fn_functions[] = {
     "}\n"
   },
   {
-    "deep-equal-error", 0, true, 375, 1,
+    "deep-equal-error", 0, true, 372, 1,
     "declare private function deep-equal-error()\n"
     "{\n"
     "  error(xs:QName(\"err:FOTY0015\"), \"An argument to fn:deep-equal() contains a function item\")\n"
     "}\n"
   },
   {
-    "deep-equal-nodes", 3, true, 380, 1,
+    "deep-equal-nodes", 3, true, 377, 1,
     "declare private function deep-equal-nodes($p1 as node()*, $p2 as node()*, $collation as xs:string) as xs:boolean\n"
     "{\n"
     "  if(empty($p1)) then empty($p2) else\n"
@@ -512,21 +507,21 @@ static const DelayedModule::FuncDef fn_functions[] = {
     "}\n"
   },
   {
-    "avg", 1, false, 455, 1,
+    "avg", 1, false, 452, 1,
     "declare function avg($arg as xs:anyAtomicType*) as xs:anyAtomicType?\n"
     "{\n"
     "  sum($arg, ()) div count($arg)\n"
     "}\n"
   },
   {
-    "sum", 1, false, 460, 1,
+    "sum", 1, false, 457, 1,
     "declare function sum($arg as xs:anyAtomicType*) as xs:anyAtomicType\n"
     "{\n"
     "  sum($arg, 0)\n"
     "}\n"
   },
   {
-    "sum", 2, false, 465, 1,
+    "sum", 2, false, 462, 1,
     "declare function sum($arg as xs:anyAtomicType*, $zero as xs:anyAtomicType?) as xs:anyAtomicType?\n"
     "{\n"
     "  typeswitch(head($arg))\n"
@@ -540,7 +535,7 @@ static const DelayedModule::FuncDef fn_functions[] = {
     "}\n"
   },
   {
-    "numeric-sum", 2, true, 477, 1,
+    "numeric-sum", 2, true, 474, 1,
     "declare private function numeric-sum($arg as xs:anyAtomicType*, $result as xs:anyAtomicType) as xs:anyAtomicType\n"
     "{\n"
     "  typeswitch(head($arg))\n"
@@ -552,7 +547,7 @@ static const DelayedModule::FuncDef fn_functions[] = {
     "}\n"
   },
   {
-    "yearMonthDuration-sum", 2, true, 487, 1,
+    "yearMonthDuration-sum", 2, true, 484, 1,
     "declare private function yearMonthDuration-sum($arg as xs:anyAtomicType*, $result as xs:yearMonthDuration) as xs:yearMonthDuration\n"
     "{\n"
     "  typeswitch(head($arg))\n"
@@ -562,7 +557,7 @@ static const DelayedModule::FuncDef fn_functions[] = {
     "}\n"
   },
   {
-    "dayTimeDuration-sum", 2, true, 495, 1,
+    "dayTimeDuration-sum", 2, true, 492, 1,
     "declare private function dayTimeDuration-sum($arg as xs:anyAtomicType*, $result as xs:dayTimeDuration) as xs:dayTimeDuration\n"
     "{\n"
     "  typeswitch(head($arg))\n"
@@ -572,14 +567,14 @@ static const DelayedModule::FuncDef fn_functions[] = {
     "}\n"
   },
   {
-    "max", 1, false, 503, 1,
+    "max", 1, false, 500, 1,
     "declare function max($arg as xs:anyAtomicType*) as xs:anyAtomicType?\n"
     "{\n"
     "  max($arg, default-collation())\n"
     "}\n"
   },
   {
-    "max", 2, false, 508, 1,
+    "max", 2, false, 505, 1,
     "declare function max($arg as xs:anyAtomicType*, $collation as xs:string) as xs:anyAtomicType?\n"
     "{\n"
     "  typeswitch(head($arg))\n"
@@ -598,7 +593,7 @@ static const DelayedModule::FuncDef fn_functions[] = {
     "}\n"
   },
   {
-    "double-max", 2, true, 525, 1,
+    "double-max", 2, true, 522, 1,
     "declare private function double-max($arg as xs:anyAtomicType*, $result as xs:double) as xs:double\n"
     "{\n"
     "  typeswitch(head($arg))\n"
@@ -610,7 +605,7 @@ static const DelayedModule::FuncDef fn_functions[] = {
     "}\n"
   },
   {
-    "float-max", 2, true, 535, 1,
+    "float-max", 2, true, 532, 1,
     "declare private function float-max($arg as xs:anyAtomicType*, $result as xs:float) as xs:anyAtomicType\n"
     "{\n"
     "  typeswitch(head($arg))\n"
@@ -623,7 +618,7 @@ static const DelayedModule::FuncDef fn_functions[] = {
     "}\n"
   },
   {
-    "decimal-max", 2, true, 546, 1,
+    "decimal-max", 2, true, 543, 1,
     "declare private function decimal-max($arg as xs:anyAtomicType*, $result as xs:decimal) as xs:anyAtomicType\n"
     "{\n"
     "  typeswitch(head($arg))\n"
@@ -635,7 +630,7 @@ static const DelayedModule::FuncDef fn_functions[] = {
     "}\n"
   },
   {
-    "string-max", 3, true, 556, 1,
+    "string-max", 3, true, 553, 1,
     "declare private function string-max($arg as xs:anyAtomicType*, $result as xs:string, $collation as xs:string) as xs:string\n"
     "{\n"
     "  typeswitch(head($arg))\n"
@@ -646,7 +641,7 @@ static const DelayedModule::FuncDef fn_functions[] = {
     "}\n"
   },
   {
-    "boolean-max", 2, true, 565, 1,
+    "boolean-max", 2, true, 562, 1,
     "declare private function boolean-max($arg as xs:anyAtomicType*, $result as xs:boolean) as xs:boolean\n"
     "{\n"
     "  typeswitch(head($arg))\n"
@@ -656,7 +651,7 @@ static const DelayedModule::FuncDef fn_functions[] = {
     "}\n"
   },
   {
-    "date-max", 2, true, 573, 1,
+    "date-max", 2, true, 570, 1,
     "declare private function date-max($arg as xs:anyAtomicType*, $result as xs:date) as xs:date\n"
     "{\n"
     "  typeswitch(head($arg))\n"
@@ -666,7 +661,7 @@ static const DelayedModule::FuncDef fn_functions[] = {
     "}\n"
   },
   {
-    "time-max", 2, true, 581, 1,
+    "time-max", 2, true, 578, 1,
     "declare private function time-max($arg as xs:anyAtomicType*, $result as xs:time) as xs:time\n"
     "{\n"
     "  typeswitch(head($arg))\n"
@@ -676,7 +671,7 @@ static const DelayedModule::FuncDef fn_functions[] = {
     "}\n"
   },
   {
-    "dateTime-max", 2, true, 589, 1,
+    "dateTime-max", 2, true, 586, 1,
     "declare private function dateTime-max($arg as xs:anyAtomicType*, $result as xs:dateTime) as xs:dateTime\n"
     "{\n"
     "  typeswitch(head($arg))\n"
@@ -686,7 +681,7 @@ static const DelayedModule::FuncDef fn_functions[] = {
     "}\n"
   },
   {
-    "yearMonthDuration-max", 2, true, 597, 1,
+    "yearMonthDuration-max", 2, true, 594, 1,
     "declare private function yearMonthDuration-max($arg as xs:anyAtomicType*, $result as xs:yearMonthDuration) as xs:yearMonthDuration\n"
     "{\n"
     "  typeswitch(head($arg))\n"
@@ -696,7 +691,7 @@ static const DelayedModule::FuncDef fn_functions[] = {
     "}\n"
   },
   {
-    "dayTimeDuration-max", 2, true, 605, 1,
+    "dayTimeDuration-max", 2, true, 602, 1,
     "declare private function dayTimeDuration-max($arg as xs:anyAtomicType*, $result as xs:dayTimeDuration) as xs:dayTimeDuration\n"
     "{\n"
     "  typeswitch(head($arg))\n"
@@ -706,14 +701,14 @@ static const DelayedModule::FuncDef fn_functions[] = {
     "}\n"
   },
   {
-    "min", 1, false, 613, 1,
+    "min", 1, false, 610, 1,
     "declare function min($arg as xs:anyAtomicType*) as xs:anyAtomicType?\n"
     "{\n"
     "  min($arg, default-collation())\n"
     "}\n"
   },
   {
-    "min", 2, false, 618, 1,
+    "min", 2, false, 615, 1,
     "declare function min($arg as xs:anyAtomicType*, $collation as xs:string) as xs:anyAtomicType?\n"
     "{\n"
     "  typeswitch(head($arg))\n"
@@ -732,7 +727,7 @@ static const DelayedModule::FuncDef fn_functions[] = {
     "}\n"
   },
   {
-    "double-min", 2, true, 635, 1,
+    "double-min", 2, true, 632, 1,
     "declare private function double-min($arg as xs:anyAtomicType*, $result as xs:double) as xs:double\n"
     "{\n"
     "  typeswitch(head($arg))\n"
@@ -744,7 +739,7 @@ static const DelayedModule::FuncDef fn_functions[] = {
     "}\n"
   },
   {
-    "float-min", 2, true, 645, 1,
+    "float-min", 2, true, 642, 1,
     "declare private function float-min($arg as xs:anyAtomicType*, $result as xs:float) as xs:anyAtomicType\n"
     "{\n"
     "  typeswitch(head($arg))\n"
@@ -757,7 +752,7 @@ static const DelayedModule::FuncDef fn_functions[] = {
     "}\n"
   },
   {
-    "decimal-min", 2, true, 656, 1,
+    "decimal-min", 2, true, 653, 1,
     "declare private function decimal-min($arg as xs:anyAtomicType*, $result as xs:decimal) as xs:anyAtomicType\n"
     "{\n"
     "  typeswitch(head($arg))\n"
@@ -769,7 +764,7 @@ static const DelayedModule::FuncDef fn_functions[] = {
     "}\n"
   },
   {
-    "string-min", 3, true, 666, 1,
+    "string-min", 3, true, 663, 1,
     "declare private function string-min($arg as xs:anyAtomicType*, $result as xs:string, $collation as xs:string) as xs:string\n"
     "{\n"
     "  typeswitch(head($arg))\n"
@@ -780,7 +775,7 @@ static const DelayedModule::FuncDef fn_functions[] = {
     "}\n"
   },
   {
-    "boolean-min", 2, true, 675, 1,
+    "boolean-min", 2, true, 672, 1,
     "declare private function boolean-min($arg as xs:anyAtomicType*, $result as xs:boolean) as xs:boolean\n"
     "{\n"
     "  typeswitch(head($arg))\n"
@@ -790,7 +785,7 @@ static const DelayedModule::FuncDef fn_functions[] = {
     "}\n"
   },
   {
-    "date-min", 2, true, 683, 1,
+    "date-min", 2, true, 680, 1,
     "declare private function date-min($arg as xs:anyAtomicType*, $result as xs:date) as xs:date\n"
     "{\n"
     "  typeswitch(head($arg))\n"
@@ -800,7 +795,7 @@ static const DelayedModule::FuncDef fn_functions[] = {
     "}\n"
   },
   {
-    "time-min", 2, true, 691, 1,
+    "time-min", 2, true, 688, 1,
     "declare private function time-min($arg as xs:anyAtomicType*, $result as xs:time) as xs:time\n"
     "{\n"
     "  typeswitch(head($arg))\n"
@@ -810,7 +805,7 @@ static const DelayedModule::FuncDef fn_functions[] = {
     "}\n"
   },
   {
-    "dateTime-min", 2, true, 699, 1,
+    "dateTime-min", 2, true, 696, 1,
     "declare private function dateTime-min($arg as xs:anyAtomicType*, $result as xs:dateTime) as xs:dateTime\n"
     "{\n"
     "  typeswitch(head($arg))\n"
@@ -820,7 +815,7 @@ static const DelayedModule::FuncDef fn_functions[] = {
     "}\n"
   },
   {
-    "yearMonthDuration-min", 2, true, 707, 1,
+    "yearMonthDuration-min", 2, true, 704, 1,
     "declare private function yearMonthDuration-min($arg as xs:anyAtomicType*, $result as xs:yearMonthDuration) as xs:yearMonthDuration\n"
     "{\n"
     "  typeswitch(head($arg))\n"
@@ -830,7 +825,7 @@ static const DelayedModule::FuncDef fn_functions[] = {
     "}\n"
   },
   {
-    "dayTimeDuration-min", 2, true, 715, 1,
+    "dayTimeDuration-min", 2, true, 712, 1,
     "declare private function dayTimeDuration-min($arg as xs:anyAtomicType*, $result as xs:dayTimeDuration) as xs:dayTimeDuration\n"
     "{\n"
     "  typeswitch(head($arg))\n"
@@ -840,7 +835,7 @@ static const DelayedModule::FuncDef fn_functions[] = {
     "}\n"
   },
   {
-    "map", 2, false, 728, 1,
+    "map", 2, false, 725, 1,
     "declare function map($f as function(item()) as item()*, $seq as item()*) as item()*\n"
     "{\n"
     "  if(empty($seq)) then ()\n"
@@ -848,7 +843,7 @@ static const DelayedModule::FuncDef fn_functions[] = {
     "}\n"
   },
   {
-    "filter", 2, false, 734, 1,
+    "filter", 2, false, 731, 1,
     "declare function filter($f as function(item()) as xs:boolean, $seq as item()*) as item()*\n"
     "{\n"
     "  if(empty($seq)) then ()\n"
@@ -859,7 +854,7 @@ static const DelayedModule::FuncDef fn_functions[] = {
     "}\n"
   },
   {
-    "fold-left", 3, false, 743, 1,
+    "fold-left", 3, false, 740, 1,
     "declare function fold-left($f as function(item()*, item()) as item()*, $zero as item()*,\n"
     "  $seq as item()*) as item()*\n"
     "{\n"
@@ -868,7 +863,7 @@ static const DelayedModule::FuncDef fn_functions[] = {
     "}\n"
   },
   {
-    "fold-right", 3, false, 750, 1,
+    "fold-right", 3, false, 747, 1,
     "declare function fold-right($f as function(item(), item()*) as item()*, $zero as item()*,\n"
     "  $seq as item()*) as item()*\n"
     "{\n"
@@ -877,7 +872,7 @@ static const DelayedModule::FuncDef fn_functions[] = {
     "}\n"
   },
   {
-    "map-pairs", 3, false, 757, 1,
+    "map-pairs", 3, false, 754, 1,
     "declare function map-pairs($f as function(item(), item()) as item()*, $seq1 as item()*,\n"
     "  $seq2 as item()*) as item()*\n"
     "{\n"

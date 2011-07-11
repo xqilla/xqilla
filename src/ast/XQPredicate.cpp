@@ -295,65 +295,48 @@ std::string NonNumericPredicateFilterResult::asString(DynamicContext *context, i
 
 NumericPredicateFilterResult::NumericPredicateFilterResult(const Result &parent, const ASTNode *pred, size_t contextSize)
   : ResultImpl(pred),
-    todo_(true),
     parent_(parent),
     pred_(pred),
     contextSize_(contextSize)
 {
 }
 
-Item::Ptr NumericPredicateFilterResult::next(DynamicContext *context)
+Item::Ptr NumericPredicateFilterResult::nextOrTail(Result &tail, DynamicContext *context)
 {
-  if(todo_) {
-    todo_ = false;
+  AutoContextInfoReset autoReset(context);
+  context->setContextSize(contextSize_);
 
-    ItemFactory* pFactory=context->getItemFactory();
+  // Set the context item to something other than null,
+  // since fn:last() checks to see that there is actually
+  // a context item
+  context->setContextItem(context->getMemoryManager()->createInteger(1));
 
-    AutoContextInfoReset autoReset(context);
-    context->setContextSize(contextSize_);
-
-    // Set the context item to something other than null,
-    // since fn:last() checks to see that there is actually
-    // a context item
-    context->setContextItem(pFactory->createInteger(1, context));
-
-    Result pred_result = pred_->createResult(context);
-    Numeric::Ptr first = (Numeric::Ptr)pred_result->next(context);
-    if(first.isNull()) {
-      // The effective boolean value is therefore false
-      parent_ = 0;
-      return 0;
-    }
-
-    Item::Ptr second = pred_result->next(context);
-    if(second.notNull()) {
-      // The effective boolean value causes an error -
-      // so call it to get the correct error
-      parent_ = 0;
-      XQEffectiveBooleanValue::get(first, second, context, this);
-      return 0;
-    }
-
-    autoReset.resetContextInfo();
-
-    int pos = 1;
-    while(pFactory->createInteger(pos, context)->lessThan(first, context) && parent_->next(context).notNull()) {
-      pos++;
-    }
-
-    if(pFactory->createInteger(pos, context)->equals(first, context)) {
-      Item::Ptr result = parent_->next(context);
-      parent_ = 0;
-      return result;
-    }
-
-    parent_ = 0;
+  Result pred_result = pred_->createResult(context);
+  Numeric::Ptr first = (Numeric::Ptr)pred_result->next(context);
+  if(first.isNull()) {
+    // The effective boolean value is therefore false
+    tail = 0;
+    return 0;
   }
 
-  return 0;
-}
+  Item::Ptr second = pred_result->next(context);
+  if(second.notNull()) {
+    // The effective boolean value causes an error -
+    // so call it to get the correct error
+    XQEffectiveBooleanValue::get(first, second, context, this);
+    tail = 0;
+    return 0;
+  }
 
-std::string NumericPredicateFilterResult::asString(DynamicContext *context, int indent) const
-{
-  return "numericpredicatefilterresult";
+  autoReset.resetContextInfo();
+
+  if(!first->isInteger() || first->isZero() || first->isNegative()) {
+    tail = 0;
+    return 0;
+  }
+
+  parent_->skip(first->asInt() - 1, context);
+  Item::Ptr result = parent_->next(context);
+  tail = 0;
+  return result;
 }

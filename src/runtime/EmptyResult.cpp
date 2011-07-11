@@ -43,3 +43,6 @@ void EmptyResult::toResultBuffer(unsigned int readCount, ResultBuffer &buffer)
 {
 }
 
+void EmptyResult::skip(unsigned count, DynamicContext *context)
+{
+}

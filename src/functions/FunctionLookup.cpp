@@ -556,6 +556,7 @@ static void initGlobalTable(FunctionLookup *t, MemoryManager *memMgr)
   t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionWords>(memMgr));
   t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionSentences>(memMgr));
   t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionExplain>(memMgr));
+  t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionDrop>(memMgr));
 
 #ifdef HAVE_LIBTIDY
   t->insertFunction(new (memMgr) FuncFactoryTemplate<FunctionParseHTML>(memMgr));
