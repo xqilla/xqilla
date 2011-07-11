@@ -83,6 +83,8 @@ public:
   Vector children;
 };
 
+class XQRewriteRule;
+
 class XQILLA_API RewriteCase
 {
 public:
@@ -94,7 +96,7 @@ public:
   void staticResolution(StaticContext *context);
   void staticTyping(StaticContext *context, StaticTyper *styper);
 
-  ASTNode *apply(DynamicContext *context, const TupleImpl *subs) const;
+  ASTNode *apply(const XQRewriteRule *rule, DynamicContext *context, const TupleImpl *subs) const;
 
   ASTNode *result;
   ASTNode *where;
@@ -137,6 +139,8 @@ private:
   RewritePattern *pattern_;
   ASTNode *where_;
   RewriteCase::Vector cases_;
+
+  friend class RewriteCase;
 };
 
 #endif

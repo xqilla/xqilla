@@ -261,6 +261,7 @@ private:
         capacity_(capacity),
         count_(0)
     {
+      assert(tableSize_ != 0);
       memset(table_, 0, tableSize_ * sizeof(Bucket*));
 
       Bucket *bkt = getBuckets();
@@ -273,6 +274,7 @@ private:
         capacity_(capacity),
         count_(0)
     {
+      assert(tableSize_ != 0);
       memset(table_, 0, tableSize_ * sizeof(Bucket*));
 
       Bucket *bkt = getBuckets();

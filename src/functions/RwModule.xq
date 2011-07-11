@@ -26,13 +26,13 @@ module namespace rw = "http://xqilla.sourceforge.net/rewrite";
 declare option rw:rule "rw:MulMulTransFold: ((~A * ~B) * ~C)
   where rw:is-constant(~C) and (rw:subtype(~this, 'xs:decimal?') or
     rw:subtype(~this, 'xs:float?') or rw:subtype(~this, 'xs:double?'))
--> ((~A * ~C) * ~B) where rw:is-constant(~A)
--> (~A * (~C * ~B)) where rw:is-constant(~B)";
+-> ((~A * ~C) * ~B) where rw:is-constant(~A) and not(rw:is-constant(~B))
+-> (~A * (~C * ~B)) where rw:is-constant(~B) and not(rw:is-constant(~A))";
 declare option rw:rule "rw:MulDivTransFold: ((~A div ~B) * ~C)
   where rw:is-constant(~C) and (rw:subtype(~this, 'xs:decimal?') or
     rw:subtype(~this, 'xs:float?') or rw:subtype(~this, 'xs:double?'))
--> ((~A * ~C) div ~B) where rw:is-constant(~A)
--> (~A * (~C div ~B)) where rw:is-constant(~B)";
+-> ((~A * ~C) div ~B) where rw:is-constant(~A) and not(rw:is-constant(~B))
+-> (~A * (~C div ~B)) where rw:is-constant(~B) and not(rw:is-constant(~A))";
 
 (: duration div duration = decimal :)
 declare option rw:rule "rw:DivMulTransFold: ((~A * ~B) div ~C)
@@ -40,37 +40,37 @@ declare option rw:rule "rw:DivMulTransFold: ((~A * ~B) div ~C)
     rw:subtype(~this, 'xs:float?') or rw:subtype(~this, 'xs:double?')) and
     not(rw:subtype(~A, 'xs:duration')) and not(rw:subtype(~B, 'xs:duration')) and
     not(rw:subtype(~C, 'xs:duration'))
--> ((~A div ~C) * ~B) where rw:is-constant(~A)
--> (~A * (~B div ~C)) where rw:is-constant(~B)";
+-> ((~A div ~C) * ~B) where rw:is-constant(~A) and not(rw:is-constant(~B))
+-> (~A * (~B div ~C)) where rw:is-constant(~B) and not(rw:is-constant(~A))";
 declare option rw:rule "rw:DivDivTransFold: ((~A div ~B) div ~C)
   where rw:is-constant(~C) and (rw:subtype(~this, 'xs:decimal?') or
     rw:subtype(~this, 'xs:float?') or rw:subtype(~this, 'xs:double?')) and
     not(rw:subtype(~A, 'xs:duration')) and not(rw:subtype(~B, 'xs:duration')) and
     not(rw:subtype(~C, 'xs:duration'))
--> ((~A div ~C) div ~B) where rw:is-constant(~A)
--> (~A div (~B * ~C)) where rw:is-constant(~B)";
+-> ((~A div ~C) div ~B) where rw:is-constant(~A) and not(rw:is-constant(~B))
+-> (~A div (~B * ~C)) where rw:is-constant(~B) and not(rw:is-constant(~A))";
 
 declare option rw:rule "rw:AddAddTransFold: ((~A + ~B) + ~C)
   where rw:is-constant(~C) and (rw:subtype(~this, 'xs:decimal?') or
     rw:subtype(~this, 'xs:float?') or rw:subtype(~this, 'xs:double?'))
--> ((~A + ~C) + ~B) where rw:is-constant(~A)
--> (~A + (~C + ~B)) where rw:is-constant(~B)";
+-> ((~A + ~C) + ~B) where rw:is-constant(~A) and not(rw:is-constant(~B))
+-> (~A + (~C + ~B)) where rw:is-constant(~B) and not(rw:is-constant(~A))";
 declare option rw:rule "rw:AddSubTransFold: ((~A - ~B) + ~C)
   where rw:is-constant(~C) and (rw:subtype(~this, 'xs:decimal?') or
     rw:subtype(~this, 'xs:float?') or rw:subtype(~this, 'xs:double?'))
--> ((~A + ~C) - ~B) where rw:is-constant(~A)
--> (~A + (~C - ~B)) where rw:is-constant(~B)";
+-> ((~A + ~C) - ~B) where rw:is-constant(~A) and not(rw:is-constant(~B))
+-> (~A + (~C - ~B)) where rw:is-constant(~B) and not(rw:is-constant(~A))";
 
 declare option rw:rule "rw:SubAddTransFold: ((~A + ~B) - ~C)
   where rw:is-constant(~C) and (rw:subtype(~this, 'xs:decimal?') or
     rw:subtype(~this, 'xs:float?') or rw:subtype(~this, 'xs:double?'))
--> ((~A - ~C) + ~B) where rw:is-constant(~A)
--> (~A + (~B - ~C)) where rw:is-constant(~B)";
+-> ((~A - ~C) + ~B) where rw:is-constant(~A) and not(rw:is-constant(~B))
+-> (~A + (~B - ~C)) where rw:is-constant(~B) and not(rw:is-constant(~A))";
 declare option rw:rule "rw:SubSubTransFold: ((~A - ~B) - ~C)
   where rw:is-constant(~C) and (rw:subtype(~this, 'xs:decimal?') or
     rw:subtype(~this, 'xs:float?') or rw:subtype(~this, 'xs:double?'))
--> ((~A - ~C) - ~B) where rw:is-constant(~A)
--> (~A - (~B + ~C)) where rw:is-constant(~B)";
+-> ((~A - ~C) - ~B) where rw:is-constant(~A) and not(rw:is-constant(~B))
+-> (~A - (~B + ~C)) where rw:is-constant(~B) and not(rw:is-constant(~A))";
 
 (: Only for xs:decimal, since otherwise "-0" messes things up :)
 declare option rw:rule "rw:MulZeroFold: ~e * 0 -> 0

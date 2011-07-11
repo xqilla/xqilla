@@ -33,6 +33,7 @@
 #include <stdio.h>
 
 #include <xercesc/framework/URLInputSource.hpp>
+#include <xercesc/framework/MemBufInputSource.hpp>
 #include <xercesc/util/XMLEntityResolver.hpp>
 #include <xercesc/framework/MemBufFormatTarget.hpp>
 #include <xercesc/dom/DOMException.hpp>
@@ -521,6 +522,13 @@ InputSource* XQillaTestSuiteRunner::resolveEntity(XMLResourceIdentifier* resourc
         }
       }
     }
+
+    // Don't hit the W3C for the XHTML DTD!
+    if(string("http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd") ==
+       UTF8(resourceIdentifier->getSystemId())) {
+      return new MemBufInputSource((XMLByte*)"", 0, "", false);
+    }
+
     return NULL;
 }
 
