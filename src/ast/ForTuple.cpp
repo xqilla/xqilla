@@ -121,6 +121,8 @@ TupleNode *ForTuple::staticTypingImpl(StaticContext *context)
   if(pType.getMax() == StaticType::UNLIMITED || sType.getMax() == StaticType::UNLIMITED)
     max = StaticType::UNLIMITED;
   else max = pType.getMax() * sType.getMax();
+  // Setting max to 0 causes the ItemType to be removed and made into the empty sequence
+  if(max == 0) max = 1;
   src_.getStaticType().setCardinality(min, max);
 
   src_.add(parent_->getStaticAnalysis());

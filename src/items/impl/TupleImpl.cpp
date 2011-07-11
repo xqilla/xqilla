@@ -45,7 +45,7 @@ TupleImpl::TupleImpl(DynamicContext *context)
 }
 
 TupleImpl::TupleImpl(size_t capacity, const Collation *collation, DynamicContext *context)
-  : values_(capacity, AtomicHashFunctor(collation, context),
+  : values_(capacity < 1 ? 1 : capacity, AtomicHashFunctor(collation, context),
             AtomicEqualsFunctor(collation, context)),
     signature_(0),
     mm_(context->getMemoryManager())
