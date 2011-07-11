@@ -16,16 +16,16 @@ static const DelayedModule::Decl rw_declarations[] = {
     "rw:MulMulTransFold: ((~A * ~B) * ~C)\n"
     "  where rw:is-constant(~C) and (rw:subtype(~this, 'xs:decimal?') or\n"
     "    rw:subtype(~this, 'xs:float?') or rw:subtype(~this, 'xs:double?'))\n"
-    "-> ((~A * ~C) * ~B) where rw:is-constant(~A)\n"
-    "-> (~A * (~C * ~B)) where rw:is-constant(~B)"
+    "-> ((~A * ~C) * ~B) where rw:is-constant(~A) and not(rw:is-constant(~B))\n"
+    "-> (~A * (~C * ~B)) where rw:is-constant(~B) and not(rw:is-constant(~A))"
   },
   {
     DelayedModule::Decl::REWRITE_RULE, "", 0, false, 31, 25,
     "rw:MulDivTransFold: ((~A div ~B) * ~C)\n"
     "  where rw:is-constant(~C) and (rw:subtype(~this, 'xs:decimal?') or\n"
     "    rw:subtype(~this, 'xs:float?') or rw:subtype(~this, 'xs:double?'))\n"
-    "-> ((~A * ~C) div ~B) where rw:is-constant(~A)\n"
-    "-> (~A * (~C div ~B)) where rw:is-constant(~B)"
+    "-> ((~A * ~C) div ~B) where rw:is-constant(~A) and not(rw:is-constant(~B))\n"
+    "-> (~A * (~C div ~B)) where rw:is-constant(~B) and not(rw:is-constant(~A))"
   },
   {
     DelayedModule::Decl::REWRITE_RULE, "", 0, false, 38, 25,
@@ -34,8 +34,8 @@ static const DelayedModule::Decl rw_declarations[] = {
     "    rw:subtype(~this, 'xs:float?') or rw:subtype(~this, 'xs:double?')) and\n"
     "    not(rw:subtype(~A, 'xs:duration')) and not(rw:subtype(~B, 'xs:duration')) and\n"
     "    not(rw:subtype(~C, 'xs:duration'))\n"
-    "-> ((~A div ~C) * ~B) where rw:is-constant(~A)\n"
-    "-> (~A * (~B div ~C)) where rw:is-constant(~B)"
+    "-> ((~A div ~C) * ~B) where rw:is-constant(~A) and not(rw:is-constant(~B))\n"
+    "-> (~A * (~B div ~C)) where rw:is-constant(~B) and not(rw:is-constant(~A))"
   },
   {
     DelayedModule::Decl::REWRITE_RULE, "", 0, false, 45, 25,
@@ -44,40 +44,40 @@ static const DelayedModule::Decl rw_declarations[] = {
     "    rw:subtype(~this, 'xs:float?') or rw:subtype(~this, 'xs:double?')) and\n"
     "    not(rw:subtype(~A, 'xs:duration')) and not(rw:subtype(~B, 'xs:duration')) and\n"
     "    not(rw:subtype(~C, 'xs:duration'))\n"
-    "-> ((~A div ~C) div ~B) where rw:is-constant(~A)\n"
-    "-> (~A div (~B * ~C)) where rw:is-constant(~B)"
+    "-> ((~A div ~C) div ~B) where rw:is-constant(~A) and not(rw:is-constant(~B))\n"
+    "-> (~A div (~B * ~C)) where rw:is-constant(~B) and not(rw:is-constant(~A))"
   },
   {
     DelayedModule::Decl::REWRITE_RULE, "", 0, false, 53, 25,
     "rw:AddAddTransFold: ((~A + ~B) + ~C)\n"
     "  where rw:is-constant(~C) and (rw:subtype(~this, 'xs:decimal?') or\n"
     "    rw:subtype(~this, 'xs:float?') or rw:subtype(~this, 'xs:double?'))\n"
-    "-> ((~A + ~C) + ~B) where rw:is-constant(~A)\n"
-    "-> (~A + (~C + ~B)) where rw:is-constant(~B)"
+    "-> ((~A + ~C) + ~B) where rw:is-constant(~A) and not(rw:is-constant(~B))\n"
+    "-> (~A + (~C + ~B)) where rw:is-constant(~B) and not(rw:is-constant(~A))"
   },
   {
     DelayedModule::Decl::REWRITE_RULE, "", 0, false, 58, 25,
     "rw:AddSubTransFold: ((~A - ~B) + ~C)\n"
     "  where rw:is-constant(~C) and (rw:subtype(~this, 'xs:decimal?') or\n"
     "    rw:subtype(~this, 'xs:float?') or rw:subtype(~this, 'xs:double?'))\n"
-    "-> ((~A + ~C) - ~B) where rw:is-constant(~A)\n"
-    "-> (~A + (~C - ~B)) where rw:is-constant(~B)"
+    "-> ((~A + ~C) - ~B) where rw:is-constant(~A) and not(rw:is-constant(~B))\n"
+    "-> (~A + (~C - ~B)) where rw:is-constant(~B) and not(rw:is-constant(~A))"
   },
   {
     DelayedModule::Decl::REWRITE_RULE, "", 0, false, 64, 25,
     "rw:SubAddTransFold: ((~A + ~B) - ~C)\n"
     "  where rw:is-constant(~C) and (rw:subtype(~this, 'xs:decimal?') or\n"
     "    rw:subtype(~this, 'xs:float?') or rw:subtype(~this, 'xs:double?'))\n"
-    "-> ((~A - ~C) + ~B) where rw:is-constant(~A)\n"
-    "-> (~A + (~B - ~C)) where rw:is-constant(~B)"
+    "-> ((~A - ~C) + ~B) where rw:is-constant(~A) and not(rw:is-constant(~B))\n"
+    "-> (~A + (~B - ~C)) where rw:is-constant(~B) and not(rw:is-constant(~A))"
   },
   {
     DelayedModule::Decl::REWRITE_RULE, "", 0, false, 69, 25,
     "rw:SubSubTransFold: ((~A - ~B) - ~C)\n"
     "  where rw:is-constant(~C) and (rw:subtype(~this, 'xs:decimal?') or\n"
     "    rw:subtype(~this, 'xs:float?') or rw:subtype(~this, 'xs:double?'))\n"
-    "-> ((~A - ~C) - ~B) where rw:is-constant(~A)\n"
-    "-> (~A - (~B + ~C)) where rw:is-constant(~B)"
+    "-> ((~A - ~C) - ~B) where rw:is-constant(~A) and not(rw:is-constant(~B))\n"
+    "-> (~A - (~B + ~C)) where rw:is-constant(~B) and not(rw:is-constant(~A))"
   },
   {
     DelayedModule::Decl::REWRITE_RULE, "", 0, false, 76, 25,

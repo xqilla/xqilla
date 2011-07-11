@@ -137,7 +137,7 @@ ASTNode *XQRewriteRule::apply(const ASTNode *item, DynamicContext *context) cons
   // Loop over the cases, trying to apply them in turn
   RewriteCase::Vector::const_iterator j = cases_.begin();
   for(; j != cases_.end(); ++j) {
-    ASTNode *apply = (*j)->apply(context, tuple.get());
+    ASTNode *apply = (*j)->apply(this, context, tuple.get());
     if(apply) {
       // std::cerr << UTF8(item->getFile()) << ":" << item->getLine()
       //           << ":" << item->getColumn() << " applied {"
@@ -491,7 +491,7 @@ protected:
   const TupleImpl *subs_;
 };
 
-ASTNode *RewriteCase::apply(DynamicContext *context, const TupleImpl *subs) const
+ASTNode *RewriteCase::apply(const XQRewriteRule *rule, DynamicContext *context, const TupleImpl *subs) const
 {
   if(where) {
     // Check the where clause
@@ -503,6 +503,8 @@ ASTNode *RewriteCase::apply(DynamicContext *context, const TupleImpl *subs) cons
 
   ASTNode *replacement = result->copy(context);
   replacement = RewriteExprSubstReplacer().run(replacement, context, subs);
+
+  // std::cerr << "Applying rule: {" << UTF8(rule->uri_) << "}" << UTF8(rule->name_) << std::endl;
 
   return replacement->staticTyping(0, 0);
 }
