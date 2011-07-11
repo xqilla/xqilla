@@ -23,7 +23,6 @@
 #include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/ast/XQOperator.hpp>
-#include <xqilla/runtime/SingleResult.hpp>
 
 class XQILLA_API OrderComparison : public XQOperator
 {
@@ -40,16 +39,6 @@ public:
   bool getTestBefore() const;
 
 private:
-  class OrderComparisonResult : public SingleResult
-  {
-  public:
-    OrderComparisonResult(const OrderComparison *op);
-
-    Item::Ptr getSingleResult(DynamicContext *context) const;
-  private:
-    const OrderComparison *_op;
-  };
-
   bool _testBefore;
 };
 

@@ -36,6 +36,7 @@
 #include <xqilla/ast/ConvertFunctionArg.hpp>
 #include <xqilla/ast/XQSequence.hpp>
 #include <xqilla/exceptions/StaticErrorException.hpp>
+#include <xqilla/runtime/ClosureResult.hpp>
 
 #if defined(XERCES_HAS_CPP_NAMESPACE)
 XERCES_CPP_NAMESPACE_USE
@@ -117,45 +118,20 @@ ASTNode *ComparisonOperator::staticTypingImpl(StaticContext *context)
   return this;
 }
 
-class ComparisonResult : public ResultImpl
-{
-public:
-  ComparisonResult(const ComparisonOperator *op)
-    : ResultImpl(op),
-      _op(op)
-  {
-  }
-
-  virtual Item::Ptr nextOrTail(Result &tail, DynamicContext *context)
-  {
-    try {
-      AnyAtomicType::Ptr left = (AnyAtomicType*)_op->getArguments()[0]->createResult(context)->next(context).get();
-      if(left.isNull()) {
-        tail = 0;
-        return 0;
-      }
-      AnyAtomicType::Ptr right = (AnyAtomicType*)_op->getArguments()[1]->createResult(context)->next(context).get();
-      if(right.isNull()) {
-        tail = 0;
-        return 0;
-      }
-      bool result = _op->execute(left, right, context);
-      tail = 0;
-      return context->getItemFactory()->createBoolean(result, context);
-    }
-    catch(XQException &e) {
-      if(e.getXQueryLine() == 0)
-        e.setXQueryPosition(this);
-      throw;
-    }
-  }
-
-private:
-  const ComparisonOperator *_op;
-};
-
 Result ComparisonOperator::createResult(DynamicContext* context, int flags) const
 {
-  return new ComparisonResult(this);
+  try {
+    AnyAtomicType::Ptr left = (AnyAtomicType*)getArguments()[0]->createResult(context)->next(context).get();
+    if(left.isNull()) return 0;
+    AnyAtomicType::Ptr right = (AnyAtomicType*)getArguments()[1]->createResult(context)->next(context).get();
+    if(right.isNull()) return 0;
+    bool result = execute(left, right, context);
+    return (Item::Ptr)context->getItemFactory()->createBoolean(result, context);
+  }
+  catch(XQException &e) {
+    if(e.getXQueryLine() == 0)
+      e.setXQueryPosition(this);
+    throw;
+  }
 }
 

@@ -39,7 +39,7 @@ XQValidate::XQValidate(ASTNode *expr, DocumentCache::ValidationMode mode, XPath2
 
 Result XQValidate::createResult(DynamicContext* context, int flags) const
 {
-  return new GenerateEventsResult(this, 0);
+  return EventGenerator::createResult(this, 0, context);
 }
 
 EventGenerator::Ptr XQValidate::generateEvents(EventHandler *events, DynamicContext *context,

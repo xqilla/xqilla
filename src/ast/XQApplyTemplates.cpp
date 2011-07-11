@@ -207,7 +207,7 @@ Result XQApplyTemplates::executeTemplate(const XQUserFunction *tplt, const Templ
           if(XPath2Utils::equals((*it)->name, (*argIt)->getName()) &&
              XPath2Utils::equals((*it)->uri, (*argIt)->getURI())) {
             if(scope == &localscope)
-              localscope.setVar((*it)->uri, (*it)->name, ClosureResult::create((*it)->value, context));
+              localscope.setVar((*it)->uri, (*it)->name, (*it)->value->createResult(context));
             found = true;
             break;
           }
@@ -231,7 +231,8 @@ Result XQApplyTemplates::executeTemplate(const XQUserFunction *tplt, const Templ
     }
   }
 
-  return ClosureResult::create(tplt->getTemplateInstance(), context, scope);
+  AutoVariableStoreReset vsReset(context, scope);
+  return tplt->getTemplateInstance()->createResult(context);
 }
 
 void XQApplyTemplates::evaluateArguments(VarStoreImpl &scope, DynamicContext *context) const
@@ -241,7 +242,7 @@ void XQApplyTemplates::evaluateArguments(VarStoreImpl &scope, DynamicContext *co
   TemplateArguments::const_iterator it;
   for(it = args_->begin(); it != args_->end(); ++it) {
     // TBD variable use count - jpcs
-    scope.setVar((*it)->uri, (*it)->name, ClosureResult::create((*it)->value, context));
+    scope.setVar((*it)->uri, (*it)->name, (*it)->value->createResult(context));
   }
 }
 
@@ -352,5 +353,6 @@ private:
 
 Result XQApplyTemplates::createResult(DynamicContext *context, int flags) const
 {
-  return new ApplyTemplatesResult(this, expr_->createResult(context), templates_, context);
+  return ClosureResult::create(getStaticAnalysis(), context,
+    new ApplyTemplatesResult(this, expr_->createResult(context), templates_, context));
 }

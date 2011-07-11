@@ -25,7 +25,6 @@ class Numeric;
 
 #include <xqilla/ast/ASTNode.hpp>
 #include <xqilla/runtime/Result.hpp>
-#include <xqilla/runtime/LazySequenceResult.hpp>
 #include <xqilla/ast/StaticAnalysis.hpp>
 
 /** class which is used as base for all the different data types */

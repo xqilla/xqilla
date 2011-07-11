@@ -52,7 +52,6 @@
 #include "ParentAxis.hpp"
 #include "PrecedingAxis.hpp"
 #include "PrecedingSiblingAxis.hpp"
-#include <xqilla/axis/SelfAxis.hpp>
 #include <xqilla/axis/NodeTest.hpp>
 
 #include <xqilla/xerces/XercesConfiguration.hpp>
@@ -991,7 +990,7 @@ Result XercesNodeImpl::getAxisResult(XQStep::Axis axis, const NodeTest *nodeTest
     return new PrecedingSiblingAxis(info, fNode, this, nodeTest, *this);
   }
   case XQStep::SELF: {
-    return nodeTest->filterResult(new SelfAxis(info, this), info);
+    return nodeTest->filterResult((Item::Ptr)this, info);
   }
   }
 

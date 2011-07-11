@@ -30,7 +30,7 @@ public:
   Item::Ptr next(DynamicContext *context);
 
   virtual Sequence toSequence(DynamicContext *context);
-  virtual ResultBufferImpl *toResultBuffer(unsigned int readCount);
+  virtual void toResultBuffer(unsigned int readCount, ResultBuffer &buffer);
 };
 
 #endif

@@ -22,6 +22,7 @@
 #include <xqilla/ast/XQDocumentOrder.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/items/Node.hpp>
+#include <xqilla/runtime/Sequence.hpp>
 
 XQDocumentOrder::XQDocumentOrder(ASTNode* expr, XPath2MemoryManager* memMgr)
   : ASTNodeImpl(DOCUMENT_ORDER, memMgr),
@@ -79,15 +80,16 @@ Result XQDocumentOrder::createResult(DynamicContext* context, int flags) const
     return new UniqueNodesResult(this, expr_->createResult(context, flags), context);
   }
   else {
-    return new DocumentOrderResult(this, expr_->createResult(context, flags), context);
+    return new DocumentOrderResult(this, expr_->createResult(context, flags));
   }
 }
 
-void DocumentOrderResult::getResult(Sequence &toFill, DynamicContext *context) const
+Item::Ptr DocumentOrderResult::nextOrTail(Result &tail, DynamicContext *context)
 {
-  toFill = parent_->toSequence(context);
-  parent_ = 0;
-  toFill.sortIntoDocumentOrder(context);
+  Sequence seq = parent_->toSequence(context);
+  seq.sortIntoDocumentOrder(context);
+  tail = seq;
+  return 0;
 }
 
 Item::Ptr UniqueNodesResult::next(DynamicContext *context)

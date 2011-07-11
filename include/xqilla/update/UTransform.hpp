@@ -63,23 +63,6 @@ public:
   DocumentCache::ValidationMode getRevalidationMode() const { return valMode_; }
 
 protected:
-  class TransformResult : public ResultImpl
-  {
-  public:
-    TransformResult(const UTransform *transform, DynamicContext *context);
-
-    Item::Ptr next(DynamicContext *context);
-    std::string asString(DynamicContext *context, int indent) const
-    { return ""; }
-
-  private:
-    const UTransform *transform_;
-    bool toDo_;
-
-    VarStoreImpl scope_;
-    Result result_;
-  };
-
   VectorOfCopyBinding* bindings_;
   ASTNode *modify_;
   ASTNode *return_;

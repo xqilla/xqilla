@@ -42,14 +42,4 @@ protected:
   ASTNode* expr_;
 };
 
-class XQILLA_API EffectiveBooleanValueResult : public ResultImpl
-{
-public:
-  EffectiveBooleanValueResult(const LocationInfo *location, const Result &parent)
-    : ResultImpl(location), parent_(parent) {}
-  virtual Item::Ptr nextOrTail(Result &tail, DynamicContext *context);
-private:
-  Result parent_;
-};
-
 #endif

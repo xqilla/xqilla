@@ -33,7 +33,7 @@
 #include <xqilla/fastxdm/FastXDMConfiguration.hpp>
 #include <xqilla/context/ModuleResolver.hpp>
 #include <xqilla/context/URIResolver.hpp>
-
+#include <xqilla/runtime/Sequence.hpp>
 /**
  * \example simple-basic.cpp
  *

@@ -20,26 +20,27 @@
 #include "../config/xqilla_config.h"
 #include <sstream>
 #include <xqilla/runtime/SequenceResult.hpp>
+#include <xqilla/runtime/Result.hpp>
+#include <xqilla/context/DynamicContext.hpp>
 
 SequenceResult::SequenceResult(const LocationInfo *o, const Sequence &seq)
   : ResultImpl(o),
-    seq_(seq)
+    seq_(seq),
+    it_(seq_.begin())
 {
-  it_ = seq_.begin();
 }
 
-Item::Ptr SequenceResult::next(DynamicContext *context)
+Item::Ptr SequenceResult::nextOrTail(Result &tail, DynamicContext *context)
 {
   if(it_ == seq_.end()) {
+    tail = 0;
     return 0;
   }
-  else {
-    return *(it_++);
-  }
+  return *(it_++);
 }
 
 Sequence SequenceResult::toSequence(DynamicContext *context)
 {
-  return seq_;
+  return Sequence(it_, seq_.end());
 }
 

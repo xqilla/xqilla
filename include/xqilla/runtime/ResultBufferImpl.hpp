@@ -43,7 +43,7 @@ public:
   ~ResultBufferImpl();
 
   /// Creates a result that returns the same items as the one used to construct this buffer
-  Result createResult();
+  Result createResult(unsigned index);
 
   unsigned int getMaxReadCount() const { return _maxReadCount; }
   void increaseMaxReadCount(unsigned int readCount);
@@ -59,25 +59,11 @@ private:
 
   typedef std::vector<Item::Ptr> ItemList;
 
-  unsigned int _refCount;
   Result _result;
   ItemList _items;
 
   unsigned int _readCount;
   unsigned int _maxReadCount;
 };
-
-class BufferedResult : public ResultImpl
-{
-public:
-  BufferedResult(ResultBufferImpl *impl);
-  Item::Ptr next(DynamicContext *context);
-  ResultBufferImpl *toResultBuffer(unsigned int readCount);
-  std::string asString(DynamicContext *context, int indent) const;
-private:
-  ResultBufferImpl::Ptr _impl;
-  unsigned int _pos;
-};
-
 
 #endif

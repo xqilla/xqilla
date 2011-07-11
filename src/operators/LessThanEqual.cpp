@@ -54,5 +54,5 @@ LessThanEqual::LessThanEqual(const VectorOfASTNodes &args, XPath2MemoryManager* 
 
 bool LessThanEqual::execute(const AnyAtomicType::Ptr &atom1, const AnyAtomicType::Ptr &atom2, DynamicContext *context) const
 {
-  return less_than_equal(atom1, atom2, context->getDefaultCollation(this), context, this);
+  return less_than_equal(atom1, atom2, 0, context, this);
 }

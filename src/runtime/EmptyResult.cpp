@@ -39,8 +39,7 @@ Sequence EmptyResult::toSequence(DynamicContext *context)
   return Sequence(context->getMemoryManager());
 }
 
-ResultBufferImpl *EmptyResult::toResultBuffer(unsigned int readCount)
+void EmptyResult::toResultBuffer(unsigned int readCount, ResultBuffer &buffer)
 {
-  return new ResultBufferImpl(Result(0), readCount);
 }
 

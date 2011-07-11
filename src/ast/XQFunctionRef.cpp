@@ -20,7 +20,6 @@
 #include <xqilla/ast/XQFunctionRef.hpp>
 #include <xqilla/ast/XQInlineFunction.hpp>
 #include <xqilla/context/DynamicContext.hpp>
-#include <xqilla/runtime/SingleResult.hpp>
 #include <xqilla/context/VariableTypeStore.hpp>
 #include <xqilla/context/ContextHelpers.hpp>
 #include <xqilla/utils/XPath2NSUtils.hpp>

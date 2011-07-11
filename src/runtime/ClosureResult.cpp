@@ -25,50 +25,54 @@
 
 using namespace std;
 
-Result ClosureResult::create(const ASTNode *ast, DynamicContext *context, const VariableStore *sourceScope)
+class LazyCreateResult : public ResultImpl
 {
-  // TBD We probably need to store the regex groups here too - jpcs
+public:
+  LazyCreateResult(const ASTNode *ast)
+    : ResultImpl(ast), ast_(ast) {}
 
-  if((!ast->getStaticAnalysis().isVariableUsed() &&
-      !ast->getStaticAnalysis().areContextFlagsUsed()) ||
-     ast->getType() == ASTNode::VARIABLE) {
-    AutoVariableStoreReset vsReset(context, sourceScope ? sourceScope : context->getVariableStore());
-    return ast->createResult(context);
+  virtual Item::Ptr nextOrTail(Result &tail, DynamicContext *context)
+  {
+    tail = ast_->createResult(context);
+    return 0;
   }
 
-  return new ClosureResult(ast, context, sourceScope);
+private:
+  const ASTNode *ast_;
+};
+
+Result ClosureResult::create(const StaticAnalysis &src, DynamicContext *context, ResultImpl *result)
+{
+  // TBD We probably need to store the regex groups here too - jpcs
+  if(!src.isVariableUsed() && !src.areContextFlagsUsed())
+    return result;
+  return new ClosureResult(src, context, result);
 }
 
-ClosureResult::ClosureResult(const ASTNode *ast, DynamicContext *context, const VariableStore *sourceScope)
-  : ResultImpl(ast),
+Result ClosureResult::create(const ASTNode *ast, DynamicContext *context)
+{
+  return create(ast->getStaticAnalysis(), context, new LazyCreateResult(ast));
+}
+
+ClosureResult::ClosureResult(const StaticAnalysis &src, DynamicContext *context, ResultImpl *result)
+  : ResultImpl(result),
     contextItem_(context->getContextItem()),
     contextPosition_(context->getContextPosition()),
     contextSize_(context->getContextSize()),
     varStore_(context->getMemoryManager()),
-    docCache_(const_cast<DocumentCache*>(context->getDocumentCache())),
-    result_(0)
+    result_(result)
 {
-  if(sourceScope == 0) sourceScope = context->getVariableStore();
-
   // Copy the variables we need into our local storage
-  varStore_.cacheVariableStore(ast->getStaticAnalysis(), sourceScope);
-
-  try {
-    AutoVariableStoreReset vsReset(context, &varStore_);
-    result_ = ast->createResult(context);
-  }
-  catch(...) {
-    varStore_.clear();
-    throw;
-  }
+  varStore_.cacheVariableStore(src, context->getVariableStore());
 }
 
 Item::Ptr ClosureResult::nextOrTail(Result &tail, DynamicContext *context)
 {
   context->testInterrupt();
 
-  AutoDocumentCacheReset dcReset(context);
-  context->setDocumentCache(docCache_);
+  // TBD Fix the DocumentCache/module import problem - jpcs
+  // AutoDocumentCacheReset dcReset(context);
+  // context->setDocumentCache(docCache_);
   AutoContextInfoReset ciReset(context, contextItem_, contextPosition_, contextSize_);
   AutoVariableStoreReset vsReset(context, &varStore_);
 
@@ -80,8 +84,7 @@ ClosureEventGenerator::ClosureEventGenerator(const ASTNode *ast, DynamicContext 
     contextItem_(context->getContextItem()),
     contextPosition_(context->getContextPosition()),
     contextSize_(context->getContextSize()),
-    varStore_(context->getMemoryManager()),
-    docCache_(const_cast<DocumentCache*>(context->getDocumentCache()))
+    varStore_(context->getMemoryManager())
 {
   // Copy the variables we need into our local storage
   varStore_.cacheVariableStore(ast->getStaticAnalysis(), context->getVariableStore());
@@ -91,8 +94,8 @@ EventGenerator::Ptr ClosureEventGenerator::generateEvents(EventHandler *events, 
 {
   context->testInterrupt();
 
-  AutoDocumentCacheReset dcReset(context);
-  context->setDocumentCache(docCache_);
+  // AutoDocumentCacheReset dcReset(context);
+  // context->setDocumentCache(docCache_);
   AutoContextInfoReset ciReset(context, contextItem_, contextPosition_, contextSize_);
   AutoVariableStoreReset vsReset(context, &varStore_);
 

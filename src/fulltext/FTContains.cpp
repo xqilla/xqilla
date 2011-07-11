@@ -72,33 +72,22 @@ ASTNode *FTContains::staticTypingImpl(StaticContext *context)
 
 Result FTContains::createResult(DynamicContext* context, int flags) const
 {
-  return new FTContainsResult(this);
-}
-
-FTContains::FTContainsResult::FTContainsResult(const FTContains *parent)
-  : SingleResult(parent),
-    parent_(parent)
-{
-}
-
-Item::Ptr FTContains::FTContainsResult::getSingleResult(DynamicContext *context) const
-{
   // TBD deal with ignore nodes
 
   DefaultTokenizer tokenizer;
 
-  Result argNodes = parent_->getArgument()->createResult(context);
+  Result argNodes = getArgument()->createResult(context);
   Item::Ptr item;
   AllMatches *matches = 0;
   while((item = argNodes->next(context)).notNull()) {
     if(!item->isNode())
-      XQThrow(XPath2TypeMatchException, X("FTContains::FTContainsResult::getSingleResult"),
+      XQThrow(XPath2TypeMatchException, X("FTContains::createResult"),
               X("The argument to ftcontains contains non nodes [err:XPTY0004]"));
 
     FTContext ftcontext(&tokenizer, new DefaultTokenStore((Node*)item.get(), &tokenizer, context), context);
 
     if (matches != 0) delete matches;
-    matches = parent_->getSelection()->execute(&ftcontext);
+    matches = getSelection()->execute(&ftcontext);
     if(matches) {
       StringMatches::const_iterator i;
       StringMatches::const_iterator end;
@@ -142,17 +131,12 @@ Item::Ptr FTContains::FTContainsResult::getSingleResult(DynamicContext *context)
 
         delete matches;
         matches = 0;
-        return context->getItemFactory()->createBoolean(true, context);
+        return (Item::Ptr)context->getItemFactory()->createBoolean(true, context);
       }
       delete matches;
       matches = 0;
     }
   }
 
-  return context->getItemFactory()->createBoolean(false, context);
-}
-
-std::string FTContains::FTContainsResult::asString(DynamicContext *context, int indent) const
-{
-  return "<ftcontainsresult/>";
+  return (Item::Ptr)context->getItemFactory()->createBoolean(false, context);
 }

@@ -23,7 +23,6 @@
 #include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/ast/XQOperator.hpp>
-#include <xqilla/runtime/SingleResult.hpp>
 
 /** NodeComparison operator function*/
 class XQILLA_API NodeComparison : public XQOperator
@@ -36,17 +35,6 @@ public:
   ASTNode* staticResolution(StaticContext *context);
   virtual ASTNode *staticTypingImpl(StaticContext *context);
   Result createResult(DynamicContext* context, int flags=0) const;
-
-private:
-  class NodeComparisonResult : public SingleResult
-  {
-  public:
-    NodeComparisonResult(const NodeComparison *op);
-
-    Item::Ptr getSingleResult(DynamicContext *context) const;
-  private:
-    const NodeComparison *_op;
-  };
 };
 
 #endif

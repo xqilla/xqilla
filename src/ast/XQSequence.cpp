@@ -184,7 +184,7 @@ public:
 
       if(i_ == ast_->getChildren().end()) {
         // Tail call optimisation
-        tail = ClosureResult::create(ast, context);
+        tail = ast->createResult(context);
         return 0;
       }
 
@@ -204,6 +204,6 @@ private:
 Result XQSequence::createResult(DynamicContext* context, int flags) const
 {
   if(_astNodes.empty()) return 0;
-  return new XQSequenceResult(this);
+  return ClosureResult::create(getStaticAnalysis(), context, new XQSequenceResult(this));
 }
 

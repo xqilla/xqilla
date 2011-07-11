@@ -54,6 +54,6 @@ GreaterThanEqual::GreaterThanEqual(const VectorOfASTNodes &args, XPath2MemoryMan
 
 bool GreaterThanEqual::execute(const AnyAtomicType::Ptr &atom1, const AnyAtomicType::Ptr &atom2, DynamicContext *context) const
 {
-  return greater_than_equal(atom1,atom2,context->getDefaultCollation(this),context, this);
+  return greater_than_equal(atom1,atom2,0,context, this);
 }
 

@@ -136,11 +136,6 @@ DynamicContext *XQQuery::createDynamicContext(MemoryManager *memMgr) const
   return m_context->createDynamicContext(memMgr);
 }
 
-Result XQQuery::execute(DynamicContext* context) const
-{
-  return new QueryResult(this);
-}
-
 Result XQQuery::execute(const Item::Ptr &contextItem, DynamicContext *context) const
 {
   context->setContextItem(contextItem);
@@ -685,23 +680,11 @@ void XQQuery::setQueryText(const XMLCh *v)
   m_szQueryText = m_context->getMemoryManager()->getPooledString(v);
 }
 
-XQQuery::QueryResult::QueryResult(const XQQuery *query)
-  : ResultImpl(query->getQueryBody()),
-    _query(query)
+Result XQQuery::execute(DynamicContext* context) const
 {
-}
-
-Item::Ptr XQQuery::QueryResult::nextOrTail(Result &tail, DynamicContext *context)
-{
-  _query->executeProlog(context);
-
-  if(_query->getQueryBody() != NULL) {
-    // No closure needed here
-    tail = _query->getQueryBody()->createResult(context);
-  }
-  else {
-    tail = 0;
-  }
+  executeProlog(context);
+  if(getQueryBody() != NULL)
+    return getQueryBody()->createResult(context);
   return 0;
 }
 

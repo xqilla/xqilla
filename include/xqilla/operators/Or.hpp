@@ -23,7 +23,6 @@
 #include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/ast/XQOperator.hpp>
-#include <xqilla/runtime/SingleResult.hpp>
 
 class XQILLA_API Or : public XQOperator
 {

@@ -24,6 +24,7 @@
 #include <xqilla/update/PendingUpdateList.hpp>
 #include <xqilla/optimizer/ASTVisitor.hpp>
 #include <xqilla/utils/XPath2Utils.hpp>
+#include <xqilla/runtime/ClosureResult.hpp>
 
 XQReturn::XQReturn(TupleNode *parent, ASTNode *expr, XPath2MemoryManager *mm)
   : ASTNodeImpl(RETURN, mm),
@@ -95,7 +96,8 @@ private:
 
 Result XQReturn::createResult(DynamicContext* context, int flags) const
 {
-  return new ReturnResult(this, parent_->createResult(context));
+  return ClosureResult::create(getStaticAnalysis(), context,
+    new ReturnResult(this, parent_->createResult(context)));
 }
 
 EventGenerator::Ptr XQReturn::generateEvents(EventHandler *events, DynamicContext *context,

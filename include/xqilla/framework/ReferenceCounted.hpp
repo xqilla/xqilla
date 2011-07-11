@@ -48,6 +48,11 @@ public:
     }
   }
 
+  unsigned int getRefCount() const
+  {
+    return _ref_count;
+  }
+
 protected:
   unsigned int _ref_count; // mutable
 };

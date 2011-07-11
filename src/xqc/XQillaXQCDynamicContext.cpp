@@ -26,6 +26,7 @@
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/context/ItemFactory.hpp>
 #include <xqilla/utils/XStr.hpp>
+#include <xqilla/runtime/Sequence.hpp>
 #include "../utils/DateUtils.hpp"
 
 XERCES_CPP_NAMESPACE_USE;

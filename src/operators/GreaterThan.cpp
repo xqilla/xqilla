@@ -73,6 +73,7 @@ GreaterThan::GreaterThan(const VectorOfASTNodes &args, XPath2MemoryManager* memM
          atom2->getPrimitiveTypeIndex() != AnyAtomicType::ANY_URI)
         XQThrow2(XPath2ErrorException,X("GreaterThan::greater_than"), X("An attempt to compare a string type to a non string type has occurred [err:XPTY0004]"));
       // if the function returns 1, then atom1 is greater
+      if(!collation) collation = context->getDefaultCollation(info);
       return collation->compare(atom1->asString(context),atom2->asString(context))>0;
     }
     case AnyAtomicType::DATE:
@@ -123,6 +124,6 @@ GreaterThan::GreaterThan(const VectorOfASTNodes &args, XPath2MemoryManager* memM
 
 bool GreaterThan::execute(const AnyAtomicType::Ptr &atom1, const AnyAtomicType::Ptr &atom2, DynamicContext *context) const
 {
-  return greater_than(atom1, atom2, context->getDefaultCollation(this), context, this);
+  return greater_than(atom1, atom2, 0, context, this);
 }
 

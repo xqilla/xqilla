@@ -29,7 +29,7 @@ class XQILLA_API ResultBuffer
 public:
   ResultBuffer(const Result &result, unsigned int readCount = ResultBufferImpl::UNLIMITED_COUNT);
   ResultBuffer(const Item::Ptr &item, unsigned int readCount = ResultBufferImpl::UNLIMITED_COUNT);
-  ResultBuffer(ResultBufferImpl *impl);
+  ResultBuffer(ResultBufferImpl *impl, unsigned start = 0);
 
   /// Creates a result that returns the same items as the one used to construct this buffer
   Result createResult();
@@ -41,6 +41,7 @@ public:
 
 private:
   ResultBufferImpl::Ptr _impl;
+  unsigned _start;
 };
 
 #endif

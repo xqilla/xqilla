@@ -110,5 +110,15 @@ private:
 
 Result XQFunctionDeref::createResult(DynamicContext *context, int flags) const
 {
-  return new FunctionDerefResult(this);
+  FunctionRef::Ptr func = (FunctionRef*)getExpression()->createResult(context)->next(context).get();
+  if(func.isNull()) return 0;
+
+  VectorOfResults args;
+  if(getArguments()) {
+    for(VectorOfASTNodes::iterator i = getArguments()->begin(); i != getArguments()->end(); ++i) {
+      args.push_back(ClosureResult::create(*i, context));
+    }
+  }
+
+  return func->execute(args, context, this);
 }

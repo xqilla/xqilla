@@ -27,7 +27,6 @@
 #include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/ast/XQOperator.hpp>
-#include <xqilla/runtime/SingleResult.hpp>
 
 /** GeneralComp operator function*/
 class XQILLA_API GeneralComp : public XQOperator

@@ -31,7 +31,6 @@
 #include <xqilla/utils/XPath2Utils.hpp>
 #include <xqilla/utils/XMLChCompare.hpp>
 #include <xqilla/dom-api/XQillaNSResolver.hpp>
-#include <xqilla/axis/SelfAxis.hpp>
 #include <xqilla/axis/NodeTest.hpp>
 #include <xqilla/events/EventSerializer.hpp>
 #include <xqilla/events/NSFixupFilter.hpp>
@@ -1489,7 +1488,7 @@ Result FastXDMAttributeNodeImpl::getAxisResult(XQStep::Axis axis, const NodeTest
   }
   case XQStep::DESCENDANT_OR_SELF:
   case XQStep::SELF: {
-    return nodeTest->filterResult(new SelfAxis(info, this), info);
+    return nodeTest->filterResult((Item::Ptr)this, info);
   }
   case XQStep::ATTRIBUTE:
   case XQStep::CHILD:
@@ -1770,7 +1769,7 @@ Result FastXDMNamespaceNodeImpl::getAxisResult(XQStep::Axis axis, const NodeTest
     if(owner_.notNull())
       return new FastXDMNamespaceAncestorOrSelfAxis(info, this, nodeTest);
     else 
-      return nodeTest->filterResult(new SelfAxis(info, this), info);
+      return nodeTest->filterResult((Item::Ptr)this, info);
   }
   case XQStep::FOLLOWING: {
     if(owner_.notNull())
@@ -1779,7 +1778,7 @@ Result FastXDMNamespaceNodeImpl::getAxisResult(XQStep::Axis axis, const NodeTest
   }
   case XQStep::PARENT: {
     if(owner_.notNull())
-      return nodeTest->filterResult(new SelfAxis(info, owner_), info);
+      return nodeTest->filterResult((Item::Ptr)owner_, info);
     break;
   }
   case XQStep::PRECEDING: {
@@ -1789,7 +1788,7 @@ Result FastXDMNamespaceNodeImpl::getAxisResult(XQStep::Axis axis, const NodeTest
   }
   case XQStep::DESCENDANT_OR_SELF:
   case XQStep::SELF: {
-    return nodeTest->filterResult(new SelfAxis(info, this), info);
+    return nodeTest->filterResult((Item::Ptr)this, info);
   }
   case XQStep::ATTRIBUTE:
   case XQStep::CHILD:

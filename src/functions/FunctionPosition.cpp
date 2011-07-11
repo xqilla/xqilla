@@ -59,24 +59,10 @@ ASTNode *FunctionPosition::staticTypingImpl(StaticContext *context)
   return this;
 }
 
-class FunctionPositionResult : public ResultImpl
-{
-public:
-  FunctionPositionResult(const LocationInfo *o)
-    : ResultImpl(o) {}
-
-  virtual Item::Ptr nextOrTail(Result &tail, DynamicContext *context)
-  {
-    if(context->getContextItem().isNull())
-      XQThrow(DynamicErrorException,X("FunctionPosition::createSequence"),
-              X("Undefined context item in fn:position [err:XPDY0002]"));
-
-    tail = 0;
-    return context->getItemFactory()->createInteger((long)context->getContextPosition(), context);
-  }
-};
-
 Result FunctionPosition::createResult(DynamicContext* context, int flags) const
 {
-  return new FunctionPositionResult(this);
+  if(context->getContextItem().isNull())
+    XQThrow(DynamicErrorException,X("FunctionPosition::createSequence"),
+            X("Undefined context item in fn:position [err:XPDY0002]"));
+  return (Item::Ptr)context->getItemFactory()->createInteger((long)context->getContextPosition(), context);
 }

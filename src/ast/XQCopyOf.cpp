@@ -66,7 +66,7 @@ ASTNode *XQCopyOf::staticTypingImpl(StaticContext *context)
 
 Result XQCopyOf::createResult(DynamicContext* context, int flags) const
 {
-  return new GenerateEventsResult(this, 0);
+  return EventGenerator::createResult(this, 0, context);
 }
 
 EventGenerator::Ptr XQCopyOf::generateEvents(EventHandler *events, DynamicContext *context,

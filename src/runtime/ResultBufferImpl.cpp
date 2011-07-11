@@ -19,12 +19,12 @@
 
 #include "../config/xqilla_config.h"
 #include <xqilla/runtime/ResultBufferImpl.hpp>
+#include <xqilla/runtime/ResultBuffer.hpp>
 
 const unsigned int ResultBufferImpl::UNLIMITED_COUNT = (unsigned int)-1;
 
 ResultBufferImpl::ResultBufferImpl(const Result &result, unsigned int readCount)
-  : _refCount(0),
-    _result(result),
+  : _result(result),
     _readCount(0),
     _maxReadCount(readCount)
 {
@@ -32,8 +32,7 @@ ResultBufferImpl::ResultBufferImpl(const Result &result, unsigned int readCount)
 }
 
 ResultBufferImpl::ResultBufferImpl(const Item::Ptr &item, unsigned int readCount)
-  : _refCount(0),
-    _result(0),
+  : _result(0),
     _readCount(0),
     _maxReadCount(readCount)
 {
@@ -50,11 +49,6 @@ void ResultBufferImpl::increaseMaxReadCount(unsigned int readCount)
   if(_maxReadCount == UNLIMITED_COUNT || readCount == UNLIMITED_COUNT)
     _maxReadCount = UNLIMITED_COUNT;
   else _maxReadCount += readCount;
-}
-
-Result ResultBufferImpl::createResult()
-{
-  return new BufferedResult(this);
 }
 
 Item::Ptr ResultBufferImpl::item(unsigned int index, DynamicContext *context)
@@ -77,25 +71,43 @@ Item::Ptr ResultBufferImpl::item(unsigned int index, DynamicContext *context)
   }
 }
 
-BufferedResult::BufferedResult(ResultBufferImpl *impl)
-  : ResultImpl(0),
-    _impl(impl),
-    _pos(0)
+class BufferedResult : public ResultImpl
 {
-}
+public:
+  BufferedResult(ResultBufferImpl *impl, unsigned start)
+    : ResultImpl(0), _impl(impl), _pos(start) {}
 
-Item::Ptr BufferedResult::next(DynamicContext *context)
-{
-  return _impl->item(_pos++, context);
-}
+  virtual Item::Ptr nextOrTail(Result &tail, DynamicContext *context)
+  {
+    if(_impl->getRefCount() == 1 && _pos >= _impl->_items.size()) {
+      // Ditch the buffer if we're the only result for it
+      unsigned size = _impl->_items.size();
+      while(_pos > size) {
+        _impl->_result->next(context);
+        ++_pos;
+      }
+      tail = _impl->_result;
+      return 0;
+    }
+    Item::Ptr item = _impl->item(_pos++, context);
+    if(item.isNull()) {
+      tail = 0;
+    }
+    return item;
+  }
 
-ResultBufferImpl *BufferedResult::toResultBuffer(unsigned int readCount)
-{
-  _impl->increaseMaxReadCount(readCount);
-  return _impl;
-}
+  virtual void toResultBuffer(unsigned int readCount, ResultBuffer &buffer)
+  {
+    _impl->increaseMaxReadCount(readCount);
+    buffer = ResultBuffer(_impl.get(), _pos);
+  }
 
-std::string BufferedResult::asString(DynamicContext *context, int indent) const
+private:
+  ResultBufferImpl::Ptr _impl;
+  unsigned int _pos;
+};
+
+Result ResultBufferImpl::createResult(unsigned start)
 {
-  return "bufferedresult";
+  return new BufferedResult(this, start);
 }

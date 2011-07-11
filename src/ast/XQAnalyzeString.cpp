@@ -273,12 +273,8 @@ public:
     context->setContextPosition(matchPos);
     context->setContextItem(context->getItemFactory()->createString(matchString, context));
 
-    if(match) {
-      return ClosureResult::create(ast_->getMatch(), context);
-    }
-    else {
-      return ClosureResult::create(ast_->getNonMatch(), context);
-    }
+    if(match) return ast_->getMatch()->createResult(context);
+    return ast_->getNonMatch()->createResult(context);
   }
 
 private:
@@ -287,6 +283,6 @@ private:
 
 Result XQAnalyzeString::createResult(DynamicContext* context, int flags) const
 {
-  return new XslAnalyzeStringResult(this);
+  return ClosureResult::create(getStaticAnalysis(), context, new XslAnalyzeStringResult(this));
 }
 

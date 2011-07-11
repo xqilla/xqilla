@@ -25,6 +25,7 @@
 #include <xqilla/ast/XQAnalyzeString.hpp>
 #include <xqilla/schema/SequenceType.hpp>
 #include <xqilla/items/FunctionRef.hpp>
+#include <xqilla/runtime/ClosureResult.hpp>
 
 #include <xercesc/validators/schema/SchemaSymbols.hpp>
 
@@ -114,5 +115,5 @@ private:
 
 Result FunctionAnalyzeString::createResult(DynamicContext* context, int flags) const
 {
-  return new FunctionAnalyzeStringResult(this);
+  return ClosureResult::create(getStaticAnalysis(), context, new FunctionAnalyzeStringResult(this));
 }

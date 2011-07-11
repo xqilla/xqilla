@@ -1,5 +1,6 @@
 #include <iostream>
 #include <xqilla/xqilla-simple.hpp>
+#include <xqilla/runtime/Sequence.hpp>
 
 int main(int argc, char *argv[]) {
   // Initialise Xerces-C and XQilla by creating the factory object

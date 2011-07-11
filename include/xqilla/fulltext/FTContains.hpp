@@ -23,7 +23,6 @@
 #include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/ast/ASTNodeImpl.hpp>
-#include <xqilla/runtime/SingleResult.hpp>
 
 class FTSelection;
 
@@ -44,18 +43,6 @@ public:
   void setArgument(ASTNode *a) { argument_ = a; }
   void setSelection(FTSelection *s) { selection_ = s; }
   void setIgnore(ASTNode *a) { ignore_ = a; }
-
-private:
-  class XQILLA_API FTContainsResult : public SingleResult
-  {
-  public:
-    FTContainsResult(const FTContains *parent);
-    Item::Ptr getSingleResult(DynamicContext *context) const;
-    std::string asString(DynamicContext *context, int indent) const;
-
-  private:
-    const FTContains *parent_;
-  };
 
 private:
   ASTNode *argument_;

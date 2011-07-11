@@ -20,7 +20,6 @@
 #include <xqilla/ast/XQQuantified.hpp>
 #include <xqilla/ast/XQLiteral.hpp>
 #include <xqilla/ast/TupleNode.hpp>
-#include <xqilla/runtime/SingleResult.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/context/ItemFactory.hpp>
 #include <xqilla/context/ContextHelpers.hpp>
@@ -59,45 +58,25 @@ ASTNode *XQQuantified::staticTypingImpl(StaticContext *context)
   return this;
 }
 
-class QuantifiedResult : public SingleResult
-{
-public:
-  QuantifiedResult(const XQQuantified *ast)
-    : SingleResult(ast),
-      ast_(ast)
-  {
-  }
-
-  virtual Item::Ptr getSingleResult(DynamicContext *context) const
-  {
-    bool defaultResult = (ast_->getQuantifierType() == XQQuantified::SOME) ? false : true;
-
-    AutoVariableStoreReset reset(context);
-
-    TupleResult::Ptr tuples = ast_->getParent()->createResult(context);
-    while(tuples->next(context)) {
-      context->setVariableStore(tuples);
-
-      bool result = ((ATBooleanOrDerived*)ast_->getExpression()->createResult(context)->next(context).get())->isTrue();
-      if(defaultResult != result) {
-        defaultResult = result;
-        break;
-      }
-
-      reset.reset();
-    }
-
-    return context->getItemFactory()->createBoolean(defaultResult, context);
-  }
-
-  virtual std::string asString(DynamicContext *context, int indent) const { return ""; }
-
-private:
-  const XQQuantified *ast_;
-};
-
 Result XQQuantified::createResult(DynamicContext* context, int flags) const
 {
-  return new QuantifiedResult(this);
+  bool defaultResult = (getQuantifierType() == XQQuantified::SOME) ? false : true;
+
+  AutoVariableStoreReset reset(context);
+
+  TupleResult::Ptr tuples = getParent()->createResult(context);
+  while(tuples->next(context)) {
+    context->setVariableStore(tuples);
+
+    bool result = ((ATBooleanOrDerived*)getExpression()->createResult(context)->next(context).get())->isTrue();
+    if(defaultResult != result) {
+      defaultResult = result;
+      break;
+    }
+
+    reset.reset();
+  }
+
+  return (Item::Ptr)context->getItemFactory()->createBoolean(defaultResult, context);
 }
 

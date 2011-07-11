@@ -53,6 +53,7 @@ Equals::Equals(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
             XQThrow3(XPath2ErrorException,X("Equals::equals"), X("An attempt to compare a string type to a non string type has occurred [err:XPTY0004]"), info);
         }
         // if the function returns 0, then they are equal
+        if(!collation) collation = context->getDefaultCollation(info);
         return (collation->compare(atom1->asString(context),atom2->asString(context))==0);
     } 
 
@@ -67,6 +68,6 @@ Equals::Equals(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
 
 bool Equals::execute(const AnyAtomicType::Ptr &atom1, const AnyAtomicType::Ptr &atom2, DynamicContext *context) const
 {
-  return equals(atom1, atom2, context->getDefaultCollation(this), context, this);
+  return equals(atom1, atom2, 0, context, this);
 }
 

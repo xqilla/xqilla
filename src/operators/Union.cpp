@@ -30,6 +30,7 @@
 #include <xqilla/ast/XQTreatAs.hpp>
 #include <xqilla/schema/SequenceType.hpp>
 #include <xqilla/exceptions/StaticErrorException.hpp>
+#include <xqilla/runtime/ClosureResult.hpp>
 
 /*static*/ const XMLCh Union::name[]={ XERCES_CPP_NAMESPACE_QUALIFIER chLatin_U, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_n, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_i, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_o, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_n, XERCES_CPP_NAMESPACE_QUALIFIER chNull };
 
@@ -97,7 +98,7 @@ ASTNode *Union::staticTypingImpl(StaticContext *context)
 
 Result Union::createResult(DynamicContext* context, int flags) const
 {
-  return new UnionResult(this, flags);
+  return ClosureResult::create(getStaticAnalysis(), context, new UnionResult(this, flags));
 }
 
 Union::UnionResult::UnionResult(const Union *op, int flags)

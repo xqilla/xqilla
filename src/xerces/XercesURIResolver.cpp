@@ -28,6 +28,7 @@
 #include <xqilla/utils/UTF8Str.hpp>
 #include <xqilla/exceptions/ASTException.hpp>
 #include <xqilla/xerces/XercesConfiguration.hpp>
+#include <xqilla/runtime/Sequence.hpp>
 
 #include "../dom-api/XQillaImplementation.hpp"
 

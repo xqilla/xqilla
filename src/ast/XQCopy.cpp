@@ -28,6 +28,7 @@
 #include <xqilla/ast/XQElementConstructor.hpp>
 #include <xqilla/ast/XQDocumentConstructor.hpp>
 #include <xqilla/runtime/Result.hpp>
+#include <xqilla/runtime/Sequence.hpp>
 
 #include "../events/NoInheritFilter.hpp"
 
@@ -90,35 +91,18 @@ ASTNode *XQCopy::staticTypingImpl(StaticContext *context)
   return this;
 }
 
-class CopyResult : public ResultImpl
-{
-public:
-  CopyResult(const XQCopy *ast) : ResultImpl(ast), ast_(ast) {}
-
-  virtual Item::Ptr nextOrTail(Result &tail, DynamicContext *context)
-  {
-    Item::Ptr toBeCopied = ast_->getExpression()->createResult(context)->next(context);
-
-    if(!toBeCopied->isNode()) {
-      tail = 0;
-      return toBeCopied;
-    }
-
-    AutoDelete<SequenceBuilder> builder(context->createSequenceBuilder());
-    EventGenerator::generateAndTailCall(ast_->generateEventsImpl(toBeCopied, builder.get(), context, true, true),
-                                        builder.get(), context);
-    builder->endEvent();
-    tail = builder->getSequence();
-    return 0;
-  }
-
-private:
-  const XQCopy *ast_;
-};
-
 Result XQCopy::createResult(DynamicContext* context, int flags) const
 {
-  return new CopyResult(this);
+  Item::Ptr toBeCopied = getExpression()->createResult(context)->next(context);
+
+  if(!toBeCopied->isNode())
+    return toBeCopied;
+
+  AutoDelete<SequenceBuilder> builder(context->createSequenceBuilder());
+  EventGenerator::generateAndTailCall(generateEventsImpl(toBeCopied, builder.get(), context, true, true),
+                                      builder.get(), context);
+  builder->endEvent();
+  return builder->getSequence();
 }
 
 EventGenerator::Ptr XQCopy::generateEvents(EventHandler *events, DynamicContext *context,

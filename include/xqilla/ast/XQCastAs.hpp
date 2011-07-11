@@ -23,7 +23,6 @@
 #include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/ast/ASTNodeImpl.hpp>
-#include <xqilla/runtime/SingleResult.hpp>
 
 class SequenceType;
 
@@ -48,17 +47,6 @@ public:
   AnyAtomicType::Ptr cast(const XMLCh *value, DynamicContext *context) const;
 
 protected:
-  class CastAsResult : public SingleResult
-  {
-  public:
-    CastAsResult(const XQCastAs *di);
-
-    Item::Ptr getSingleResult(DynamicContext *context) const;
-
-  private:
-    const XQCastAs *_di;
-  };
-
   ASTNode* _expr;
   SequenceType* _exprType;
   bool _isPrimitive;

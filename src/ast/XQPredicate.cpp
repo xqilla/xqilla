@@ -25,6 +25,7 @@
 #include <xqilla/context/ContextHelpers.hpp>
 #include <xqilla/context/ItemFactory.hpp>
 #include <xqilla/runtime/SequenceResult.hpp>
+#include <xqilla/runtime/ClosureResult.hpp>
 
 XQPredicate::XQPredicate(ASTNode *predicate, XPath2MemoryManager* memMgr)
   : ASTNodeImpl(PREDICATE, memMgr),
@@ -94,16 +95,20 @@ Result XQPredicate::createResult(DynamicContext* context, int flags) const
      !src.isContextItemUsed() && !src.isContextPositionUsed()) {
     // It only contains numeric type results, and doesn't use the context
     // item or position
-    return new NumericPredicateFilterResult(parent, predicate_, contextSize);
+    // TBD Fix this StaticAnalysis - jpcs
+    return ClosureResult::create(predicate_->getStaticAnalysis(), context,
+      new NumericPredicateFilterResult(parent, predicate_, contextSize));
   }
   else if(!src.getStaticType().containsType(StaticType::NUMERIC_TYPE) ||
           src.getStaticType().getMin() > 1 ||
           src.getStaticType().getMax() < 1) {
     // It only contains non-numeric results
-    return new NonNumericPredicateFilterResult(parent, predicate_, contextSize);
+    return ClosureResult::create(predicate_->getStaticAnalysis(), context,
+      new NonNumericPredicateFilterResult(parent, predicate_, contextSize));
   }
   else {
-    return new PredicateFilterResult(parent, predicate_, contextSize);
+    return ClosureResult::create(predicate_->getStaticAnalysis(), context,
+      new PredicateFilterResult(parent, predicate_, contextSize));
   }
 }
 
@@ -120,7 +125,8 @@ Result XQPredicate::iterateResult(const Result &contextItems, DynamicContext *co
 
   Result parent = expr_->iterateResult(contextItems, context);
   // It only contains non-numeric results
-  return new NonNumericPredicateFilterResult(parent, predicate_, 0);
+  return ClosureResult::create(predicate_->getStaticAnalysis(), context,
+    new NonNumericPredicateFilterResult(parent, predicate_, 0));
 }
 
 ASTNode *XQPredicate::addPredicates(ASTNode *expr, VectorOfPredicates *preds)
@@ -262,8 +268,9 @@ Item::Ptr NonNumericPredicateFilterResult::next(DynamicContext *context)
       context->setContextItem(result);
 
       // 2) Otherwise, the predicate truth value is the effective boolean value of the predicate expression
-      Result predResult = new EffectiveBooleanValueResult(this, pred_->createResult(context));
-      if(!((ATBooleanOrDerived*)predResult->next(context).get())->isTrue()) {
+      Result predResult = pred_->createResult(context);
+      Item::Ptr first = predResult->next(context);
+      if(first.isNull() || !XQEffectiveBooleanValue::get(first, predResult->next(context), context, this)) {
         result = 0;
         if(!contextUsed) {
           parent_ = 0;

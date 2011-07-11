@@ -22,7 +22,6 @@
 
 #include <xqilla/framework/XQillaExport.hpp>
 #include <xqilla/ast/ASTNodeImpl.hpp>
-#include <xqilla/runtime/LazySequenceResult.hpp>
 #include <xqilla/items/Node.hpp>
 
 #include <set>
@@ -46,15 +45,14 @@ protected:
   bool unordered_;
 };
 
-class XQILLA_API DocumentOrderResult : public LazySequenceResult
+class XQILLA_API DocumentOrderResult : public ResultImpl
 {
 public:
-  DocumentOrderResult(const LocationInfo *location, const Result &parent, DynamicContext *context)
-    : LazySequenceResult(location, context), parent_(parent) {}
-  void getResult(Sequence &toFill, DynamicContext *context) const;
-  std::string asString(DynamicContext *context, int indent) const { return "documentorderresult"; }
+  DocumentOrderResult(const LocationInfo *location, const Result &parent)
+    : ResultImpl(location), parent_(parent) {}
+  virtual Item::Ptr nextOrTail(Result &tail, DynamicContext *context);
 private:
-  mutable Result parent_;
+  Result parent_;
 };
 
 class XQILLA_API UniqueNodesResult : public ResultImpl
@@ -64,7 +62,6 @@ public:
     : ResultImpl(doc), parent_(parent), nTypeOfItemsInLastStep_(0),
       noDups_(uniqueLessThanCompareFn(context)) {}
   Item::Ptr next(DynamicContext *context);
-  std::string asString(DynamicContext *context, int indent) const { return "uniquenodesresult"; }
 
 private:
   class uniqueLessThanCompareFn {

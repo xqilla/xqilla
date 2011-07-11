@@ -73,48 +73,21 @@ ASTNode *Or::staticTypingImpl(StaticContext *context)
   return this;
 }
 
-class OrResult : public ResultImpl
-{
-public:
-  OrResult(const Or *ast)
-    : ResultImpl(ast),
-      ast_(ast)
-  {
-  }
-
-  virtual Item::Ptr nextOrTail(Result &tail, DynamicContext *context)
-  {
-    VectorOfASTNodes::const_iterator i = ast_->getArguments().begin();
-    while(i != ast_->getArguments().end()) {
-      const ASTNode *arg = *i;
-      ++i;
-
-      if(i == ast_->getArguments().end()) {
-        // Tail call optimisation
-        tail = ClosureResult::create(arg, context);
-        return 0;
-      }
-
-      if(((ATBooleanOrDerived*)arg->createResult(context)->next(context).get())->isTrue()) {
-        Item::Ptr result = context->getItemFactory()->createBoolean(true, context);
-        tail = 0;
-        return result;
-      }
-    }
-
-    Item::Ptr result = context->getItemFactory()->createBoolean(false, context);
-    tail = 0;
-    return result;
-  }
-
-private:
-  const Or *ast_;
-};
-
 Result Or::createResult(DynamicContext* context, int flags) const
 {
-  if(_args.empty())
-    return (Item::Ptr)context->getItemFactory()->createBoolean(false, context);
-  return new OrResult(this);
+  VectorOfASTNodes::const_iterator i = getArguments().begin();
+  while(i != getArguments().end()) {
+    const ASTNode *arg = *i;
+    ++i;
+
+    // Tail call optimisation
+    if(i == getArguments().end())
+      return arg->createResult(context);
+
+    if(((ATBooleanOrDerived*)arg->createResult(context)->next(context).get())->isTrue())
+      return (Item::Ptr)context->getItemFactory()->createBoolean(true, context);
+  }
+
+  return (Item::Ptr)context->getItemFactory()->createBoolean(false, context);
 }
 

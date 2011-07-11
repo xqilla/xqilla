@@ -213,7 +213,7 @@ protected:
 
 Result XQStep::createResult(DynamicContext* context, int flags) const 
 {
-  return new StepResult(new ContextItemResult(this), this);
+  return new StepResult(XQContextItem::result(context, this), this);
 }
 
 Result XQStep::iterateResult(const Result &contextItems, DynamicContext* context) const
