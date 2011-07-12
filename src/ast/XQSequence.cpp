@@ -207,3 +207,9 @@ Result XQSequence::createResult(DynamicContext* context, int flags) const
   return ClosureResult::create(getStaticAnalysis(), context, new XQSequenceResult(this));
 }
 
+BoolResult XQSequence::boolResult(DynamicContext* context) const
+{
+  if(_astNodes.empty()) return BoolResult::Null;
+  if(_astNodes.size() == 1) return _astNodes[0]->boolResult(context);
+  return ASTNodeImpl::boolResult(context);
+}

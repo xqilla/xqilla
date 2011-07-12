@@ -111,7 +111,7 @@ bool XQEffectiveBooleanValue::get(const Item::Ptr &first, const Item::Ptr &secon
   return getEffectiveBooleanValueInternal(first, second, context, info);
 }
 
-Result XQEffectiveBooleanValue::createResult(DynamicContext* context, int flags) const
+BoolResult XQEffectiveBooleanValue::boolResult(DynamicContext* context) const
 {
   bool result;
   Result parent = expr_->createResult(context);
@@ -126,5 +126,10 @@ Result XQEffectiveBooleanValue::createResult(DynamicContext* context, int flags)
     result = getEffectiveBooleanValueInternal(first, parent->next(context), context, this);
   }
 
-  return (Item::Ptr)context->getItemFactory()->createBoolean(result, context);
+  return result;
+}
+
+Result XQEffectiveBooleanValue::createResult(DynamicContext* context, int flags) const
+{
+  return (Item::Ptr)context->getItemFactory()->createBoolean(boolResult(context), context);
 }

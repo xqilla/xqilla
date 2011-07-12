@@ -31,6 +31,7 @@ public:
 
   virtual Sequence toSequence(DynamicContext *context);
   virtual void toResultBuffer(unsigned int readCount, ResultBuffer &buffer);
+  virtual void skip(unsigned count, DynamicContext *context);
 };
 
 #endif

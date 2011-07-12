@@ -66,9 +66,17 @@ Sequence::Sequence(size_t n, MemoryManager* memMgr)
     _itemList.reserve(n);
 }
 
-Sequence::Sequence(iterator start, iterator end, MemoryManager* memMgr)
-  : _itemList(start, end, XQillaAllocator<Item::Ptr>(memMgr))
+Sequence::Sequence(const Sequence&s, size_t start, MemoryManager* memMgr)
+  : _itemList(XQillaAllocator<Item::Ptr>(memMgr))
 {
+  size_t end = s._itemList.size();
+  if(end > start) {
+    _itemList.reserve(end - start);
+    while(end > start) {
+      _itemList.push_back(s._itemList[start]);
+      ++start;
+    }
+  }
 }
 
 Sequence & Sequence::operator=(const Sequence & s) {

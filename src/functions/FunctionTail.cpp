@@ -23,10 +23,7 @@
 
 XERCES_CPP_NAMESPACE_USE;
 
-const XMLCh FunctionTail::name[] = {
-  chLatin_t, chLatin_a, chLatin_i,
-  chLatin_l, chNull 
-};
+const XMLCh FunctionTail::name[] = { 't', 'a', 'i', 'l', 0 };
 const unsigned int FunctionTail::minArgs = 1;
 const unsigned int FunctionTail::maxArgs = 1;
 
@@ -60,7 +57,39 @@ ASTNode *FunctionTail::staticTypingImpl(StaticContext *context)
 Result FunctionTail::createResult(DynamicContext* context, int flags) const
 {
   Result result = getParamNumber(1, context);
-  result->next(context);
+  result->skip(1, context);
+  return result;
+}
+
+const XMLCh FunctionDrop::name[] = { 'd', 'r', 'o', 'p', 0 };
+const unsigned int FunctionDrop::minArgs = 2;
+const unsigned int FunctionDrop::maxArgs = 2;
+
+/**
+ * xqilla:drop($target as item()*, $count as xs:double) as item()*
+ */
+
+FunctionDrop::FunctionDrop(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
+  : XQillaFunction(name, "($target as item()*, $count as xs:double) as item()*", args, memMgr)
+{
+}
+
+ASTNode *FunctionDrop::staticTypingImpl(StaticContext *context)
+{
+  _src.clearExceptType();
+  calculateSRCForArguments(context);
+
+  _src.getStaticType() = _args[0]->getStaticAnalysis().getStaticType();
+  _src.getStaticType().setCardinality(0, _src.getStaticType().getMax());
+
+  return this;
+}
+
+Result FunctionDrop::createResult(DynamicContext* context, int flags) const
+{
+  Numeric::Ptr count = (Numeric*)getParamNumber(2, context)->next(context).get();
+  Result result = getParamNumber(1, context);
+  result->skip(count->asInt(), context);
   return result;
 }
 

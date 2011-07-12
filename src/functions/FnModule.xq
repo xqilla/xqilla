@@ -260,7 +260,7 @@ function boolean($arg as item()*) as xs:boolean
 declare option rw:rule "fn:EBVFold: boolean(~e)
 -> false() where rw:subtype(~e, 'empty-sequence()')
 -> exists(~e) where rw:subtype(~e, 'node()*')
--> ~e where rw:subtype(~e, 'xs:boolean')";
+-> ~e where rw:subtype(~e, 'xs:boolean?')";
 
 declare %xqilla:inline
 function exists($arg as item()*) as xs:boolean
@@ -368,7 +368,10 @@ declare function reverse($seq as item()*) as item()*
 declare %xqilla:inline
 function subsequence($sourceSeq as item()*, $startingLoc as xs:double) as item()*
 {
-  subsequence-helper($sourceSeq, round($startingLoc))
+  let $s := round($startingLoc)
+  return
+    if($s < 1) then $sourceSeq
+    else xqilla:drop($sourceSeq, $s - 1)
 };
 
 declare %xqilla:inline
@@ -376,9 +379,9 @@ function subsequence($sourceSeq as item()*, $startingLoc as xs:double,
   $length as xs:double) as item()*
 {
   let $s := round($startingLoc)
-  let $l := if($s < 1) then round($length) + $s - 1 else round($length)
   return
-    take(subsequence-helper($sourceSeq, $s), $l)
+    if($s < 1) then take($sourceSeq, round($length) + $s - 1)
+    else take(xqilla:drop($sourceSeq, $s - 1), round($length))
 };
 
 (: TBD %xqilla:type("($A*, xs:double) as $A*") - jpcs:)

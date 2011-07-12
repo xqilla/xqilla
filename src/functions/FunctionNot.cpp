@@ -51,9 +51,12 @@ ASTNode* FunctionNot::staticResolution(StaticContext *context)
   return this;
 }
 
-Sequence FunctionNot::createSequence(DynamicContext* context, int flags) const
+BoolResult FunctionNot::boolResult(DynamicContext* context) const
 {
-  bool result = !((ATBooleanOrDerived*)getParamNumber(1,context)->next(context).get())->isTrue();
-  XPath2MemoryManager* memMgr = context->getMemoryManager();
-  return Sequence(context->getItemFactory()->createBoolean(result, context), memMgr);
+  return !_args[0]->boolResult(context);
+}
+
+Result FunctionNot::createResult(DynamicContext* context, int flags) const
+{
+  return (Item::Ptr)context->getItemFactory()->createBoolean(boolResult(context), context);
 }

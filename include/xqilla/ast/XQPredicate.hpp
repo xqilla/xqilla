@@ -98,14 +98,12 @@ private:
 class NumericPredicateFilterResult : public ResultImpl
 {
 public:
-	NumericPredicateFilterResult(const Result &parent, const ASTNode *pred, size_t contextSize);
-	Item::Ptr next(DynamicContext *context);
-	std::string asString(DynamicContext *context, int indent) const;
+  NumericPredicateFilterResult(const Result &parent, const ASTNode *pred, size_t contextSize);
+  virtual Item::Ptr nextOrTail(Result &tail, DynamicContext *context);
 private:
-	bool todo_;
-	Result parent_;
-	const ASTNode *pred_;
-	size_t contextSize_;
+  Result parent_;
+  const ASTNode *pred_;
+  size_t contextSize_;
 };
 
 #endif

@@ -57,7 +57,7 @@ ASTNode *XQQuantified::staticTypingImpl(StaticContext *context)
   return this;
 }
 
-Result XQQuantified::createResult(DynamicContext* context, int flags) const
+BoolResult XQQuantified::boolResult(DynamicContext* context) const
 {
   bool defaultResult = (getQuantifierType() == XQQuantified::SOME) ? false : true;
 
@@ -67,7 +67,7 @@ Result XQQuantified::createResult(DynamicContext* context, int flags) const
   while(tuples->next(context)) {
     context->setVariableStore(tuples);
 
-    bool result = ((ATBooleanOrDerived*)getExpression()->createResult(context)->next(context).get())->isTrue();
+    bool result = getExpression()->boolResult(context);
     if(defaultResult != result) {
       defaultResult = result;
       break;
@@ -76,6 +76,10 @@ Result XQQuantified::createResult(DynamicContext* context, int flags) const
     reset.reset();
   }
 
-  return (Item::Ptr)context->getItemFactory()->createBoolean(defaultResult, context);
+  return defaultResult;
 }
 
+Result XQQuantified::createResult(DynamicContext* context, int flags) const
+{
+  return (Item::Ptr)context->getItemFactory()->createBoolean(boolResult(context), context);
+}

@@ -17,17 +17,8 @@
  * limitations under the License.
  */
 
-/*
-
-  Contains function
-
-*/
-
 #ifndef _FUNCTIONCONTAINS_HPP
 #define _FUNCTIONCONTAINS_HPP
-
-#include <xqilla/framework/XQillaExport.hpp>
-
 
 #include <xqilla/ast/XQFunction.hpp>
 
@@ -40,9 +31,8 @@ public:
   static const unsigned int maxArgs;
 
   FunctionContains(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
-  
-  /** XPath function. returns true if string1 conatins string2 **/
-  Sequence createSequence(DynamicContext* context, int flags=0) const;
+  virtual BoolResult boolResult(DynamicContext* context) const;
+  virtual Result createResult(DynamicContext* context, int flags) const;
 };
 
-#endif // _FUNCTIONCONTAINS_HPP
+#endif

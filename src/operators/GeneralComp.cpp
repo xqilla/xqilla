@@ -161,7 +161,7 @@ ASTNode *GeneralComp::staticTypingImpl(StaticContext *context)
   return this;
 }
 
-Result GeneralComp::createResult(DynamicContext* context, int flags) const
+BoolResult GeneralComp::boolResult(DynamicContext* context) const
 {
   // Atomization is applied to each operand of a general comparison.
   Result arg1 = getArgument(0)->createResult(context);
@@ -179,7 +179,7 @@ Result GeneralComp::createResult(DynamicContext* context, int flags) const
     Sequence arg2_sequence(context->getMemoryManager());
     while((item2 = (const AnyAtomicType::Ptr)arg2->next(context)) != NULLRCP) {
       if(GeneralComp::compare(getOperation(), item1, item2, getCollation(), context, getXPath1CompatibilityMode(), this)) {
-        return (Item::Ptr)context->getItemFactory()->createBoolean(true, context);
+        return true;
       }
       arg2_sequence.addItem(item2);
     }
@@ -190,11 +190,15 @@ Result GeneralComp::createResult(DynamicContext* context, int flags) const
       for(itSecond = arg2_sequence.begin(); itSecond != arg2_sequence.end(); ++itSecond) {
         if(GeneralComp::compare(getOperation(), item1, (const AnyAtomicType::Ptr)*itSecond, getCollation(), context,
                                 getXPath1CompatibilityMode(), this)) {
-          return (Item::Ptr)context->getItemFactory()->createBoolean(true, context);
+          return true;
         }
       }
     }
   }
-  return (Item::Ptr)context->getItemFactory()->createBoolean(false, context);
+  return false;
 }
 
+Result GeneralComp::createResult(DynamicContext* context, int flags) const
+{
+  return (Item::Ptr)context->getItemFactory()->createBoolean(boolResult(context), context);
+}

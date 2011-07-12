@@ -72,21 +72,16 @@ ASTNode *And::staticTypingImpl(StaticContext *context)
   return this;
 }
 
-Result And::createResult(DynamicContext* context, int flags) const
+BoolResult And::boolResult(DynamicContext* context) const
 {
   VectorOfASTNodes::const_iterator i = getArguments().begin();
-  while(i != getArguments().end()) {
-    const ASTNode *arg = *i;
-    ++i;
-
-    // Tail call optimisation
-    if(i == getArguments().end())
-      return arg->createResult(context);
-
-    if(!((ATBooleanOrDerived*)arg->createResult(context)->next(context).get())->isTrue())
-      return (Item::Ptr)context->getItemFactory()->createBoolean(false, context);
+  for(; i != getArguments().end(); ++i) {
+    if(!(*i)->boolResult(context)) return false;
   }
-
-  return (Item::Ptr)context->getItemFactory()->createBoolean(true, context);
+  return true;
 }
 
+Result And::createResult(DynamicContext* context, int flags) const
+{
+  return (Item::Ptr)context->getItemFactory()->createBoolean(boolResult(context), context);
+}

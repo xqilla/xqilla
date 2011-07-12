@@ -26,12 +26,14 @@
 #include <xqilla/utils/XPath2Utils.hpp>
 #include <xercesc/util/XMLString.hpp>
 
+XERCES_CPP_NAMESPACE_USE;
+
 const XMLCh FunctionDocAvailable::name[] = {
-  XERCES_CPP_NAMESPACE_QUALIFIER chLatin_d, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_o, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_c, 
-  XERCES_CPP_NAMESPACE_QUALIFIER chDash,    XERCES_CPP_NAMESPACE_QUALIFIER chLatin_a, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_v, 
-  XERCES_CPP_NAMESPACE_QUALIFIER chLatin_a, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_i, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_l, 
-  XERCES_CPP_NAMESPACE_QUALIFIER chLatin_a, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_b, XERCES_CPP_NAMESPACE_QUALIFIER chLatin_l, 
-  XERCES_CPP_NAMESPACE_QUALIFIER chLatin_e, XERCES_CPP_NAMESPACE_QUALIFIER chNull 
+  chLatin_d, chLatin_o, chLatin_c, 
+  chDash,    chLatin_a, chLatin_v, 
+  chLatin_a, chLatin_i, chLatin_l, 
+  chLatin_a, chLatin_b, chLatin_l, 
+  chLatin_e, chNull 
 };
 const unsigned int FunctionDocAvailable::minArgs = 1;
 const unsigned int FunctionDocAvailable::maxArgs = 1;
@@ -52,32 +54,35 @@ ASTNode *FunctionDocAvailable::staticTypingImpl(StaticContext *context)
   return this;
 }
 
-Sequence FunctionDocAvailable::createSequence(DynamicContext* context, int flags) const {
+BoolResult FunctionDocAvailable::boolResult(DynamicContext* context) const
+{
   Sequence uriArg = getParamNumber(1,context)->toSequence(context);
   
-  if (uriArg.isEmpty()) {
-    return Sequence(context->getMemoryManager());
-  }
+  if (uriArg.isEmpty()) return false;
   
   const XMLCh* uri = uriArg.first()->asString(context);
   // on Windows, we can have URIs using \ instead of /; let's normalize them
-  XMLCh backSlash[]={ XERCES_CPP_NAMESPACE_QUALIFIER chBackSlash, XERCES_CPP_NAMESPACE_QUALIFIER chNull };
-  if(XERCES_CPP_NAMESPACE_QUALIFIER XMLString::findAny(uri,backSlash))
+  XMLCh backSlash[]={ chBackSlash, chNull };
+  if(XMLString::findAny(uri,backSlash))
   {
-	  XMLCh* newUri=XERCES_CPP_NAMESPACE_QUALIFIER XMLString::replicate(uri,context->getMemoryManager());
-	  for(unsigned int i=0;i<XERCES_CPP_NAMESPACE_QUALIFIER XMLString::stringLen(newUri);i++)
-		  if(newUri[i]==XERCES_CPP_NAMESPACE_QUALIFIER chBackSlash)
-			  newUri[i]=XERCES_CPP_NAMESPACE_QUALIFIER chForwardSlash;
+	  XMLCh* newUri=XMLString::replicate(uri,context->getMemoryManager());
+	  for(unsigned int i=0;i<XMLString::stringLen(newUri);i++)
+		  if(newUri[i]==chBackSlash)
+			  newUri[i]=chForwardSlash;
 	  uri=newUri;
   }
   if(!XPath2Utils::isValidURI(uri, context->getMemoryManager()))
     XQThrow(FunctionException, X("FunctionDocAvailable::createSequence"), X("Invalid argument to fn:doc-available function [err:FODC0005]"));
 
-  bool bSuccess=false;
   try {
-    bSuccess = !context->resolveDocument(uri, this).isEmpty();
+    return !context->resolveDocument(uri, this).isEmpty();
   } 
   catch(...) {
   }
-  return Sequence(context->getItemFactory()->createBoolean(bSuccess, context), context->getMemoryManager());
+  return false;
+}
+
+Result FunctionDocAvailable::createResult(DynamicContext* context, int flags) const
+{
+  return (Item::Ptr)context->getItemFactory()->createBoolean(boolResult(context), context);
 }

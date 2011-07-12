@@ -97,6 +97,7 @@ public:
   virtual ATUntypedAtomic::Ptr createUntypedAtomic(const XMLCh* value, const DynamicContext* context);
 
   virtual ATBooleanOrDerived::Ptr createBoolean(bool value, const DynamicContext* context);
+  virtual ATBooleanOrDerived::Ptr createBoolean(BoolResult value, const DynamicContext* context);
   virtual ATBooleanOrDerived::Ptr createBoolean(const XMLCh* value, const DynamicContext* context);
   virtual ATBooleanOrDerived::Ptr createBooleanOrDerived(const XMLCh* typeURI, const XMLCh* typeName, bool value, const DynamicContext* context);
   virtual ATBooleanOrDerived::Ptr createBooleanOrDerived(const XMLCh* typeURI, const XMLCh* typeName, const XMLCh* value, const DynamicContext* context);

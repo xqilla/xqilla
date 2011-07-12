@@ -30,6 +30,7 @@
 #include <xqilla/items/impl/ATDoubleOrDerivedImpl.hpp>
 #include <xqilla/items/impl/ATFloatOrDerivedImpl.hpp>
 #include <xqilla/exceptions/IllegalArgumentException.hpp>
+#include <xqilla/utils/XPath2Utils.hpp>
 
 #include <xercesc/validators/schema/SchemaSymbols.hpp>
 
@@ -147,6 +148,12 @@ ASTNode* XQLiteral::staticResolution(StaticContext *context)
 ASTNode *XQLiteral::staticTypingImpl(StaticContext *context)
 {
   return this;
+}
+
+BoolResult XQLiteral::boolResult(DynamicContext* context) const
+{
+  assert(type_->getPrimitiveType() == AnyAtomicType::BOOLEAN);
+  return XPath2Utils::equals(SchemaSymbols::fgATTVAL_TRUE, value_);
 }
 
 Result XQLiteral::createResult(DynamicContext* context, int flags) const

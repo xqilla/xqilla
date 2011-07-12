@@ -56,7 +56,7 @@ FunctionEndsWith::FunctionEndsWith(const VectorOfASTNodes &args, XPath2MemoryMan
 {
 }
 
-Sequence FunctionEndsWith::createSequence(DynamicContext* context, int flags) const
+BoolResult FunctionEndsWith::boolResult(DynamicContext* context) const
 {
     Sequence sourceString=getParamNumber(1,context)->toSequence(context);
     Sequence findString=getParamNumber(2,context)->toSequence(context);
@@ -71,10 +71,10 @@ Sequence FunctionEndsWith::createSequence(DynamicContext* context, int flags) co
     // If the value of $operand1 is the zero-length string and the value of $operand2 is not the zero-length string,
     // then the function returns false.
     if(XMLString::stringLen(source)==0 && XMLString::stringLen(find)>0)
-        return Sequence(context->getItemFactory()->createBoolean(false, context), context->getMemoryManager());
+        return false;
     // If the value of $operand2 is the zero-length string, then the function returns true
     if(XMLString::stringLen(find)==0)
-        return Sequence(context->getItemFactory()->createBoolean(true, context), context->getMemoryManager());
+        return true;
 
     Collation* collation;
     if(getNumArgs()>2) collation = context->getCollation(getParamNumber(3,context)->
@@ -85,7 +85,7 @@ Sequence FunctionEndsWith::createSequence(DynamicContext* context, int flags) co
 	// of $operand2 according to the specified collation
 
     if(XMLString::stringLen(find)>XMLString::stringLen(source))
-        return Sequence(context->getItemFactory()->createBoolean(false, context), context->getMemoryManager());
+        return false;
     int i,j;
 //    for(i = XMLString::stringLen(source)-1, j=XMLString::stringLen(find)-1; i >=0 && j >=0; i--,j--)
 
@@ -96,9 +96,14 @@ Sequence FunctionEndsWith::createSequence(DynamicContext* context, int flags) co
         bool result = (collation->compare(string1, string2)!=0);
 
         if(result) {
-            return Sequence(context->getItemFactory()->createBoolean(false, context), context->getMemoryManager());
+            return false;
         }
     }
 
-    return Sequence(context->getItemFactory()->createBoolean(true, context), context->getMemoryManager());
+    return true;
+}
+
+Result FunctionEndsWith::createResult(DynamicContext* context, int flags) const
+{
+  return (Item::Ptr)context->getItemFactory()->createBoolean(boolResult(context), context);
 }

@@ -35,9 +35,11 @@ public:
   /// Cast operator to a Sequence
   virtual Sequence toSequence(DynamicContext *context = 0);
 
+  virtual void skip(unsigned count, DynamicContext *context);
+
 private:
   Sequence seq_;
-  Sequence::iterator it_;
+  size_t i_;
 };
 
 #endif

@@ -425,6 +425,11 @@ int Numeric::asInt() const
   return (int)asMAPM().toDouble();
 }
 
+bool Numeric::isInteger() const
+{
+  return asMAPM().is_integer();
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /* http://exslt.org/math */

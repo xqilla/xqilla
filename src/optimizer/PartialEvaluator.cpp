@@ -1525,7 +1525,7 @@ ASTNode *PartialEvaluator::optimizeQuantified(XQQuantified *item)
 
   if(item->getExpression()->isConstant() &&
      item->getParent()->getStaticAnalysis().getStaticType().getMin() != 0) {
-      bool value = ((ATBooleanOrDerived*)item->getExpression()->createResult(context_)->next(context_).get())->isTrue();
+      bool value = item->getExpression()->boolResult(context_);
     ASTNode *result = XQLiteral::create(value, context_->getMemoryManager(), item)
       ->staticResolution(context_);
     sizeLimit_ += ASTCounter().count(item);

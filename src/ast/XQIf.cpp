@@ -41,12 +41,9 @@ XQIf::XQIf(ASTNode* test, ASTNode* whenTrue, ASTNode* whenFalse, XPath2MemoryMan
 EventGenerator::Ptr XQIf::generateEvents(EventHandler *events, DynamicContext *context,
                                     bool preserveNS, bool preserveType) const
 {
-  if(((ATBooleanOrDerived*)_test->createResult(context)->next(context).get())->isTrue()) {
+  if(_test->boolResult(context))
     return new ClosureEventGenerator(_whenTrue, context, preserveNS, preserveType);
-  }
-  else {
-    return new ClosureEventGenerator(_whenFalse, context, preserveNS, preserveType);
-  }
+  else return new ClosureEventGenerator(_whenFalse, context, preserveNS, preserveType);
 }
 
 ASTNode* XQIf::staticResolution(StaticContext *context)
@@ -128,18 +125,15 @@ void XQIf::setWhenFalse(ASTNode *item)
 
 PendingUpdateList XQIf::createUpdateList(DynamicContext *context) const
 {
-  if(((ATBooleanOrDerived*)_test->createResult(context)->next(context).get())->isTrue()) {
+  if(_test->boolResult(context))
     return _whenTrue->createUpdateList(context);
-  }
-  else {
-    return _whenFalse->createUpdateList(context);
-  }
+  else return _whenFalse->createUpdateList(context);
 }
 
 Result XQIf::createResult(DynamicContext* context, int flags) const
 {
-  if(((ATBooleanOrDerived*)getTest()->createResult(context)->next(context).get())->isTrue())
-      return getWhenTrue()->createResult(context);
+  if(_test->boolResult(context))
+    return getWhenTrue()->createResult(context);
   return getWhenFalse()->createResult(context);
 }
 

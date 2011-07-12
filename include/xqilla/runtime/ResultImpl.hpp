@@ -44,11 +44,14 @@ public:
   /// Gets the next item, or returns a tail call Result which will give the next item.
   virtual Item::Ptr nextOrTail(Result &tail, DynamicContext *context);
 
-  /// Cast operator to a Sequence. Only works properly before next() has been called.
+  /// Cast operator to a Sequence
   virtual Sequence toSequence(DynamicContext *context);
 
   /// Returns a result buffer of the result
   virtual void toResultBuffer(unsigned int readCount, ResultBuffer &buffer);
+
+  /// Skip ahead
+  virtual void skip(unsigned count, DynamicContext *context);
 
 protected:
   ResultImpl(const LocationInfo *o);

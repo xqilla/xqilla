@@ -31,9 +31,10 @@ class XQILLA_API XQCastableAs : public ASTNodeImpl
 public:
   XQCastableAs(ASTNode* expr, SequenceType* exprType, XPath2MemoryManager* memMgr);
 
-  virtual Result createResult(DynamicContext* context, int flags=0) const;
   virtual ASTNode* staticResolution(StaticContext *context);
   virtual ASTNode *staticTypingImpl(StaticContext *context);
+  virtual BoolResult boolResult(DynamicContext* context) const;
+  virtual Result createResult(DynamicContext* context, int flags) const;
 
   ASTNode *getExpression() const;
   SequenceType *getSequenceType() const;

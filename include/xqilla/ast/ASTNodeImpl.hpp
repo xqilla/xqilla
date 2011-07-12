@@ -55,6 +55,9 @@ public:
   /// Default - returns an empty update list
   virtual PendingUpdateList createUpdateList(DynamicContext *context) const;
 
+  /// Default implementation calls ATBooleanOrDerived::isTrue()
+  virtual BoolResult boolResult(DynamicContext* context) const;
+
   /**
    * Can be overridden by derived classes. Default implementation returns a
    * NavStepResult constructed using contextItems and this expression.

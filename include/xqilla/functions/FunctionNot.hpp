@@ -34,8 +34,8 @@ public:
   FunctionNot(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
   
   ASTNode* staticResolution(StaticContext *context);
-  Sequence createSequence(DynamicContext* context, int flags=0) const;
-
+  virtual BoolResult boolResult(DynamicContext* context) const;
+  virtual Result createResult(DynamicContext* context, int flags) const;
 };
 
 #endif

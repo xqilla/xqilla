@@ -78,3 +78,18 @@ void ResultImpl::toResultBuffer(unsigned int readCount, ResultBuffer &buffer)
   Result me(this);
   buffer = ResultBuffer(new ResultBufferImpl(me, readCount));
 }
+
+void ResultImpl::skip(unsigned count, DynamicContext *context)
+{
+  // Store resultPointer_ locally, as "this" may get deleted
+  Result &resultPointer = *resultPointer_;
+
+  Item::Ptr item;
+  while(count > 0) {
+    do {
+      if(resultPointer.isNull()) return;
+      item = resultPointer->nextOrTail(resultPointer, context);
+    } while(item.isNull());
+    --count;
+  }
+}

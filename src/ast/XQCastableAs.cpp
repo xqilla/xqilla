@@ -126,7 +126,7 @@ void XQCastableAs::setExpression(ASTNode *item) {
   _expr = item;
 }
 
-Result XQCastableAs::createResult(DynamicContext* context, int flags) const
+BoolResult XQCastableAs::boolResult(DynamicContext* context) const
 {
   // The semantics of the cast expression are as follows:
   //    1. Atomization is performed on the input expression.
@@ -162,6 +162,10 @@ Result XQCastableAs::createResult(DynamicContext* context, int flags) const
       }
     }
   }
-  return (const Item::Ptr)context->getItemFactory()->createBoolean(result, context);
+  return result;
 }
 
+Result XQCastableAs::createResult(DynamicContext* context, int flags) const
+{
+  return (Item::Ptr)context->getItemFactory()->createBoolean(boolResult(context), context);
+}

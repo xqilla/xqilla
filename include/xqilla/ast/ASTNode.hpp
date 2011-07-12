@@ -34,6 +34,7 @@ class StaticAnalysis;
 class PendingUpdateList;
 class EventHandler;
 class StaticTyper;
+class BoolResult;
 
 class XQILLA_API ASTNode : public LocationInfo
 {
@@ -162,6 +163,9 @@ public:
   /** Returns a result iterator with the result of applying this expression to
       each of the given context items in turn. */
   virtual Result iterateResult(const Result &contextItems, DynamicContext* context) const = 0;
+
+  /** Returns the result of this expression as a boolean */
+  virtual BoolResult boolResult(DynamicContext* context) const = 0;
 
   /** Returns the result of this expression via the EventHandler provided.
       An EventGenerator may be returned to be called as a tail call optimization */

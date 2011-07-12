@@ -27,6 +27,26 @@
 
 class XPath2MemoryManager;
 
+struct XQILLA_API BoolResult
+{
+  static const BoolResult True;
+  static const BoolResult False;
+  static const BoolResult Null;
+
+  inline BoolResult(bool b) : value(b ? BOOL_TRUE : BOOL_FALSE) {}
+  inline operator bool() const { return value == BOOL_TRUE; }
+  inline bool operator==(BoolResult o) const { return value == o.value; }
+  inline bool operator!=(BoolResult o) const { return value != o.value; }
+
+private:
+  inline BoolResult() : value(BOOL_NULL) {}
+  enum {
+    BOOL_NULL,
+    BOOL_FALSE,
+    BOOL_TRUE
+  } value;
+};
+
 class XQILLA_API ATBooleanOrDerived : public AnyAtomicType
 {
 public:
@@ -64,4 +84,4 @@ public:
   virtual AnyAtomicType::AtomicObjectType getPrimitiveTypeIndex() const = 0;
 };
 
-#endif //  _ATBOOLEANORDERIVED_HPP
+#endif

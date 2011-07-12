@@ -17,16 +17,8 @@
  * limitations under the License.
  */
 
-/*
-
-  Empty function
-
-*/
-
 #ifndef _FUNCTIONEMPTY_HPP
 #define _FUNCTIONEMPTY_HPP
-
-#include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/ast/XQFunction.hpp>
 
@@ -41,10 +33,8 @@ public:
 
   ASTNode* staticResolution(StaticContext *context);
   virtual ASTNode *staticTypingImpl(StaticContext *context);
-  Sequence createSequence(DynamicContext* context, int flags=0) const;
+  virtual BoolResult boolResult(DynamicContext* context) const;
+  virtual Result createResult(DynamicContext* context, int flags) const;
 };
 
-#endif // _FUNCTIONEMPTY_HPP
-
-
-
+#endif

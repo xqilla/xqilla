@@ -34,7 +34,8 @@ public:
 
   virtual ASTNode *staticResolution(StaticContext *context);
   virtual ASTNode *staticTypingImpl(StaticContext *context);
-  virtual Result createResult(DynamicContext *context, int flags=0) const;
+  virtual BoolResult boolResult(DynamicContext* context) const;
+  virtual Result createResult(DynamicContext* context, int flags) const;
 
   ASTNode *getArgument() const { return argument_; }
   FTSelection *getSelection() const { return selection_; }

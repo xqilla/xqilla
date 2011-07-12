@@ -143,6 +143,15 @@ ATBooleanOrDerived::Ptr ItemFactoryImpl::createBoolean(bool value, const Dynamic
     value, context);  
 }
 
+ATBooleanOrDerived::Ptr ItemFactoryImpl::createBoolean(BoolResult value, const DynamicContext* context)
+{
+  if(value == BoolResult::Null) return 0;
+  return createBooleanOrDerived(
+    SchemaSymbols::fgURI_SCHEMAFORSCHEMA,
+    SchemaSymbols::fgDT_BOOLEAN,
+    value, context);  
+}
+
 ATBooleanOrDerived::Ptr ItemFactoryImpl::createBoolean(const XMLCh* value, const DynamicContext* context) {
   return (ATBooleanOrDerived*)datatypeLookup_->getBooleanFactory()->createInstance(value, context).get();
 }

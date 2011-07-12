@@ -163,7 +163,7 @@ public:
       context->testInterrupt();
 
       AutoVariableStoreReset reset(context, parent_);
-      if(((ATBooleanOrDerived*)ast_->getExpression()->createResult(context)->next(context).get())->isTrue())
+      if(ast_->getExpression()->boolResult(context))
         return true;
     }
 

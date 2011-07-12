@@ -53,7 +53,7 @@ FunctionContains::FunctionContains(const VectorOfASTNodes &args, XPath2MemoryMan
 {
 }
 
-Sequence FunctionContains::createSequence(DynamicContext* context, int flags) const
+BoolResult FunctionContains::boolResult(DynamicContext* context) const
 {
   Sequence str1 = getParamNumber(1,context)->toSequence(context);
   Sequence str2 = getParamNumber(2,context)->toSequence(context);
@@ -70,11 +70,13 @@ Sequence FunctionContains::createSequence(DynamicContext* context, int flags) co
   if(!str2.isEmpty())
     pattern=str2.first()->asString(context);
 
-  if(XMLString::stringLen(pattern)==0)
-    return Sequence(context->getItemFactory()->createBoolean(true, context), context->getMemoryManager());
-  else if(XMLString::stringLen(container)==0)
-    return Sequence(context->getItemFactory()->createBoolean(false, context), context->getMemoryManager());
+    if(XMLString::stringLen(pattern)==0) return true;
+    else if(XMLString::stringLen(container)==0) return false;
 
-  bool contains = XMLString::patternMatch(container, pattern) > -1;
-  return Sequence(context->getItemFactory()->createBoolean(contains, context), context->getMemoryManager());
+    return XMLString::patternMatch(container, pattern) > -1;
+}
+
+Result FunctionContains::createResult(DynamicContext* context, int flags) const
+{
+  return (Item::Ptr)context->getItemFactory()->createBoolean(boolResult(context), context);
 }

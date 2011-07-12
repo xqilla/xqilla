@@ -164,3 +164,7 @@ bool ATBooleanOrDerivedImpl::isFalse() const {
 AnyAtomicType::AtomicObjectType ATBooleanOrDerivedImpl::getPrimitiveTypeIndex() const {
   return getTypeIndex();
 }
+
+const BoolResult BoolResult::True(true);
+const BoolResult BoolResult::False(false);
+const BoolResult BoolResult::Null;
