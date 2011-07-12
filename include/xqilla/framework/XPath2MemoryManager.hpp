@@ -158,6 +158,16 @@ public:
     return 0xFFFFFFFF;
   }
 
+  bool operator==(const XQillaAllocator<_Tp>& o) const
+  {
+    return &o == this;
+  }
+
+  bool operator!=(const XQillaAllocator<_Tp>& o) const
+  {
+    return &o != this;
+  }
+
   char _singleton[sizeof(_Tp)];
   XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* _memMgr;
 };

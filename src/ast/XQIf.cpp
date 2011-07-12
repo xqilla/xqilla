@@ -38,11 +38,6 @@ XQIf::XQIf(ASTNode* test, ASTNode* whenTrue, ASTNode* whenFalse, XPath2MemoryMan
 {
 }
 
-Result XQIf::createResult(DynamicContext* context, int flags) const
-{
-  return new IfResult(this);
-}
-
 EventGenerator::Ptr XQIf::generateEvents(EventHandler *events, DynamicContext *context,
                                     bool preserveNS, bool preserveType) const
 {
@@ -141,19 +136,10 @@ PendingUpdateList XQIf::createUpdateList(DynamicContext *context) const
   }
 }
 
-XQIf::IfResult::IfResult(const XQIf *di)
-  : ResultImpl(di),
-    _di(di)
+Result XQIf::createResult(DynamicContext* context, int flags) const
 {
+  if(((ATBooleanOrDerived*)getTest()->createResult(context)->next(context).get())->isTrue())
+      return getWhenTrue()->createResult(context);
+  return getWhenFalse()->createResult(context);
 }
 
-Item::Ptr XQIf::IfResult::nextOrTail(Result &tail, DynamicContext *context)
-{
-  if(((ATBooleanOrDerived*)_di->getTest()->createResult(context)->next(context).get())->isTrue()) {
-    tail = ClosureResult::create(_di->getWhenTrue(), context);
-  }
-  else {
-    tail = ClosureResult::create(_di->getWhenFalse(), context);
-  }
-  return 0;
-}

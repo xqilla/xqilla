@@ -50,7 +50,12 @@ DIST_COMMON = README $(am__configure_deps) $(srcdir)/Makefile.am \
 	autotools/depcomp autotools/install-sh autotools/ltmain.sh \
 	autotools/missing autotools/mkinstalldirs
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
-am__aclocal_m4_deps = $(top_srcdir)/configure.in
+am__aclocal_m4_deps = $(top_srcdir)/autotools/m4/libtool.m4 \
+	$(top_srcdir)/autotools/m4/ltoptions.m4 \
+	$(top_srcdir)/autotools/m4/ltsugar.m4 \
+	$(top_srcdir)/autotools/m4/ltversion.m4 \
+	$(top_srcdir)/autotools/m4/lt~obsolete.m4 \
+	$(top_srcdir)/configure.in
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 am__CONFIG_DISTCLEAN_FILES = config.status config.cache config.log \
@@ -171,29 +176,28 @@ am_libxqilla_la_OBJECTS = ReferenceCounted.lo BaseMemoryManager.lo \
 	mapm_lg2.lo mapm_lg3.lo mapm_log.lo mapm_mt.lo mapm_mul.lo \
 	mapm_pow.lo mapmpwr2.lo mapm_rcp.lo mapm_rnd.lo mapmrsin.lo \
 	mapm_set.lo mapm_sin.lo mapmsqrt.lo mapmstck.lo mapmutil.lo \
-	mapmutl2.lo NodeTest.lo SelfAxis.lo And.lo \
-	ArithmeticOperator.lo ComparisonOperator.lo Divide.lo \
-	Equals.lo Except.lo GeneralComp.lo GreaterThan.lo \
-	GreaterThanEqual.lo IntegerDivide.lo Intersect.lo LessThan.lo \
-	LessThanEqual.lo Minus.lo Mod.lo Multiply.lo NodeComparison.lo \
-	NotEquals.lo Or.lo OrderComparison.lo Plus.lo UnaryMinus.lo \
-	Union.lo DocumentCacheImpl.lo SequenceType.lo \
+	mapmutl2.lo NodeTest.lo And.lo ArithmeticOperator.lo \
+	ComparisonOperator.lo Divide.lo Equals.lo Except.lo \
+	GeneralComp.lo GreaterThan.lo GreaterThanEqual.lo \
+	IntegerDivide.lo Intersect.lo LessThan.lo LessThanEqual.lo \
+	Minus.lo Mod.lo Multiply.lo NodeComparison.lo NotEquals.lo \
+	Or.lo OrderComparison.lo Plus.lo UnaryMinus.lo Union.lo \
+	DocumentCacheImpl.lo SequenceType.lo \
 	AnyAtomicTypeDatatypeValidator.lo SchemaValidatorFilter.lo \
 	FaxppDocumentCacheImpl.lo ClosureResult.lo EmptyResult.lo \
-	LazySequenceResult.lo ResultBuffer.lo ResultBufferImpl.lo \
-	Result.lo ResultImpl.lo SequenceResult.lo SingleResult.lo \
-	Sequence.lo FunctionPut.lo PendingUpdateList.lo \
-	UApplyUpdates.lo UDelete.lo URename.lo UReplace.lo \
-	UReplaceValueOf.lo UInsertAsFirst.lo UInsertAsLast.lo \
-	UInsertInto.lo UInsertAfter.lo UInsertBefore.lo UTransform.lo \
-	TestSuiteParser.lo TestSuiteResultListener.lo \
-	TestSuiteRunner.lo FastXDMUpdateFactory.lo FastXDMDocument.lo \
-	FastXDMNodeImpl.lo FastXDMConfiguration.lo \
-	FastXDMSequenceBuilder.lo AncestorAxis.lo \
-	AncestorOrSelfAxis.lo AttributeAxis.lo Axis.lo ChildAxis.lo \
-	DescendantAxis.lo DescendantOrSelfAxis.lo FollowingAxis.lo \
-	FollowingSiblingAxis.lo NamespaceAxis.lo ParentAxis.lo \
-	PrecedingAxis.lo PrecedingSiblingAxis.lo \
+	ResultBuffer.lo ResultBufferImpl.lo Result.lo ResultImpl.lo \
+	SequenceResult.lo Sequence.lo FunctionPut.lo \
+	PendingUpdateList.lo UApplyUpdates.lo UDelete.lo URename.lo \
+	UReplace.lo UReplaceValueOf.lo UInsertAsFirst.lo \
+	UInsertAsLast.lo UInsertInto.lo UInsertAfter.lo \
+	UInsertBefore.lo UTransform.lo TestSuiteParser.lo \
+	TestSuiteResultListener.lo TestSuiteRunner.lo \
+	FastXDMUpdateFactory.lo FastXDMDocument.lo FastXDMNodeImpl.lo \
+	FastXDMConfiguration.lo FastXDMSequenceBuilder.lo \
+	AncestorAxis.lo AncestorOrSelfAxis.lo AttributeAxis.lo Axis.lo \
+	ChildAxis.lo DescendantAxis.lo DescendantOrSelfAxis.lo \
+	FollowingAxis.lo FollowingSiblingAxis.lo NamespaceAxis.lo \
+	ParentAxis.lo PrecedingAxis.lo PrecedingSiblingAxis.lo \
 	XercesConfiguration.lo XercesNodeImpl.lo \
 	XercesSequenceBuilder.lo XercesUpdateFactory.lo \
 	XercesURIResolver.lo Optimizer.lo ASTCopier.lo ASTReleaser.lo \
@@ -400,6 +404,7 @@ PACKAGE_BUGREPORT = @PACKAGE_BUGREPORT@
 PACKAGE_NAME = @PACKAGE_NAME@
 PACKAGE_STRING = @PACKAGE_STRING@
 PACKAGE_TARNAME = @PACKAGE_TARNAME@
+PACKAGE_URL = @PACKAGE_URL@
 PACKAGE_VERSION = @PACKAGE_VERSION@
 PATH_SEPARATOR = @PATH_SEPARATOR@
 RANLIB = @RANLIB@
@@ -789,7 +794,6 @@ src/mapm/mapmutil.c \
 src/mapm/mapmutl2.c \
 src/mapm/README \
 src/axis/NodeTest.cpp \
-src/axis/SelfAxis.cpp \
 src/operators/And.cpp \
 src/operators/ArithmeticOperator.cpp \
 src/operators/ComparisonOperator.cpp \
@@ -821,13 +825,11 @@ src/schema/FaxppDocumentCacheImpl.hpp \
 src/schema/FaxppDocumentCacheImpl.cpp \
 src/runtime/ClosureResult.cpp \
 src/runtime/EmptyResult.cpp \
-src/runtime/LazySequenceResult.cpp \
 src/runtime/ResultBuffer.cpp \
 src/runtime/ResultBufferImpl.cpp \
 src/runtime/Result.cpp \
 src/runtime/ResultImpl.cpp \
 src/runtime/SequenceResult.cpp \
-src/runtime/SingleResult.cpp \
 src/runtime/Sequence.cpp \
 src/update/FunctionPut.cpp \
 src/update/PendingUpdateList.cpp \
@@ -1369,7 +1371,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Intersect.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Item.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ItemFactoryImpl.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/LazySequenceResult.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/LessThan.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/LessThanEqual.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/LetTuple.Plo@am__quote@
@@ -1407,11 +1408,9 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ResultBufferImpl.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ResultImpl.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SchemaValidatorFilter.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SelfAxis.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Sequence.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SequenceResult.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SequenceType.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SingleResult.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/StackFrame.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/StaticAnalysis.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/StaticType.Plo@am__quote@
@@ -3544,13 +3543,6 @@ NodeTest.lo: src/axis/NodeTest.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o NodeTest.lo `test -f 'src/axis/NodeTest.cpp' || echo '$(srcdir)/'`src/axis/NodeTest.cpp
 
-SelfAxis.lo: src/axis/SelfAxis.cpp
-@am__fastdepCXX_TRUE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SelfAxis.lo -MD -MP -MF $(DEPDIR)/SelfAxis.Tpo -c -o SelfAxis.lo `test -f 'src/axis/SelfAxis.cpp' || echo '$(srcdir)/'`src/axis/SelfAxis.cpp
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/SelfAxis.Tpo $(DEPDIR)/SelfAxis.Plo
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/axis/SelfAxis.cpp' object='SelfAxis.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SelfAxis.lo `test -f 'src/axis/SelfAxis.cpp' || echo '$(srcdir)/'`src/axis/SelfAxis.cpp
-
 And.lo: src/operators/And.cpp
 @am__fastdepCXX_TRUE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT And.lo -MD -MP -MF $(DEPDIR)/And.Tpo -c -o And.lo `test -f 'src/operators/And.cpp' || echo '$(srcdir)/'`src/operators/And.cpp
 @am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/And.Tpo $(DEPDIR)/And.Plo
@@ -3761,13 +3753,6 @@ EmptyResult.lo: src/runtime/EmptyResult.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o EmptyResult.lo `test -f 'src/runtime/EmptyResult.cpp' || echo '$(srcdir)/'`src/runtime/EmptyResult.cpp
 
-LazySequenceResult.lo: src/runtime/LazySequenceResult.cpp
-@am__fastdepCXX_TRUE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT LazySequenceResult.lo -MD -MP -MF $(DEPDIR)/LazySequenceResult.Tpo -c -o LazySequenceResult.lo `test -f 'src/runtime/LazySequenceResult.cpp' || echo '$(srcdir)/'`src/runtime/LazySequenceResult.cpp
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/LazySequenceResult.Tpo $(DEPDIR)/LazySequenceResult.Plo
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/runtime/LazySequenceResult.cpp' object='LazySequenceResult.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o LazySequenceResult.lo `test -f 'src/runtime/LazySequenceResult.cpp' || echo '$(srcdir)/'`src/runtime/LazySequenceResult.cpp
-
 ResultBuffer.lo: src/runtime/ResultBuffer.cpp
 @am__fastdepCXX_TRUE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ResultBuffer.lo -MD -MP -MF $(DEPDIR)/ResultBuffer.Tpo -c -o ResultBuffer.lo `test -f 'src/runtime/ResultBuffer.cpp' || echo '$(srcdir)/'`src/runtime/ResultBuffer.cpp
 @am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/ResultBuffer.Tpo $(DEPDIR)/ResultBuffer.Plo
@@ -3802,13 +3787,6 @@ SequenceResult.lo: src/runtime/SequenceResult.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/runtime/SequenceResult.cpp' object='SequenceResult.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SequenceResult.lo `test -f 'src/runtime/SequenceResult.cpp' || echo '$(srcdir)/'`src/runtime/SequenceResult.cpp
-
-SingleResult.lo: src/runtime/SingleResult.cpp
-@am__fastdepCXX_TRUE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SingleResult.lo -MD -MP -MF $(DEPDIR)/SingleResult.Tpo -c -o SingleResult.lo `test -f 'src/runtime/SingleResult.cpp' || echo '$(srcdir)/'`src/runtime/SingleResult.cpp
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/SingleResult.Tpo $(DEPDIR)/SingleResult.Plo
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/runtime/SingleResult.cpp' object='SingleResult.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SingleResult.lo `test -f 'src/runtime/SingleResult.cpp' || echo '$(srcdir)/'`src/runtime/SingleResult.cpp
 
 Sequence.lo: src/runtime/Sequence.cpp
 @am__fastdepCXX_TRUE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT Sequence.lo -MD -MP -MF $(DEPDIR)/Sequence.Tpo -c -o Sequence.lo `test -f 'src/runtime/Sequence.cpp' || echo '$(srcdir)/'`src/runtime/Sequence.cpp

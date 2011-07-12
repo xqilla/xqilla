@@ -154,66 +154,17 @@ void ArithmeticOperator::calculateStaticTypeForNumerics(const StaticType &arg0, 
   }
 }
 
-class ArithmeticResult : public ResultImpl
-{
-public:
-  ArithmeticResult(const ArithmeticOperator *op)
-    : ResultImpl(op),
-      _op(op)
-  {
-  }
-
-  virtual Item::Ptr nextOrTail(Result &tail, DynamicContext *context)
-  {
-    try {
-      Item::Ptr item = _op->execute((AnyAtomicType*)_op->getArguments()[0]->createResult(context)->next(context).get(),
-                                    (AnyAtomicType*)_op->getArguments()[1]->createResult(context)->next(context).get(),
-                                    context);
-      tail = 0;
-      return item;
-    }
-    catch(XQException &e) {
-      if(e.getXQueryLine() == 0)
-        e.setXQueryPosition(this);
-      throw;
-    }
-  }
-
-private:
-  const ArithmeticOperator *_op;
-};
-
-class UnaryArithmeticResult : public ResultImpl
-{
-public:
-  UnaryArithmeticResult(const ArithmeticOperator *op)
-    : ResultImpl(op),
-      _op(op)
-  {
-  }
-
-  virtual Item::Ptr nextOrTail(Result &tail, DynamicContext *context)
-  {
-    try {
-      Item::Ptr item = _op->execute((AnyAtomicType*)_op->getArguments()[0]->createResult(context)->next(context).get(),
-                                    0, context);
-      tail = 0;
-      return item;
-    }
-    catch(XQException &e) {
-      if(e.getXQueryLine() == 0)
-        e.setXQueryPosition(this);
-      throw;
-    }
-  }
-
-private:
-  const ArithmeticOperator *_op;
-};
-
 Result ArithmeticOperator::createResult(DynamicContext* context, int flags) const
 {
-  if(getNumArgs() == 1) return new UnaryArithmeticResult(this);
-  return new ArithmeticResult(this);
+  try {
+    return execute((AnyAtomicType*)getArguments()[0]->createResult(context)->next(context).get(),
+      getNumArgs() == 1 ? 0 : (AnyAtomicType*)getArguments()[1]->createResult(context)->next(context).get(),
+      context);
+  }
+  catch(XQException &e) {
+    if(e.getXQueryLine() == 0)
+      e.setXQueryPosition(this);
+    throw;
+  }
 }
 

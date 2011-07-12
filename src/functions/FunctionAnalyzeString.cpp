@@ -29,6 +29,7 @@
 #include <xqilla/functions/FuncFactory.hpp>
 #include <xqilla/framework/BasicMemoryManager.hpp>
 #include <xqilla/events/SequenceBuilder.hpp>
+#include <xqilla/runtime/ClosureResult.hpp>
 
 #include <xercesc/validators/schema/SchemaSymbols.hpp>
 
@@ -255,5 +256,5 @@ private:
 
 Result FunctionXQillaAnalyzeString::createResult(DynamicContext* context, int flags) const
 {
-  return new FunctionXQillaAnalyzeStringResult(this);
+  return ClosureResult::create(getStaticAnalysis(), context, new FunctionXQillaAnalyzeStringResult(this));
 }

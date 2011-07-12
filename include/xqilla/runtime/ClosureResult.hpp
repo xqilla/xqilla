@@ -33,16 +33,16 @@ class XQILLA_API ClosureResult : public ResultImpl
 public:
   virtual Item::Ptr nextOrTail(Result &tail, DynamicContext *context);
 
-  static Result create(const ASTNode *ast, DynamicContext *context, const VariableStore *varStore = 0);
+  static Result create(const ASTNode *ast, DynamicContext *context);
+  static Result create(const StaticAnalysis &src, DynamicContext *context, ResultImpl *result);
 
 private:
-  ClosureResult(const ASTNode *ast, DynamicContext *context, const VariableStore *varStore);
+  ClosureResult(const StaticAnalysis &src, DynamicContext *context, ResultImpl *result);
 
   Item::Ptr contextItem_;
   size_t contextPosition_;
   size_t contextSize_;
   VarStoreImpl varStore_;
-  DocumentCache *docCache_;
   Result result_;
 };
 
@@ -58,7 +58,6 @@ protected:
   size_t contextPosition_;
   size_t contextSize_;
   VarStoreImpl varStore_;
-  DocumentCache *docCache_;
 };
 
 #endif

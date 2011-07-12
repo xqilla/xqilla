@@ -30,14 +30,14 @@ public:
   SequenceResult(const LocationInfo *o, const Sequence &seq);
 
   /// Get the next item from the iterator
-  virtual Item::Ptr next(DynamicContext *context);
+  virtual Item::Ptr nextOrTail(Result &tail, DynamicContext *context);
 
   /// Cast operator to a Sequence
   virtual Sequence toSequence(DynamicContext *context = 0);
 
 private:
-  Sequence::iterator it_;
   Sequence seq_;
+  Sequence::iterator it_;
 };
 
 #endif

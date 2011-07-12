@@ -23,7 +23,6 @@
 #include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/ast/ASTNodeImpl.hpp>
-#include <xqilla/runtime/LazySequenceResult.hpp>
 
 class SequenceType;
 

@@ -23,6 +23,7 @@
 #include <xqilla/ast/CountTuple.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/context/VariableTypeStore.hpp>
+#include <xqilla/context/ContextHelpers.hpp>
 #include <xqilla/runtime/ResultBuffer.hpp>
 #include <xqilla/runtime/ClosureResult.hpp>
 #include <xqilla/utils/XPath2NSUtils.hpp>
@@ -179,7 +180,8 @@ public:
       return false;
 
     // TBD Use counts for the variable - jpcs
-    values_ = ResultBuffer(ClosureResult::create(ast_->getExpression(), context, parent_));
+    AutoVariableStoreReset vsReset(context, parent_);
+    values_ = ResultBuffer(ast_->getExpression()->createResult(context));
     return true;
   }
 

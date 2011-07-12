@@ -46,17 +46,6 @@ public:
   void setWhenFalse(ASTNode *item);
 
 protected:
-  class IfResult : public ResultImpl
-  {
-  public:
-    IfResult(const XQIf *di);
-
-    Item::Ptr nextOrTail(Result &tail, DynamicContext *context);
-
-  private:
-    const XQIf *_di;
-  };
-
   ASTNode* _test,* _whenTrue,* _whenFalse;
 };
 

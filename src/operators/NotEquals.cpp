@@ -41,7 +41,7 @@ NotEquals::NotEquals(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
 
 bool NotEquals::execute(const AnyAtomicType::Ptr &atom1, const AnyAtomicType::Ptr &atom2, DynamicContext *context) const
 {
-  return not_equals(atom1, atom2, context->getDefaultCollation(this), context, this);
+  return not_equals(atom1, atom2, 0, context, this);
 }
 
 

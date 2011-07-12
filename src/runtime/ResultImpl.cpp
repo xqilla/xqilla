@@ -22,6 +22,7 @@
 
 #include <xqilla/runtime/ResultImpl.hpp>
 #include <xqilla/runtime/SequenceResult.hpp>
+#include <xqilla/runtime/ResultBuffer.hpp>
 #include <xqilla/runtime/ResultBufferImpl.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/items/Numeric.hpp>
@@ -64,17 +65,16 @@ Sequence ResultImpl::toSequence(DynamicContext *context)
   Sequence result(context->getMemoryManager());
 
   Item::Ptr item = 0;
-  while((item = me->next(context)) != NULLRCP) {
+  while((item = me->next(context)).notNull()) {
     result.addItem(item);
   }
 
   return result;
 }
 
-ResultBufferImpl *ResultImpl::toResultBuffer(unsigned int readCount)
+void ResultImpl::toResultBuffer(unsigned int readCount, ResultBuffer &buffer)
 {
   // Control our own scoped pointer
   Result me(this);
-
-  return new ResultBufferImpl(me, readCount);
+  buffer = ResultBuffer(new ResultBufferImpl(me, readCount));
 }

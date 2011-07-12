@@ -25,22 +25,27 @@
 #include <xqilla/context/DynamicContext.hpp>
 
 ResultBuffer::ResultBuffer(const Result &result, unsigned int readCount)
-  : _impl(const_cast<ResultImpl*>(result.get())->toResultBuffer(readCount))
+  : _impl(0),
+    _start(0)
 {
+  const_cast<ResultImpl*>(result.get())->toResultBuffer(readCount,*this);
 }
 
 ResultBuffer::ResultBuffer(const Item::Ptr &item, unsigned int readCount)
-  : _impl(new ResultBufferImpl(item, readCount))
+  : _impl(new ResultBufferImpl(item, readCount)),
+    _start(0)
 {
 }
 
-ResultBuffer::ResultBuffer(ResultBufferImpl *impl)
-  : _impl(impl)
+ResultBuffer::ResultBuffer(ResultBufferImpl *impl, unsigned start)
+  : _impl(impl),
+    _start(start)
 {
 }
 
 ResultBuffer::ResultBuffer()
-  : _impl(0)
+  : _impl(0),
+    _start(0)
 {
 }
 
@@ -48,7 +53,7 @@ Result ResultBuffer::createResult()
 {
   if(_impl.isNull()) return 0;
 
-  Result result = _impl->createResult();
+  Result result = _impl->createResult(_start);
 
   if(_impl->getMaxReadCount() != ResultBufferImpl::UNLIMITED_COUNT &&
      _impl->incrementReadCount() >= _impl->getMaxReadCount()) {

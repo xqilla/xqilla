@@ -149,7 +149,6 @@ public:
   DistinctValueResult(const FunctionDistinctValues *fdv, const DynamicContext *context);
   ~DistinctValueResult();
   Item::Ptr next(DynamicContext *context);
-  std::string asString(DynamicContext *context, int indent) const;
 private:
   const FunctionDistinctValues *fdv_;
   Result parent_;
@@ -197,11 +196,6 @@ Item::Ptr DistinctValueResult::next(DynamicContext *context)
 
   parent_ = 0;
   return 0;
-}
-
-std::string DistinctValueResult::asString(DynamicContext *context, int indent) const
-{
-  return "<DistinctValueResult/>";
 }
 
 Result FunctionDistinctValues::createResult(DynamicContext* context, int flags) const

@@ -375,8 +375,10 @@ declare %xqilla:inline
 function subsequence($sourceSeq as item()*, $startingLoc as xs:double,
   $length as xs:double) as item()*
 {
-  let $start := round($startingLoc)
-  return subsequence-helper($sourceSeq, $start, $start + round($length))
+  let $s := round($startingLoc)
+  let $l := if($s < 1) then round($length) + $s - 1 else round($length)
+  return
+    take(subsequence-helper($sourceSeq, $s), $l)
 };
 
 (: TBD %xqilla:type("($A*, xs:double) as $A*") - jpcs:)
@@ -387,16 +389,12 @@ function subsequence-helper($seq as item()*, $start as xs:double) as item()*
   else subsequence-helper(tail($seq), $start - 1)
 };
 
-(: TBD %xqilla:type("($A*, xs:double, xs:double, xs:double) as $A*") - jpcs:)
-declare %private (: %xqilla:inline-if-constant("start","end") :)
-function subsequence-helper($seq as item()*, $start as xs:double,
-  $end as xs:double) as item()*
+(: TBD %xqilla:type("($A*, xs:double) as $A*") - jpcs:)
+declare %private
+function take($seq as item()*, $num as xs:double) as item()*
 {
-  if($end le 1) then ()
-  else (
-    if($start le 1) then head($seq) else (),
-    subsequence-helper(tail($seq), $start - 1, $end - 1)
-  )
+  if($num le 0 or empty($seq)) then ()
+  else (head($seq), take(tail($seq), $num - 1))
 };
 
 declare %xqilla:inline

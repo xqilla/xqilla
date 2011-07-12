@@ -30,6 +30,7 @@
 #include <xqilla/ast/XQTreatAs.hpp>
 #include <xqilla/schema/SequenceType.hpp>
 #include <xqilla/exceptions/StaticErrorException.hpp>
+#include <xqilla/runtime/ClosureResult.hpp>
 
 #include <xercesc/util/XMLUniDefs.hpp>
 
@@ -100,7 +101,7 @@ ASTNode *Union::staticTypingImpl(StaticContext *context)
 
 Result Union::createResult(DynamicContext* context, int flags) const
 {
-  return new UnionResult(this, flags);
+  return ClosureResult::create(getStaticAnalysis(), context, new UnionResult(this, flags));
 }
 
 Union::UnionResult::UnionResult(const Union *op, int flags)

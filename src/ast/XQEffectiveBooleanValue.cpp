@@ -66,11 +66,6 @@ ASTNode *XQEffectiveBooleanValue::staticTypingImpl(StaticContext *context)
   return this;
 }
 
-Result XQEffectiveBooleanValue::createResult(DynamicContext* context, int flags) const
-{
-  return new EffectiveBooleanValueResult(this, expr_->createResult(context));
-}
-
 static inline bool getEffectiveBooleanValueInternal(const Item::Ptr &first, const Item::Ptr &second, DynamicContext* context, const LocationInfo *info)
 {
   // If its operand is a singleton value ...
@@ -116,10 +111,11 @@ bool XQEffectiveBooleanValue::get(const Item::Ptr &first, const Item::Ptr &secon
   return getEffectiveBooleanValueInternal(first, second, context, info);
 }
 
-Item::Ptr EffectiveBooleanValueResult::nextOrTail(Result &tail, DynamicContext *context)
+Result XQEffectiveBooleanValue::createResult(DynamicContext* context, int flags) const
 {
   bool result;
-  const Item::Ptr first = parent_->next(context);
+  Result parent = expr_->createResult(context);
+  const Item::Ptr first = parent->next(context);
   if(first.isNull()) {
     result = false;
   }
@@ -127,9 +123,8 @@ Item::Ptr EffectiveBooleanValueResult::nextOrTail(Result &tail, DynamicContext *
     result = true;
   }
   else {
-    result = getEffectiveBooleanValueInternal(first, parent_->next(context), context, this);
+    result = getEffectiveBooleanValueInternal(first, parent->next(context), context, this);
   }
 
-  tail = 0;
-  return context->getItemFactory()->createBoolean(result, context);
+  return (Item::Ptr)context->getItemFactory()->createBoolean(result, context);
 }

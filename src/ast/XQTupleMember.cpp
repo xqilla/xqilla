@@ -142,7 +142,7 @@ protected:
 
 Result XQTupleMember::createResult(DynamicContext *context, int flags) const 
 {
-  return new TupleMemberResult(new ContextItemResult(this), this);
+  return new TupleMemberResult(XQContextItem::result(context, this), this);
 }
 
 Result XQTupleMember::iterateResult(const Result &contextItems, DynamicContext* context) const

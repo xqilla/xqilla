@@ -96,54 +96,50 @@ ASTNode *Except::staticTypingImpl(StaticContext *context)
   return this;
 }
 
+class ExceptResult : public ResultImpl
+{
+public:
+  ExceptResult(const Except *op, DynamicContext *context)
+    : ResultImpl(op),
+      _result(op->getArgument(0)->createResult(context)),
+      _excpt(op->getArgument(1)->createResult(context))
+  {
+  }
+
+  Item::Ptr next(DynamicContext *context)
+  {
+    Item::Ptr item = _result->next(context);
+    while(item.notNull()) {    
+      bool found = false;
+      Result except_result(_excpt.createResult());
+      Item::Ptr except_item;
+      while((except_item = except_result->next(context)).notNull()) {
+        if(((Node*)item.get())->equals((Node*)except_item.get())) {
+          found = true;
+          break;
+        }
+      }
+
+      if(!found) break;
+
+      item = _result->next(context);
+    }
+
+    if(item.isNull()) {
+      _result = 0;
+      _excpt = 0;
+    }
+
+    return item;
+  }
+
+private:
+  Result _result;
+  ResultBuffer _excpt;
+};
+
 Result Except::createResult(DynamicContext* context, int flags) const
 {
-  return new ExceptResult(this, flags);
-}
-
-Except::ExceptResult::ExceptResult(const Except *op, int flags)
-  : ResultImpl(op),
-    _op(op),
-    _flags(flags),
-    _toDo(true),
-    _result(0),
-    _excpt(0)
-{
-}
-
-Item::Ptr Except::ExceptResult::next(DynamicContext *context)
-{
-  if(_toDo) {
-    _toDo = false;
-    _result = _op->getArgument(0)->createResult(context, _flags);
-    _excpt = _op->getArgument(1)->createResult(context);
-  }
-
-  Item::Ptr item = _result->next(context);
-  while(item != NULLRCP) {    
-
-    bool found = false;
-    Result except_result(_excpt.createResult());
-    Item::Ptr except_item;
-    while((except_item = except_result->next(context)) != NULLRCP) {
-      if(((Node*)item.get())->equals((Node*)except_item.get())) {
-        found = true;
-        break;
-      }
-    }
-
-    if(!found) {
-      break;
-    }
-
-    item = _result->next(context);
-  }
-
-  if(item == NULLRCP) {
-    _result = 0;
-    _excpt = 0;
-  }
-
-  return item;
+  return new ExceptResult(this, context);
 }
 

@@ -46,11 +46,6 @@ XQCastAs::XQCastAs(ASTNode* expr, SequenceType* exprType, XPath2MemoryManager* m
 {
 }
 
-Result XQCastAs::createResult(DynamicContext* context, int flags) const
-{
-  return new CastAsResult(this);
-}
-
 ASTNode* XQCastAs::staticResolution(StaticContext *context)
 {
   XPath2MemoryManager *mm = context->getMemoryManager();
@@ -63,7 +58,7 @@ ASTNode* XQCastAs::staticResolution(StaticContext *context)
        (XPath2Utils::equals(itemType->getTypeURI(), SchemaSymbols::fgURI_SCHEMAFORSCHEMA) &&
         (XPath2Utils::equals(itemType->getTypeName(), XMLUni::fgNotationString) ||
          XPath2Utils::equals(itemType->getTypeName(), AnyAtomicType::fgDT_ANYATOMICTYPE))))
-      XQThrow(TypeErrorException,X("XQCastAs::CastAsResult::getSingleResult"),
+      XQThrow(TypeErrorException,X("XQCastAs::staticResolution"),
               X("The target type of a cast expression must be an atomic type that is in the in-scope schema types and is not xs:NOTATION or xdt:anyAtomicType [err:XPST0080]"));
   }
 
@@ -187,18 +182,11 @@ AnyAtomicType::Ptr XQCastAs::cast(const XMLCh *value, DynamicContext *context) c
   }
 }
 
-
-XQCastAs::CastAsResult::CastAsResult(const XQCastAs *di)
-  : SingleResult(di),
-    _di(di)
-{
-}
-
-Item::Ptr XQCastAs::CastAsResult::getSingleResult(DynamicContext *context) const
+Result XQCastAs::createResult(DynamicContext* context, int flags) const
 {
   // The semantics of the cast expression are as follows:
   //    1. Atomization is performed on the input expression.
-  Result toBeCasted(_di->getExpression()->createResult(context));
+  Result toBeCasted(getExpression()->createResult(context));
 
   const Item::Ptr first = toBeCasted->next(context);
 
@@ -206,8 +194,8 @@ Item::Ptr XQCastAs::CastAsResult::getSingleResult(DynamicContext *context) const
     //    3. If the result of atomization is an empty sequence:
     //       1. If ? is specified after the target type, the result of the cast expression is an empty sequence.
     //       2. If ? is not specified after the target type, a type error is raised [err:XPTY0004].
-    if(_di->getSequenceType()->getOccurrenceIndicator() == SequenceType::EXACTLY_ONE) {
-      XQThrow(TypeErrorException,X("XQCastAs::CastAsResult::getSingleResult"),
+    if(getSequenceType()->getOccurrenceIndicator() == SequenceType::EXACTLY_ONE) {
+      XQThrow(TypeErrorException,X("XQCastAs::createResult"),
               X("The input to a non-optional cast as expression is an empty sequence [err:XPTY0004]"));
     }
     else {
@@ -219,12 +207,11 @@ Item::Ptr XQCastAs::CastAsResult::getSingleResult(DynamicContext *context) const
 
   //    2. If the result of atomization is a sequence of more than one atomic value, a type error is raised.[err:XPTY0004]
   if(second.notNull()) {
-    XQThrow(TypeErrorException,X("XQCastAs::CastAsResult::getSingleResult"),
+    XQThrow(TypeErrorException,X("XQCastAs::createResult"),
             X("The input to a cast as expression is more than one atomic value [err:XPTY0004]"));
   }
 
   //    4. If the result of atomization is a single atomic value, the result of the cast expression depends on the input type and the target type.
   //       The normative definition of these rules is given in [XQuery 1.0 and XPath 2.0 Functions and Operators].
-  return _di->cast((const AnyAtomicType*)first.get(), context);
+  return (Item::Ptr)cast((const AnyAtomicType*)first.get(), context);
 }
-

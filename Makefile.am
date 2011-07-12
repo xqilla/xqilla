@@ -323,7 +323,6 @@ src/mapm/mapmutil.c \
 src/mapm/mapmutl2.c \
 src/mapm/README \
 src/axis/NodeTest.cpp \
-src/axis/SelfAxis.cpp \
 src/operators/And.cpp \
 src/operators/ArithmeticOperator.cpp \
 src/operators/ComparisonOperator.cpp \
@@ -355,13 +354,11 @@ src/schema/FaxppDocumentCacheImpl.hpp \
 src/schema/FaxppDocumentCacheImpl.cpp \
 src/runtime/ClosureResult.cpp \
 src/runtime/EmptyResult.cpp \
-src/runtime/LazySequenceResult.cpp \
 src/runtime/ResultBuffer.cpp \
 src/runtime/ResultBufferImpl.cpp \
 src/runtime/Result.cpp \
 src/runtime/ResultImpl.cpp \
 src/runtime/SequenceResult.cpp \
-src/runtime/SingleResult.cpp \
 src/runtime/Sequence.cpp \
 src/update/FunctionPut.cpp \
 src/update/PendingUpdateList.cpp \

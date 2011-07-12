@@ -137,7 +137,7 @@ Result XQPartialApply::createResult(DynamicContext *context, int flags) const
   VectorOfASTNodes::iterator i;
   for(i = args_->begin(); i != args_->end(); ++i) {
     if(*i)
-      function = function->partialApply(ClosureResult::create(*i, context), argNum, context, this);
+      function = function->partialApply((*i)->createResult(context), argNum, context, this);
     else ++argNum;
   }
 

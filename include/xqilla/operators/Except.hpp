@@ -45,20 +45,6 @@ public:
   Result createResult(DynamicContext* context, int flags=0) const;
 
 private:
-  class ExceptResult : public ResultImpl
-  {
-  public:
-    ExceptResult(const Except *op, int flags);
-
-    Item::Ptr next(DynamicContext *context);
-  private:
-    const Except *_op;
-    unsigned int _flags;
-    bool _toDo;
-    Result _result;
-    ResultBuffer _excpt;
-  };
-
   bool sortAdded_;
 };
 

@@ -23,7 +23,6 @@
 #include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/ast/ASTNodeImpl.hpp>
-#include <xqilla/runtime/SingleResult.hpp>
 
 class SequenceType;
 
@@ -42,17 +41,6 @@ public:
   void setExpression(ASTNode *item);
 
 protected:
-  class CastableAsResult : public SingleResult
-  {
-  public:
-    CastableAsResult(const XQCastableAs *di);
-
-    Item::Ptr getSingleResult(DynamicContext *context) const;
-
-  private:
-    const XQCastableAs *_di;
-  };
-
   ASTNode* _expr;
   SequenceType* _exprType;
 };

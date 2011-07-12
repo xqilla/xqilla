@@ -37,27 +37,19 @@ EventGenerator::Ptr ASTNodeEventGenerator::generateEvents(EventHandler *events, 
   return ast_->generateEvents(events, context, preserveNS_, preserveType_);
 }
 
-GenerateEventsResult::GenerateEventsResult(const ASTNode *ast, const QueryPathNode *projection)
-  : ResultImpl(ast),
-    ast_(ast),
-    projection_(projection)
-{
-}
-
-Item::Ptr GenerateEventsResult::nextOrTail(Result &tail, DynamicContext *context)
+Result EventGenerator::createResult(const ASTNode *ast, const QueryPathNode *projection,
+  DynamicContext *context)
 {
   AutoDelete<SequenceBuilder> builder(context->createSequenceBuilder());
-  if(context->getProjection() && projection_ != 0) {
-    QueryPathTreeFilter qptf(projection_, builder.get());
-    ast_->generateAndTailCall(&qptf, context, true, true);
+  if(context->getProjection() && projection != 0) {
+    QueryPathTreeFilter qptf(projection, builder.get());
+    ast->generateAndTailCall(&qptf, context, true, true);
     qptf.endEvent();
   }
   else {
-    ast_->generateAndTailCall(builder.get(), context, true, true);
+    ast->generateAndTailCall(builder.get(), context, true, true);
     builder->endEvent();
   }
 
-  tail = builder->getSequence();
-  return 0;
+  return builder->getSequence();
 }
-

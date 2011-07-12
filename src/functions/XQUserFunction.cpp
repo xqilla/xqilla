@@ -645,15 +645,6 @@ Result XQUserFunctionInstance::getArgument(size_t index, DynamicContext *context
   return _args[index]->createResult(context);
 }
 
-Result XQUserFunctionInstance::createResult(DynamicContext* context, int flags) const
-{
-  if(funcDef_->body_ != NULL) {
-    return new FunctionEvaluatorResult(this, context);
-  } else {
-    return new ExternalFunctionEvaluatorResult(this);
-  }
-}
-
 ASTNode* XQUserFunctionInstance::staticResolution(StaticContext* context)
 {
   XPath2MemoryManager *mm = context->getMemoryManager();
@@ -725,9 +716,7 @@ void XQUserFunctionInstance::evaluateArguments(VarStoreImpl &scope, DynamicConte
     for(ArgumentSpecs::const_iterator defIt = funcDef_->signature_->argSpecs->begin();
         defIt != funcDef_->signature_->argSpecs->end() && argIt != _args.end(); ++defIt, ++argIt) {
       if((*defIt)->isUsed()) {
-        // TBD ClosureResult doesn't save RegexGroupStore - jpcs
-        // TBD variable use count - jpcs
-        scope.setVar((*defIt)->getURI(), (*defIt)->getName(), ClosureResult::create(*argIt, context));
+        scope.setVar((*defIt)->getURI(), (*defIt)->getName(), (*argIt)->createResult(context));
       }
       else {
         // Skip evaluation of the parameter, since it isn't used, and debugging isn't enabled
@@ -784,75 +773,27 @@ PendingUpdateList XQUserFunctionInstance::createUpdateList(DynamicContext *conte
   return result;
 }
 
-XQUserFunctionInstance::FunctionEvaluatorResult::FunctionEvaluatorResult(const XQUserFunctionInstance *di, DynamicContext *context)
-  : ResultImpl(di),
-    _di(di)
-{
-}
-
-Item::Ptr XQUserFunctionInstance::FunctionEvaluatorResult::nextOrTail(Result &tail, DynamicContext *context)
+Result XQUserFunctionInstance::createResult(DynamicContext* context, int flags) const
 {
   context->testInterrupt();
 
-  VarStoreImpl scope(context->getMemoryManager(), _di->getFunctionDefinition()->isGlobal() ?
-                     context->getGlobalVariableStore() : context->getVariableStore());
-  _di->evaluateArguments(scope, context);
+  if(funcDef_->body_ != NULL) {
+    VarStoreImpl scope(context->getMemoryManager(), funcDef_->isGlobal() ?
+                       context->getGlobalVariableStore() : context->getVariableStore());
+    evaluateArguments(scope, context);
 
-  AutoRegexGroupStoreReset reset3(context);
-  if(!_di->getFunctionDefinition()->isTemplate()) context->setRegexGroupStore(0);
+    AutoRegexGroupStoreReset reset3(context);
+    if(!funcDef_->isTemplate()) context->setRegexGroupStore(0);
 
-  AutoDocumentCacheReset reset(context);
-  DocumentCache* docCache = _di->getFunctionDefinition()->getModuleDocumentCache();
-  if(docCache)
-    context->setDocumentCache(docCache);
+    AutoDocumentCacheReset reset(context);
+    DocumentCache* docCache = funcDef_->getModuleDocumentCache();
+    if(docCache) context->setDocumentCache(docCache);
 
-  tail = ClosureResult::create(_di->getFunctionDefinition()->getFunctionBody(), context, &scope);
-  return 0;
-
-  // TBD Solve this problem again - jpcs
-//   // if we had to switch document cache, check that the returned types are known also in the original context; if not, upgrade them to the base type
-//   if(docCache!=NULL)
-//   {
-//     if(item!=NULLRCP && !reset.oldDC->isTypeDefined(item->getTypeURI(), item->getTypeName()))
-//     {
-//       if(item->isNode())
-//       {
-//         Node::Ptr node = item;
-//         // TODO: change the annotation in the DOM elements and attributes
-//       }
-//       else if(item->isAtomicValue())
-//       {
-//         AnyAtomicType::Ptr atom = item;
-//         const XMLCh* uri = atom->getTypeURI(), *name = atom->getTypeName();
-//         while(!reset.oldDC->isTypeDefined(uri, name))
-//         {
-//             DatatypeValidator* pDV = docCache->getDatatypeValidator(uri, name);
-//             assert(pDV!=NULL);
-//             DatatypeValidator* pBaseDV = pDV->getBaseValidator();
-//             if(pBaseDV==NULL)
-//                 break;
-//             uri = pBaseDV->getTypeUri();
-//             name = pBaseDV->getTypeLocalName();
-//         }
-//         item = context->getItemFactory()->createDerivedFromAtomicType(uri, name, atom->asString(context), context);
-//       }
-//     }
-//   }
-//   return item;
-}
-
-XQUserFunctionInstance::ExternalFunctionEvaluatorResult::ExternalFunctionEvaluatorResult(const XQUserFunctionInstance *di)
-  : ResultImpl(di),
-    _di(di)
-{
-}
-
-Item::Ptr XQUserFunctionInstance::ExternalFunctionEvaluatorResult::nextOrTail(Result &tail, DynamicContext *context)
-{
-  context->testInterrupt();
-
-  tail = _di->getFunctionDefinition()->getExternalFunction()->execute(_di, context);
-  return 0;
+    AutoVariableStoreReset vsReset(context, &scope);
+    return ClosureResult::create(funcDef_->getFunctionBody(), context);
+  } else {
+    return funcDef_->getExternalFunction()->execute(this, context);
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

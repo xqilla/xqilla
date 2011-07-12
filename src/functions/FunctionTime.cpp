@@ -120,26 +120,18 @@ private:
 class FunctionTimeResult : public ResultImpl
 {
 public:
-  FunctionTimeResult(const FunctionTime *ast)
+  FunctionTimeResult(const FunctionTime *ast, DynamicContext *context)
     : ResultImpl(ast),
-      ast_(ast),
-      timer_(0),
-      result_(0),
-      toDo_(true)
+      timer_(new Timer(ast->getArguments()[1]->createResult(context)->
+          next(context)->asString(context), context, ast)),
+      result_(0)
   {
+    TimerGuard tGuard(timer_);
+    result_ = ast->getArguments()[0]->createResult(context);
   }
 
   virtual Item::Ptr next(DynamicContext *context)
   {
-    if(toDo_) {
-      toDo_ = false;
-
-      timer_.set(new Timer(ast_->getArguments()[1]->createResult(context)->
-                           next(context)->asString(context), context, ast_));
-
-      result_ = ast_->getArguments()[0]->createResult(context);
-    }
-
     TimerGuard tGuard(timer_);
     return result_->next(context);
   }
@@ -147,15 +139,13 @@ public:
   virtual std::string asString(DynamicContext *context, int indent) const { return ""; }
 
 private:
-  const FunctionTime *ast_;
   AutoDelete<Timer> timer_;
   Result result_;
-  bool toDo_;
 };
 
 Result FunctionTime::createResult(DynamicContext* context, int flags) const
 {
-  return new FunctionTimeResult(this);
+  return new FunctionTimeResult(this, context);
 }
 
 EventGenerator::Ptr FunctionTime::generateEvents(EventHandler *events, DynamicContext *context,

@@ -24,6 +24,7 @@
 #include <xqilla/items/Node.hpp>
 #include <xqilla/exceptions/StaticErrorException.hpp>
 #include <xqilla/exceptions/XPath2TypeMatchException.hpp>
+#include <xqilla/runtime/Sequence.hpp>
 
 XERCES_CPP_NAMESPACE_USE
 

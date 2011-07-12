@@ -83,18 +83,6 @@ public:
   const Cases *getCases() const { return cases_; }
 
 private:
-  class TypeswitchResult : public ResultImpl
-  {
-  public:
-    TypeswitchResult(const XQTypeswitch *di);
-
-    Item::Ptr nextOrTail(Result &tail, DynamicContext *context);
-    std::string asString(DynamicContext *context, int indent) const;
-
-  private:
-    const XQTypeswitch *_di;
-  };
-
   ASTNode *expr_;
   Cases *cases_;
   Case *default_;

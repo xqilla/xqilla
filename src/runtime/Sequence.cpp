@@ -66,6 +66,11 @@ Sequence::Sequence(size_t n, MemoryManager* memMgr)
     _itemList.reserve(n);
 }
 
+Sequence::Sequence(iterator start, iterator end, MemoryManager* memMgr)
+  : _itemList(start, end, XQillaAllocator<Item::Ptr>(memMgr))
+{
+}
+
 Sequence & Sequence::operator=(const Sequence & s) {
 	if( this != &s ) { // no self-assignment
 	  _itemList = s._itemList;

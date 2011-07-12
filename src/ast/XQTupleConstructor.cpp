@@ -21,6 +21,7 @@
 #include <xqilla/context/ContextHelpers.hpp>
 #include <xqilla/optimizer/ASTVisitor.hpp>
 #include <xqilla/utils/XPath2Utils.hpp>
+#include <xqilla/runtime/ClosureResult.hpp>
 
 XQTupleConstructor::XQTupleConstructor(TupleNode *parent, XPath2MemoryManager *mm)
   : ASTNodeImpl(TUPLE_CONSTRUCTOR, mm),
@@ -66,5 +67,6 @@ private:
 
 Result XQTupleConstructor::createResult(DynamicContext* context, int flags) const
 {
-  return new TupleConstructorResult(this, parent_->createResult(context));
+  return ClosureResult::create(getStaticAnalysis(), context,
+    new TupleConstructorResult(this, parent_->createResult(context)));
 }

@@ -21,7 +21,6 @@
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/context/ContextHelpers.hpp>
 #include <xqilla/functions/XQUserFunction.hpp>
-#include <xqilla/runtime/SingleResult.hpp>
 #include <xqilla/context/VariableTypeStore.hpp>
 #include <xqilla/utils/XPath2Utils.hpp>
 #include <xqilla/functions/FunctionSignature.hpp>

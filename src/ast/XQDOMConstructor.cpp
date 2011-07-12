@@ -50,7 +50,7 @@ XQDOMConstructor::XQDOMConstructor(XPath2MemoryManager* mm)
 
 Result XQDOMConstructor::createResult(DynamicContext* context, int flags) const
 {
-  return new GenerateEventsResult(this, queryPathTree_);
+  return EventGenerator::createResult(this, queryPathTree_, context);
 }
 
 bool XQDOMConstructor::getStringValue(const VectorOfASTNodes* m_children, XMLBuffer &value, DynamicContext *context)
@@ -123,7 +123,7 @@ ASTNode *XQContentSequence::staticTypingImpl(StaticContext *context)
 
 Result XQContentSequence::createResult(DynamicContext* context, int flags) const
 {
-  return new GenerateEventsResult(this, 0);
+  return EventGenerator::createResult(this, 0, context);
 }
 
 EventGenerator::Ptr XQContentSequence::generateEvents(EventHandler *events, DynamicContext *context,
@@ -234,35 +234,30 @@ ASTNode *XQNameExpression::staticTypingImpl(StaticContext *context)
 
 Result XQNameExpression::createResult(DynamicContext* context, int flags) const
 {
-  return new NameExpressionResult(this);
-}
+  AnyAtomicType::Ptr itemName = getExpression()->createResult(context)->next(context);
 
-Item::Ptr XQNameExpression::NameExpressionResult::getSingleResult(DynamicContext *context) const
-{
-    AnyAtomicType::Ptr itemName = ast_->getExpression()->createResult(context)->next(context);
-
-    switch(itemName->getPrimitiveTypeIndex()) {
-    case AnyAtomicType::QNAME:
-      return itemName;
-    case AnyAtomicType::STRING:
-    case AnyAtomicType::UNTYPED_ATOMIC:
-      try {
-        return context->getItemFactory()->createDerivedFromAtomicType(AnyAtomicType::QNAME, itemName->asString(context), context);
-      }
-      catch(XQException &ex) {
-        XQThrow(ASTException,X("XQNameExpression::NameExpressionResult::getSingleResult"),
-                X("The name expression cannot be converted to a xs:QName [err:XQDY0074]"));
-      }
-    default:
-      break;
+  switch(itemName->getPrimitiveTypeIndex()) {
+  case AnyAtomicType::QNAME:
+    return (Item::Ptr)itemName;
+  case AnyAtomicType::STRING:
+  case AnyAtomicType::UNTYPED_ATOMIC:
+    try {
+      return (Item::Ptr)context->getItemFactory()->createDerivedFromAtomicType(AnyAtomicType::QNAME, itemName->asString(context), context);
     }
+    catch(XQException &ex) {
+      XQThrow(ASTException,X("XQNameExpression::NameExpressionResult::createResult"),
+              X("The name expression cannot be converted to a xs:QName [err:XQDY0074]"));
+    }
+  default:
+    break;
+  }
 
-    XMLBuffer buf;
-    buf.set(X("The name expression must be a single xs:QName, xs:string or xs:untypedAtomic"));
-    buf.append(X(" - found item of type "));
-    itemName->typeToBuffer(context, buf);
-    buf.append(X(" [err:XPTY0004]"));
-    XQThrow(XPath2TypeMatchException, X("XQNameExpression::NameExpressionResult::getSingleResult"), buf.getRawBuffer());
+  XMLBuffer buf;
+  buf.set(X("The name expression must be a single xs:QName, xs:string or xs:untypedAtomic"));
+  buf.append(X(" - found item of type "));
+  itemName->typeToBuffer(context, buf);
+  buf.append(X(" [err:XPTY0004]"));
+  XQThrow(XPath2TypeMatchException, X("XQNameExpression::NameExpressionResult::createResult"), buf.getRawBuffer());
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -314,14 +309,8 @@ ASTNode *XQSimpleContent::staticTypingImpl(StaticContext *context)
 
 Result XQSimpleContent::createResult(DynamicContext* context, int flags) const
 {
-  return new SimpleContentResult(this);
-}
-
-Item::Ptr XQSimpleContent::SimpleContentResult::getSingleResult(DynamicContext *context) const
-{
   // TBD separator - jpcs
   XMLBuffer value;
-  XQDOMConstructor::getStringValue(ast_->getChildren(), value, context);
-  return context->getItemFactory()->createString(value.getRawBuffer(), context);
+  XQDOMConstructor::getStringValue(getChildren(), value, context);
+  return (Item::Ptr)context->getItemFactory()->createString(value.getRawBuffer(), context);
 }
-

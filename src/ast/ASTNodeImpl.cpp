@@ -43,6 +43,7 @@
 #include <xqilla/optimizer/ASTReleaser.hpp>
 #include <xqilla/optimizer/ASTCopier.hpp>
 #include <xqilla/optimizer/StaticTyper.hpp>
+#include <xqilla/runtime/ClosureResult.hpp>
 
 ASTNodeImpl::ASTNodeImpl(whichType type, XPath2MemoryManager* memMgr)
   : _src(memMgr),
@@ -112,9 +113,10 @@ Result ASTNodeImpl::iterateResult(const Result &contextItems, DynamicContext* co
   if(_src.isContextSizeUsed()) {
     // We need the context size, so convert contextItems to a Sequence to work it out
     Sequence seq(((ResultImpl*)contextItems.get())->toSequence(context));
-    return new NavStepResult(new SequenceResult(this, seq), this, seq.getLength());
+    return ClosureResult::create(getStaticAnalysis(), context,
+      new NavStepResult(new SequenceResult(this, seq), this, seq.getLength()));
   }
-  return new NavStepResult(contextItems, this, 0);
+  return ClosureResult::create(getStaticAnalysis(), context, new NavStepResult(contextItems, this, 0));
 }
 
 EventGenerator::Ptr ASTNodeImpl::generateEvents(EventHandler *events, DynamicContext *context,

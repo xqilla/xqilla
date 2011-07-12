@@ -86,25 +86,13 @@ ASTNode *OrderComparison::staticTypingImpl(StaticContext *context)
 
 Result OrderComparison::createResult(DynamicContext* context, int flags) const
 {
-  return new OrderComparisonResult(this);
-}
-
-OrderComparison::OrderComparisonResult::OrderComparisonResult(const OrderComparison *op)
-  : SingleResult(op),
-    _op(op)
-{
-}
-
-Item::Ptr OrderComparison::OrderComparisonResult::getSingleResult(DynamicContext *context) const
-{
-  Item::Ptr arg1 = _op->getArgument(0)->createResult(context)->next(context);
+  Item::Ptr arg1 = getArgument(0)->createResult(context)->next(context);
   if(arg1.isNull()) return 0;
-  Item::Ptr arg2 = _op->getArgument(1)->createResult(context)->next(context);
+  Item::Ptr arg2 = getArgument(1)->createResult(context)->next(context);
   if(arg2.isNull()) return 0;
   
-	if(_op->getTestBefore())
-    return context->getItemFactory()->createBoolean(((Node*)arg1.get())->lessThan((Node*)arg2.get(), context), context);
+	if(getTestBefore())
+    return (Item::Ptr)context->getItemFactory()->createBoolean(((Node*)arg1.get())->lessThan((Node*)arg2.get(), context), context);
 
-  return context->getItemFactory()->createBoolean(((Node*)arg2.get())->lessThan((Node*)arg1.get(), context), context);
+  return (Item::Ptr)context->getItemFactory()->createBoolean(((Node*)arg2.get())->lessThan((Node*)arg1.get(), context), context);
 }
-

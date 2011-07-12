@@ -21,7 +21,6 @@
 #define _ARITHMETICOPERATOR_HPP
 
 #include <xqilla/ast/XQOperator.hpp>
-#include <xqilla/runtime/SingleResult.hpp>
 
 class AnyAtomicType;
 

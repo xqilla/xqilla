@@ -118,38 +118,16 @@ ASTNode *XQFunctionDeref::staticTypingImpl(StaticContext *context)
   return this;
 }
 
-class FunctionDerefResult : public ResultImpl
-{
-public:
-  FunctionDerefResult(const XQFunctionDeref *ast)
-    : ResultImpl(ast),
-      ast_(ast)
-  {
-  }
-
-  virtual Item::Ptr nextOrTail(Result &tail, DynamicContext *context)
-  {
-    FunctionRef::Ptr func = (FunctionRef*)ast_->getExpression()->createResult(context)->next(context).get();
-    if(func.isNull()) {
-      tail = 0;
-      return 0;
-    }
-
-    VectorOfResults args;
-    if(ast_->getArguments()) {
-      for(VectorOfASTNodes::iterator i = ast_->getArguments()->begin(); i != ast_->getArguments()->end(); ++i) {
-        args.push_back(ClosureResult::create(*i, context));
-      }
-    }
-    tail = func->execute(args, context, this);
-    return 0;
-  }
-
-private:
-  const XQFunctionDeref *ast_;
-};
-
 Result XQFunctionDeref::createResult(DynamicContext *context, int flags) const
 {
-  return new FunctionDerefResult(this);
+  FunctionRef::Ptr func = (FunctionRef*)getExpression()->createResult(context)->next(context).get();
+  if(func.isNull()) return 0;
+
+  VectorOfResults args;
+  if(getArguments()) {
+    for(VectorOfASTNodes::iterator i = getArguments()->begin(); i != getArguments()->end(); ++i) {
+      args.push_back((*i)->createResult(context));
+    }
+  }
+  return func->execute(args, context, this);
 }

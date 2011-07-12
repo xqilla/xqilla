@@ -27,6 +27,7 @@
 #include <xqilla/ast/XQTreatAs.hpp>
 #include <xqilla/schema/SequenceType.hpp>
 #include <xqilla/exceptions/StaticErrorException.hpp>
+#include <xqilla/runtime/Sequence.hpp>
 
 #include <xercesc/util/XMLUniDefs.hpp>
 
@@ -93,41 +94,27 @@ ASTNode *Intersect::staticTypingImpl(StaticContext *context)
   return this;
 }
 
-class IntersectResult : public ResultImpl
-{
-public:
-  IntersectResult(const Intersect *ast) : ResultImpl(ast), ast_(ast) {}
-
-  virtual Item::Ptr nextOrTail(Result &tail, DynamicContext *context)
-  {
-    Sequence param1 = ast_->getArgument(0)->createResult(context)->toSequence(context);
-    Sequence param2 = ast_->getArgument(1)->createResult(context)->toSequence(context);
-
-    XPath2MemoryManager* memMgr = context->getMemoryManager();
-    Sequence result(param1.getLength(),memMgr);
-
-    Sequence::const_iterator p1It = param1.begin();
-    Sequence::const_iterator p2It;
-    Sequence::const_iterator end1 = param1.end();
-    Sequence::const_iterator end2 = param2.end();
-
-    for(;p1It != end1; ++p1It) {
-      for(p2It = param2.begin();p2It != end2; ++p2It) {
-        if(((Node*)p1It->get())->equals((Node*)p2It->get())) {
-          result.addItem(*p1It);
-        }
-      }
-    }
-
-    tail = result;
-    return 0;
-  }
-
-private:
-  const Intersect *ast_;
-};
-
 Result Intersect::createResult(DynamicContext* context, int flags) const
 {
-  return new IntersectResult(this);
+  // TBD Improve this implementation - jpcs
+  Sequence param1 = getArgument(0)->createResult(context)->toSequence(context);
+  Sequence param2 = getArgument(1)->createResult(context)->toSequence(context);
+
+  XPath2MemoryManager* memMgr = context->getMemoryManager();
+  Sequence result(param1.getLength(),memMgr);
+
+  Sequence::const_iterator p1It = param1.begin();
+  Sequence::const_iterator p2It;
+  Sequence::const_iterator end1 = param1.end();
+  Sequence::const_iterator end2 = param2.end();
+
+  for(;p1It != end1; ++p1It) {
+    for(p2It = param2.begin();p2It != end2; ++p2It) {
+      if(((Node*)p1It->get())->equals((Node*)p2It->get())) {
+        result.addItem(*p1It);
+      }
+    }
+  }
+
+  return result;
 }

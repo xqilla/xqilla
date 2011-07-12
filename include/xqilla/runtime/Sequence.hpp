@@ -54,6 +54,8 @@ public:
   /// construct and reserve space for n elements
   Sequence(size_t n, XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* memMgr =
            XERCES_CPP_NAMESPACE_QUALIFIER XMLPlatformUtils::fgMemoryManager);
+  Sequence(iterator start, iterator end, XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* memMgr =
+           XERCES_CPP_NAMESPACE_QUALIFIER XMLPlatformUtils::fgMemoryManager);
   // copy constructor
   Sequence(const Sequence&, XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* memMgr);
   // copy constructor

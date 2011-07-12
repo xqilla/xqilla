@@ -39,7 +39,12 @@ subdir = include
 DIST_COMMON = $(nobase_include_HEADERS) $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
-am__aclocal_m4_deps = $(top_srcdir)/configure.in
+am__aclocal_m4_deps = $(top_srcdir)/autotools/m4/libtool.m4 \
+	$(top_srcdir)/autotools/m4/ltoptions.m4 \
+	$(top_srcdir)/autotools/m4/ltsugar.m4 \
+	$(top_srcdir)/autotools/m4/ltversion.m4 \
+	$(top_srcdir)/autotools/m4/lt~obsolete.m4 \
+	$(top_srcdir)/configure.in
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 mkinstalldirs = $(SHELL) $(top_srcdir)/autotools/mkinstalldirs
@@ -133,6 +138,7 @@ PACKAGE_BUGREPORT = @PACKAGE_BUGREPORT@
 PACKAGE_NAME = @PACKAGE_NAME@
 PACKAGE_STRING = @PACKAGE_STRING@
 PACKAGE_TARNAME = @PACKAGE_TARNAME@
+PACKAGE_URL = @PACKAGE_URL@
 PACKAGE_VERSION = @PACKAGE_VERSION@
 PATH_SEPARATOR = @PATH_SEPARATOR@
 RANLIB = @RANLIB@
@@ -312,7 +318,6 @@ xqilla/fulltext/FTScope.hpp \
 xqilla/fulltext/FTContent.hpp \
 xqilla/fulltext/FTWindow.hpp \
 xqilla/axis/NodeTest.hpp \
-xqilla/axis/SelfAxis.hpp \
 xqilla/context/ContextHelpers.hpp \
 xqilla/context/DynamicContext.hpp \
 xqilla/context/StaticContext.hpp \
@@ -512,9 +517,7 @@ xqilla/runtime/ResultBuffer.hpp \
 xqilla/runtime/ResultBufferImpl.hpp \
 xqilla/runtime/Result.hpp \
 xqilla/runtime/ResultImpl.hpp \
-xqilla/runtime/SingleResult.hpp \
 xqilla/runtime/SequenceResult.hpp \
-xqilla/runtime/LazySequenceResult.hpp \
 xqilla/runtime/EmptyResult.hpp \
 xqilla/schema/DocumentCache.hpp \
 xqilla/schema/SequenceType.hpp \
@@ -575,9 +578,9 @@ $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__confi
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu include/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign include/Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --gnu include/Makefile
+	  $(AUTOMAKE) --foreign include/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \

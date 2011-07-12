@@ -21,7 +21,6 @@
 #define XQDOMCONSTRUCTOR_HPP
 
 #include <xqilla/ast/ASTNodeImpl.hpp>
-#include <xqilla/runtime/SingleResult.hpp>
 
 #include <xercesc/framework/XMLBuffer.hpp>
 
@@ -106,20 +105,6 @@ public:
   void setExpression(ASTNode *expr) { expr_ = expr; }
 
 private:
-  class NameExpressionResult : public SingleResult
-  {
-  public:
-    NameExpressionResult(const XQNameExpression *ast)
-      : SingleResult(ast), ast_(ast) {}
-
-    Item::Ptr getSingleResult(DynamicContext *context) const;
-    std::string asString(DynamicContext *context, int indent) const
-    { return ""; }
-
-  private:
-    const XQNameExpression *ast_;
-  };
-
   ASTNode *expr_;
 };
 
@@ -135,20 +120,6 @@ public:
   const VectorOfASTNodes *getChildren() const { return children_; }
 
 private:
-  class SimpleContentResult : public SingleResult
-  {
-  public:
-    SimpleContentResult(const XQSimpleContent *ast)
-      : SingleResult(ast), ast_(ast) {}
-
-    Item::Ptr getSingleResult(DynamicContext *context) const;
-    std::string asString(DynamicContext *context, int indent) const
-    { return ""; }
-
-  private:
-    const XQSimpleContent *ast_;
-  };
-
   VectorOfASTNodes *children_;
 };
 

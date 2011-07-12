@@ -79,22 +79,10 @@ ASTNode *NodeComparison::staticTypingImpl(StaticContext *context)
 
 Result NodeComparison::createResult(DynamicContext* context, int flags) const
 {
-  return new NodeComparisonResult(this);
-}
-
-NodeComparison::NodeComparisonResult::NodeComparisonResult(const NodeComparison *op)
-  : SingleResult(op),
-    _op(op)
-{
-}
-
-Item::Ptr NodeComparison::NodeComparisonResult::getSingleResult(DynamicContext *context) const
-{
-  Item::Ptr arg1 = _op->getArgument(0)->createResult(context)->next(context);
+  Item::Ptr arg1 = getArgument(0)->createResult(context)->next(context);
   if(arg1.isNull()) return 0;
-  Item::Ptr arg2 = _op->getArgument(1)->createResult(context)->next(context);
+  Item::Ptr arg2 = getArgument(1)->createResult(context)->next(context);
   if(arg2.isNull()) return 0;
   
-	return context->getItemFactory()->createBoolean(((Node*)arg1.get())->equals((Node*)arg2.get()), context);
+	return (Item::Ptr)context->getItemFactory()->createBoolean(((Node*)arg1.get())->equals((Node*)arg2.get()), context);
 }
-

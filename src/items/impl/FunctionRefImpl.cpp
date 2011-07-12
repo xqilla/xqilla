@@ -129,7 +129,8 @@ Result FunctionRefImpl::execute(const VectorOfResults &args, DynamicContext *con
   }
 
   FunctionRefScope scope(this, args, context);
-  return ClosureResult::create(instance_, context, &scope);
+  AutoVariableStoreReset vsReset(context, &scope);
+  return instance_->createResult(context);
 }
 
 ATQNameOrDerived::Ptr FunctionRefImpl::getName(const DynamicContext *context) const

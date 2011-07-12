@@ -42,11 +42,6 @@ XQTypeswitch::  XQTypeswitch(ASTNode *expr, Cases *cases, Case *defaultCase, XPa
 {
 }
 
-Result XQTypeswitch::createResult(DynamicContext *context, int flags) const
-{
-  return new TypeswitchResult(this);
-}
-
 ASTNode* XQTypeswitch::staticResolution(StaticContext *context)
 {
   // Statically resolve the test expression
@@ -321,27 +316,15 @@ PendingUpdateList XQTypeswitch::createUpdateList(DynamicContext *context) const
   return cse->getExpression()->createUpdateList(context);
 }
 
-XQTypeswitch::TypeswitchResult::TypeswitchResult(const XQTypeswitch *di)
-  : ResultImpl(di),
-    _di(di)
-{
-}
-
-Item::Ptr XQTypeswitch::TypeswitchResult::nextOrTail(Result &tail, DynamicContext *context)
+Result XQTypeswitch::createResult(DynamicContext *context, int flags) const
 {
   SingleVarStore scope;
-  const Case *cse = _di->chooseCase(context, scope.value);
+  const Case *cse = chooseCase(context, scope.value);
 
   AutoVariableStoreReset reset(context);
-  if(cse->isVariableUsed()) {
+  if(cse->isVariableUsed())
     scope.setAsVariableStore(cse->getURI(), cse->getName(), context);
-  }
 
-  tail = ClosureResult::create(cse->getExpression(), context);
-  return 0;
+  return cse->getExpression()->createResult(context);
 }
 
-std::string XQTypeswitch::TypeswitchResult::asString(DynamicContext *context, int indent) const
-{
-  return "TypeswitchResult";
-}

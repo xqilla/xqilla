@@ -265,11 +265,11 @@ Result XQNumericLiteral::createResult(DynamicContext* context, int flags) const
 {
   switch(type_->getPrimitiveType()) {
   case AnyAtomicType::DECIMAL:
-    return (Item::Ptr)context->getItemFactory()->createDecimalOrDerived(type_->getTypeURI(), type_->getTypeName(), getValue(), context);
+    return (Item::Ptr)new ATDecimalOrDerivedImpl(type_->getTypeURI(), type_->getTypeName(), getValue(), context);
   case AnyAtomicType::FLOAT:
-    return (Item::Ptr)context->getItemFactory()->createFloatOrDerived(type_->getTypeURI(), type_->getTypeName(), getValue(), context);
+    return (Item::Ptr)new ATFloatOrDerivedImpl(type_->getTypeURI(), type_->getTypeName(), getValue(), context);
   case AnyAtomicType::DOUBLE:
-    return (Item::Ptr)context->getItemFactory()->createDoubleOrDerived(type_->getTypeURI(), type_->getTypeName(), getValue(), context);
+    return (Item::Ptr)new ATDoubleOrDerivedImpl(type_->getTypeURI(), type_->getTypeName(), getValue(), context);
   default: break;
   }
   return 0;

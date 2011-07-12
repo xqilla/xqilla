@@ -97,9 +97,7 @@ void XQGlobalVariable::execute(DynamicContext* context) const
     }
 
     // TBD Could use our own VariableStore implementation - jpcs
-    // TBD Use a closure here when module dynamic contexts aren't deleted before the end of the query - jpcs
-    context->setExternalVariable(m_szURI, m_szLocalName, m_Value->createResult(context)->toSequence(context));
-//     context->setExternalVariable(m_szURI, m_szLocalName, ClosureResult::create(m_Value, context));
+    context->setExternalVariable(m_szURI, m_szLocalName, m_Value->createResult(context));
   }
   catch(const XPath2TypeMatchException &ex) {
     XMLBuffer errMsg;

@@ -28,6 +28,7 @@
 #include <xqilla/ast/XQVariable.hpp>
 #include <xqilla/context/VariableTypeStore.hpp>
 #include <xqilla/utils/XPath2Utils.hpp>
+#include <xqilla/runtime/ClosureResult.hpp>
 
 XERCES_CPP_NAMESPACE_USE
 
@@ -95,15 +96,18 @@ Result XQMap::createResult(DynamicContext* context, int flags) const
   Result result = arg1_->createResult(context);
 
   if(name_ != 0) {
-    return new MapResult(result, arg2_, uri_, name_);
+    return ClosureResult::create(arg2_->getStaticAnalysis(), context,
+      new MapResult(result, arg2_, uri_, name_));
   }
 
   if(arg2_->getStaticAnalysis().isContextSizeUsed()) {
     // We need the context size, so convert to a Sequence to work it out
     Sequence seq(result->toSequence(context));
-    result =  new NavStepResult(new SequenceResult(this, seq), arg2_, seq.getLength());
+    result =  ClosureResult::create(arg2_->getStaticAnalysis(), context,
+      new NavStepResult(new SequenceResult(this, seq), arg2_, seq.getLength()));
   } else {
-    result = new NavStepResult(result, arg2_, 0);
+    result = ClosureResult::create(arg2_->getStaticAnalysis(), context,
+      new NavStepResult(result, arg2_, 0));
   }
 
   return result;

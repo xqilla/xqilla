@@ -26,7 +26,6 @@
 #include <xercesc/util/XMemory.hpp>
 #include <xercesc/sax/InputSource.hpp>
 #include <xqilla/runtime/ResultImpl.hpp>
-#include <xqilla/runtime/LazySequenceResult.hpp>
 #include <xqilla/context/StaticContext.hpp>
 #include <xqilla/utils/HashMap.hpp>
 
@@ -314,19 +313,6 @@ public:
   XQQuery *findModuleForFunction(const XMLCh *uri, const XMLCh *name, int numArgs);
 
   //@}
-
-private:
-  /// Top level lazy result iterator
-  class QueryResult : public ResultImpl
-  {
-  public:
-    QueryResult(const XQQuery *query);
-
-    Item::Ptr nextOrTail(Result &tail, DynamicContext *context);
-
-  private:
-    const XQQuery *_query;
-  };
 
 private:
   /// Private constructor - Can be accessed by an XQilla object, as it is a friend.

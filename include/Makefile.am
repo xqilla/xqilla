@@ -102,7 +102,6 @@ xqilla/fulltext/FTScope.hpp \
 xqilla/fulltext/FTContent.hpp \
 xqilla/fulltext/FTWindow.hpp \
 xqilla/axis/NodeTest.hpp \
-xqilla/axis/SelfAxis.hpp \
 xqilla/context/ContextHelpers.hpp \
 xqilla/context/DynamicContext.hpp \
 xqilla/context/StaticContext.hpp \
@@ -302,9 +301,7 @@ xqilla/runtime/ResultBuffer.hpp \
 xqilla/runtime/ResultBufferImpl.hpp \
 xqilla/runtime/Result.hpp \
 xqilla/runtime/ResultImpl.hpp \
-xqilla/runtime/SingleResult.hpp \
 xqilla/runtime/SequenceResult.hpp \
-xqilla/runtime/LazySequenceResult.hpp \
 xqilla/runtime/EmptyResult.hpp \
 xqilla/schema/DocumentCache.hpp \
 xqilla/schema/SequenceType.hpp \

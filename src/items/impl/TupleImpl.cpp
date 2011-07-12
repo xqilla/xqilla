@@ -328,7 +328,7 @@ static Result mapPut(const VectorOfASTNodes &args, DynamicContext *context,
   Tuple::Ptr tuple = (Tuple*)args[0]->createResult(context)->next(context).get();
   AnyAtomicType::Ptr key = (AnyAtomicType*)args[1]->createResult(context)->next(context).get();
 
-  return (Item::Ptr)tuple->put(key, ClosureResult::create(args[2], context));
+  return (Item::Ptr)tuple->put(key, args[2]->createResult(context));
 }
 
 const XMLCh mapPutName[] =

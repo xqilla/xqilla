@@ -58,26 +58,6 @@ public:
   bool getAddReturnCheck() const { return addReturnCheck_; }
 
 protected:
-  class FunctionEvaluatorResult : public ResultImpl
-  {
-  public:
-    FunctionEvaluatorResult(const XQUserFunctionInstance *di, DynamicContext *context);
-
-    Item::Ptr nextOrTail(Result &tail, DynamicContext *context);
-  private:
-    const XQUserFunctionInstance *_di;
-  };
-
-  class ExternalFunctionEvaluatorResult : public ResultImpl
-  {
-  public:
-    ExternalFunctionEvaluatorResult(const XQUserFunctionInstance *di);
-
-    Item::Ptr nextOrTail(Result &tail, DynamicContext *context);
-  private:
-    const XQUserFunctionInstance *_di;
-  };
-
   bool addReturnCheck_;
   const XQUserFunction *funcDef_;
 };

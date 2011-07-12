@@ -64,21 +64,20 @@ ASTNode *XQContextItem::staticTypingImpl(StaticContext *context)
 
 Result XQContextItem::createResult(DynamicContext* context, int flags) const
 {
-  return new ContextItemResult(this);
-}
-
-ContextItemResult::ContextItemResult(const LocationInfo *location)
-  : SingleResult(location)
-{
-}
-
-Item::Ptr ContextItemResult::getSingleResult(DynamicContext *context) const
-{
   const Item::Ptr item = context->getContextItem();
-  if(item == NULLRCP) {
-    XQThrow(DynamicErrorException,X("XQContextItem::ContextItemResult::getSingleResult"),
+  if(item.isNull()) {
+    XQThrow(DynamicErrorException,X("XQContextItem::ContextItemResult::createResult"),
              X("It is an error for the context item to be undefined when using it [err:XPDY0002]"));
   }
   return item;
 }
 
+Result XQContextItem::result(DynamicContext *context, const LocationInfo *info)
+{
+  const Item::Ptr item = context->getContextItem();
+  if(item.isNull()) {
+    XQThrow3(DynamicErrorException,X("XQContextItem::result"),
+             X("It is an error for the context item to be undefined when using it [err:XPDY0002]"), info);
+  }
+  return item;
+}

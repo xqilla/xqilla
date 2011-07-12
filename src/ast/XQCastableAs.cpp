@@ -48,11 +48,6 @@ XQCastableAs::XQCastableAs(ASTNode* expr, SequenceType* exprType, XPath2MemoryMa
 {
 }
 
-Result XQCastableAs::createResult(DynamicContext* context, int flags) const
-{
-  return new CastableAsResult(this);
-}
-
 ASTNode* XQCastableAs::staticResolution(StaticContext *context)
 {
   XPath2MemoryManager *mm = context->getMemoryManager();
@@ -131,17 +126,11 @@ void XQCastableAs::setExpression(ASTNode *item) {
   _expr = item;
 }
 
-XQCastableAs::CastableAsResult::CastableAsResult(const XQCastableAs *di)
-  : SingleResult(di),
-    _di(di)
-{
-}
-
-Item::Ptr XQCastableAs::CastableAsResult::getSingleResult(DynamicContext *context) const
+Result XQCastableAs::createResult(DynamicContext* context, int flags) const
 {
   // The semantics of the cast expression are as follows:
   //    1. Atomization is performed on the input expression.
-  Result toBeCasted(_di->getExpression()->createResult(context));
+  Result toBeCasted(getExpression()->createResult(context));
 
   const Item::Ptr first = toBeCasted->next(context);
 
@@ -150,7 +139,7 @@ Item::Ptr XQCastableAs::CastableAsResult::getSingleResult(DynamicContext *contex
     //    3. If the result of atomization is an empty sequence:
     //       1. If ? is specified after the target type, the result of the cast expression is an empty sequence.
     //       2. If ? is not specified after the target type, a type error is raised.[err:XP0004][err:XP0006]
-    result = _di->getSequenceType()->getOccurrenceIndicator() != SequenceType::EXACTLY_ONE;
+    result = getSequenceType()->getOccurrenceIndicator() != SequenceType::EXACTLY_ONE;
   }
   else {
     const Item::Ptr second = toBeCasted->next(context);
@@ -162,13 +151,13 @@ Item::Ptr XQCastableAs::CastableAsResult::getSingleResult(DynamicContext *contex
     else {
       //    4. If the result of atomization is a single atomic value, the result of the cast expression depends on the input type and the target type.
       //       The normative definition of these rules is given in [XQuery 1.0 and XPath 2.0 Functions and Operators].
-      if(_di->getSequenceType()->getItemType()->isPrimitive()) {
-        result = ((const AnyAtomicType::Ptr)first)->castable(_di->getSequenceType()->getItemType()->getPrimitiveType(), 0, 0, context);
+      if(getSequenceType()->getItemType()->isPrimitive()) {
+        result = ((const AnyAtomicType::Ptr)first)->castable(getSequenceType()->getItemType()->getPrimitiveType(), 0, 0, context);
       }
       else {
-        result = ((const AnyAtomicType::Ptr)first)->castable(_di->getSequenceType()->getItemType()->getPrimitiveType(),
-                                                             _di->getSequenceType()->getItemType()->getTypeURI(),
-                                                             _di->getSequenceType()->getItemType()->getTypeName(),
+        result = ((const AnyAtomicType::Ptr)first)->castable(getSequenceType()->getItemType()->getPrimitiveType(),
+                                                             getSequenceType()->getItemType()->getTypeURI(),
+                                                             getSequenceType()->getItemType()->getTypeName(),
                                                              context);
       }
     }

@@ -27,7 +27,7 @@
 class DynamicContext;
 class Sequence;
 class Result;
-class ResultBufferImpl;
+class ResultBuffer;
 
 /** A lazily evaluated query result */
 class XQILLA_API ResultImpl : public LocationInfo
@@ -48,7 +48,7 @@ public:
   virtual Sequence toSequence(DynamicContext *context);
 
   /// Returns a result buffer of the result
-  virtual ResultBufferImpl *toResultBuffer(unsigned int readCount);
+  virtual void toResultBuffer(unsigned int readCount, ResultBuffer &buffer);
 
 protected:
   ResultImpl(const LocationInfo *o);

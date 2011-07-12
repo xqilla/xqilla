@@ -24,6 +24,7 @@
 #include <xqilla/simple-api/XQQuery.hpp>
 #include <xqilla/events/SequenceBuilder.hpp>
 #include <xqilla/context/VariableStore.hpp>
+#include <xqilla/runtime/Sequence.hpp>
 
 using namespace std;
 

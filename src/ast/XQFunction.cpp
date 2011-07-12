@@ -207,34 +207,9 @@ size_t XQFunction::getNumArgs() const
   return _args.size();
 }
 
-class CreateSequenceResult : public LazySequenceResult
-{
-public:
-  CreateSequenceResult(const XQFunction *func, DynamicContext *context)
-    : LazySequenceResult(func, context),
-      func_(func)
-  {
-  }
-
-  void getResult(Sequence &toFill, DynamicContext *context) const
-  {
-    try {
-      toFill = func_->createSequence(context);
-    }
-    catch(XQException &e) {
-      if(e.getXQueryLine() == 0)
-        e.setXQueryPosition(this);
-      throw e;
-    }
-  }
-
-private:
-  const XQFunction *func_;
-};
-
 Result XQFunction::createResult(DynamicContext* context, int flags) const
 {
-  return new CreateSequenceResult(this, context);
+  return createSequence(context);
 }
 
 Sequence XQFunction::createSequence(DynamicContext* context, int flags) const

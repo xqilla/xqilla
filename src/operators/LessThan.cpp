@@ -73,6 +73,7 @@ LessThan::LessThan(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
          atom2->getPrimitiveTypeIndex() != AnyAtomicType::ANY_URI)
         XQThrow2(XPath2ErrorException,X("LessThan::less_than"), X("An attempt to compare a string type to a non string type has occurred [err:XPTY0004]"));
       // if the function returns -1, then atom1 is less
+      if(!collation) collation = context->getDefaultCollation(info);
       return collation->compare(atom1->asString(context),atom2->asString(context))<0;
     }
     case AnyAtomicType::DATE:
@@ -124,5 +125,5 @@ LessThan::LessThan(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr)
 
 bool LessThan::execute(const AnyAtomicType::Ptr &atom1, const AnyAtomicType::Ptr &atom2, DynamicContext *context) const
 {
-  return less_than(atom1, atom2, context->getDefaultCollation(this), context, this);
+  return less_than(atom1, atom2, 0, context, this);
 }

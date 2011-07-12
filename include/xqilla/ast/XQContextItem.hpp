@@ -23,7 +23,6 @@
 #include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/ast/ASTNodeImpl.hpp>
-#include <xqilla/runtime/SingleResult.hpp>
 
 /** Returns the context item. Raises [err:XP0002] if the context item is null. */
 class XQILLA_API XQContextItem : public ASTNodeImpl
@@ -40,13 +39,7 @@ public:
   virtual ASTNode *staticTypingImpl(StaticContext *context);
 
   virtual Result createResult(DynamicContext* context, int flags=0) const;
-};
-
-class XQILLA_API ContextItemResult : public SingleResult
-{
-public:
-  ContextItemResult(const LocationInfo *location);
-  Item::Ptr getSingleResult(DynamicContext *context) const;
+  static Result result(DynamicContext *context, const LocationInfo *info);
 };
 
 #endif

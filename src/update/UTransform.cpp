@@ -174,11 +174,6 @@ ASTNode *UTransform::staticTypingImpl(StaticContext *context)
   return this;
 }
 
-Result UTransform::createResult(DynamicContext* context, int flags) const
-{
-  return new TransformResult(this, context);
-}
-
 class nodecompare {
 public:
   nodecompare(const DynamicContext *context)
@@ -195,73 +190,51 @@ private:
 
 typedef std::set<Node::Ptr, nodecompare> NodeSet;
 
-UTransform::TransformResult::TransformResult(const UTransform *transform, DynamicContext *context)
-  : ResultImpl(transform),
-    transform_(transform),
-    toDo_(true),
-    scope_(context->getMemoryManager(), context->getVariableStore()),
-    result_(0)
-{
-}
-
-Item::Ptr UTransform::TransformResult::next(DynamicContext *context)
+Result UTransform::createResult(DynamicContext* context, int flags) const
 {
   context->testInterrupt();
 
-  AutoVariableStoreReset reset(context, &scope_);
+  VarStoreImpl scope(context->getMemoryManager(), context->getVariableStore());
+  AutoVariableStoreReset reset(context, &scope);
 
-  if(toDo_) {
-    toDo_ = false;
+  NodeSet copiedNodes = NodeSet(nodecompare(context));
 
-    NodeSet copiedNodes = NodeSet(nodecompare(context));
-
-    VectorOfCopyBinding::const_iterator end = transform_->getBindings()->end();
-    for(VectorOfCopyBinding::const_iterator it = transform_->getBindings()->begin();
-        it != end; ++it) {
-      if((*it)->qname_ == 0) continue;
+  VectorOfCopyBinding::const_iterator end = getBindings()->end();
+  for(VectorOfCopyBinding::const_iterator it = getBindings()->begin();
+      it != end; ++it) {
+    if((*it)->qname_ == 0) continue;
       
-      Sequence values = (*it)->expr_->createResult(context)->toSequence(context);
+    Sequence values = (*it)->expr_->createResult(context)->toSequence(context);
 
-      // Keep a record of the nodes that have been copied
-      Result valIt = values;
-      Item::Ptr val;
-      while((val = valIt->next(context)).notNull()) {
-        copiedNodes.insert((Node*)val.get());
-      }
-
-      scope_.setVar((*it)->uri_, (*it)->name_, values);
+    // Keep a record of the nodes that have been copied
+    Result valIt = values;
+    Item::Ptr val;
+    while((val = valIt->next(context)).notNull()) {
+      copiedNodes.insert((Node*)val.get());
     }
 
-    // Get the pending update list
-    PendingUpdateList pul = transform_->getModifyExpr()->createUpdateList(context);
+    scope.setVar((*it)->uri_, (*it)->name_, values);
+  }
 
-    // Check that the targets of the pending updates are copied nodes
-    for(PendingUpdateList::const_iterator i = pul.begin(); i != pul.end(); ++i) {
-      Node::Ptr target = i->getTarget();
-      while(copiedNodes.find(target) == copiedNodes.end()) {
-        target = target->dmParent(context);
-        if(target.isNull()) {
-          XQThrow3(StaticErrorException,X("UTransform::staticTyping"),
-                   X("The target node of an update expression in the transform expression is not a node from the copy clauses [err:XUDY0014]"), &(*i));
-        }
+  // Get the pending update list
+  PendingUpdateList pul = getModifyExpr()->createUpdateList(context);
+
+  // Check that the targets of the pending updates are copied nodes
+  for(PendingUpdateList::const_iterator i = pul.begin(); i != pul.end(); ++i) {
+    Node::Ptr target = i->getTarget();
+    while(copiedNodes.find(target) == copiedNodes.end()) {
+      target = target->dmParent(context);
+      if(target.isNull()) {
+        XQThrow3(StaticErrorException,X("UTransform::staticTyping"),
+                 X("The target node of an update expression in the transform expression is not a node from the copy clauses [err:XUDY0014]"), &(*i));
       }
     }
-
-    // Apply the updates
-    AutoDelete<UpdateFactory> ufactory(context->createUpdateFactory());
-    ufactory->applyUpdates(pul, context, transform_->getRevalidationMode());
-
-    // Execute the return expression
-    result_ = transform_->getReturnExpr()->createResult(context);
   }
 
-  Item::Ptr result = result_->next(context);
+  // Apply the updates
+  AutoDelete<UpdateFactory> ufactory(context->createUpdateFactory());
+  ufactory->applyUpdates(pul, context, getRevalidationMode());
 
-  if(result.isNull()) {
-    result_ = 0;
-    return 0;
-  }
-
-  return result;
+  // Execute the return expression
+  return getReturnExpr()->createResult(context);
 }
-
