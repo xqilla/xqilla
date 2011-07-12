@@ -118,15 +118,14 @@ ASTNode *ComparisonOperator::staticTypingImpl(StaticContext *context)
   return this;
 }
 
-Result ComparisonOperator::createResult(DynamicContext* context, int flags) const
+BoolResult ComparisonOperator::boolResult(DynamicContext* context) const
 {
   try {
     AnyAtomicType::Ptr left = (AnyAtomicType*)getArguments()[0]->createResult(context)->next(context).get();
-    if(left.isNull()) return 0;
+    if(left.isNull()) return BoolResult::Null;
     AnyAtomicType::Ptr right = (AnyAtomicType*)getArguments()[1]->createResult(context)->next(context).get();
-    if(right.isNull()) return 0;
-    bool result = execute(left, right, context);
-    return (Item::Ptr)context->getItemFactory()->createBoolean(result, context);
+    if(right.isNull()) return BoolResult::Null;
+    return execute(left, right, context);
   }
   catch(XQException &e) {
     if(e.getXQueryLine() == 0)
@@ -135,3 +134,7 @@ Result ComparisonOperator::createResult(DynamicContext* context, int flags) cons
   }
 }
 
+Result ComparisonOperator::createResult(DynamicContext* context, int flags) const
+{
+  return (Item::Ptr)context->getItemFactory()->createBoolean(boolResult(context), context);
+}

@@ -17,18 +17,11 @@
  * limitations under the License.
  */
 
-/*
-
-  StartsWith function
-
-*/
-
 #ifndef _FUNCTIONSTARTSWITH_HPP
 #define _FUNCTIONSTARTSWITH_HPP
 
 #include <xqilla/ast/XQFunction.hpp>
 
-/** StartsWith function. */
 class XQILLA_API FunctionStartsWith : public XQFunction
 {
 public:
@@ -37,10 +30,8 @@ public:
   static const unsigned int maxArgs;
 
   FunctionStartsWith(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
-  
-  /** XPath function. returns true if string1 starts with string2 **/
-  Sequence createSequence(DynamicContext* context, int flags=0) const;
-
+  virtual BoolResult boolResult(DynamicContext* context) const;
+  virtual Result createResult(DynamicContext* context, int flags) const;
 };
 
-#endif // _FUNCTIONSTARTSWITH_HPP
+#endif

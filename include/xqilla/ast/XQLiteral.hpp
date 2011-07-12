@@ -33,6 +33,7 @@ public:
 
   virtual ASTNode *staticResolution(StaticContext *context);
   virtual ASTNode *staticTypingImpl(StaticContext *context);
+  virtual BoolResult boolResult(DynamicContext* context) const;
   virtual Result createResult(DynamicContext* context, int flags=0) const;
   virtual EventGenerator::Ptr generateEvents(EventHandler *events, DynamicContext *context,
                                              bool preserveNS, bool preserveType) const;

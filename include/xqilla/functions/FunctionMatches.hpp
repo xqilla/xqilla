@@ -38,9 +38,8 @@ public:
   FunctionMatches(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
 
   virtual ASTNode *staticTypingImpl(StaticContext *context);
-
-  /** XPath function: returns true if string1 matches the regExp supplied as string2, otherwise returns false. **/
-  Sequence createSequence(DynamicContext* context, int flags = 0) const;
+  virtual BoolResult boolResult(DynamicContext* context) const;
+  virtual Result createResult(DynamicContext* context, int flags) const;
 
   static bool matches(const XMLCh *input, const XMLCh *pattern, const XMLCh *options = 0);
   static bool matches(const XMLCh *input, const XERCES_CPP_NAMESPACE_QUALIFIER RegularExpression* regExp);

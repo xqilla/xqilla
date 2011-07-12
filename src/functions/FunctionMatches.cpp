@@ -99,7 +99,7 @@ ASTNode *FunctionMatches::staticTypingImpl(StaticContext *context)
 }
 
 
-Sequence FunctionMatches::createSequence(DynamicContext* context, int flags) const
+BoolResult FunctionMatches::boolResult(DynamicContext* context) const
 {
   XPath2MemoryManager* memMgr = context->getMemoryManager();
 
@@ -112,7 +112,7 @@ Sequence FunctionMatches::createSequence(DynamicContext* context, int flags) con
   {
     try
     {
-      return Sequence(context->getItemFactory()->createBoolean(matches(input, regExp_), context), memMgr);
+      return matches(input, regExp_);
     } catch (XMLException &e){
       processXMLException(e, "FunctionMatches::createSequence");
     }
@@ -131,7 +131,7 @@ Sequence FunctionMatches::createSequence(DynamicContext* context, int flags) con
   checkRegexpOpts(options, "FunctionMatches::createSequence");
 
   try {
-    return Sequence(context->getItemFactory()->createBoolean(matches(input, pattern, options), context), memMgr);
+    return matches(input, pattern, options);
   } catch (ParseException &e){ 
 	processParseException(e, "FunctionMatches::createSequence", memMgr);
   } catch (XMLException &e){
@@ -139,7 +139,12 @@ Sequence FunctionMatches::createSequence(DynamicContext* context, int flags) con
   }  
 
   //do not get here
-  return Sequence(memMgr);
+  return false;
+}
+
+Result FunctionMatches::createResult(DynamicContext* context, int flags) const
+{
+  return (Item::Ptr)context->getItemFactory()->createBoolean(boolResult(context), context);
 }
 
 void FunctionMatches::processXMLException(XMLException &e, const char* sourceMsg) const

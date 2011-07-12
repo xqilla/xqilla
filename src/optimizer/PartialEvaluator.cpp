@@ -1396,7 +1396,7 @@ ASTNode *PartialEvaluator::optimizeIf(XQIf *item)
   item->setTest(optimize(const_cast<ASTNode *>(item->getTest())));
 
   if(item->getTest()->isConstant()) {
-    bool result = ((ATBooleanOrDerived*)item->getTest()->createResult(context_)->next(context_).get())->isTrue();
+    bool result = item->getTest()->boolResult(context_);
     context_->clearDynamicContext();
 
     if(result) {
@@ -1435,7 +1435,7 @@ ASTNode *PartialEvaluator::optimizeQuantified(XQQuantified *item)
   item->setExpression(optimize(item->getExpression()));
 
   if(item->getExpression()->isConstant() && item->getParent()->getMin() != 0) {
-    bool value = ((ATBooleanOrDerived*)item->getExpression()->createResult(context_)->next(context_).get())->isTrue();
+    bool value = item->getExpression()->boolResult(context_);
     ASTNode *result = XQLiteral::create(value, context_->getMemoryManager(), item);
     sizeLimit_ += ASTCounter().count(item);
     sizeLimit_ -= ASTCounter().count(result);
@@ -1524,7 +1524,7 @@ ASTNode *PartialEvaluator::optimizeAnd(And *item)
   VectorOfASTNodes::iterator i = args.begin();
   while(i != args.end()) {
     if(!(*i)->getStaticAnalysis().isUsed()) {
-      if(!((ATBooleanOrDerived*)(*i)->createResult(context_)->next(context_).get())->isTrue()) {
+      if(!(*i)->boolResult(context_)) {
         // It's constantly false, so this expression is false
         ASTNode *result = XQLiteral::create(false, context_->getMemoryManager(), item);
         sizeLimit_ += ASTCounter().count(item);
@@ -1552,7 +1552,7 @@ ASTNode *PartialEvaluator::optimizeOr(Or *item)
   VectorOfASTNodes::iterator i = args.begin();
   while(i != args.end()) {
     if(!(*i)->getStaticAnalysis().isUsed()) {
-      if(((ATBooleanOrDerived*)(*i)->createResult(context_)->next(context_).get())->isTrue()) {
+      if((*i)->boolResult(context_)) {
         // It's constantly true, so this expression is true
         ASTNode *result = XQLiteral::create(true, context_->getMemoryManager(), item);
         sizeLimit_ += ASTCounter().count(item);
@@ -1596,10 +1596,10 @@ ASTNode *PartialEvaluator::optimizeEffectiveBooleanValue(XQEffectiveBooleanValue
     return result;
   }
 
-  if(item->getExpression()->getStaticAnalysis().getStaticType().getMin() == 1 &&
+  if(item->getExpression()->getStaticAnalysis().getStaticType().getMin() <= 1 &&
      item->getExpression()->getStaticAnalysis().getStaticType().getMax() == 1 &&
      item->getExpression()->getStaticAnalysis().getStaticType().isType(StaticType::BOOLEAN_TYPE)) {
-    // If there is a single boolean, EBV isn't needed
+    // If there is zero or one boolean values, EBV isn't needed
     ASTNode *result = item->getExpression();
     item->setExpression(0);
     sizeLimit_ += ASTCounter().count(item);

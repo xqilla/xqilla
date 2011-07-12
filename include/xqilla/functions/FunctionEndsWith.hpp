@@ -17,17 +17,8 @@
  * limitations under the License.
  */
 
-/*
-  
-  xf:ends-with(string? $operand1, string? $operand2) => boolean?
-  xf:ends-with(string? $operand1, string? $operand2, anyURI $collationLiteral) => boolean?
-  
-*/
-
 #ifndef _FUNCTIONENDSWITH_HPP
 #define _FUNCTIONENDSWITH_HPP
-
-#include <xqilla/framework/XQillaExport.hpp>
 
 #include <xqilla/ast/XQFunction.hpp>
 
@@ -39,11 +30,8 @@ public:
   static const unsigned int maxArgs;
 
   FunctionEndsWith(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
-
-  Sequence createSequence(DynamicContext* context, int flags=0) const;
+  virtual BoolResult boolResult(DynamicContext* context) const;
+  virtual Result createResult(DynamicContext* context, int flags) const;
 };
 
-#endif // _FUNCTIONENDSWITH_HPP
-
-
-
+#endif

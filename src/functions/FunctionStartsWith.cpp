@@ -54,7 +54,7 @@ FunctionStartsWith::FunctionStartsWith(const VectorOfASTNodes &args, XPath2Memor
 {
 }
 
-Sequence FunctionStartsWith::createSequence(DynamicContext* context, int flags) const
+BoolResult FunctionStartsWith::boolResult(DynamicContext* context) const
 {
 	XPath2MemoryManager* memMgr = context->getMemoryManager();
 
@@ -71,10 +71,10 @@ Sequence FunctionStartsWith::createSequence(DynamicContext* context, int flags) 
 	// If the value of $operand1 is the zero-length string and the value of $operand2 is not the zero-length string, 
 	// then the function returns false. 
 	if(XMLString::stringLen(source)==0 && XMLString::stringLen(find)>0)
-		return Sequence(context->getItemFactory()->createBoolean(false, context), memMgr);
+		return false;
 	// If the value of $operand2 is the zero-length string, then the function returns true
 	if(XMLString::stringLen(find)==0)
-		return Sequence(context->getItemFactory()->createBoolean(true, context), memMgr);
+		return true;
 
 	Collation* collation=NULL;
 	if(getNumArgs()>2) {
@@ -94,10 +94,13 @@ Sequence FunctionStartsWith::createSequence(DynamicContext* context, int flags) 
 	// of $operand2 according to the specified collation
 
 	if(XMLString::stringLen(find)>XMLString::stringLen(source)) {
-		return Sequence(context->getItemFactory()->createBoolean(false, context), memMgr);
+		return false;
 	}
 	const XMLCh* string = XPath2Utils::subString(source, 0, XPath2Utils::uintStrlen(find), memMgr);
-	bool result = (collation->compare(string,find)==0);
+	return (collation->compare(string,find)==0);
+}
 
-	return Sequence(context->getItemFactory()->createBoolean(result, context), memMgr);
+Result FunctionStartsWith::createResult(DynamicContext* context, int flags) const
+{
+  return (Item::Ptr)context->getItemFactory()->createBoolean(boolResult(context), context);
 }

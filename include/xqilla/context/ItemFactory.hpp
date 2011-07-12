@@ -43,6 +43,7 @@
 #include <xqilla/items/ATStringOrDerived.hpp>
 #include <xqilla/items/ATTimeOrDerived.hpp>
 #include <xqilla/items/ATUntypedAtomic.hpp>
+#include <xqilla/ast/ASTNode.hpp>
 
 #include <xercesc/util/XMemory.hpp>
 
@@ -114,6 +115,7 @@ public:
   virtual ATUntypedAtomic::Ptr createUntypedAtomic(const XMLCh* value, const DynamicContext* context) = 0;
 
   virtual ATBooleanOrDerived::Ptr createBoolean(bool value, const DynamicContext* context) = 0;
+  virtual ATBooleanOrDerived::Ptr createBoolean(BoolResult value, const DynamicContext* context) = 0;
   virtual ATBooleanOrDerived::Ptr createBoolean(const XMLCh* value, const DynamicContext* context) = 0;
   virtual ATBooleanOrDerived::Ptr createBooleanOrDerived(const XMLCh* typeURI, const XMLCh* typeName, bool value, const DynamicContext* context) = 0;
   virtual ATBooleanOrDerived::Ptr createBooleanOrDerived(const XMLCh* typeURI, const XMLCh* typeName, const XMLCh* value, const DynamicContext* context) = 0;

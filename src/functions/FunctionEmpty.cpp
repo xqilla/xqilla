@@ -67,25 +67,12 @@ ASTNode *FunctionEmpty::staticTypingImpl(StaticContext *context)
   return this;
 }
 
-Sequence FunctionEmpty::createSequence(DynamicContext* context, int flags) const
+BoolResult FunctionEmpty::boolResult(DynamicContext* context) const
 {
-  Result items = getParamNumber(1,context);
-  return Sequence(context->getItemFactory()->createBoolean(items->next(context).isNull(), context),
-                  context->getMemoryManager());
+  return getParamNumber(1,context)->next(context).isNull();
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+Result FunctionEmpty::createResult(DynamicContext* context, int flags) const
+{
+  return (Item::Ptr)context->getItemFactory()->createBoolean(boolResult(context), context);
+}

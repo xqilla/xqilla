@@ -34,7 +34,8 @@ public:
 
   ASTNode* staticResolution(StaticContext *context);
   virtual ASTNode *staticTypingImpl(StaticContext *context);
-  Result createResult(DynamicContext* context, int flags=0) const;
+  virtual BoolResult boolResult(DynamicContext* context) const;
+  virtual Result createResult(DynamicContext* context, int flags) const;
 
   bool getTestBefore() const;
 

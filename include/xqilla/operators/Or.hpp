@@ -31,9 +31,10 @@ public:
 
   Or(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
   
-  Result createResult(DynamicContext* context, int flags=0) const;
   virtual ASTNode* staticResolution(StaticContext *context);
   virtual ASTNode *staticTypingImpl(StaticContext *context);
+  virtual BoolResult boolResult(DynamicContext* context) const;
+  virtual Result createResult(DynamicContext* context, int flags) const;
 };
 
 #endif

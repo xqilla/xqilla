@@ -20,8 +20,6 @@
 #ifndef _FUNCTIONDOCAVAILABLE_HPP
 #define _FUNCTIONDOCAVAILABLE_HPP
 
-#include <xqilla/framework/XQillaExport.hpp>
-
 #include <xqilla/ast/XQFunction.hpp>
 
 class XQILLA_API FunctionDocAvailable : public XQFunction
@@ -34,8 +32,8 @@ public:
   FunctionDocAvailable(const VectorOfASTNodes &args, XPath2MemoryManager* memMgr);
   
   virtual ASTNode *staticTypingImpl(StaticContext *context);
-
-  Sequence createSequence(DynamicContext* context, int flags=0) const;
+  virtual BoolResult boolResult(DynamicContext* context) const;
+  virtual Result createResult(DynamicContext* context, int flags) const;
 };
 
 #endif

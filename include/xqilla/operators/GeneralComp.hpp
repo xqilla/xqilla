@@ -48,7 +48,8 @@ public:
 
   ASTNode* staticResolution(StaticContext *context);
   virtual ASTNode *staticTypingImpl(StaticContext *context);
-  Result createResult(DynamicContext* context, int flags=0) const;
+  virtual BoolResult boolResult(DynamicContext* context) const;
+  virtual Result createResult(DynamicContext* context, int flags) const;
 
   ComparisonOperation getOperation() const { return operation_; }
   Collation *getCollation() const { return collation_; }

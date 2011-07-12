@@ -70,7 +70,7 @@ ASTNode *FTContains::staticTypingImpl(StaticContext *context)
   return this;
 }
 
-Result FTContains::createResult(DynamicContext* context, int flags) const
+BoolResult FTContains::boolResult(DynamicContext* context) const
 {
   // TBD deal with ignore nodes
 
@@ -131,12 +131,17 @@ Result FTContains::createResult(DynamicContext* context, int flags) const
 
         delete matches;
         matches = 0;
-        return (Item::Ptr)context->getItemFactory()->createBoolean(true, context);
+        return true;
       }
       delete matches;
       matches = 0;
     }
   }
 
-  return (Item::Ptr)context->getItemFactory()->createBoolean(false, context);
+  return false;
+}
+
+Result FTContains::createResult(DynamicContext* context, int flags) const
+{
+  return (Item::Ptr)context->getItemFactory()->createBoolean(boolResult(context), context);
 }

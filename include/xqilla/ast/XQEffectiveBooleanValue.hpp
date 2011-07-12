@@ -28,9 +28,10 @@ class XQILLA_API XQEffectiveBooleanValue : public ASTNodeImpl
 public:
   XQEffectiveBooleanValue(ASTNode* expr, XPath2MemoryManager* memMgr);
 
-  virtual Result createResult(DynamicContext* context, int flags=0) const;
   virtual ASTNode* staticResolution(StaticContext *context);
   virtual ASTNode *staticTypingImpl(StaticContext *context);
+  virtual BoolResult boolResult(DynamicContext* context) const;
+  virtual Result createResult(DynamicContext* context, int flags) const;
 
   ASTNode *getExpression() const { return expr_; }
   void setExpression(ASTNode *expr) { expr_ = expr; }
