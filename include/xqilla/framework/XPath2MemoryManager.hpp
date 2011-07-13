@@ -174,6 +174,11 @@ public:
     return &o != this;
   }
 
+  bool operator!=(XQillaAllocator<_Tp>& o)
+  {
+    return _memMgr != o._memMgr;
+  }
+
   char _singleton[sizeof(_Tp)];
   XERCES_CPP_NAMESPACE_QUALIFIER MemoryManager* _memMgr;
 };
