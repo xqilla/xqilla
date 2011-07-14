@@ -15163,7 +15163,7 @@ case 180:
 YY_RULE_SETUP
 #line 502 "../src/lexer/XQLexer.l"
 {
-  if(isVersion11() && lookAhead() == _LPAR_) {
+  if(isVersion3() && lookAhead() == _LPAR_) {
     RECOGNIZE_VALUE(_FUNCTION_EXT_, yytext);
   } else {
     RECOGNIZE_VALUE(_FUNCTION_, yytext);
@@ -15174,7 +15174,7 @@ case 181:
 YY_RULE_SETUP
 #line 509 "../src/lexer/XQLexer.l"
 {
-  if(isVersion11()) {
+  if(isVersion3()) {
     RECOGNIZE(_HASH_);
   } else {
     return error("Unrecognized token '#'");
@@ -15185,7 +15185,7 @@ case 182:
 YY_RULE_SETUP
 #line 516 "../src/lexer/XQLexer.l"
 {
-  if(isVersion11()) {
+  if(isVersion3()) {
     RECOGNIZE(_PERCENT_);
   } else {
     return error("Unrecognized token '%'");
@@ -15196,7 +15196,7 @@ case 183:
 YY_RULE_SETUP
 #line 523 "../src/lexer/XQLexer.l"
 {
-  if(isVersion11()) {
+  if(isVersion3()) {
     RECOGNIZE(_BAR_BAR_);
   } else {
     return error("Unrecognized token '||'");
@@ -15207,7 +15207,7 @@ case 184:
 YY_RULE_SETUP
 #line 530 "../src/lexer/XQLexer.l"
 {
-  if(isVersion11()) {
+  if(isVersion3()) {
     RECOGNIZE(_BANG_);
   } else {
     return error("Unrecognized token '!'");
@@ -15218,7 +15218,7 @@ case 185:
 YY_RULE_SETUP
 #line 537 "../src/lexer/XQLexer.l"
 {
-  if(isVersion11() && lookAhead() == _DOLLAR_) {
+  if(isVersion3() && lookAhead() == _DOLLAR_) {
     RECOGNIZE_VALUE(_COUNT_, yytext);
   } else {
     RECOGNIZE_VALUE(_QNAME_, yytext);
@@ -15229,7 +15229,7 @@ case 186:
 YY_RULE_SETUP
 #line 544 "../src/lexer/XQLexer.l"
 {
-  if(isVersion11()) {
+  if(isVersion3()) {
     RECOGNIZE_VALUE(_NAMESPACE_NODE_, yytext);
   } else {
     RECOGNIZE_VALUE(_QNAME_, yytext);
@@ -15439,7 +15439,7 @@ YY_RULE_SETUP
 #line 681 "../src/lexer/XQLexer.l"
 {
   int tok = lookAhead();
-  if(tok == _VERSION_ || (isVersion11() && tok == _ENCODING_)) {
+  if(tok == _VERSION_ || (isVersion3() && tok == _ENCODING_)) {
     RECOGNIZE_VALUE(_XQUERY_, yytext);
   } else {
     RECOGNIZE_VALUE(_QNAME_, yytext);

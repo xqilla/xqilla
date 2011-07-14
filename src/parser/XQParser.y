@@ -187,7 +187,7 @@ void *alloca (size_t);
 #define MEMMGR   (QP->_lexer->getMemoryManager())
 
 #define REJECT_NOT_XQUERY(where,pos)    if(!QP->_lexer->isXQuery()) { yyerror(LANGUAGE, #where, (pos).first_line, (pos).first_column); }
-#define REJECT_NOT_VERSION11(where,pos) if(!QP->_lexer->isVersion11()) { yyerror(LANGUAGE, #where, (pos).first_line, (pos).first_column); }
+#define REJECT_NOT_VERSION3(where,pos) if(!QP->_lexer->isVersion3()) { yyerror(LANGUAGE, #where, (pos).first_line, (pos).first_column); }
 
 #define WRAP(pos,object)        (wrapForDebug((QP), (object), (pos).first_line, (pos).first_column))
 
@@ -236,7 +236,6 @@ XERCES_CPP_NAMESPACE_USE;
 using namespace std;
 
 static const XMLCh sz1_0[] = { chDigit_1, chPeriod, chDigit_0, chNull };
-static const XMLCh sz1_1[] = { chDigit_1, chPeriod, chDigit_1, chNull };
 static const XMLCh sz3_0[] = { chDigit_3, chPeriod, chDigit_0, chNull };
 static const XMLCh option_projection[] = { 'p', 'r', 'o', 'j', 'e', 'c', 't', 'i', 'o', 'n', 0 };
 static const XMLCh option_psvi[] = { 'p', 's', 'v', 'i', 0 };
@@ -574,7 +573,7 @@ namespace XQParser {
 %token <str> _MODULE_                  "module"
 %token <str> _ELEMENT_                "element"
 %token <str> _FUNCTION_                "function"
-%token <str> _FUNCTION_EXT_                "function (XQuery 1.1)"
+%token <str> _FUNCTION_EXT_                "function (XQuery 3.0)"
 %token <str> _SCORE_                                          "score"
 %token <str> _CONTAINS_                                       "contains"
 %token <str> _WEIGHT_                                         "weight"
@@ -2618,18 +2617,18 @@ Version:
   {
     // TBD Set the language correctly on the context - jpcs
     if(XPath2Utils::equals($2,sz1_0)) {
-      QP->_lexer->setVersion11(false);
-      QP->_query->setVersion11(false);
+      QP->_lexer->setVersion3(false);
+      QP->_query->setVersion3(false);
     }
-    else if(XPath2Utils::equals($2,sz1_1) || XPath2Utils::equals($2,sz3_0)) {
-      if(!QP->_lexer->isVersion11()) {
-        yyerror(@1, "This XQuery processor is not configured to support XQuery 1.1 [err:XQST0031]");
+    else if(XPath2Utils::equals($2,sz3_0)) {
+      if(!QP->_lexer->isVersion3()) {
+        yyerror(@1, "This XQuery processor is not configured to support XQuery 3.0 [err:XQST0031]");
       }
-      QP->_lexer->setVersion11(true);
-      QP->_query->setVersion11(true);
+      QP->_lexer->setVersion3(true);
+      QP->_query->setVersion3(true);
     }
     else
-      yyerror(@1, "This XQuery processor only supports version 1.0 and 1.1 [err:XQST0031]");
+      yyerror(@1, "This XQuery processor only supports version 1.0 and 3.0 [err:XQST0031]");
   }
   ;
 
@@ -3246,7 +3245,7 @@ FLWORExpr:
 
       // Check the correct clause order for XQuery 1.0
       // FLWORExpr ::= (ForClause |  LetClause)+ WhereClause? OrderByClause? "return" ExprSingle
-      if(!QP->_lexer->isVersion11()) {
+      if(!QP->_lexer->isVersion3()) {
         const TupleNode *where = 0;
         const TupleNode *forlet = 0;
         const TupleNode *node = tuples;
@@ -3601,7 +3600,7 @@ CaseSequenceTypeUnion:
   }
   | CaseSequenceTypeUnion _BAR_ SequenceType
   {
-    REJECT_NOT_VERSION11(SequenceTypeUnion, @2);
+    REJECT_NOT_VERSION3(SequenceTypeUnion, @2);
     $1->push_back(WRAP(@3, new (MEMMGR) XQTypeswitch::Case($1->back()->getQName(), $3, 0)));
     $$ = $1;
   }
@@ -4379,7 +4378,7 @@ Argument:
     ExprSingle
   | _QUESTION_MARK_
   {
-    REJECT_NOT_VERSION11(Argument, @1);
+    REJECT_NOT_VERSION3(Argument, @1);
     $$ = 0;
   }
   ;
@@ -4904,7 +4903,7 @@ CommentTest:
 NamespaceNodeTest:
   _NAMESPACE_NODE_ _LPAR_ _RPAR_
   {
-    REJECT_NOT_VERSION11(NamespaceNodeTest, @1);
+    REJECT_NOT_VERSION3(NamespaceNodeTest, @1);
     $$ = WRAP(@1, new (MEMMGR) ItemType(ItemType::TEST_NAMESPACE));
   }
   ;
@@ -5872,7 +5871,7 @@ TemplateArgument:
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-// XQuery 1.1 Functionality
+// XQuery 3.0 Functionality
 
 // [161] FunctionItemExpr ::= LiteralFunctionItem | InlineFunction
 FunctionItemExpr: LiteralFunctionItem | InlineFunction;
@@ -5900,12 +5899,12 @@ InlineFunction:
 DynamicFunctionInvocation:
     PostfixExpr _LPAR_ _RPAR_
   {
-    REJECT_NOT_VERSION11(DynamicFunctionInvocation, @1);
+    REJECT_NOT_VERSION3(DynamicFunctionInvocation, @1);
     $$ = WRAP(@2, new (MEMMGR) XQFunctionDeref($1, new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR)), MEMMGR));
   }
   | PostfixExpr _LPAR_ FunctionCallArgumentList _RPAR_
   {
-    REJECT_NOT_VERSION11(DynamicFunctionInvocation, @1);
+    REJECT_NOT_VERSION3(DynamicFunctionInvocation, @1);
 
     bool partial = false;
     VectorOfASTNodes::iterator i;

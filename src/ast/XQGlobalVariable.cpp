@@ -198,7 +198,7 @@ void XQGlobalVariable::staticTypingOnce(StaticContext* context, StaticTyper *sty
 
       // XQuery 1.0 doesn't allow forward references
       XQQuery *module = context->getModule();
-      if(!module->getVersion11()) {
+      if(!module->getVersion3()) {
         GlobalVariables::const_iterator it2 = module->getVariables().begin();
         for(; it2 != module->getVariables().end(); ++it2) {
           if(*it2 == *it) break;

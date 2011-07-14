@@ -128,7 +128,7 @@ struct CommandLineArgs
       outputFile(0),
       baseURIDir(0),
       conf(&fastConf),
-      language(XQilla::XQUERY|XQilla::VERSION11),
+      language(XQilla::XQUERY|XQilla::VERSION3),
       parseFlags(0),
       xpathCompatible(false),
       quiet(false),

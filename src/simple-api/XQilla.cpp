@@ -255,7 +255,7 @@ void XQilla::compileDelayedModule(const XMLCh* queryFile, MemoryManager* memMgr)
 
   Janitor<InputSource> srcToFill(new (memMgr) LocalFileInputSource(queryFile));
 
-  DynamicContext *context = XQilla::createContext((XQilla::Language)(XQilla::XQUERY11_FULLTEXT_UPDATE
+  DynamicContext *context = XQilla::createContext((XQilla::Language)(XQilla::XQUERY3_FULLTEXT_UPDATE
                                                                      | XQilla::EXTENSIONS), 0, memMgr);
   AutoDelete<XQQuery> query(new (memMgr) XQQuery(context, true, 0, memMgr));
 
