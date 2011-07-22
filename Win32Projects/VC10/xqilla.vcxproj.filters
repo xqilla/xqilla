@@ -858,6 +858,9 @@
     <ClInclude Include="..\..\include\xqilla\functions\FuncFactory.hpp" >
       <Filter >include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\functions\FuncFactoryTemplate.hpp" >
+      <Filter >functions</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\include\xqilla\functions\RegExpFunction.hpp" >
       <Filter >include</Filter>
     </ClInclude>
@@ -1319,9 +1322,6 @@
     </ClInclude>
     <ClInclude Include="..\..\src\fastxdm\FastXDMUpdateFactory.hpp" >
       <Filter >fastxdm</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\functions\FuncFactoryTemplate.hpp" >
-      <Filter >functions</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\functions\CoreModule.hpp" >
       <Filter >functions</Filter>

@@ -818,6 +818,7 @@
     <ClInclude Include="..\..\include\xqilla\functions\FunctionYearFromDateTime.hpp" />
     <ClInclude Include="..\..\include\xqilla\functions\FunctionYearsFromDuration.hpp" />
     <ClInclude Include="..\..\include\xqilla\functions\FuncFactory.hpp" />
+    <ClInclude Include="..\..\include\xqilla\functions\FuncFactoryTemplate.hpp" />
     <ClInclude Include="..\..\include\xqilla\functions\RegExpFunction.hpp" />
     <ClInclude Include="..\..\include\xqilla\functions\XQUserFunction.hpp" />
     <ClInclude Include="..\..\include\xqilla\functions\FunctionSignature.hpp" />
@@ -972,7 +973,6 @@
     <ClInclude Include="..\..\src\fastxdm\FastXDMNodeImpl.hpp" />
     <ClInclude Include="..\..\src\fastxdm\FastXDMSequenceBuilder.hpp" />
     <ClInclude Include="..\..\src\fastxdm\FastXDMUpdateFactory.hpp" />
-    <ClInclude Include="..\..\src\functions\FuncFactoryTemplate.hpp" />
     <ClInclude Include="..\..\src\functions\CoreModule.hpp" />
     <ClInclude Include="..\..\src\functions\FnModule.hpp" />
     <ClInclude Include="..\..\src\items\DatatypeFactoryTemplate.hpp" />

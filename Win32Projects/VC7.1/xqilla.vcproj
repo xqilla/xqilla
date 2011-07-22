@@ -307,6 +307,7 @@
       <File RelativePath="..\..\include\xqilla\functions\FunctionYearFromDateTime.hpp"/>
       <File RelativePath="..\..\include\xqilla\functions\FunctionYearsFromDuration.hpp"/>
       <File RelativePath="..\..\include\xqilla\functions\FuncFactory.hpp"/>
+      <File RelativePath="..\..\include\xqilla\functions\FuncFactoryTemplate.hpp"/>
       <File RelativePath="..\..\include\xqilla\functions\RegExpFunction.hpp"/>
       <File RelativePath="..\..\include\xqilla\functions\XQUserFunction.hpp"/>
       <File RelativePath="..\..\include\xqilla\functions\FunctionSignature.hpp"/>
@@ -600,7 +601,6 @@
       <File RelativePath="..\..\src\functions\EXSLTMathFunction.cpp"/>
       <File RelativePath="..\..\src\functions\ExternalFunction.cpp"/>
       <File RelativePath="..\..\src\functions\FuncFactory.cpp"/>
-      <File RelativePath="..\..\src\functions\FuncFactoryTemplate.hpp"/>
       <File RelativePath="..\..\src\functions\FunctionAbs.cpp"/>
       <File RelativePath="..\..\src\functions\FunctionAcos.cpp"/>
       <File RelativePath="..\..\src\functions\FunctionAdjustDateTimeToTimezone.cpp"/>

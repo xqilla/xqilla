@@ -656,7 +656,6 @@ src/functions/ExternalFunction.cpp \
 src/functions/XQillaFunction.cpp \
 src/functions/FunctionParseXML.cpp \
 src/functions/FuncFactory.cpp \
-src/functions/FuncFactoryTemplate.hpp \
 src/functions/FunctionLookup.cpp \
 src/functions/FunctionAbs.cpp \
 src/functions/FunctionAcos.cpp \

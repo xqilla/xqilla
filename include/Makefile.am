@@ -256,6 +256,7 @@ xqilla/functions/FunctionYearFromDate.hpp \
 xqilla/functions/FunctionYearFromDateTime.hpp \
 xqilla/functions/FunctionYearsFromDuration.hpp \
 xqilla/functions/FuncFactory.hpp \
+xqilla/functions/FuncFactoryTemplate.hpp \
 xqilla/functions/RegExpFunction.hpp \
 xqilla/functions/XQUserFunction.hpp \
 xqilla/functions/FunctionSignature.hpp \

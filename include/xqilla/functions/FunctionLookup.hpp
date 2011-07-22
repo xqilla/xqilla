@@ -72,6 +72,7 @@ public:
                                        const FunctionLookup *contextTable);
   static const ExternalFunction *lookUpGlobalExternalFunction(const XMLCh* URI, const XMLCh* fname, size_t numArgs,
                                                               const FunctionLookup *contextTable);
+  static XPath2MemoryManager *getMemoryManager();
   static void initialize();
   static void terminate();
 private:

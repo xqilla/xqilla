@@ -391,6 +391,7 @@
         <file name='include/xqilla/functions/FunctionYearFromDateTime.hpp'/>
         <file name='include/xqilla/functions/FunctionYearsFromDuration.hpp'/>
         <file name='include/xqilla/functions/FuncFactory.hpp'/>
+        <file name='include/xqilla/functions/FuncFactoryTemplate.hpp'/>
         <file name='include/xqilla/functions/RegExpFunction.hpp'/>
         <file name='include/xqilla/functions/XQUserFunction.hpp'/>
         <file name='include/xqilla/functions/FunctionSignature.hpp'/>
@@ -684,7 +685,6 @@
         <file name="src/functions/EXSLTMathFunction.cpp"/>
         <file name="src/functions/ExternalFunction.cpp"/>
         <file name="src/functions/FuncFactory.cpp"/>
-        <file name="src/functions/FuncFactoryTemplate.hpp"/>
         <file name="src/functions/FunctionAbs.cpp"/>
         <file name="src/functions/FunctionAcos.cpp"/>
         <file name="src/functions/FunctionAdjustDateTimeToTimezone.cpp"/>

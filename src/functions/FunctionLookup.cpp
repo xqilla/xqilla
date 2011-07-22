@@ -149,6 +149,12 @@ void FunctionLookup::copyExternalFunctionsTo(DynamicContext *context) const
 static void initGlobalTable(FunctionLookup *t, MemoryManager *memMgr);
 
 // static
+XPath2MemoryManager* FunctionLookup::getMemoryManager()
+{
+  return g_memMgr;
+}
+
+// static
 void FunctionLookup::initialize()
 {
   /* global table is allocated via the memory manager, so
@@ -217,7 +223,7 @@ const ExternalFunction *FunctionLookup::lookUpGlobalExternalFunction(
   return ef;
 }
 
-#include "FuncFactoryTemplate.hpp"
+#include <xqilla/functions/FuncFactoryTemplate.hpp>
 #include <xqilla/functions/FunctionAbs.hpp>
 #include <xqilla/functions/FunctionBaseURI.hpp>
 #include <xqilla/functions/FunctionCeiling.hpp>
