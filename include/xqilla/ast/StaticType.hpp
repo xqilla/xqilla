@@ -69,7 +69,7 @@ struct XQILLA_API TypeFlags
 
     FUNCTION            = 0x040000000,
     TUPLE               = 0x080000000,
-    EXPRESSION          = 0x100000000,
+    EXPRESSION          = 0x000000080,
 
     NODE                = (DOCUMENT | ELEMENT | ATTRIBUTE | TEXT | PI | COMMENT |
                            NAMESPACE),
