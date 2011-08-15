@@ -124,8 +124,6 @@ Result ASTNodeImpl::iterateResult(const Result &contextItems, DynamicContext* co
 
 BoolResult ASTNodeImpl::boolResult(DynamicContext* context) const
 {
-  std::cerr << "ASTNodeImpl::boolResult: " << ASTToXML().print(this, context) << "\n";
-
   Item::Ptr item = createResult(context)->next(context);
   return item.isNull() ? BoolResult::Null :
     ((ATBooleanOrDerived*)item.get())->isTrue() ? BoolResult::True :

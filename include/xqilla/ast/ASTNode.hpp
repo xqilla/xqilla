@@ -34,7 +34,7 @@ class StaticAnalysis;
 class PendingUpdateList;
 class EventHandler;
 class StaticTyper;
-class BoolResult;
+struct BoolResult;
 
 class XQILLA_API ASTNode : public LocationInfo
 {

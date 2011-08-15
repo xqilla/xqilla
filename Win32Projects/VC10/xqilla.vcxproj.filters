@@ -378,9 +378,6 @@
     <ClInclude Include="..\..\include\xqilla\axis\NodeTest.hpp" >
       <Filter >include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\xqilla\axis\SelfAxis.hpp" >
-      <Filter >include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\include\xqilla\context\ContextHelpers.hpp" >
       <Filter >include</Filter>
     </ClInclude>
@@ -858,8 +855,8 @@
     <ClInclude Include="..\..\include\xqilla\functions\FuncFactory.hpp" >
       <Filter >include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\functions\FuncFactoryTemplate.hpp" >
-      <Filter >functions</Filter>
+    <ClInclude Include="..\..\include\xqilla\functions\FuncFactoryTemplate.hpp" >
+      <Filter >include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\xqilla\functions\RegExpFunction.hpp" >
       <Filter >include</Filter>
@@ -1131,13 +1128,7 @@
     <ClInclude Include="..\..\include\xqilla\runtime\ResultImpl.hpp" >
       <Filter >include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\xqilla\runtime\SingleResult.hpp" >
-      <Filter >include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\include\xqilla\runtime\SequenceResult.hpp" >
-      <Filter >include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\xqilla\runtime\LazySequenceResult.hpp" >
       <Filter >include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\xqilla\runtime\EmptyResult.hpp" >
@@ -1641,9 +1632,6 @@
       <Filter >ast</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\axis\NodeTest.cpp" >
-      <Filter >axis</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\axis\SelfAxis.cpp" >
       <Filter >axis</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\context\UpdateFactory.cpp" >
@@ -2495,9 +2483,6 @@
     <ClCompile Include="..\..\src\runtime\EmptyResult.cpp" >
       <Filter >runtime</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\runtime\LazySequenceResult.cpp" >
-      <Filter >runtime</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\runtime\Result.cpp" >
       <Filter >runtime</Filter>
     </ClCompile>
@@ -2514,9 +2499,6 @@
       <Filter >runtime</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\runtime\SequenceResult.cpp" >
-      <Filter >runtime</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\runtime\SingleResult.cpp" >
       <Filter >runtime</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\schema\AnyAtomicTypeDatatypeValidator.cpp" >

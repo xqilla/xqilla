@@ -231,7 +231,6 @@
         <file name='include/xqilla/fulltext/FTContent.hpp'/>
         <file name='include/xqilla/fulltext/FTWindow.hpp'/>
         <file name='include/xqilla/axis/NodeTest.hpp'/>
-        <file name='include/xqilla/axis/SelfAxis.hpp'/>
         <file name='include/xqilla/context/ContextHelpers.hpp'/>
         <file name='include/xqilla/context/DynamicContext.hpp'/>
         <file name='include/xqilla/context/StaticContext.hpp'/>
@@ -482,9 +481,7 @@
         <file name='include/xqilla/runtime/ResultBufferImpl.hpp'/>
         <file name='include/xqilla/runtime/Result.hpp'/>
         <file name='include/xqilla/runtime/ResultImpl.hpp'/>
-        <file name='include/xqilla/runtime/SingleResult.hpp'/>
         <file name='include/xqilla/runtime/SequenceResult.hpp'/>
-        <file name='include/xqilla/runtime/LazySequenceResult.hpp'/>
         <file name='include/xqilla/runtime/EmptyResult.hpp'/>
         <file name='include/xqilla/schema/DocumentCache.hpp'/>
         <file name='include/xqilla/schema/SequenceType.hpp'/>
@@ -590,7 +587,6 @@
       </filter>
       <filter name="axis" guid="213e6d72-164a-4abc-9d81-ea4ec1fa913e">
         <file name="src/axis/NodeTest.cpp"/>
-        <file name="src/axis/SelfAxis.cpp"/>
       </filter>
       <filter name="context" guid="7654848b-9dc8-466b-869c-b3ec4586f839">
         <file name="src/context/UpdateFactory.cpp"/>
@@ -939,14 +935,12 @@
       <filter name="runtime" guid="8fee88eb-8985-4e6c-85c1-2315f15b33df">
         <file name="src/runtime/ClosureResult.cpp"/>
         <file name="src/runtime/EmptyResult.cpp"/>
-        <file name="src/runtime/LazySequenceResult.cpp"/>
         <file name="src/runtime/Result.cpp"/>
         <file name="src/runtime/ResultBuffer.cpp"/>
         <file name="src/runtime/ResultBufferImpl.cpp"/>
         <file name="src/runtime/ResultImpl.cpp"/>
         <file name="src/runtime/Sequence.cpp"/>
         <file name="src/runtime/SequenceResult.cpp"/>
-        <file name="src/runtime/SingleResult.cpp"/>
       </filter>
       <filter name="schema" guid="74d32292-bdcc-478d-8f5a-02fe04cde6af">
         <file name="src/schema/AnyAtomicTypeDatatypeValidator.cpp"/>

@@ -521,7 +521,8 @@ declare function local:getOutputName($project, $vsversion)
 
 declare function local:getVsversion()
 {
-  distinct-values(doc($projectFile)//visualstudioversion)
+  (: Only be suitable when version >= 10.0 :)
+  distinct-values(doc($projectFile)//visualstudioversion[fn:number(.) >= 10.0])
 };
 
 declare function local:getProjects()
@@ -531,7 +532,7 @@ declare function local:getProjects()
 
 for $vsversion in local:getVsversion()
 for $project in  local:getProjects()
-return 
+return
 put(
 <Project DefaultTargets="Build" ToolsVersion="{$msbversion}" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   {local:generateProjectConfigurations($project, $vsversion)}

@@ -159,62 +159,62 @@
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" >..\..\build\windows\VC10\$(Platform)\Debug\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" >./$(OutDir)xqilla\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" >false</LinkIncremental>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" >xqilla22d</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" >xqilla23d</TargetName>
     <TargetExt Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" >.dll</TargetExt>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Static Debug|Win32'" >..\..\build\windows\VC10\$(Platform)\Static Debug\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Static Debug|Win32'" >./$(OutDir)xqilla\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Static Debug|Win32'" >false</LinkIncremental>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='Static Debug|Win32'" >xqilla22sd</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Static Debug|Win32'" >xqilla23sd</TargetName>
     <TargetExt Condition="'$(Configuration)|$(Platform)'=='Static Debug|Win32'" >.lib</TargetExt>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" >..\..\build\windows\VC10\$(Platform)\Release\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" >./$(OutDir)xqilla\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" >false</LinkIncremental>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" >xqilla22</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" >xqilla23</TargetName>
     <TargetExt Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" >.dll</TargetExt>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Static Release|Win32'" >..\..\build\windows\VC10\$(Platform)\Static Release\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Static Release|Win32'" >./$(OutDir)xqilla\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Static Release|Win32'" >false</LinkIncremental>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='Static Release|Win32'" >xqilla22s</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Static Release|Win32'" >xqilla23s</TargetName>
     <TargetExt Condition="'$(Configuration)|$(Platform)'=='Static Release|Win32'" >.lib</TargetExt>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" >..\..\build\windows\VC10\$(Platform)\Debug\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" >./$(OutDir)xqilla\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" >false</LinkIncremental>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" >xqilla22d</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" >xqilla23d</TargetName>
     <TargetExt Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" >.dll</TargetExt>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Static Debug|x64'" >..\..\build\windows\VC10\$(Platform)\Static Debug\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Static Debug|x64'" >./$(OutDir)xqilla\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Static Debug|x64'" >false</LinkIncremental>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='Static Debug|x64'" >xqilla22sd</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Static Debug|x64'" >xqilla23sd</TargetName>
     <TargetExt Condition="'$(Configuration)|$(Platform)'=='Static Debug|x64'" >.lib</TargetExt>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'" >..\..\build\windows\VC10\$(Platform)\Release\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'" >./$(OutDir)xqilla\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|x64'" >false</LinkIncremental>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|x64'" >xqilla22</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|x64'" >xqilla23</TargetName>
     <TargetExt Condition="'$(Configuration)|$(Platform)'=='Release|x64'" >.dll</TargetExt>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Static Release|x64'" >..\..\build\windows\VC10\$(Platform)\Static Release\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Static Release|x64'" >./$(OutDir)xqilla\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Static Release|x64'" >false</LinkIncremental>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='Static Release|x64'" >xqilla22s</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Static Release|x64'" >xqilla23s</TargetName>
     <TargetExt Condition="'$(Configuration)|$(Platform)'=='Static Release|x64'" >.lib</TargetExt>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|IA64'" >..\..\build\windows\VC10\$(Platform)\Debug\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|IA64'" >./$(OutDir)xqilla\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|IA64'" >false</LinkIncremental>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|IA64'" >xqilla22d</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|IA64'" >xqilla23d</TargetName>
     <TargetExt Condition="'$(Configuration)|$(Platform)'=='Debug|IA64'" >.dll</TargetExt>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Static Debug|IA64'" >..\..\build\windows\VC10\$(Platform)\Static Debug\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Static Debug|IA64'" >./$(OutDir)xqilla\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Static Debug|IA64'" >false</LinkIncremental>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='Static Debug|IA64'" >xqilla22sd</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Static Debug|IA64'" >xqilla23sd</TargetName>
     <TargetExt Condition="'$(Configuration)|$(Platform)'=='Static Debug|IA64'" >.lib</TargetExt>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|IA64'" >..\..\build\windows\VC10\$(Platform)\Release\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|IA64'" >./$(OutDir)xqilla\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|IA64'" >false</LinkIncremental>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|IA64'" >xqilla22</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|IA64'" >xqilla23</TargetName>
     <TargetExt Condition="'$(Configuration)|$(Platform)'=='Release|IA64'" >.dll</TargetExt>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Static Release|IA64'" >..\..\build\windows\VC10\$(Platform)\Static Release\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Static Release|IA64'" >./$(OutDir)xqilla\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Static Release|IA64'" >false</LinkIncremental>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='Static Release|IA64'" >xqilla22s</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Static Release|IA64'" >xqilla23s</TargetName>
     <TargetExt Condition="'$(Configuration)|$(Platform)'=='Static Release|IA64'" >.lib</TargetExt>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" >
@@ -241,10 +241,10 @@
       <AdditionalDependencies>xerces-c_3d.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>../../../xerces-c-src/Build/Win32/VC7.1/$(ConfigurationName);../../../xerces-c-src/Build/Win32/VC8/$(ConfigurationName);../../../xerces-c-src/Build/Win32/VC10/$(ConfigurationName);../lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
-      <ProgramDatabaseFile>$(OutDir)xqilla22d.pdb</ProgramDatabaseFile>
+      <ProgramDatabaseFile>$(OutDir)xqilla23d.pdb</ProgramDatabaseFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <ImportLibrary >$(OutDir)xqilla22d.lib</ImportLibrary>
+      <ImportLibrary >$(OutDir)xqilla23d.lib</ImportLibrary>
       <OptimizeReferences>true</OptimizeReferences>
       <TargetMachine>NotSet</TargetMachine>
     </Link>
@@ -298,10 +298,10 @@
       <AdditionalDependencies>xerces-c_3.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>../../../xerces-c-src/Build/Win32/VC7.1/$(ConfigurationName);../../../xerces-c-src/Build/Win32/VC8/$(ConfigurationName);../../../xerces-c-src/Build/Win32/VC10/$(ConfigurationName);../lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
-      <ProgramDatabaseFile>$(OutDir)xqilla22.pdb</ProgramDatabaseFile>
+      <ProgramDatabaseFile>$(OutDir)xqilla23.pdb</ProgramDatabaseFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <ImportLibrary >$(OutDir)xqilla22.lib</ImportLibrary>
+      <ImportLibrary >$(OutDir)xqilla23.lib</ImportLibrary>
       <OptimizeReferences>true</OptimizeReferences>
       <TargetMachine>NotSet</TargetMachine>
     </Link>
@@ -355,10 +355,10 @@
       <AdditionalDependencies>xerces-c_3d.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>../../../xerces-c-src/Build/Win64/VC8/$(ConfigurationName);../../../xerces-c-src/Build/Win64/VC10/$(ConfigurationName);../lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
-      <ProgramDatabaseFile>$(OutDir)xqilla22d.pdb</ProgramDatabaseFile>
+      <ProgramDatabaseFile>$(OutDir)xqilla23d.pdb</ProgramDatabaseFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <ImportLibrary >$(OutDir)xqilla22d.lib</ImportLibrary>
+      <ImportLibrary >$(OutDir)xqilla23d.lib</ImportLibrary>
       <OptimizeReferences>true</OptimizeReferences>
       <TargetMachine>NotSet</TargetMachine>
     </Link>
@@ -412,10 +412,10 @@
       <AdditionalDependencies>xerces-c_3.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>../../../xerces-c-src/Build/Win64/VC8/$(ConfigurationName);../../../xerces-c-src/Build/Win64/VC10/$(ConfigurationName);../lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
-      <ProgramDatabaseFile>$(OutDir)xqilla22.pdb</ProgramDatabaseFile>
+      <ProgramDatabaseFile>$(OutDir)xqilla23.pdb</ProgramDatabaseFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <ImportLibrary >$(OutDir)xqilla22.lib</ImportLibrary>
+      <ImportLibrary >$(OutDir)xqilla23.lib</ImportLibrary>
       <OptimizeReferences>true</OptimizeReferences>
       <TargetMachine>NotSet</TargetMachine>
     </Link>
@@ -469,10 +469,10 @@
       <AdditionalDependencies>xerces-c_3d.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>../lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
-      <ProgramDatabaseFile>$(OutDir)xqilla22d.pdb</ProgramDatabaseFile>
+      <ProgramDatabaseFile>$(OutDir)xqilla23d.pdb</ProgramDatabaseFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <ImportLibrary >$(OutDir)xqilla22d.lib</ImportLibrary>
+      <ImportLibrary >$(OutDir)xqilla23d.lib</ImportLibrary>
       <OptimizeReferences>true</OptimizeReferences>
       <TargetMachine>NotSet</TargetMachine>
     </Link>
@@ -526,10 +526,10 @@
       <AdditionalDependencies>xerces-c_3.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>../lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
-      <ProgramDatabaseFile>$(OutDir)xqilla22.pdb</ProgramDatabaseFile>
+      <ProgramDatabaseFile>$(OutDir)xqilla23.pdb</ProgramDatabaseFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <ImportLibrary >$(OutDir)xqilla22.lib</ImportLibrary>
+      <ImportLibrary >$(OutDir)xqilla23.lib</ImportLibrary>
       <OptimizeReferences>true</OptimizeReferences>
       <TargetMachine>NotSet</TargetMachine>
     </Link>
@@ -658,7 +658,6 @@
     <ClInclude Include="..\..\include\xqilla\fulltext\FTContent.hpp" />
     <ClInclude Include="..\..\include\xqilla\fulltext\FTWindow.hpp" />
     <ClInclude Include="..\..\include\xqilla\axis\NodeTest.hpp" />
-    <ClInclude Include="..\..\include\xqilla\axis\SelfAxis.hpp" />
     <ClInclude Include="..\..\include\xqilla\context\ContextHelpers.hpp" />
     <ClInclude Include="..\..\include\xqilla\context\DynamicContext.hpp" />
     <ClInclude Include="..\..\include\xqilla\context\StaticContext.hpp" />
@@ -909,9 +908,7 @@
     <ClInclude Include="..\..\include\xqilla\runtime\ResultBufferImpl.hpp" />
     <ClInclude Include="..\..\include\xqilla\runtime\Result.hpp" />
     <ClInclude Include="..\..\include\xqilla\runtime\ResultImpl.hpp" />
-    <ClInclude Include="..\..\include\xqilla\runtime\SingleResult.hpp" />
     <ClInclude Include="..\..\include\xqilla\runtime\SequenceResult.hpp" />
-    <ClInclude Include="..\..\include\xqilla\runtime\LazySequenceResult.hpp" />
     <ClInclude Include="..\..\include\xqilla\runtime\EmptyResult.hpp" />
     <ClInclude Include="..\..\include\xqilla\schema\DocumentCache.hpp" />
     <ClInclude Include="..\..\include\xqilla\schema\SequenceType.hpp" />
@@ -1081,7 +1078,6 @@
     <ClCompile Include="..\..\src\ast\XQValidate.cpp" />
     <ClCompile Include="..\..\src\ast\XQVariable.cpp" />
     <ClCompile Include="..\..\src\axis\NodeTest.cpp" />
-    <ClCompile Include="..\..\src\axis\SelfAxis.cpp" />
     <ClCompile Include="..\..\src\context\UpdateFactory.cpp" />
     <ClCompile Include="..\..\src\context\impl\CodepointCollation.cpp" />
     <ClCompile Include="..\..\src\context\impl\CollationImpl.cpp" />
@@ -1365,14 +1361,12 @@
     <ClCompile Include="..\..\src\parser\XQParser.cpp" />
     <ClCompile Include="..\..\src\runtime\ClosureResult.cpp" />
     <ClCompile Include="..\..\src\runtime\EmptyResult.cpp" />
-    <ClCompile Include="..\..\src\runtime\LazySequenceResult.cpp" />
     <ClCompile Include="..\..\src\runtime\Result.cpp" />
     <ClCompile Include="..\..\src\runtime\ResultBuffer.cpp" />
     <ClCompile Include="..\..\src\runtime\ResultBufferImpl.cpp" />
     <ClCompile Include="..\..\src\runtime\ResultImpl.cpp" />
     <ClCompile Include="..\..\src\runtime\Sequence.cpp" />
     <ClCompile Include="..\..\src\runtime\SequenceResult.cpp" />
-    <ClCompile Include="..\..\src\runtime\SingleResult.cpp" />
     <ClCompile Include="..\..\src\schema\AnyAtomicTypeDatatypeValidator.cpp" />
     <ClCompile Include="..\..\src\schema\DocumentCacheImpl.cpp" />
     <ClCompile Include="..\..\src\schema\FaxppDocumentCacheImpl.cpp" />

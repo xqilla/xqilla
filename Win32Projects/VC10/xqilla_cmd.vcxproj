@@ -238,7 +238,7 @@
     </ClCompile>
     <Link >
       <AdditionalOptions >/machine:x86 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>xqilla22d.lib;xerces-c_3d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>xqilla23d.lib;xerces-c_3d.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(OutDir);../../../xerces-c-src/Build/Win32/VC7.1/$(ConfigurationName);../../../xerces-c-src/Build/Win32/VC8/$(ConfigurationName);../../../xerces-c-src/Build/Win32/VC10/$(ConfigurationName);../lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <ProgramDatabaseFile>$(OutDir)xqilla.pdb</ProgramDatabaseFile>
@@ -269,7 +269,7 @@
     </ClCompile>
     <Link >
       <AdditionalOptions >/machine:x86 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>xqilla22sd.lib;xerces-c_static_3d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>xqilla23sd.lib;xerces-c_static_3d.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(OutDir);../../../xerces-c-src/Build/Win32/VC7.1/$(ConfigurationName);../../../xerces-c-src/Build/Win32/VC8/$(ConfigurationName);../../../xerces-c-src/Build/Win32/VC10/$(ConfigurationName);../lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <ProgramDatabaseFile>$(OutDir)xqilla.pdb</ProgramDatabaseFile>
@@ -301,7 +301,7 @@
     </ClCompile>
     <Link >
       <AdditionalOptions >/machine:x86 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>xqilla22.lib;xerces-c_3.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>xqilla23.lib;xerces-c_3.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(OutDir);../../../xerces-c-src/Build/Win32/VC7.1/$(ConfigurationName);../../../xerces-c-src/Build/Win32/VC8/$(ConfigurationName);../../../xerces-c-src/Build/Win32/VC10/$(ConfigurationName);../lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <ProgramDatabaseFile>$(OutDir)xqilla.pdb</ProgramDatabaseFile>
@@ -333,7 +333,7 @@
     </ClCompile>
     <Link >
       <AdditionalOptions >/machine:x86 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>xqilla22s.lib;xerces-c_static_3.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>xqilla23s.lib;xerces-c_static_3.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(OutDir);../../../xerces-c-src/Build/Win32/VC7.1/$(ConfigurationName);../../../xerces-c-src/Build/Win32/VC8/$(ConfigurationName);../../../xerces-c-src/Build/Win32/VC10/$(ConfigurationName);../lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <ProgramDatabaseFile>$(OutDir)xqilla.pdb</ProgramDatabaseFile>
@@ -364,7 +364,7 @@
     </ClCompile>
     <Link >
       <AdditionalOptions >/machine:x64 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>xqilla22d.lib;xerces-c_3d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>xqilla23d.lib;xerces-c_3d.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(OutDir);../../../xerces-c-src/Build/Win64/VC8/$(ConfigurationName);../../../xerces-c-src/Build/Win64/VC10/$(ConfigurationName);../lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <ProgramDatabaseFile>$(OutDir)xqilla.pdb</ProgramDatabaseFile>
@@ -395,7 +395,7 @@
     </ClCompile>
     <Link >
       <AdditionalOptions >/machine:x64 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>xqilla22sd.lib;xerces-c_static_3d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>xqilla23sd.lib;xerces-c_static_3d.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(OutDir);../../../xerces-c-src/Build/Win64/VC8/$(ConfigurationName);../../../xerces-c-src/Build/Win64/VC10/$(ConfigurationName);../lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <ProgramDatabaseFile>$(OutDir)xqilla.pdb</ProgramDatabaseFile>
@@ -427,7 +427,7 @@
     </ClCompile>
     <Link >
       <AdditionalOptions >/machine:x64 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>xqilla22.lib;xerces-c_3.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>xqilla23.lib;xerces-c_3.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(OutDir);../../../xerces-c-src/Build/Win64/VC8/$(ConfigurationName);../../../xerces-c-src/Build/Win64/VC10/$(ConfigurationName);../lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <ProgramDatabaseFile>$(OutDir)xqilla.pdb</ProgramDatabaseFile>
@@ -459,7 +459,7 @@
     </ClCompile>
     <Link >
       <AdditionalOptions >/machine:x64 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>xqilla22s.lib;xerces-c_static_3.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>xqilla23s.lib;xerces-c_static_3.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(OutDir);../../../xerces-c-src/Build/Win64/VC8/$(ConfigurationName);../../../xerces-c-src/Build/Win64/VC10/$(ConfigurationName);../lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <ProgramDatabaseFile>$(OutDir)xqilla.pdb</ProgramDatabaseFile>
@@ -490,7 +490,7 @@
     </ClCompile>
     <Link >
       <AdditionalOptions >/machine:IA64 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>xqilla22d.lib;xerces-c_3d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>xqilla23d.lib;xerces-c_3d.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(OutDir);../lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <ProgramDatabaseFile>$(OutDir)xqilla.pdb</ProgramDatabaseFile>
@@ -521,7 +521,7 @@
     </ClCompile>
     <Link >
       <AdditionalOptions >/machine:IA64 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>xqilla22sd.lib;xerces-c_static_3d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>xqilla23sd.lib;xerces-c_static_3d.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(OutDir);../lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <ProgramDatabaseFile>$(OutDir)xqilla.pdb</ProgramDatabaseFile>
@@ -553,7 +553,7 @@
     </ClCompile>
     <Link >
       <AdditionalOptions >/machine:IA64 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>xqilla22.lib;xerces-c_3.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>xqilla23.lib;xerces-c_3.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(OutDir);../lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <ProgramDatabaseFile>$(OutDir)xqilla.pdb</ProgramDatabaseFile>
@@ -585,7 +585,7 @@
     </ClCompile>
     <Link >
       <AdditionalOptions >/machine:IA64 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>xqilla22s.lib;xerces-c_static_3.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>xqilla23s.lib;xerces-c_static_3.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(OutDir);../lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <ProgramDatabaseFile>$(OutDir)xqilla.pdb</ProgramDatabaseFile>
