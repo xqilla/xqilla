@@ -475,7 +475,9 @@ public:
 protected:
   virtual ASTNode *optimizeExprSubstitution(XQExprSubstitution *expr)
   {
-    Item::Ptr item = subs_->get(expr->getURI(), expr->getName(), context_)->next(context_);
+    Result result(0);
+    subs_->get(expr->getURI(), expr->getName(), context_, result);
+    Item::Ptr item = result->next(context_);
     if(item.isNull() || item->getType() != Item::EXPRESSION) {
       XMLBuffer buf;
       buf.set(X("Substitute expression not found: {"));

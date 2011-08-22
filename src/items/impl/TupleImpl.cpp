@@ -134,12 +134,13 @@ void TupleImpl::add(const AnyAtomicType::Ptr &key, const Result &value)
   values_.put(key, ResultBuffer(value));
 }
 
-Result TupleImpl::get(const XMLCh *uri, const XMLCh *name, const DynamicContext *context) const
+bool TupleImpl::get(const XMLCh *uri, const XMLCh *name, const DynamicContext *context, Result &result) const
 {
   ATQNameOrDerived::Ptr qname = context->getItemFactory()->createQName(uri, 0, name, context);
   ResultBuffer *buffer = const_cast<ResultBuffer*>(values_.get(qname));
-  if(!buffer) return 0;
-  return buffer->createResult();
+  if(!buffer) return false;
+  result = buffer->createResult();
+  return true;
 }
 
 Result TupleImpl::get(const AnyAtomicType::Ptr &key) const

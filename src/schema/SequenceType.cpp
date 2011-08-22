@@ -1165,8 +1165,9 @@ bool ItemType::matches(const Tuple::Ptr &tuple, DynamicContext* context) const
 
       TupleMembers::iterator i = const_cast<TupleMembers*>(tupleMembers_)->begin();
       for(; i != const_cast<TupleMembers*>(tupleMembers_)->end(); ++i) {
-        if(!i.getValue()->getType()->matches(tuple->get(i.getValue()->getURI(),
-              i.getValue()->getName(), context), context))
+        Result value(0);
+        tuple->get(i.getValue()->getURI(), i.getValue()->getName(), context, value);
+        if(!i.getValue()->getType()->matches(value, context))
           return false;
       }
 

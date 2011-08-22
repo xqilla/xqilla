@@ -64,7 +64,7 @@ public:
   void add(const XMLCh *uri, const XMLCh *name, const Result &value, const DynamicContext *context);
   void add(const AnyAtomicType::Ptr &key, const Result &value);
 
-  virtual Result get(const XMLCh *uri, const XMLCh *name, const DynamicContext *context) const;
+  virtual bool get(const XMLCh *uri, const XMLCh *name, const DynamicContext *context, Result &result) const;
   virtual void getInScopeVariables(std::vector<std::pair<const XMLCh*, const XMLCh*> > &variables) const;
 
   virtual Result get(const AnyAtomicType::Ptr &key) const;

@@ -128,7 +128,8 @@ public:
                 X("Context item is not a tuple while executing a tuple member expression [err:TBD]"));
       }
 
-      stepResult_ = ((Tuple*)item.get())->get(step_->getURI(), step_->getName(), context);
+      stepResult_ = 0;
+      ((Tuple*)item.get())->get(step_->getURI(), step_->getName(), context, stepResult_);
     }
 
     return result;
