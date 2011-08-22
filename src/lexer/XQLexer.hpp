@@ -191,6 +191,7 @@ public:
   bool isUpdate() const { return (m_language & XQilla::UPDATE) != 0; }
   bool isVersion3() const { return (m_language & XQilla::VERSION3) != 0; }
   bool isExtensions() const { return (m_language & XQilla::EXTENSIONS) != 0; }
+  bool isCarrot() const { return (m_language & XQilla::CARROT) != 0; }
 
   void setVersion3(bool value)
   {

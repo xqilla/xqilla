@@ -534,6 +534,13 @@ void XQLexer::undoLessThan()
     return error("Unrecognized token '!'");
   }
 }
+<INITIAL>"^" {
+  if(isCarrot()) {
+    RECOGNIZE(_CARROT_);
+  } else {
+    return error("Unrecognized token '^'");
+  }
+}
 <INITIAL>"count" {
   if(isVersion3() && lookAhead() == _DOLLAR_) {
     RECOGNIZE_VALUE(_COUNT_, yytext);

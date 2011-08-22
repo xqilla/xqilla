@@ -380,6 +380,7 @@ namespace XQParser {
 %token _LANG_REWRITE_RULE_             "<Language: Rewrite Rule>"
 %token _LANG_REWRITE_PATTERN_          "<Language: Rewrite Pattern>"
 %token _LANG_SEQUENCE_TYPE_            "<Language: SequenceType>"
+%token _LANG_CARROT_                   "<Language: Carrot>"
 
 %token _DOLLAR_ "$"
 %token _COLON_EQUALS_ ":="
@@ -430,6 +431,7 @@ namespace XQParser {
 %token _MINUS_GREATER_THAN_    "->"
 %token _BAR_BAR_               "||"
 %token _BANG_                  "!"
+%token _CARROT_                "^"
 
 
 %token <str> _INTEGER_LITERAL_ "<integer literal>"
@@ -715,11 +717,11 @@ namespace XQParser {
 %type <globalVar>    GlobalVariableAttrs_XSLT GlobalParamAttrs_XSLT
 %type <alias>        TypeAliasAttrs_XSLT
 %type <argSpec>      Param Param_XSLT ParamAttrs_XSLT TupleTestEntry
-%type <argSpecs>     ParamList FunctionParamList TemplateParamList ParamList_XSLT FunctionTypeArguments
+%type <argSpecs>     ParamList FunctionParamList TemplateParamList ParamList_XSLT FunctionTypeArguments CarrotTemplateParams
 %type <tupleMembers> TupleTestEntryList
-%type <astNode>      Expr ExprSingle OrExpr AndExpr EnclosedExpr FLWORExpr IfExpr ComparisonExpr DecimalLiteral VarRef
+%type <astNode>      Expr ExprSingle OrExpr AndExpr EnclosedExpr FLWORExpr IfExpr ComparisonExpr DecimalLiteral VarRef CarrotApplyOptionalExpr
 %type <astNode>      RangeExpr AdditiveExpr MultiplicativeExpr UnionExpr QuantifiedExpr StringLiteral Literal ContextItemExpr
-%type <astNode>      UnaryExpr ValidateExpr CastExpr TreatExpr IntersectExceptExpr ParenthesizedExpr PrimaryExpr FunctionCall
+%type <astNode>      UnaryExpr ValidateExpr CastExpr TreatExpr IntersectExceptExpr ParenthesizedExpr PrimaryExpr FunctionCall CarrotApply
 %type <astNode>      RelativePathExpr StepExpr AxisStep PostfixExpr TypeswitchExpr ValueExpr PathExpr NumericLiteral IntegerLiteral 
 %type <astNode>      CastableExpr Constructor ComputedConstructor DirElemConstructor DirCommentConstructor DirPIConstructor  
 %type <astNode>      CompElemConstructor CompTextConstructor CompPIConstructor CompCommentConstructor OrderedExpr UnorderedExpr
@@ -763,7 +765,7 @@ namespace XQParser {
 %type <copyBinding>     TransformBinding
 %type <copyBindingList> TransformBindingList
 %type <templateArg>     TemplateArgument WithParamAttrs_XSLT WithParam_XSLT
-%type <templateArgs>    TemplateArgumentList ApplyTemplatesContent_XSLT CallTemplateContent_XSLT
+%type <templateArgs>    TemplateArgumentList ApplyTemplatesContent_XSLT CallTemplateContent_XSLT CarrotApplyArgs
 %type <tupleNode>       ForBinding LetBinding WhereClause FLWORTuples OrderByClause OrderSpec OrderSpecList CountClause
 %type <tupleNode>       ForClause LetClause ForBindingList LetBindingList QuantifyBinding QuantifyBindingList InitialClause IntermediateClause
 %type <tupleNode>       TupleEntryList TupleEntry
@@ -775,8 +777,8 @@ namespace XQParser {
 %type <str>             PositionalVar SchemaPrefix URILiteral FTScoreVar DirCommentContents DirElemConstructorQName
 %type <str>             FunctionName QNameValue VarName NCName DirPIContents PragmaContents Number_XSLT CaseClauseVariable
 
-%type <modeList>        TemplateModes_XSLT TemplateDeclModesSection TemplateDeclModes
-%type <mode>            ApplyTemplatesMode_XSLT ApplyTemplatesMode TemplateDeclMode
+%type <modeList>        TemplateModes_XSLT TemplateDeclModesSection TemplateDeclModes CarrotModes CarrotModeList
+%type <mode>            ApplyTemplatesMode_XSLT ApplyTemplatesMode TemplateDeclMode CarrotApplyMode
 %type <signature>       AnnotatedDeclAnnotations
 %type <annotation>      Annotation CompatibilityAnnotation AnnotatedDeclAnnotation
 %type <boolean>         PreserveMode InheritMode
@@ -820,6 +822,7 @@ SelectLanguage:
   {
     QP->_seqType = $2;
   }
+  | _LANG_CARROT_ XQueryNamespaces Carrot
   ;
 
 XQueryNamespaces:
@@ -827,6 +830,150 @@ XQueryNamespaces:
   {
     BuiltInModules::addNamespaces(CONTEXT);
   }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// Carrot
+
+Carrot:
+    CarrotProlog
+  {
+    SequenceType *optionalString =
+      WRAP(@1, new (MEMMGR) SequenceType((ItemType*)&ItemType::ANY_ATOMIC_TYPE, SequenceType::QUESTION_MARK));
+
+    XQGlobalVariable *nameVar =
+      WRAP(@1, new (MEMMGR) XQGlobalVariable(0, optionalString,
+                                             WRAP(@1, new (MEMMGR) XQSequence(MEMMGR)), MEMMGR, /*isParam*/true));
+    nameVar->setVariableURI(XQillaFunction::XMLChFunctionURI);
+    nameVar->setVariableLocalName(var_name);
+
+    QP->_query->addVariable(nameVar);
+
+    ASTNode *nameVarRef1 = WRAP(@1, new (MEMMGR) XQVariable(XQillaFunction::XMLChFunctionURI, var_name, MEMMGR));
+    XQCallTemplate *call = WRAP(@1, new (MEMMGR) XQCallTemplate(nameVarRef1, 0, MEMMGR));
+
+    ASTNode *ci = WRAP(@1, new (MEMMGR) XQContextItem(MEMMGR));
+    ASTNode *apply = WRAP(@1, new (MEMMGR) XQApplyTemplates(ci, 0, 0, MEMMGR));
+
+    VectorOfASTNodes *args = new (MEMMGR) VectorOfASTNodes(XQillaAllocator<ASTNode*>(MEMMGR));
+    args->push_back(WRAP(@1, new (MEMMGR) XQVariable(XQillaFunction::XMLChFunctionURI, var_name, MEMMGR)));
+    ASTNode *exists = WRAP(@1, new (MEMMGR) XQFunctionCall(0, XQFunction::XMLChFunctionURI,
+                                                           MEMMGR->getPooledString("exists"), args, MEMMGR));
+
+    QP->_query->setQueryBody(WRAP(@1, new (MEMMGR) XQIf(exists, call, apply, MEMMGR)));
+  }
+;
+
+CarrotProlog:
+    /* empty */
+  | CarrotProlog CarrotVarDecl _SEMICOLON_
+  | CarrotProlog CarrotFuncDecl _SEMICOLON_
+  | CarrotProlog CarrotTemplateDecl _SEMICOLON_
+  ;
+
+CarrotVarDecl:
+    _DOLLAR_ VarName TypeDeclaration _COLON_EQUALS_ ExprSingle
+  {
+    QP->_query->addVariable(WRAP(@1, new (MEMMGR) XQGlobalVariable($2, $3, $5, MEMMGR)));
+  }
+  ;
+
+CarrotFuncDecl:
+    FunctionName FunctionParamList FunctionDeclReturnType _COLON_EQUALS_ ExprSingle
+  {
+    FunctionSignature *sig = new (MEMMGR) FunctionSignature(MEMMGR);
+    sig->argSpecs = $2;
+    sig->returnType = $3;
+    XQUserFunction* decl=WRAP(@1, new (MEMMGR) XQUserFunction($1, sig, $5, true, MEMMGR));
+    QP->_query->addFunction(decl);
+  }
+  ;
+
+CarrotTemplateDecl:
+    _CARROT_ CarrotModes _LPAR_ Pattern_XSLT CarrotTemplateParams _RPAR_ FunctionDeclReturnType _COLON_EQUALS_ ExprSingle
+  {
+    FunctionSignature *signature = new (MEMMGR) FunctionSignature($5, $7, MEMMGR);
+    XQUserFunction* decl=WRAP(@1, new (MEMMGR) XQUserFunction(0, $4, signature, $9, MEMMGR));
+    decl->setModeList($2);
+    QP->_query->addFunction(decl);
+  }
+  ;
+
+CarrotModes:
+    /* empty */
+  {
+    $$ = new (MEMMGR) XQUserFunction::ModeList(XQillaAllocator<XQUserFunction::Mode*>(MEMMGR));
+    $$->push_back(WRAP(@$, new (MEMMGR) XQUserFunction::Mode(XQUserFunction::Mode::DEFAULT)));
+  }
+  | CarrotModeList
+  ;
+
+CarrotModeList:
+    TemplateDeclMode
+  {
+    $$ = new (MEMMGR) XQUserFunction::ModeList(XQillaAllocator<XQUserFunction::Mode*>(MEMMGR));
+    $$->push_back($1);
+  }
+  | CarrotModeList _BAR_ TemplateDeclMode
+  {
+    $1->push_back($3);
+    $$ = $1;
+  }
+  ;
+
+CarrotTemplateParams:
+    /* empty */
+  {
+    $$ = 0;
+  }
+  | _SEMICOLON_ ParamList
+  {
+    $$ = $2;
+  }
+  ;
+
+PrimaryExpr: CarrotApply;
+
+CarrotApply:
+    _CARROT_ CarrotApplyMode _LPAR_ CarrotApplyOptionalExpr CarrotApplyArgs _RPAR_
+  {
+    $$ = WRAP(@1, new (MEMMGR) XQApplyTemplates($4, $5, $2, MEMMGR));
+  }
+  ;
+
+CarrotApplyOptionalExpr:
+  /* empty */
+  {
+    NodeTest *nt = new (MEMMGR) NodeTest();
+    nt->setTypeWildcard();
+    nt->setNameWildcard();
+    nt->setNamespaceWildcard();
+
+    $$ = WRAP(@$, new (MEMMGR) XQStep(Node::CHILD, nt, MEMMGR));
+  }
+  | ExprSingle
+  ;
+
+CarrotApplyMode:
+    /* empty */
+  {
+    $$ = 0;
+  }
+  | ApplyTemplatesMode
+  ;
+
+CarrotApplyArgs:
+    /* empty */
+  {
+    $$ = 0;
+  }
+  | _SEMICOLON_ TemplateArgumentList
+  {
+    $$ = $2;
+  }
+  ;
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// Misc
 
 Start_FunctionDecl:
     _DECLARE_ AnnotatedDeclAnnotations _FUNCTION_ FunctionName FunctionParamList FunctionDeclReturnType EnclosedExpr FunctionDecl_MaybeSemicolon

@@ -250,6 +250,9 @@ int main(int argc, char *argv[])
       else if(argv[i][1] == 's') {
         args.language |= XQilla::XSLT2;
       }
+      else if(argv[i][1] == 'c') {
+        args.language |= XQilla::CARROT | XQilla::XQUERY;
+      }
       else if(argv[i][1] == 't') {
         args.printAST = true;
       }

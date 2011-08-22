@@ -40,6 +40,8 @@ XQLexer::XQLexer(XPath2MemoryManager* memMgr, const XMLCh *queryFile, const XMLC
 {
   if((m_language & XQilla::XPATH2) != 0) {
     firstToken_ = _LANG_XPATH2_;
+  } else if((m_language & XQilla::CARROT) != 0) {
+    firstToken_ = _LANG_CARROT_;
   } else {
     firstToken_ = _LANG_XQUERY_;
   }

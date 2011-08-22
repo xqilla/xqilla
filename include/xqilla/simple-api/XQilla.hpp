@@ -69,7 +69,8 @@ public:
     UPDATE     = 0x04,
     EXTENSIONS = 0x08,
     XSLT2      = 0x10,
-    VERSION3  = 0x20,
+    VERSION3   = 0x20,
+    CARROT     = 0x40,
 
     XQUERY_FULLTEXT          = (XQUERY | FULLTEXT),
     XQUERY_UPDATE            = (XQUERY | UPDATE),
