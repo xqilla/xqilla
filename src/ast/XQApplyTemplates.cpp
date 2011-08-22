@@ -256,9 +256,10 @@ public:
       templates_(templates),
       input_(input),
       node_(0),
-      scope_(context->getMemoryManager(), context->getVariableStore()),
+      scope_(context->getMemoryManager()),
       result_(0)
   {
+    scope_.cacheVariableStore(ast_->getStaticAnalysis(), context->getVariableStore());
     ast_->evaluateArguments(scope_, context);
   }
 
@@ -269,9 +270,10 @@ public:
       templates_(context->getTemplateRules()),
       input_(node->getAxisResult(Node::CHILD, 0, context, parent)),
       node_(0),
-      scope_(context->getMemoryManager(), &parent->scope_),
+      scope_(parent->scope_, context->getMemoryManager()),
       result_(0)
   {
+    scope_.cacheVariableStore(ast_->getStaticAnalysis(), context->getVariableStore());
   }
 
   Item::Ptr next(DynamicContext *context)
@@ -339,8 +341,6 @@ public:
     }
   }
 
-  string asString(DynamicContext *context, int indent) const { return ""; }
-
 private:
   const XQApplyTemplates *ast_;
   UserFunctions templates_;
@@ -354,6 +354,5 @@ private:
 
 Result XQApplyTemplates::createResult(DynamicContext *context, int flags) const
 {
-  return ClosureResult::create(getStaticAnalysis(), context,
-    new ApplyTemplatesResult(this, expr_->createResult(context), templates_, context));
+  return new ApplyTemplatesResult(this, expr_->createResult(context), templates_, context);
 }
