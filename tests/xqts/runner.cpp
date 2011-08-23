@@ -117,7 +117,7 @@ void usage(const char *progname)
   cout << "-u             : Parse XQuery Update (also uses Xerces-C data model)" << endl;
   cout << "-s             : Parse XSLT 2.0" << endl;
   cout << "-f             : Parse XQuery Full Text 1.0" << endl;
-  cout << "-1             : Parse XQuery 1.1" << endl;
+  cout << "-3             : Parse XQuery 3.0" << endl;
   cout << "-x             : Use the Xerces-C data model (default is FastXDM)" << endl;
 }
 
@@ -177,8 +177,8 @@ int main(int argc, char *argv[])
         conf = &xercesConf;
         break;
       }
-      case '1': {
-        lang = (XQilla::Language)(lang | XQilla::VERSION11);
+      case '3': {
+        lang = (XQilla::Language)(lang | XQilla::VERSION3);
         userSetParserLang = true;
         break;
       }

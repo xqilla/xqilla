@@ -500,49 +500,56 @@ void XQLexer::undoLessThan()
   }
 }
 <INITIAL>"function" {
-  if(isVersion11() && lookAhead() == _LPAR_) {
+  if(isVersion3() && lookAhead() == _LPAR_) {
     RECOGNIZE_VALUE(_FUNCTION_EXT_, yytext);
   } else {
     RECOGNIZE_VALUE(_FUNCTION_, yytext);
   }
 }
 <INITIAL>"#" {
-  if(isVersion11()) {
+  if(isVersion3()) {
     RECOGNIZE(_HASH_);
   } else {
     return error("Unrecognized token '#'");
   }
 }
 <INITIAL>"%" {
-  if(isVersion11()) {
+  if(isVersion3()) {
     RECOGNIZE(_PERCENT_);
   } else {
     return error("Unrecognized token '%'");
   }
 }
 <INITIAL>"||" {
-  if(isVersion11()) {
+  if(isVersion3()) {
     RECOGNIZE(_BAR_BAR_);
   } else {
     return error("Unrecognized token '||'");
   }
 }
 <INITIAL>"!" {
-  if(isVersion11()) {
+  if(isVersion3()) {
     RECOGNIZE(_BANG_);
   } else {
     return error("Unrecognized token '!'");
   }
 }
+<INITIAL>"^" {
+  if(isCarrot()) {
+    RECOGNIZE(_CARROT_);
+  } else {
+    return error("Unrecognized token '^'");
+  }
+}
 <INITIAL>"count" {
-  if(isVersion11() && lookAhead() == _DOLLAR_) {
+  if(isVersion3() && lookAhead() == _DOLLAR_) {
     RECOGNIZE_VALUE(_COUNT_, yytext);
   } else {
     RECOGNIZE_VALUE(_QNAME_, yytext);
   }
 }
 <INITIAL>"namespace-node" {
-  if(isVersion11()) {
+  if(isVersion3()) {
     RECOGNIZE_VALUE(_NAMESPACE_NODE_, yytext);
   } else {
     RECOGNIZE_VALUE(_QNAME_, yytext);
@@ -680,7 +687,7 @@ void XQLexer::undoLessThan()
 
 <INITIAL>"xquery" {
   int tok = lookAhead();
-  if(tok == _VERSION_ || (isVersion11() && tok == _ENCODING_)) {
+  if(tok == _VERSION_ || (isVersion3() && tok == _ENCODING_)) {
     RECOGNIZE_VALUE(_XQUERY_, yytext);
   } else {
     RECOGNIZE_VALUE(_QNAME_, yytext);

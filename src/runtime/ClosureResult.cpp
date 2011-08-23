@@ -67,6 +67,10 @@ ClosureResult::ClosureResult(const StaticAnalysis &src, DynamicContext *context,
   varStore_.cacheVariableStore(src, context->getVariableStore());
 }
 
+ClosureResult::~ClosureResult()
+{
+}
+
 Item::Ptr ClosureResult::nextOrTail(Result &tail, DynamicContext *context)
 {
   context->testInterrupt();

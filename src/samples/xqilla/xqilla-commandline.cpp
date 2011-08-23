@@ -128,7 +128,7 @@ struct CommandLineArgs
       outputFile(0),
       baseURIDir(0),
       conf(&fastConf),
-      language(XQilla::XQUERY|XQilla::VERSION11),
+      language(XQilla::XQUERY|XQilla::VERSION3),
       parseFlags(0),
       xpathCompatible(false),
       quiet(false),
@@ -249,6 +249,9 @@ int main(int argc, char *argv[])
       }
       else if(argv[i][1] == 's') {
         args.language |= XQilla::XSLT2;
+      }
+      else if(argv[i][1] == 'c') {
+        args.language |= XQilla::CARROT | XQilla::XQUERY;
       }
       else if(argv[i][1] == 't') {
         args.printAST = true;

@@ -150,6 +150,11 @@
       <query name="bug7"/>
       <output-file compare="Fragment">bug7.out</output-file>
     </test-case>
+    <test-case name="bug8" FilePath="bugs/">
+      <!-- Check visibility of non-FLWOR variables after "order by" -->
+      <query name="bug8"/>
+      <output-file compare="Fragment">bug8.out</output-file>
+    </test-case>
   </test-group>
 
   <test-group name="unicode">

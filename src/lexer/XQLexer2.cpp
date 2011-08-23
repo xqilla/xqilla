@@ -40,13 +40,15 @@ XQLexer::XQLexer(XPath2MemoryManager* memMgr, const XMLCh *queryFile, const XMLC
 {
   if((m_language & XQilla::XPATH2) != 0) {
     firstToken_ = _LANG_XPATH2_;
+  } else if((m_language & XQilla::CARROT) != 0) {
+    firstToken_ = _LANG_CARROT_;
   } else {
     firstToken_ = _LANG_XQUERY_;
   }
 }
 
 XQLexer::XQLexer(XPath2MemoryManager* memMgr, int firstToken, const XMLCh *queryFile, int line, int column, const XMLCh *query)
-  : Lexer(memMgr, (XQilla::Language)(XQilla::XQUERY11_FULLTEXT_UPDATE | XQilla::EXTENSIONS), queryFile, line, column),
+  : Lexer(memMgr, (XQilla::Language)(XQilla::XQUERY3_FULLTEXT_UPDATE | XQilla::EXTENSIONS), queryFile, line, column),
     firstToken_(firstToken),
     mode_(MODE_NORMAL),
     m_szQuery(XPath2Utils::normalizeEOL(query, memMgr)),

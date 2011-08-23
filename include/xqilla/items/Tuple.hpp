@@ -33,7 +33,7 @@ public:
 
   virtual Type getType() const { return TUPLE; }
 
-  virtual Result get(const XMLCh *uri, const XMLCh *name, const DynamicContext *context) const = 0;
+  virtual bool get(const XMLCh *uri, const XMLCh *name, const DynamicContext *context, Result &result) const = 0;
   virtual void getInScopeVariables(std::vector<std::pair<const XMLCh*, const XMLCh*> > &variables) const = 0;
 
   virtual Result get(const AnyAtomicType::Ptr &key) const = 0;

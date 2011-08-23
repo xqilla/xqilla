@@ -38,6 +38,7 @@ public:
 
 private:
   ClosureResult(const StaticAnalysis &src, DynamicContext *context, ResultImpl *result);
+  ~ClosureResult();
 
   Item::Ptr contextItem_;
   size_t contextPosition_;

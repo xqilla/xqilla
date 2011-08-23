@@ -18,6 +18,7 @@
 // #define SHOW_QUERY_PATH_TREES
 // #define SHOW_HIDDEN_AST
 // #define SHOW_STATIC_TYPES
+// #define SHOW_STATIC_ANALYSIS
 
 #include "../config/xqilla_config.h"
 #include <iostream>
@@ -524,7 +525,9 @@ ASTNode *ASTToXML::optimize(ASTNode *item)
   XMLBuffer type_buf;
   item->getStaticAnalysis().getStaticType().typeToBuf(type_buf);
   events_->attributeEvent(0, 0, s_static_type, type_buf.getRawBuffer(), 0, 0);
-  // events_->attributeEvent(0, 0, s_static_analysis, X(item->getStaticAnalysis().toString().c_str()), 0, 0);
+#endif
+#ifdef SHOW_STATIC_ANALYSIS
+  events_->attributeEvent(0, 0, s_static_analysis, X(item->getStaticAnalysis().toString().c_str()), 0, 0);
 #endif
 
   if(item) {
@@ -1325,7 +1328,9 @@ TupleNode *ASTToXML::optimizeTupleNode(TupleNode *item)
   XMLBuffer type_buf;
   item->getStaticAnalysis().getStaticType().typeToBuf(type_buf);
   events_->attributeEvent(0, 0, s_static_type, type_buf.getRawBuffer(), 0, 0);
-  // events_->attributeEvent(0, 0, s_static_analysis, X(item->getStaticAnalysis().toString().c_str()), 0, 0);
+#endif
+#ifdef SHOW_STATIC_ANALYSIS
+  events_->attributeEvent(0, 0, s_static_analysis, X(item->getStaticAnalysis().toString().c_str()), 0, 0);
 #endif
 
   {

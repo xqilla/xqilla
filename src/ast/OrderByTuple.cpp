@@ -126,7 +126,8 @@ public:
       toDo_(true),
       tuples_(),
       tupleIt_(tuples_.begin()),
-      context_(context)
+      context_(context),
+      varStore_(0)
   {
   }
 
@@ -140,12 +141,16 @@ public:
 
   virtual Result getVar(const XMLCh *namespaceURI, const XMLCh *name) const
   {
-    return (*tupleIt_)->tuple->get(namespaceURI, name, context_);
+    Result result(0);
+    if((*tupleIt_)->tuple->get(namespaceURI, name, context_, result))
+      return result;
+    return varStore_->getVar(namespaceURI, name);
   }
 
   virtual void getInScopeVariables(std::vector<std::pair<const XMLCh*, const XMLCh*> > &variables) const
   {
     (*tupleIt_)->tuple->getInScopeVariables(variables);
+    varStore_->getInScopeVariables(variables);
   }
 
   virtual bool next(DynamicContext *context)
@@ -164,6 +169,7 @@ public:
       stable_sort(tuples_.begin(), tuples_.end(),
                   OrderComparison(ast_->getModifiers(), ast_->getCollation(), context, this));
       tupleIt_ = tuples_.begin();
+      varStore_ = context->getVariableStore();
     } else {
       delete *tupleIt_;
       *tupleIt_ = 0;
@@ -255,6 +261,7 @@ private:
   vector<OrderPair*>::iterator tupleIt_;
 
   DynamicContext *context_;
+  const VariableStore *varStore_;
 };
 
 TupleResult::Ptr OrderByTuple::createResult(DynamicContext* context) const

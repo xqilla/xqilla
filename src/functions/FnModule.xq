@@ -834,7 +834,7 @@ function map-new($maps as map()*, $collation as xs:string) as map()
 };
 
 (:----------------------------------------------------------------------------------------------------:)
-(: XQuery 1.1 functions :)
+(: XQuery 3.0 functions :)
 
 declare function map($f as function(item()) as item()*, $seq as item()*) as item()*
 {
