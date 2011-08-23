@@ -1297,6 +1297,15 @@ bool ItemType::isSubtypeOf(const ItemType *b, bool forStaticType) const
   case TEST_ATOMIC_TYPE: {
     // Ai and Bi are AtomicTypes, and derives-from(Ai, Bi) returns true.
     if(a->m_nTestType != TEST_ATOMIC_TYPE) return false;
+    if(a->m_primitiveType != b->m_primitiveType) {
+      if((b->m_primitiveType != AnyAtomicType::DURATION ||
+        (a->m_primitiveType != AnyAtomicType::DAY_TIME_DURATION &&
+         b->m_primitiveType != AnyAtomicType::YEAR_MONTH_DURATION)))
+        return false;
+    } else {
+      if(b->m_primitive) return true;
+      if(a->m_primitive) return false;
+    }
     return a->isSubtypeOfNameType(b);
   }
 
