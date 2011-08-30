@@ -27,6 +27,7 @@
 #include <xqilla/items/impl/ATDoubleOrDerivedImpl.hpp>
 #include <xqilla/mapm/m_apm.h>
 #include <xqilla/exceptions/IllegalArgumentException.hpp>
+#include <xqilla/exceptions/XQillaException.hpp>
 #include <xqilla/context/DynamicContext.hpp>
 #include <xqilla/context/ItemFactory.hpp>
 #include <xqilla/utils/XPath2Utils.hpp>
@@ -280,7 +281,24 @@ const XMLCh *Numeric::asDecimalString(int significantDigits, const StaticContext
 
 const XMLCh *Numeric::asDecimalString(const MAPM &number, int significantDigits, const StaticContext* context)
 {
-  char obuf[1024];
+  // Init a buf with an array. Most of the time 1024 digits is enough for
+  // decimals. So we only need malloc() in extreme case (huge decimal).
+  char buf[1024];
+  char *obuf = buf;
+
+  // Calculate the required buf size
+  int bufSize = significantDigits + 1;
+  if (bufSize < (number.significant_digits() + 1))
+    bufSize = (number.significant_digits() + 1);
+
+  // Malloc a larger one as needed
+  if (bufSize > sizeof(buf)) {
+    obuf = (char *)malloc(bufSize);
+    if (obuf == NULL)
+      throw XQillaException(XQillaException::RUNTIME_ERR,
+                            X("Numeric::asDecimalString(): Out of memory"));
+  }
+
   if(number.is_integer())
     number.toIntegerString(obuf);
   else {
@@ -300,7 +318,11 @@ const XMLCh *Numeric::asDecimalString(const MAPM &number, int significantDigits,
         *lastChar=0;
     }
   }
-  return context->getMemoryManager()->getPooledString(obuf);
+
+  const XMLCh* ret = context->getMemoryManager()->getPooledString(obuf);
+  if (obuf != buf) // Free "obuf" if it has been malloced
+    free(obuf);
+  return ret;
 }
 
 const XMLCh *Numeric::asDoubleString(int significantDigits, const StaticContext* context) const
