@@ -15142,7 +15142,7 @@ case 176:
 YY_RULE_SETUP
 #line 478 "../src/lexer/XQLexer.l"
 {
-  if(isVersion11()) {
+  if(isVersion3()) {
     RECOGNIZE_VALUE(_FUNCTION_EXT_, yytext);
   } else {
     RECOGNIZE_VALUE(_FUNCTION_, yytext);
@@ -15153,7 +15153,7 @@ case 177:
 YY_RULE_SETUP
 #line 485 "../src/lexer/XQLexer.l"
 {
-  if(isVersion11()) {
+  if(isVersion3()) {
     RECOGNIZE(_HASH_);
   } else {
     return error("Unrecognized token '#'");
@@ -15164,7 +15164,7 @@ case 178:
 YY_RULE_SETUP
 #line 492 "../src/lexer/XQLexer.l"
 {
-  if(isVersion11() && lookAhead() == _DOLLAR_) {
+  if(isVersion3() && lookAhead() == _DOLLAR_) {
     RECOGNIZE_VALUE(_COUNT_, yytext);
   } else {
     RECOGNIZE_VALUE(_QNAME_, yytext);
@@ -15175,7 +15175,7 @@ case 179:
 YY_RULE_SETUP
 #line 499 "../src/lexer/XQLexer.l"
 {
-  if(isVersion11()) {
+  if(isVersion3()) {
     RECOGNIZE_VALUE(_PRIVATE_, yytext);
   } else {
     RECOGNIZE_VALUE(_QNAME_, yytext);
@@ -15186,7 +15186,7 @@ case 180:
 YY_RULE_SETUP
 #line 506 "../src/lexer/XQLexer.l"
 {
-  if(isVersion11()) {
+  if(isVersion3()) {
     RECOGNIZE_VALUE(_PUBLIC_, yytext);
   } else {
     RECOGNIZE_VALUE(_QNAME_, yytext);
@@ -15197,7 +15197,7 @@ case 181:
 YY_RULE_SETUP
 #line 513 "../src/lexer/XQLexer.l"
 {
-  if(isVersion11()) {
+  if(isVersion3()) {
     RECOGNIZE_VALUE(_DETERMINISTIC_, yytext);
   } else {
     RECOGNIZE_VALUE(_QNAME_, yytext);
@@ -15208,7 +15208,7 @@ case 182:
 YY_RULE_SETUP
 #line 520 "../src/lexer/XQLexer.l"
 {
-  if(isVersion11()) {
+  if(isVersion3()) {
     RECOGNIZE_VALUE(_NONDETERMINISTIC_, yytext);
   } else {
     RECOGNIZE_VALUE(_QNAME_, yytext);
@@ -15219,7 +15219,7 @@ case 183:
 YY_RULE_SETUP
 #line 527 "../src/lexer/XQLexer.l"
 {
-  if(isVersion11()) {
+  if(isVersion3()) {
     RECOGNIZE_VALUE(_NAMESPACE_NODE_, yytext);
   } else {
     RECOGNIZE_VALUE(_QNAME_, yytext);
@@ -15407,7 +15407,7 @@ YY_RULE_SETUP
 #line 650 "../src/lexer/XQLexer.l"
 {
   int tok = lookAhead();
-  if(tok == _VERSION_ || (isVersion11() && tok == _ENCODING_)) {
+  if(tok == _VERSION_ || (isVersion3() && tok == _ENCODING_)) {
     RECOGNIZE_VALUE(_XQUERY_, yytext);
   } else {
     RECOGNIZE_VALUE(_QNAME_, yytext);

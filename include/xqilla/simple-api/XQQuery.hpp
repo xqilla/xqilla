@@ -270,8 +270,8 @@ public:
   /// Sets the name of the file that this query was parsed from.
   void setFile(const XMLCh* file);
 
-  bool getVersion11() const { return m_version11; }
-  void setVersion11(bool v) { m_version11 = v; }
+  bool getVersion3() const { return m_version3; }
+  void setVersion3(bool v) { m_version3 = v; }
 
   const DynamicContext *getStaticContext() const { return m_context; }
 
@@ -334,7 +334,7 @@ private:
   ModuleCache *m_moduleCache;
   bool m_moduleCacheOwned;
 
-  bool m_version11;
+  bool m_version3;
 
   enum { BEFORE, DURING, AFTER } m_staticTyped;
 

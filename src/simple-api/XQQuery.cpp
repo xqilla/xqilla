@@ -116,7 +116,7 @@ XQQuery::XQQuery(DynamicContext *context, bool contextOwned, ModuleCache *module
     m_importedModules(XQillaAllocator<XQQuery*>(memMgr)),
     m_moduleCache(moduleCache ? moduleCache : new (memMgr) ModuleCache(memMgr)),
     m_moduleCacheOwned(moduleCache == 0),
-    m_version11(context->getLanguage() & XQilla::VERSION11),
+    m_version3(context->getLanguage() & XQilla::VERSION3),
     m_staticTyped(BEFORE),
     m_next(0)
 {
@@ -461,7 +461,7 @@ void XQQuery::staticTyping(StaticTyper *styper)
     }
 
     // XQuery 1.1 reorders the global variables to enable forward references
-    if(m_version11)
+    if(m_version3)
       m_userDefVars = globalsOrder;
   }
 

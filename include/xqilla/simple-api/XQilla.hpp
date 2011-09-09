@@ -69,7 +69,7 @@ public:
     UPDATE     = 0x04,
     EXTENSIONS = 0x08,
     XSLT2      = 0x10,
-    VERSION11  = 0x20,
+    VERSION3   = 0x20,
 
     XQUERY_FULLTEXT          = (XQUERY | FULLTEXT),
     XQUERY_UPDATE            = (XQUERY | UPDATE),
@@ -77,14 +77,14 @@ public:
     XPATH2_FULLTEXT          = (XPATH2 | FULLTEXT),
     XSLT2_FULLTEXT           = (XSLT2 | FULLTEXT),
 
-    XQUERY11                 = (XQUERY | VERSION11),
-    XQUERY11_FULLTEXT        = (XQUERY | VERSION11 | FULLTEXT),
-    XQUERY11_UPDATE          = (XQUERY | VERSION11 | UPDATE),
-    XQUERY11_FULLTEXT_UPDATE = (XQUERY | VERSION11 | FULLTEXT | UPDATE),
-    XPATH21                  = (XPATH2 | VERSION11),
-    XPATH21_FULLTEXT         = (XPATH2 | VERSION11 | FULLTEXT),
-    XSLT21                   = (XSLT2 | VERSION11),
-    XSLT21_FULLTEXT          = (XSLT2 | VERSION11 | FULLTEXT),
+    XQUERY3                  = (XQUERY | VERSION3),
+    XQUERY3_FULLTEXT         = (XQUERY | VERSION3 | FULLTEXT),
+    XQUERY3_UPDATE           = (XQUERY | VERSION3 | UPDATE),
+    XQUERY3_FULLTEXT_UPDATE  = (XQUERY | VERSION3 | FULLTEXT | UPDATE),
+    XPATH3                   = (XPATH2 | VERSION3),
+    XPATH3_FULLTEXT          = (XPATH2 | VERSION3 | FULLTEXT),
+    XSLT3                    = (XSLT2 | VERSION3),
+    XSLT3_FULLTEXT           = (XSLT2 | VERSION3 | FULLTEXT),
   };
                                                                                                                                                               
   /**
