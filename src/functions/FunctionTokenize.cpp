@@ -85,7 +85,7 @@ ASTNode *FunctionTokenize::staticTypingImpl(StaticContext *context)
 
   	try
     {
-      regExp_ = new (memMgr) RegularExpression(pattern_, optionsBuf.getRawBuffer());
+      regExp_ = new (memMgr) RegularExpression(pattern_, optionsBuf.getRawBuffer(), memMgr);
       if(regExp_->matches(XMLUni::fgZeroLenString))
         XQThrow(FunctionException, X("FunctionTokenize::staticTypingImpl"), X("The pattern matches the zero-length string [err:FORX0003]"));
     } catch (ParseException &e){

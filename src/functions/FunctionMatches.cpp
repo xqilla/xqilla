@@ -89,7 +89,7 @@ ASTNode *FunctionMatches::staticTypingImpl(StaticContext *context)
 
   	try
     {
-      regExp_ = new (memMgr) RegularExpression(pattern_, optionsBuf.getRawBuffer());
+      regExp_ = new (memMgr) RegularExpression(pattern_, optionsBuf.getRawBuffer(), memMgr);
     } catch (ParseException &e){
       processParseException(e, "FunctionMatches::staticTypingImplSequence", memMgr);
     }

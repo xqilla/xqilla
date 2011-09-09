@@ -77,7 +77,7 @@ void RegExpFunction::copyRegExp(RegExpFunction* source, XPath2MemoryManager* mem
     //compiling regexp again
     try
     {
-      regExp_ = new (memMgr) RegularExpression(pattern_, optionsBuf.getRawBuffer());
+      regExp_ = new (memMgr) RegularExpression(pattern_, optionsBuf.getRawBuffer(), memMgr);
     } catch (ParseException &e){
       processParseException(e, "RegExpFunction::copyRegExp", memMgr);
     }
