@@ -116,8 +116,10 @@ public:
 #endif
   pointer allocate(size_t _n, const void* = 0)
   {
+#ifndef _MSC_VER
     if(_n==1)
       return (pointer)_singleton;
+#endif
     //std::cout << "XQillaAllocator::allocate(" << _n << ")" << std::endl;
     if(_memMgr)
       return _n != 0 ? static_cast<pointer>(_memMgr->allocate(_n*sizeof(_Tp))) : 0;

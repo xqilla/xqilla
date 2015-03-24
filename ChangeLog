@@ -1,5 +1,8 @@
 XQilla: an XQuery and XPath 2.0 library and command line interpreter.
-
+version 2.x.x (20xx.xx.xx):
+	* Fixed a crash that would happen when XQilla was built with Visual
+	  Studio 2010 or higher.
+	
 version 2.2.3 (2009.11.12):
 	* Work around for a Xerces-C bug in DOMDocument::importNode() that
 	  resulted in badly copied prefixes using XQuery Update.
