@@ -115,6 +115,7 @@ void VarStoreImpl::cacheVariableStore(const StaticAnalysis &src, const VariableS
       entry = entry->prev;
     }
   }
+  if (parent_ == 0) parent_ = toCache;
 }
 
 VarStoreImpl::VarEntry::VarEntry(const XMLCh *u, const XMLCh *n, const Result &r, unsigned int readCount, VarEntry *p)
