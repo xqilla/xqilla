@@ -1,7 +1,8 @@
 XQilla: an XQuery and XPath 2.0 library and command line interpreter.
 
 version 2.3.1 (2015.05.18):
-	* XQilla is now tested with Xerces 3.1.2.
+	* Modified to build against Xerces-C 3.1.2.
+	* Added Visual Studio 2010 projects.
 	* Fixed a bug that could cause incorrect query results when combining
 	  nested expressions and functions.
 	* Fixed a crash that could happen when XQilla is built with Visual
