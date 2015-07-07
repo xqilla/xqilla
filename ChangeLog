@@ -1,5 +1,8 @@
 XQilla: an XQuery and XPath 2.0 library and command line interpreter.
 
+version 2.3.2 (2015.07.07):
+	* XQilla can now be built with Visual Studios 2013.
+	
 version 2.3.1 (2015.05.18):
 	* Modified to build against Xerces-C 3.1.2.
 	* Added Visual Studio 2010 projects.

@@ -414,9 +414,6 @@
     <ClInclude Include="..\..\include\xqilla\context\Collation.hpp" >
       <Filter >include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\xqilla\context\ModuleResolver.hpp" >
-      <Filter >include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\include\xqilla\context\ExternalFunctionResolver.hpp" >
       <Filter >include</Filter>
     </ClInclude>

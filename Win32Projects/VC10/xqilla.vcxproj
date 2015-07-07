@@ -670,7 +670,6 @@
     <ClInclude Include="..\..\include\xqilla\context\VarHashEntry.hpp" />
     <ClInclude Include="..\..\include\xqilla\context\VariableTypeStore.hpp" />
     <ClInclude Include="..\..\include\xqilla\context\Collation.hpp" />
-    <ClInclude Include="..\..\include\xqilla\context\ModuleResolver.hpp" />
     <ClInclude Include="..\..\include\xqilla\context\ExternalFunctionResolver.hpp" />
     <ClInclude Include="..\..\include\xqilla\context\UpdateFactory.hpp" />
     <ClInclude Include="..\..\include\xqilla\context\RegexGroupStore.hpp" />

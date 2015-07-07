@@ -159,7 +159,6 @@
       <File RelativePath="..\..\include\xqilla\context\VarHashEntry.hpp"/>
       <File RelativePath="..\..\include\xqilla\context\VariableTypeStore.hpp"/>
       <File RelativePath="..\..\include\xqilla\context\Collation.hpp"/>
-      <File RelativePath="..\..\include\xqilla\context\ModuleResolver.hpp"/>
       <File RelativePath="..\..\include\xqilla\context\ExternalFunctionResolver.hpp"/>
       <File RelativePath="..\..\include\xqilla\context\UpdateFactory.hpp"/>
       <File RelativePath="..\..\include\xqilla\context\RegexGroupStore.hpp"/>

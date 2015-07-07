@@ -243,7 +243,6 @@
         <file name='include/xqilla/context/VarHashEntry.hpp'/>
         <file name='include/xqilla/context/VariableTypeStore.hpp'/>
         <file name='include/xqilla/context/Collation.hpp'/>
-        <file name='include/xqilla/context/ModuleResolver.hpp'/>
         <file name='include/xqilla/context/ExternalFunctionResolver.hpp'/>
         <file name='include/xqilla/context/UpdateFactory.hpp'/>
         <file name='include/xqilla/context/RegexGroupStore.hpp'/>
