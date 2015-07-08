@@ -16,7 +16,7 @@ s!@XQILLA_LIB_BASE@!xqilla!g
 
 s!@XQILLA_VERSION_MAJOR@!2!g
 s!@XQILLA_VERSION_MINOR@!3!g
-s!@XQILLA_VERSION_PATCH@!1!g
+s!@XQILLA_VERSION_PATCH@!2!g
 
 # Xerces is assumed to be source (vs installation)
 s!@XERCES_LIBHOME7@!@XERCES_WINHOME@/Build!g
