@@ -47,7 +47,7 @@ sed -i -e 's/<\([^/>][^> ]*\)\([^>]*\) Name="\([^"]*\)"\([^>]*\)>/<\1 Name="\3"\
 #              element name             value of "Name" attr
 done
 
-for file in `ls ../Win32Projects/VC10/*.vcxproj ../Win32Projects/VC10/*.vcxproj.filters`
+for file in `ls ../Win32Projects/VC10/*.vcxproj ../Win32Projects/VC10/*.vcxproj.filters ../Win32Projects/VC11/*.vcxproj ../Win32Projects/VC11/*.vcxproj.filters`
 do
 sed '2,$s/xmlns="http:\/\/schemas.microsoft.com\/developer\/msbuild\/2003"//' $file > temp
 sed '1 i\

@@ -19,32 +19,32 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals" >
-  <ProjectGuid>{C03914F5-AA13-4B1C-A4B0-8FD6560AB575}</ProjectGuid>
+  <ProjectGuid>{C03914F5-AA13-4B1C-A4B0-8FD6560AB574}</ProjectGuid>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props"/>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration" >
     <ConfigurationType>Application</ConfigurationType>
     <UseOfMfc>false</UseOfMfc>
     <CharacterSet>MultiByte</CharacterSet>
-    <PlatformToolset>v100</PlatformToolset>
+    <PlatformToolset>v110</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration" >
     <ConfigurationType>Application</ConfigurationType>
     <UseOfMfc>false</UseOfMfc>
     <CharacterSet>MultiByte</CharacterSet>
-    <PlatformToolset>v100</PlatformToolset>
+    <PlatformToolset>v110</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration" >
     <ConfigurationType>Application</ConfigurationType>
     <UseOfMfc>false</UseOfMfc>
     <CharacterSet>MultiByte</CharacterSet>
-    <PlatformToolset>v100</PlatformToolset>
+    <PlatformToolset>v110</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration" >
     <ConfigurationType>Application</ConfigurationType>
     <UseOfMfc>false</UseOfMfc>
     <CharacterSet>MultiByte</CharacterSet>
-    <PlatformToolset>v100</PlatformToolset>
+    <PlatformToolset>v110</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props"/>
   <ImportGroup Label="ExtensionSettings" >
@@ -65,24 +65,24 @@
   <PropertyGroup >
     <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" >..\..\build\windows\VC10\$(Platform)\Debug\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" >./$(OutDir)xqc-context-item\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" >./$(OutDir)xqc-basic\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" >false</LinkIncremental>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" >xqc-context-item</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" >xqc-basic</TargetName>
     <TargetExt Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" >.exe</TargetExt>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" >..\..\build\windows\VC10\$(Platform)\Release\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" >./$(OutDir)xqc-context-item\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" >./$(OutDir)xqc-basic\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" >false</LinkIncremental>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" >xqc-context-item</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" >xqc-basic</TargetName>
     <TargetExt Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" >.exe</TargetExt>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" >..\..\build\windows\VC10\$(Platform)\Debug\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" >./$(OutDir)xqc-context-item\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" >./$(OutDir)xqc-basic\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" >false</LinkIncremental>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" >xqc-context-item</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" >xqc-basic</TargetName>
     <TargetExt Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" >.exe</TargetExt>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'" >..\..\build\windows\VC10\$(Platform)\Release\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'" >./$(OutDir)xqc-context-item\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'" >./$(OutDir)xqc-basic\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|x64'" >false</LinkIncremental>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|x64'" >xqc-context-item</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|x64'" >xqc-basic</TargetName>
     <TargetExt Condition="'$(Configuration)|$(Platform)'=='Release|x64'" >.exe</TargetExt>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" >
@@ -95,9 +95,9 @@
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <PrecompiledHeader>
       </PrecompiledHeader>
-      <PrecompiledHeaderOutputFile>./$(OutDir)xqc-context-item.pch</PrecompiledHeaderOutputFile>
-      <AssemblerListingLocation>$(OutDir)xqc-context-item/</AssemblerListingLocation>
-      <ObjectFileName>$(OutDir)xqc-context-item/</ObjectFileName>
+      <PrecompiledHeaderOutputFile>./$(OutDir)xqc-basic.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>$(OutDir)xqc-basic/</AssemblerListingLocation>
+      <ObjectFileName>$(OutDir)xqc-basic/</ObjectFileName>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <DebugInformationFormat >ProgramDatabase</DebugInformationFormat>
@@ -109,7 +109,7 @@
       <AdditionalDependencies>xqilla23d.lib;xerces-c_3d.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(OutDir);../../../xerces-c-src/Build/Win32/VC7.1/$(ConfigurationName);../../../xerces-c-src/Build/Win32/VC8/$(ConfigurationName);../../../xerces-c-src/Build/Win32/VC10/$(ConfigurationName);../../../xerces-c-src/Build/Win32/VC11/$(ConfigurationName);../lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
-      <ProgramDatabaseFile>$(OutDir)xqc-context-item.pdb</ProgramDatabaseFile>
+      <ProgramDatabaseFile>$(OutDir)xqc-basic.pdb</ProgramDatabaseFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <OptimizeReferences>true</OptimizeReferences>
@@ -128,9 +128,9 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <PrecompiledHeader>
       </PrecompiledHeader>
-      <PrecompiledHeaderOutputFile>./$(OutDir)xqc-context-item.pch</PrecompiledHeaderOutputFile>
-      <AssemblerListingLocation>$(OutDir)xqc-context-item/</AssemblerListingLocation>
-      <ObjectFileName>$(OutDir)xqc-context-item/</ObjectFileName>
+      <PrecompiledHeaderOutputFile>./$(OutDir)xqc-basic.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>$(OutDir)xqc-basic/</AssemblerListingLocation>
+      <ObjectFileName>$(OutDir)xqc-basic/</ObjectFileName>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <DebugInformationFormat >ProgramDatabase</DebugInformationFormat>
@@ -141,7 +141,7 @@
       <AdditionalDependencies>xqilla23.lib;xerces-c_3.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(OutDir);../../../xerces-c-src/Build/Win32/VC7.1/$(ConfigurationName);../../../xerces-c-src/Build/Win32/VC8/$(ConfigurationName);../../../xerces-c-src/Build/Win32/VC10/$(ConfigurationName);../../../xerces-c-src/Build/Win32/VC11/$(ConfigurationName);../lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
-      <ProgramDatabaseFile>$(OutDir)xqc-context-item.pdb</ProgramDatabaseFile>
+      <ProgramDatabaseFile>$(OutDir)xqc-basic.pdb</ProgramDatabaseFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <OptimizeReferences>true</OptimizeReferences>
@@ -158,9 +158,9 @@
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <PrecompiledHeader>
       </PrecompiledHeader>
-      <PrecompiledHeaderOutputFile>./$(OutDir)xqc-context-item.pch</PrecompiledHeaderOutputFile>
-      <AssemblerListingLocation>$(OutDir)xqc-context-item/</AssemblerListingLocation>
-      <ObjectFileName>$(OutDir)xqc-context-item/</ObjectFileName>
+      <PrecompiledHeaderOutputFile>./$(OutDir)xqc-basic.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>$(OutDir)xqc-basic/</AssemblerListingLocation>
+      <ObjectFileName>$(OutDir)xqc-basic/</ObjectFileName>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <DebugInformationFormat >ProgramDatabase</DebugInformationFormat>
@@ -172,7 +172,7 @@
       <AdditionalDependencies>xqilla23d.lib;xerces-c_3d.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(OutDir);../../../xerces-c-src/Build/Win64/VC8/$(ConfigurationName);../../../xerces-c-src/Build/Win64/VC10/$(ConfigurationName);../../../xerces-c-src/Build/Win64/VC11/$(ConfigurationName);../lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
-      <ProgramDatabaseFile>$(OutDir)xqc-context-item.pdb</ProgramDatabaseFile>
+      <ProgramDatabaseFile>$(OutDir)xqc-basic.pdb</ProgramDatabaseFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <OptimizeReferences>true</OptimizeReferences>
@@ -191,9 +191,9 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <PrecompiledHeader>
       </PrecompiledHeader>
-      <PrecompiledHeaderOutputFile>./$(OutDir)xqc-context-item.pch</PrecompiledHeaderOutputFile>
-      <AssemblerListingLocation>$(OutDir)xqc-context-item/</AssemblerListingLocation>
-      <ObjectFileName>$(OutDir)xqc-context-item/</ObjectFileName>
+      <PrecompiledHeaderOutputFile>./$(OutDir)xqc-basic.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>$(OutDir)xqc-basic/</AssemblerListingLocation>
+      <ObjectFileName>$(OutDir)xqc-basic/</ObjectFileName>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <DebugInformationFormat >ProgramDatabase</DebugInformationFormat>
@@ -204,7 +204,7 @@
       <AdditionalDependencies>xqilla23.lib;xerces-c_3.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(OutDir);../../../xerces-c-src/Build/Win64/VC8/$(ConfigurationName);../../../xerces-c-src/Build/Win64/VC10/$(ConfigurationName);../../../xerces-c-src/Build/Win64/VC11/$(ConfigurationName);../lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
-      <ProgramDatabaseFile>$(OutDir)xqc-context-item.pdb</ProgramDatabaseFile>
+      <ProgramDatabaseFile>$(OutDir)xqc-basic.pdb</ProgramDatabaseFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <OptimizeReferences>true</OptimizeReferences>
@@ -214,7 +214,7 @@
   <ItemGroup >
   </ItemGroup>
   <ItemGroup >
-    <ClCompile Include="..\..\src\samples\xqc-api\xqc-context-item.c" />
+    <ClCompile Include="..\..\src\samples\xqc-api\xqc-basic.c" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets"/>
   <ImportGroup Label="ExtensionTargets" >

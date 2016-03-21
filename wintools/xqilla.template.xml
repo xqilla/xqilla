@@ -14,10 +14,12 @@
   <visualstudioversion>7.10</visualstudioversion>
   <visualstudioversion>8.00</visualstudioversion>
   <visualstudioversion>10.0</visualstudioversion>
+  <visualstudioversion>11.0</visualstudioversion>
   <variable name='sourcePath'>../../</variable>
   <variable name='outputBase.7.10'>../../build/windows/VC7.1/</variable>
   <variable name='outputBase.8.00'>../../build/windows/VC8/</variable>
   <variable name='outputBase.10.0'>../../build/windows/VC10/</variable>
+  <variable name='outputBase.11.0'>../../build/windows/VC11/</variable>
   <preprocessor config='all'>WIN32;_WINDOWS</preprocessor>
   <preprocessor config='Debug'>_DEBUG</preprocessor>
   <preprocessor config='Release'>NDEBUG</preprocessor>
@@ -32,7 +34,7 @@
     <libname config='Release'>@XQILLA_LIB@</libname>
     <libname config='Static Debug'>@XQILLA_STATIC_LIB@d</libname>
     <libname config='Static Release'>@XQILLA_STATIC_LIB@</libname>
-    <platform name='Win32 x64 IA64' vsver="7.10 8.00 10.0">
+    <platform name='Win32 x64' vsver="7.10 8.00 10.0 11.0">
       <config type='Debug'>
         <libdir>$(OutDir)</libdir>
       </config>
@@ -94,6 +96,20 @@
         <libdir>@XERCES_LIBHOME10@/Win32/VC10/$(ConfigurationName)</libdir>
       </config>
     </platform>
+    <platform name="Win32" vsver="11.0">
+      <config type="Debug">
+        <libdir>@XERCES_LIBHOME11@/Win32/VC11/$(ConfigurationName)</libdir>
+      </config>
+      <config type="Release">
+        <libdir>@XERCES_LIBHOME11@/Win32/VC11/$(ConfigurationName)</libdir>
+      </config>
+      <config type="Static Debug">
+        <libdir>@XERCES_LIBHOME11@/Win32/VC11/$(ConfigurationName)</libdir>
+      </config>
+      <config type="Static Release">
+        <libdir>@XERCES_LIBHOME11@/Win32/VC11/$(ConfigurationName)</libdir>
+      </config>
+    </platform>
     <platform name="x64" vsver="8.00">
       <config type="Debug">
         <libdir>@XERCES_LIBHOME8@/Win64/VC8/$(ConfigurationName)</libdir>
@@ -120,6 +136,20 @@
       </config>
       <config type="Static Release">
         <libdir>@XERCES_LIBHOME10@/Win64/VC10/$(ConfigurationName)</libdir>
+      </config>
+    </platform>
+    <platform name="x64" vsver="11.0">
+      <config type="Debug">
+        <libdir>@XERCES_LIBHOME11@/Win64/VC11/$(ConfigurationName)</libdir>
+      </config>
+      <config type="Release">
+        <libdir>@XERCES_LIBHOME11@/Win64/VC11/$(ConfigurationName)</libdir>
+      </config>
+      <config type="Static Debug">
+        <libdir>@XERCES_LIBHOME11@/Win64/VC11/$(ConfigurationName)</libdir>
+      </config>
+      <config type="Static Release">
+        <libdir>@XERCES_LIBHOME11@/Win64/VC11/$(ConfigurationName)</libdir>
       </config>
     </platform>
   </library>

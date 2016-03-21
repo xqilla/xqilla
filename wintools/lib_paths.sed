@@ -22,6 +22,7 @@ s!@XQILLA_VERSION_PATCH@!2!g
 s!@XERCES_LIBHOME7@!@XERCES_WINHOME@/Build!g
 s!@XERCES_LIBHOME8@!@XERCES_WINHOME@/Build!g
 s!@XERCES_LIBHOME10@!@XERCES_WINHOME@/Build!g
+s!@XERCES_LIBHOME11@!@XERCES_WINHOME@/Build!g
 # Xerces-c is in ../../../xerces-c-src
 s!@XERCES_WINHOME@!../../../@XERCES_NAME@!g
 s!@XERCES_NAME@!xerces-c-src!g

@@ -35,7 +35,7 @@ declare function local:indent($n)
 declare function local:getPlatforms($version) 
 {
   if ($version eq "7.10") then ("Win32")
-  else ("Win32", "x64", "IA64")
+  else ("Win32", "x64")
 };
 
 declare function local:getGuid($project)
@@ -72,11 +72,18 @@ declare function local:configurationType($project, $config)
   else error(QName("","xqilla"),"configurationType:unkown project type")
 };
 
+declare function local:getPlatformToolset($vsversion)
+{
+  if ($vsversion = "10.0") then "v100"
+  else "v110"
+};
+
 declare function local:generateConfigurations($project, $vsversion)
 {
   for $platform in local:getPlatforms($vsversion) return
     for $config in local:getConfiguration($project) 
-      let $configType := local:configurationType($project,$config)	    
+      let $configType := local:configurationType($project,$config)
+      let $platformToolset := local:getPlatformToolset($vsversion)	    
       return 
       (local:indent(2),<PropertyGroup xmlns="http://schemas.microsoft.com/developer/msbuild/2003" 
                         Condition="'$(Configuration)|$(Platform)'=={concat("'",$config,"|",$platform,"'")}"
@@ -84,6 +91,7 @@ declare function local:generateConfigurations($project, $vsversion)
         {local:indent(4)}<ConfigurationType>{$configType}</ConfigurationType>
 	{local:indent(4)}<UseOfMfc>false</UseOfMfc>
 	{local:indent(4)}<CharacterSet>MultiByte</CharacterSet>
+	{local:indent(4)}<PlatformToolset>{$platformToolset}</PlatformToolset>
       {local:indent(2)}</PropertyGroup>
       )
 };
@@ -513,9 +521,11 @@ declare function local:getOutputName($project, $vsversion)
 {
   let $vsname := if($vsversion = "7.10") then "VC7.1" 
 	         else if($vsversion = "8.00") then "VC8"
-		 else "VC10"
-  let $postfix := if($vsversion = "10.0") then ".vcxproj" 
-		  else ".vcproj"
+		 else if($vsversion = "10.0") then "VC10"
+		 else "VC11"
+  let $postfix := if($vsversion = "7.10") then ".vcproj" 
+      	       	  else if($vsversion = "8.00") then ".vcproj"
+		  else ".vcxproj"
   return concat($outputPath, "/", $vsname, "/", $project/@name, $postfix)
 };
 

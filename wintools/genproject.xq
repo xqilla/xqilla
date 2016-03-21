@@ -387,7 +387,7 @@ declare function local:getGuid($project)
 declare function local:getPlatforms($version)
 {
 	if ($version eq "7.10") then ("Win32")
-	else ("Win32", "x64", "IA64")
+	else ("Win32", "x64")
 };
 
 declare function local:getOutputName($project, $vsversion)
@@ -409,6 +409,7 @@ let $static := contains($project/@name,"static")
 let $proj := $project
 return
 if ($vsversion = "10.0") then ()
+else if ($vsversion = "11.0") then ()
 else (
 put(<VisualStudioProject
    ProjectType="Visual C++"
