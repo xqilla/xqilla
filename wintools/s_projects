@@ -27,16 +27,16 @@ if [ ! -x "$XQILLA" ]; then
 fi
 echo XQILLA = $XQILLA
 
-# generate the VC7.1 and VC8 project files
-# generate VC10 filter information for xqilla project
+# generate the VC9 project files
+# generate VC10 and VC11 filter information for xqilla project
 $XQILLA -u genproject.xq -v projectFile "$CONFIG_OUTPUT" -v outputPath "../Win32Projects"
 $XQILLA -u xqilla.vs2010.xq -v projectFile "$CONFIG_OUTPUT" -v outputPath "../Win32Projects"
 $XQILLA -u xqilla.vs2010_filter.xq -v projectFile "$CONFIG_OUTPUT" -v outputPath "../Win32Projects"
 
-# Post process the VC7.1 files to put the "Name" attribute first,
-# since VC7.1 doesn't use a proper XML parser :-(
+# Post process the VC9 files to put the "Name" attribute first,
+# since VC9 doesn't use a proper XML parser :-(
 
-for file in `ls ../Win32Projects/VC7.1/*.vcproj ../Win32Projects/VC8/*.vcproj`
+for file in `ls ../Win32Projects/VC9/*.vcproj`
 do
 # This only works if the start elements are always on a single line.
 #

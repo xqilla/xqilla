@@ -179,7 +179,7 @@
     <Link >
       <AdditionalOptions >/machine:x86 %(AdditionalOptions)</AdditionalOptions>
       <AdditionalDependencies>xerces-c_3d.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>../../../xerces-c-src/Build/Win32/VC7.1/$(ConfigurationName);../../../xerces-c-src/Build/Win32/VC8/$(ConfigurationName);../../../xerces-c-src/Build/Win32/VC10/$(ConfigurationName);../../../xerces-c-src/Build/Win32/VC11/$(ConfigurationName);../lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>../../../xerces-c-src/Build/Win32/VC9/$(ConfigurationName);../../../xerces-c-src/Build/Win32/VC10/$(ConfigurationName);../../../xerces-c-src/Build/Win32/VC11/$(ConfigurationName);../lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <ProgramDatabaseFile>$(OutDir)xqilla23d.pdb</ProgramDatabaseFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -236,7 +236,7 @@
     <Link >
       <AdditionalOptions >/machine:x86 %(AdditionalOptions)</AdditionalOptions>
       <AdditionalDependencies>xerces-c_3.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>../../../xerces-c-src/Build/Win32/VC7.1/$(ConfigurationName);../../../xerces-c-src/Build/Win32/VC8/$(ConfigurationName);../../../xerces-c-src/Build/Win32/VC10/$(ConfigurationName);../../../xerces-c-src/Build/Win32/VC11/$(ConfigurationName);../lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>../../../xerces-c-src/Build/Win32/VC9/$(ConfigurationName);../../../xerces-c-src/Build/Win32/VC10/$(ConfigurationName);../../../xerces-c-src/Build/Win32/VC11/$(ConfigurationName);../lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <ProgramDatabaseFile>$(OutDir)xqilla23.pdb</ProgramDatabaseFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -293,7 +293,7 @@
     <Link >
       <AdditionalOptions >/machine:x64 %(AdditionalOptions)</AdditionalOptions>
       <AdditionalDependencies>xerces-c_3d.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>../../../xerces-c-src/Build/Win64/VC8/$(ConfigurationName);../../../xerces-c-src/Build/Win64/VC10/$(ConfigurationName);../../../xerces-c-src/Build/Win64/VC11/$(ConfigurationName);../lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>../../../xerces-c-src/Build/Win64/VC9/$(ConfigurationName);../../../xerces-c-src/Build/Win64/VC10/$(ConfigurationName);../../../xerces-c-src/Build/Win64/VC11/$(ConfigurationName);../lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <ProgramDatabaseFile>$(OutDir)xqilla23d.pdb</ProgramDatabaseFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -350,7 +350,7 @@
     <Link >
       <AdditionalOptions >/machine:x64 %(AdditionalOptions)</AdditionalOptions>
       <AdditionalDependencies>xerces-c_3.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>../../../xerces-c-src/Build/Win64/VC8/$(ConfigurationName);../../../xerces-c-src/Build/Win64/VC10/$(ConfigurationName);../../../xerces-c-src/Build/Win64/VC11/$(ConfigurationName);../lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>../../../xerces-c-src/Build/Win64/VC9/$(ConfigurationName);../../../xerces-c-src/Build/Win64/VC10/$(ConfigurationName);../../../xerces-c-src/Build/Win64/VC11/$(ConfigurationName);../lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <ProgramDatabaseFile>$(OutDir)xqilla23.pdb</ProgramDatabaseFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>

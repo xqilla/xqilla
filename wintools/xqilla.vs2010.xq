@@ -521,10 +521,12 @@ declare function local:getOutputName($project, $vsversion)
 {
   let $vsname := if($vsversion = "7.10") then "VC7.1" 
 	         else if($vsversion = "8.00") then "VC8"
+		 else if($vsversion = "9.00") then "VC9"
 		 else if($vsversion = "10.0") then "VC10"
 		 else "VC11"
   let $postfix := if($vsversion = "7.10") then ".vcproj" 
       	       	  else if($vsversion = "8.00") then ".vcproj"
+		  else if($vsversion = "9.00") then ".vcproj"
 		  else ".vcxproj"
   return concat($outputPath, "/", $vsname, "/", $project/@name, $postfix)
 };
