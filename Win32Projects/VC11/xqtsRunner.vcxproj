@@ -64,22 +64,22 @@
   <PropertyGroup Label="UserMacros"/>
   <PropertyGroup >
     <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" >..\..\build\windows\VC10\$(Platform)\Debug\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" >..\..\build\windows\VC11\$(Platform)\Debug\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" >./$(OutDir)xqtsRunner\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" >false</LinkIncremental>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" >xqtsRunner</TargetName>
     <TargetExt Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" >.exe</TargetExt>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" >..\..\build\windows\VC10\$(Platform)\Release\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" >..\..\build\windows\VC11\$(Platform)\Release\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" >./$(OutDir)xqtsRunner\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" >false</LinkIncremental>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" >xqtsRunner</TargetName>
     <TargetExt Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" >.exe</TargetExt>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" >..\..\build\windows\VC10\$(Platform)\Debug\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" >..\..\build\windows\VC11\$(Platform)\Debug\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" >./$(OutDir)xqtsRunner\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" >false</LinkIncremental>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" >xqtsRunner</TargetName>
     <TargetExt Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" >.exe</TargetExt>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'" >..\..\build\windows\VC10\$(Platform)\Release\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'" >..\..\build\windows\VC11\$(Platform)\Release\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'" >./$(OutDir)xqtsRunner\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|x64'" >false</LinkIncremental>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|x64'" >xqtsRunner</TargetName>

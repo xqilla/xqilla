@@ -14,11 +14,9 @@ declare variable $releaseOptLevel := "MaxSpeed";
 declare variable $warnLevel := "Level3";
 declare variable $debugInfo := "ProgramDatabase";
 declare variable $sourcePath := doc($projectFile)/projects/variable[@name="sourcePath"];
-declare variable $outputBase := doc($projectFile)/projects/variable[@name="outputBase.10.0"];
 declare variable $dllType := "dll";
 declare variable $appType := "Application";
 declare variable $libprop := "library.props";
-
 
 declare function local:genImportProperty($libprop)
 {
@@ -130,9 +128,10 @@ declare function local:windowsPath($path) as xs:string
   translate($path,"/","\\")
 };
 
-declare function local:generateOutDir($config)
+declare function local:generateOutDir($config, $vsversion)
 {
-  local:windowsPath(concat($outputBase, "$(Platform)", "/", $config, "/"))
+  let $outputBase := doc($projectFile)/projects/variable[@name=concat("outputBase.", $vsversion)]
+  return local:windowsPath(concat($outputBase, "$(Platform)", "/", $config, "/"))
 };
 
 (:becaues zlib has different 32 and 64 bits platform libraries, so use another getLibName:)
@@ -179,7 +178,7 @@ declare function local:genDynamicMacros($project, $vsversion)
       for $config  in local:getConfiguration($project) return
         (local:indent(4),<OutDir xmlns="http://schemas.microsoft.com/developer/msbuild/2003"
                            Condition="'$(Configuration)|$(Platform)'=={concat("'",$config,"|",$platform,"'")}">
-          {local:generateOutDir($config)}</OutDir>,
+          {local:generateOutDir($config, $vsversion)}</OutDir>,
 	 local:indent(4),<IntDir xmlns="http://schemas.microsoft.com/developer/msbuild/2003"
                            Condition="'$(Configuration)|$(Platform)'=={concat("'",$config,"|",$platform,"'")}"> 
 	  {concat("./$(OutDir)",$project/@name,"\")}</IntDir>,
