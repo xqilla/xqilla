@@ -26,20 +26,16 @@ declare function local:getVsversion()
 
 declare function local:getPlatforms($version) 
 {
-  if ($version eq "7.10") then ("Win32")
+  if ($version eq "14.0") then ("Win32", "x64", "ARM")
   else ("Win32", "x64")
 };
 
 declare function local:getOutputName($project, $vsversion)
 {
-  let $vsname := if($vsversion = "7.10") then "VC7.1" 
-	         else if($vsversion = "8.00") then "VC8"
-		 else if($vsversion = "10.0") then "VC10"
-		 else "VC11"
-  let $postfix := if($vsversion = "7.10") then ".vcproj.filters" 
-      	       	  else if($vsversion = "8.00") then ".vcproj.filters"
-		  else ".vcxproj.filters"
-  return concat($outputPath, "/", $vsname, "/", $project/@name, $postfix)
+  let $vsname := if($vsversion = "10.0") then "VC10"
+      		 else if($vsversion = "11.0") then "VC11"
+		 else "VC14"
+  return concat($outputPath, "/", $vsname, "/", $project/@name, ".vcxproj.filters")
 };
 
 declare function local:genFilters($project){

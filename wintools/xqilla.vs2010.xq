@@ -32,7 +32,7 @@ declare function local:indent($n)
 
 declare function local:getPlatforms($version) 
 {
-  if ($version eq "7.10") then ("Win32")
+  if ($version eq "14.0") then ("Win32", "x64", "ARM")
   else ("Win32", "x64")
 };
 
@@ -73,7 +73,8 @@ declare function local:configurationType($project, $config)
 declare function local:getPlatformToolset($vsversion)
 {
   if ($vsversion = "10.0") then "v100"
-  else "v110"
+  else if ($vsversion = "11.0") then "v110"
+  else "v140"
 };
 
 declare function local:generateConfigurations($project, $vsversion)
@@ -346,9 +347,16 @@ declare function local:generateCustomBuildTool($project,$config)
 	    {local:indent(6)}<Command>{$commandtext}</Command>
 	    {local:indent(6)}<Message>{$message}</Message>
 	    {local:indent(4)}</PostBuildEvent>)
+    else if (not(empty($project/event[@name="prebuild"]))) then 
+	let $commandtext := $project/event[@name="prebuild"]/command[contains(@config,$config)]/text()
+        let $message := $project/event[@name="prebuild"]/description
+        return (
+	    local:indent(4),<PreBuildEvent xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	    {local:indent(6)}<Command>{$commandtext}</Command>
+	    {local:indent(6)}<Message>{$message}</Message>
+	    {local:indent(4)}</PreBuildEvent>)
      else ()
 };
-
 
 declare function local:genDefinition($project,$vsversion)
 {
@@ -518,16 +526,10 @@ declare function local:getConfiguration($project)
 
 declare function local:getOutputName($project, $vsversion)
 {
-  let $vsname := if($vsversion = "7.10") then "VC7.1" 
-	         else if($vsversion = "8.00") then "VC8"
-		 else if($vsversion = "9.00") then "VC9"
-		 else if($vsversion = "10.0") then "VC10"
-		 else "VC11"
-  let $postfix := if($vsversion = "7.10") then ".vcproj" 
-      	       	  else if($vsversion = "8.00") then ".vcproj"
-		  else if($vsversion = "9.00") then ".vcproj"
-		  else ".vcxproj"
-  return concat($outputPath, "/", $vsname, "/", $project/@name, $postfix)
+  let $vsname := if($vsversion = "10.0") then "VC10"
+		 else if($vsversion = "11.0") then "VC11"
+		 else "VC14"
+  return concat($outputPath, "/", $vsname, "/", $project/@name, ".vcxproj")
 };
 
 declare function local:getVsversion()

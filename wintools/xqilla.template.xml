@@ -11,13 +11,13 @@
   * TBD: describe format in more detail
   -->
 <projects>
-  <visualstudioversion>9.00</visualstudioversion>
   <visualstudioversion>10.0</visualstudioversion>
   <visualstudioversion>11.0</visualstudioversion>
+  <visualstudioversion>14.0</visualstudioversion>
   <variable name='sourcePath'>../../</variable>
-  <variable name='outputBase.9.00'>../../build/windows/VC9/</variable>
   <variable name='outputBase.10.0'>../../build/windows/VC10/</variable>
   <variable name='outputBase.11.0'>../../build/windows/VC11/</variable>
+  <variable name='outputBase.14.0'>../../build/windows/VC14/</variable>
   <preprocessor config='all'>WIN32;_WINDOWS</preprocessor>
   <preprocessor config='Debug'>_DEBUG</preprocessor>
   <preprocessor config='Release'>NDEBUG</preprocessor>
@@ -26,13 +26,13 @@
   <preprocessor config='all'>_CRT_SECURE_NO_WARNINGS</preprocessor>
   <preprocessor config='static_lib'>_LIB;XQILLA_API=;XERCES_STATIC_LIBRARY</preprocessor>
   <preprocessor config='static_app'>XQILLA_API=;XERCES_STATIC_LIBRARY=</preprocessor>
-  <include name='all'>../../include,../../src/lexer,@XERCES_WINHOME@/include,@XERCES_WINHOME@/src</include>>
+  <include name='all'>../../include,../../src/lexer,@XERCES_WINHOME@/include,@XERCES_WINHOME@/src,@XERCES_WINHOME@/build/src</include>>
   <library name='xqilla'>
     <libname config='Debug'>@XQILLA_LIB@d</libname>
     <libname config='Release'>@XQILLA_LIB@</libname>
     <libname config='Static Debug'>@XQILLA_STATIC_LIB@d</libname>
     <libname config='Static Release'>@XQILLA_STATIC_LIB@</libname>
-    <platform name='Win32 x64' vsver="9.00 10.0 11.0">
+    <platform name='Win32 x64 ARM' vsver="10.0 11.0 12.0">
       <config type='Debug'>
         <libdir>$(OutDir)</libdir>
       </config>
@@ -52,88 +52,102 @@
     <libname config="Release">@XERCES_LIB@</libname>
     <libname config="Static Debug">@XERCES_STATIC_LIB@d</libname>
     <libname config="Static Release">@XERCES_STATIC_LIB@</libname>
-    <platform name="Win32" vsver="9.00">
-      <config type="Debug">
-        <libdir>@XERCES_LIBHOME9@/Win32/VC9/$(ConfigurationName)</libdir>
-      </config>
-      <config type="Release">
-        <libdir>@XERCES_LIBHOME9@/Win32/VC9/$(ConfigurationName)</libdir>
-      </config>
-      <config type="Static Debug">
-        <libdir>@XERCES_LIBHOME9@/Win32/VC9/$(ConfigurationName)</libdir>
-      </config>
-      <config type="Static Release">
-        <libdir>@XERCES_LIBHOME9@/Win32/VC9/$(ConfigurationName)</libdir>
-      </config>
-    </platform>
     <platform name="Win32" vsver="10.0">
       <config type="Debug">
-        <libdir>@XERCES_LIBHOME10@/Win32/VC10/$(ConfigurationName)</libdir>
+        <libdir>@XERCES_WINHOME@/build/src/$(ConfigurationName)</libdir>
       </config>
       <config type="Release">
-        <libdir>@XERCES_LIBHOME10@/Win32/VC10/$(ConfigurationName)</libdir>
+        <libdir>@XERCES_WINHOME@/build/src/$(ConfigurationName)</libdir>
       </config>
       <config type="Static Debug">
-        <libdir>@XERCES_LIBHOME10@/Win32/VC10/$(ConfigurationName)</libdir>
+        <libdir>@XERCES_WINHOME@/build/src/$(ConfigurationName)</libdir>
       </config>
       <config type="Static Release">
-        <libdir>@XERCES_LIBHOME10@/Win32/VC10/$(ConfigurationName)</libdir>
+        <libdir>@XERCES_WINHOME@/build/src/$(ConfigurationName)</libdir>
       </config>
     </platform>
     <platform name="Win32" vsver="11.0">
       <config type="Debug">
-        <libdir>@XERCES_LIBHOME11@/Win32/VC11/$(ConfigurationName)</libdir>
+        <libdir>@XERCES_WINHOME@/build/src/$(ConfigurationName)</libdir>
       </config>
       <config type="Release">
-        <libdir>@XERCES_LIBHOME11@/Win32/VC11/$(ConfigurationName)</libdir>
+        <libdir>@XERCES_WINHOME@/build/src/$(ConfigurationName)</libdir>
       </config>
       <config type="Static Debug">
-        <libdir>@XERCES_LIBHOME11@/Win32/VC11/$(ConfigurationName)</libdir>
+        <libdir>@XERCES_WINHOME@/build/src/$(ConfigurationName)</libdir>
       </config>
       <config type="Static Release">
-        <libdir>@XERCES_LIBHOME11@/Win32/VC11/$(ConfigurationName)</libdir>
+        <libdir>@XERCES_WINHOME@/build/src/$(ConfigurationName)</libdir>
       </config>
     </platform>
-    <platform name="x64" vsver="9.00">
+    <platform name="Win32" vsver="14.0">
       <config type="Debug">
-        <libdir>@XERCES_LIBHOME9@/Win64/VC9/$(ConfigurationName)</libdir>
+        <libdir>@XERCES_WINHOME@/build/src/$(ConfigurationName)</libdir>
       </config>
       <config type="Release">
-        <libdir>@XERCES_LIBHOME9@/Win64/VC9/$(ConfigurationName)</libdir>
+        <libdir>@XERCES_WINHOME@/build/src/$(ConfigurationName)</libdir>
       </config>
       <config type="Static Debug">
-        <libdir>@XERCES_LIBHOME9@/Win64/VC9/$(ConfigurationName)</libdir>
+        <libdir>@XERCES_WINHOME@/build/src/$(ConfigurationName)</libdir>
       </config>
       <config type="Static Release">
-        <libdir>@XERCES_LIBHOME9@/Win64/VC9/$(ConfigurationName)</libdir>
+        <libdir>@XERCES_WINHOME@/build/src/$(ConfigurationName)</libdir>
       </config>
     </platform>
     <platform name="x64" vsver="10.0">
       <config type="Debug">
-        <libdir>@XERCES_LIBHOME10@/Win64/VC10/$(ConfigurationName)</libdir>
+        <libdir>@XERCES_WINHOME@/build/src/$(ConfigurationName)</libdir>
       </config>
       <config type="Release">
-        <libdir>@XERCES_LIBHOME10@/Win64/VC10/$(ConfigurationName)</libdir>
+        <libdir>@XERCES_WINHOME@/build/src/$(ConfigurationName)</libdir>
       </config>
       <config type="Static Debug">
-        <libdir>@XERCES_LIBHOME10@/Win64/VC10/$(ConfigurationName)</libdir>
+        <libdir>@XERCES_WINHOME@/build/src/$(ConfigurationName)</libdir>
       </config>
       <config type="Static Release">
-        <libdir>@XERCES_LIBHOME10@/Win64/VC10/$(ConfigurationName)</libdir>
+        <libdir>@XERCES_WINHOME@/build/src/$(ConfigurationName)</libdir>
       </config>
     </platform>
     <platform name="x64" vsver="11.0">
       <config type="Debug">
-        <libdir>@XERCES_LIBHOME11@/Win64/VC11/$(ConfigurationName)</libdir>
+        <libdir>@XERCES_WINHOME@/build/src/$(ConfigurationName)</libdir>
       </config>
       <config type="Release">
-        <libdir>@XERCES_LIBHOME11@/Win64/VC11/$(ConfigurationName)</libdir>
+        <libdir>@XERCES_WINHOME@/build/src/$(ConfigurationName)</libdir>
       </config>
       <config type="Static Debug">
-        <libdir>@XERCES_LIBHOME11@/Win64/VC11/$(ConfigurationName)</libdir>
+        <libdir>@XERCES_WINHOME@/build/src/$(ConfigurationName)</libdir>
       </config>
       <config type="Static Release">
-        <libdir>@XERCES_LIBHOME11@/Win64/VC11/$(ConfigurationName)</libdir>
+        <libdir>@XERCES_WINHOME@/build/src/$(ConfigurationName)</libdir>
+      </config>
+    </platform>
+    <platform name="x64" vsver="14.0">
+      <config type="Debug">
+        <libdir>@XERCES_WINHOME@/build/src/$(ConfigurationName)</libdir>
+      </config>
+      <config type="Release">
+        <libdir>@XERCES_WINHOME@/build/src/$(ConfigurationName)</libdir>
+      </config>
+      <config type="Static Debug">
+        <libdir>@XERCES_WINHOME@/build/src/$(ConfigurationName)</libdir>
+      </config>
+      <config type="Static Release">
+        <libdir>@XERCES_WINHOME@/build/src/$(ConfigurationName)</libdir>
+      </config>
+    </platform>
+    <platform name="ARM" vsver="14.0">
+      <config type="Debug">
+        <libdir>@XERCES_WINHOME@/build/src/$(ConfigurationName)</libdir>
+      </config>
+      <config type="Release">
+        <libdir>@XERCES_WINHOME@/build/src/$(ConfigurationName)</libdir>
+      </config>
+      <config type="Static Debug">
+        <libdir>@XERCES_WINHOME@/build/src/$(ConfigurationName)</libdir>
+      </config>
+      <config type="Static Release">
+        <libdir>@XERCES_WINHOME@/build/src/$(ConfigurationName)</libdir>
       </config>
     </platform>
   </library>
@@ -143,6 +157,18 @@
     <configuration>Static </configuration>
     <depends>xerces</depends>
     <include type='ref'>all</include>
+    <event name="prebuild">
+      <command config="Static Release">cd ..\..\..\xerces-c-src
+      mkdir build
+      cd build
+      cmake -DCMAKE_INSTALL_PREFIX=..\..\..\bin\release ..\
+      cmake --build .</command>
+      <command config="Static Debug">cd ..\..\..\xerces-c-src
+      mkdir build
+      cd build
+      cmake -DCMAKE_INSTALL_PREFIX=..\..\..\bin\debug ..\
+      cmake --build . --config Debug</command>
+    </event>
     <preprocessor config='Release'>XQILLA_APIS</preprocessor>
     <preprocessor config='Debug'>XQILLA_APIS</preprocessor>
     <files>
