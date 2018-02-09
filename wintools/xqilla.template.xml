@@ -32,7 +32,7 @@
     <libname config='Release'>@XQILLA_LIB@</libname>
     <libname config='Static Debug'>@XQILLA_STATIC_LIB@d</libname>
     <libname config='Static Release'>@XQILLA_STATIC_LIB@</libname>
-    <platform name='Win32 x64 ARM' vsver="10.0 11.0 12.0">
+    <platform name='Win32 x64 ARM' vsver="10.0 11.0 14.0">
       <config type='Debug'>
         <libdir>$(OutDir)</libdir>
       </config>
@@ -157,18 +157,20 @@
     <configuration>Static </configuration>
     <depends>xerces</depends>
     <include type='ref'>all</include>
-    <event name="prebuild">
-      <command config="Static Release">cd ..\..\..\xerces-c-src
+    <xerces>
+      <prefixCommand config="Static Release">cd ..\..\..\xerces-c-src
       mkdir build
       cd build
-      cmake -DCMAKE_INSTALL_PREFIX=..\..\..\bin\release ..\
-      cmake --build .</command>
-      <command config="Static Debug">cd ..\..\..\xerces-c-src
+      cmake -DCMAKE_INSTALL_PREFIX=..\..\..\bin\release -DBUILD_SHARED_LIBS=</prefixCommand>
+      <prefixCommand config="Static Debug">cd ..\..\..\xerces-c-src
       mkdir build
       cd build
-      cmake -DCMAKE_INSTALL_PREFIX=..\..\..\bin\debug ..\
-      cmake --build . --config Debug</command>
-    </event>
+      cmake -DCMAKE_INSTALL_PREFIX=..\..\..\bin\debug -DBUILD_SHARED_LIBS=</prefixCommand>
+      <suffixCommand config="Static Release"> ..\
+      cmake --build .</suffixCommand>
+      <suffixCommand config="Static Debug"> ..\
+      cmake --build . --config Debug</suffixCommand>
+    </xerces>
     <preprocessor config='Release'>XQILLA_APIS</preprocessor>
     <preprocessor config='Debug'>XQILLA_APIS</preprocessor>
     <files>

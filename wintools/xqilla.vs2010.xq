@@ -204,6 +204,11 @@ declare function local:isRelease($config) as xs:boolean
   contains($config,"Release")
 };
 
+declare function local:isStatic($config) as xs:boolean
+{
+  contains($config,"Static")
+};
+
 declare function local:optLevel($config)
 {
   if (local:isDebug($config)) then $debugOptLevel
@@ -332,7 +337,7 @@ declare function local:makeModuleDefinition($project,$config)
 declare function local:generateCustomBuildTool($project,$config)
 { 
     if (not(empty($project/event[@name="custom"]))) then 
-        let $commandtext := $project/event[@name="custom"]/command[contains(@config,$config)]/text()
+        let $commandtext := $project/event[@name="custom"]/command[matches(@config,$config)]/text()
         let $outputs := concat($project/event[@name="custom"]/output,";%(Outputs)")
         return (	  
             local:indent(4),<CustomBuildStep xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
@@ -354,6 +359,31 @@ declare function local:generateCustomBuildTool($project,$config)
 	    local:indent(4),<PreBuildEvent xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 	    {local:indent(6)}<Command>{$commandtext}</Command>
 	    {local:indent(6)}<Message>{$message}</Message>
+	    {local:indent(4)}</PreBuildEvent>)
+     else ()
+};
+
+declare function local:enableSharedXerces($config)
+{
+	if (local:isStatic($config)) then "OFF"
+	else "ON"
+};
+
+declare function local:buildXerces($project,$config,$vsversion, $platform)
+{ 
+    if (not(empty($project/xerces))) then 
+	let $prefixtext := $project/xerces/prefixCommand[contains(@config,$config)]/text()
+        let $suffixtext := $project/xerces/suffixCommand[contains(@config,$config)]/text()
+	let $sharedBuild := local:enableSharedXerces($config)
+	let $cmakePlat := if($platform = "Win32") then "" else if($platform = "x64") then "Win64" else $platform
+	let $cmakePlatform := if($vsversion = "10.0") then concat(' -G "Visual Studio 10 2010 ',$cmakePlat,'" ')
+		 else if($vsversion = "11.0") then concat(' -G "Visual Studio 11 2012 ',$cmakePlat,'" ')
+		 else concat(' -G "Visual Studio 14 2015 ',$cmakePlat,'" ')
+ 	let $commandtext := concat($prefixtext,$sharedBuild,$cmakePlatform, $suffixtext)
+        return (
+	    local:indent(4),<PreBuildEvent xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	    {local:indent(6)}<Command>{$commandtext}</Command>
+	    {local:indent(6)}<Message>Building Xerces-C</Message>
 	    {local:indent(4)}</PreBuildEvent>)
      else ()
 };
@@ -434,6 +464,7 @@ declare function local:genDynamicDefinition($project,$vsversion)
         {if ($static) then local:generateStaticLink($project,$platform,$config, $vsversion)
         else local:generateDynamicLink($project,$platform,$config,$vsversion)}
 	{local:generateCustomBuildTool($project,$config)}
+	{local:buildXerces($project,$config,$vsversion, $platform)}
       {local:indent(2)}</ItemDefinitionGroup>
     )
 };
@@ -448,6 +479,7 @@ declare function local:genStaticDefinition($project, $vsversion)
 	{local:generateConfigCompiler($project,$platform,$config)}
 	{local:generateStaticLink($project,$platform,$config,$vsversion)}
 	{local:generateCustomBuildTool($project,$config)}
+	{local:buildXerces($project,$config,$vsversion, $platform)}
       {local:indent(2)}</ItemDefinitionGroup>
     )
 };

@@ -192,9 +192,9 @@
       <Command>cd ..\..\..\xerces-c-src
       mkdir build
       cd build
-      cmake -DCMAKE_INSTALL_PREFIX=..\..\..\bin\debug ..\
+      cmake -DCMAKE_INSTALL_PREFIX=..\..\..\bin\debug -DBUILD_SHARED_LIBS=ON -G "Visual Studio 11 2012 "  ..\
       cmake --build . --config Debug</Command>
-      <Message/>
+      <Message>Building Xerces-C</Message>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Static Debug|Win32'" >
@@ -224,9 +224,9 @@
       <Command>cd ..\..\..\xerces-c-src
       mkdir build
       cd build
-      cmake -DCMAKE_INSTALL_PREFIX=..\..\..\bin\debug ..\
+      cmake -DCMAKE_INSTALL_PREFIX=..\..\..\bin\debug -DBUILD_SHARED_LIBS=OFF -G "Visual Studio 11 2012 "  ..\
       cmake --build . --config Debug</Command>
-      <Message/>
+      <Message>Building Xerces-C</Message>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" >
@@ -265,9 +265,9 @@
       <Command>cd ..\..\..\xerces-c-src
       mkdir build
       cd build
-      cmake -DCMAKE_INSTALL_PREFIX=..\..\..\bin\release ..\
+      cmake -DCMAKE_INSTALL_PREFIX=..\..\..\bin\release -DBUILD_SHARED_LIBS=ON -G "Visual Studio 11 2012 "  ..\
       cmake --build .</Command>
-      <Message/>
+      <Message>Building Xerces-C</Message>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Static Release|Win32'" >
@@ -298,9 +298,9 @@
       <Command>cd ..\..\..\xerces-c-src
       mkdir build
       cd build
-      cmake -DCMAKE_INSTALL_PREFIX=..\..\..\bin\release ..\
+      cmake -DCMAKE_INSTALL_PREFIX=..\..\..\bin\release -DBUILD_SHARED_LIBS=OFF -G "Visual Studio 11 2012 "  ..\
       cmake --build .</Command>
-      <Message/>
+      <Message>Building Xerces-C</Message>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" >
@@ -338,9 +338,9 @@
       <Command>cd ..\..\..\xerces-c-src
       mkdir build
       cd build
-      cmake -DCMAKE_INSTALL_PREFIX=..\..\..\bin\debug ..\
+      cmake -DCMAKE_INSTALL_PREFIX=..\..\..\bin\debug -DBUILD_SHARED_LIBS=ON -G "Visual Studio 11 2012 Win64"  ..\
       cmake --build . --config Debug</Command>
-      <Message/>
+      <Message>Building Xerces-C</Message>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Static Debug|x64'" >
@@ -370,9 +370,9 @@
       <Command>cd ..\..\..\xerces-c-src
       mkdir build
       cd build
-      cmake -DCMAKE_INSTALL_PREFIX=..\..\..\bin\debug ..\
+      cmake -DCMAKE_INSTALL_PREFIX=..\..\..\bin\debug -DBUILD_SHARED_LIBS=OFF -G "Visual Studio 11 2012 Win64"  ..\
       cmake --build . --config Debug</Command>
-      <Message/>
+      <Message>Building Xerces-C</Message>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" >
@@ -411,9 +411,9 @@
       <Command>cd ..\..\..\xerces-c-src
       mkdir build
       cd build
-      cmake -DCMAKE_INSTALL_PREFIX=..\..\..\bin\release ..\
+      cmake -DCMAKE_INSTALL_PREFIX=..\..\..\bin\release -DBUILD_SHARED_LIBS=ON -G "Visual Studio 11 2012 Win64"  ..\
       cmake --build .</Command>
-      <Message/>
+      <Message>Building Xerces-C</Message>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Static Release|x64'" >
@@ -444,9 +444,9 @@
       <Command>cd ..\..\..\xerces-c-src
       mkdir build
       cd build
-      cmake -DCMAKE_INSTALL_PREFIX=..\..\..\bin\release ..\
+      cmake -DCMAKE_INSTALL_PREFIX=..\..\..\bin\release -DBUILD_SHARED_LIBS=OFF -G "Visual Studio 11 2012 Win64"  ..\
       cmake --build .</Command>
-      <Message/>
+      <Message>Building Xerces-C</Message>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup >
