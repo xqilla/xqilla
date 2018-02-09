@@ -19,7 +19,7 @@
 
 %{
 
-#if defined(WIN32) && !defined(__CYGWIN__)
+#if defined(WIN32) && !defined(__CYGWIN__) && !defined(__MINGW__)
 // turn off the warnings "switch statement contains 'default' but no 'case' labels"
 //                       "'yyerrlab1' : unreferenced label"
 #pragma warning(disable : 4065 4102)

@@ -40,7 +40,7 @@
 
 #include <xqilla/mapm/m_apm.h>
 
-#if defined(WIN32) && !defined(__CYGWIN__)
+#if defined(WIN32) && !defined(__CYGWIN__) && !defined(__MINGW32__)
 #define snprintf _snprintf
 #endif
 

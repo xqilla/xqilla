@@ -27,7 +27,7 @@
 // Turn OFF use of windows heap by default.
 // There is a fragmentation problem resulting
 // in less available memory
-#if defined(WIN32) && !defined(__CYGWIN__)
+#if defined(WIN32) && !defined(__CYGWIN__) && !defined(__MINGW__)
 #define WIN_USE_HEAP
 #endif
 #endif

@@ -20,7 +20,7 @@
 #include "../config/xqilla_config.h"
 
 #include <stdio.h> // for sprintf
-#if defined(WIN32) && !defined(__CYGWIN__)
+#if defined(WIN32) && !defined(__CYGWIN__) && !defined(__MINGW__)
 #define snprintf _snprintf
 #endif
 
