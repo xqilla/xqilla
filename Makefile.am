@@ -17,7 +17,7 @@ lib_LTLIBRARIES = libxqilla.la
 
 # Library version, see http://sourceware.org/autobook/autobook/autobook_91.html
 # -no-undefined for Cygwin (bug #1639669)
-libxqilla_la_LDFLAGS = -version-info 6:0:3 -no-undefined
+libxqilla_la_LDFLAGS = -version-info 6:0:4 -no-undefined
 
 libxqilla_la_SOURCES = \
 src/framework/ReferenceCounted.cpp \
@@ -524,6 +524,18 @@ docs/xqc_header.html \
 docs/simple-api \
 docs/dom3-api \
 docs/xqc-api \
+Win32Projects/VC14/dom-basic.vcxproj \
+Win32Projects/VC14/dom-context-item.vcxproj \
+Win32Projects/VC14/dom-resolver.vcxproj \
+Win32Projects/VC14/simple-basic.vcxproj \
+Win32Projects/VC14/simple-context-item.vcxproj \
+Win32Projects/VC14/xmarkRunner.vcxproj \
+Win32Projects/VC14/xqc-basic.vcxproj \
+Win32Projects/VC14/xqc-context-item.vcxproj \
+Win32Projects/VC14/xqilla.vcxproj \
+Win32Projects/VC14/xqilla_cmd.vcxproj \
+Win32Projects/VC14/xqtsRunner.vcxproj \
+Win32Projects/VC14/XQilla.sln \
 Win32Projects/VC11/dom-basic.vcxproj \
 Win32Projects/VC11/dom-context-item.vcxproj \
 Win32Projects/VC11/dom-resolver.vcxproj \
@@ -548,18 +560,6 @@ Win32Projects/VC10/xqilla.vcxproj \
 Win32Projects/VC10/xqilla_cmd.vcxproj \
 Win32Projects/VC10/xqtsRunner.vcxproj \
 Win32Projects/VC10/XQilla.sln \
-Win32Projects/VC9/dom-basic.vcproj \
-Win32Projects/VC9/dom-context-item.vcproj \
-Win32Projects/VC9/dom-resolver.vcproj \
-Win32Projects/VC9/simple-basic.vcproj \
-Win32Projects/VC9/simple-context-item.vcproj \
-Win32Projects/VC9/xmarkRunner.vcproj \
-Win32Projects/VC9/xqc-basic.vcproj \
-Win32Projects/VC9/xqc-context-item.vcproj \
-Win32Projects/VC9/xqilla.vcproj \
-Win32Projects/VC9/xqilla_cmd.vcproj \
-Win32Projects/VC9/xqtsRunner.vcproj \
-Win32Projects/VC9/XQilla.sln \
 tests/xqts/xqts_testsuite/errors.xml \
 tests/xqts/xqts_testsuite/update_errors.xml \
 tests/xqts/xqts_testsuite/xsl_errors.xml \
