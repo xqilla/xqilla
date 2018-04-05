@@ -1,4 +1,10 @@
 XQilla: an XQuery and XPath 2.0 library and command line interpreter.
+version 2.3.4 (2018.04.04):
+	* Added C++11 support.
+	* Added Visual Studio 2015 projects.
+	* Removed Visual Studio 2008 projects.
+	* Modified to build against Xerces-C 3.2.1.
+	
 version 2.3.3 (2015.07.07):
 	* Fixed a localization bug parsing floating point numbers.
 	* Added Visual Studio 2012 projects.
