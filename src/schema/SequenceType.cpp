@@ -706,7 +706,6 @@ bool SequenceType::ItemType::matchesSchemaElement(const Node::Ptr &toBeTested, c
   const XMLCh* elementNS=m_NameURI;
   const XMLCh* elementName=m_pName->getName();
   SchemaElementDecl *elemDecl=context->getDocumentCache()->getElementDecl(elementNS, elementName);
-  assert(elemDecl != NULL);
 
   // 1. The name of the candidate node matches the specified ElementName or matches the name of an element in a 
   //    substitution group headed by an element named ElementName.
@@ -740,6 +739,8 @@ bool SequenceType::ItemType::matchesSchemaElement(const Node::Ptr &toBeTested, c
       return false;
   }
 
+  if (elemDecl == NULL)
+	  return false;
   // 2. derives-from(AT, ET) is true, where AT is the type of the candidate node and ET is the type declared for 
   //    element ElementName in the in-scope element declarations.
   ComplexTypeInfo* pTypeInfo=elemDecl->getComplexTypeInfo();

@@ -19,8 +19,6 @@
   <error id="fn-put-005" reason="error failure"/>
   <error id="fn-put-006" reason="error failure"/>
   <error id="fn-put-007" reason="error failure"/>
-  <error id="fn-put-009" reason="error failure"/>
-  <error id="fn-put-010" reason="error failure"/>
   <error id="fn-put-013" reason="error failure"/>
   <error id="id-comma-expr-037" reason="error failure"/>
   <error id="id-conditional-expr-037" reason="error failure"/>
@@ -45,6 +43,7 @@
   <error id="id-transform-expr-052" reason="result failure"/>
   <error id="id-transform-expr-053" reason="result failure"/>
   <error id="id-typeswitch-expr-038" reason="no error failure"/>
+  <error id="namespace-errors-q16" reason="result failure"/>
   <error id="propagateNamespaces02" reason="result failure"/>
   <error id="propagateNamespaces03" reason="result failure"/>
   <error id="propagateNamespaces04" reason="result failure"/>

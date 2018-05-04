@@ -24,6 +24,7 @@
 
 #include <xercesc/util/XercesDefs.hpp>
 #include <xercesc/dom/impl/DOMNodeImpl.hpp>
+#include <xercesc/dom/impl/DOMNodeBase.hpp>
 #include <xercesc/dom/DOMXPathNamespace.hpp>
 
 XERCES_CPP_NAMESPACE_BEGIN
@@ -31,8 +32,9 @@ class DOMElement;
 class DOMDocument;
 XERCES_CPP_NAMESPACE_END
 
+XERCES_CPP_NAMESPACE_USE
 
-class XQILLA_API XPathNamespaceImpl : public XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathNamespace
+class XQILLA_API XPathNamespaceImpl : public XERCES_CPP_NAMESPACE_QUALIFIER DOMXPathNamespace, public XERCES_CPP_NAMESPACE_QUALIFIER HasDOMNodeImpl
 {
 public:
 	XERCES_CPP_NAMESPACE_QUALIFIER DOMNodeImpl fNode;
@@ -48,6 +50,10 @@ public:
 	XPathNamespaceImpl(const XMLCh* const prefix, const XMLCh* const uri, XERCES_CPP_NAMESPACE_QUALIFIER DOMElement *owner, XERCES_CPP_NAMESPACE_QUALIFIER DOMDocument *docOwner);
 	XPathNamespaceImpl(const XPathNamespaceImpl &other);
 	virtual ~XPathNamespaceImpl();
+
+#if _XERCES_VERSION >= 30200 
+	DOMNODEIMPL_DECL;
+#endif
 
 	// Declare functions from DOMNode.  They all must be implemented by this class
     virtual       XERCES_CPP_NAMESPACE_QUALIFIER DOMNode*         appendChild(XERCES_CPP_NAMESPACE_QUALIFIER DOMNode *newChild) ;

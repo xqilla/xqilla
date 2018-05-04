@@ -507,3 +507,7 @@ const XMLCh* XPathNamespaceImpl::getLocalName() const {
 #else
            DOMNode*         XPathNamespaceImpl::getInterface(const XMLCh* feature)      {return fNode.getInterface(feature); };
 #endif
+
+#if _XERCES_VERSION >= 30200 
+	   DOMNODEIMPL_IMPL(XPathNamespaceImpl);
+#endif
