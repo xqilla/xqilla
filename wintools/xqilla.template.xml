@@ -167,7 +167,7 @@
       cd build
       cmake -DCMAKE_INSTALL_PREFIX=..\..\..\bin\debug -DBUILD_SHARED_LIBS=</prefixCommand>
       <suffixCommand config="Static Release"> ..\
-      cmake --build .</suffixCommand>
+      cmake --build . --config Release</suffixCommand>
       <suffixCommand config="Static Debug"> ..\
       cmake --build . --config Debug</suffixCommand>
     </xerces>

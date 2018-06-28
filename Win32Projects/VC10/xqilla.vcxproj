@@ -266,7 +266,7 @@
       mkdir build
       cd build
       cmake -DCMAKE_INSTALL_PREFIX=..\..\..\bin\release -DBUILD_SHARED_LIBS=ON -G "Visual Studio 10 2010 "  ..\
-      cmake --build .</Command>
+      cmake --build . --config Release</Command>
       <Message>Building Xerces-C</Message>
     </PreBuildEvent>
   </ItemDefinitionGroup>
@@ -299,7 +299,7 @@
       mkdir build
       cd build
       cmake -DCMAKE_INSTALL_PREFIX=..\..\..\bin\release -DBUILD_SHARED_LIBS=OFF -G "Visual Studio 10 2010 "  ..\
-      cmake --build .</Command>
+      cmake --build . --config Release</Command>
       <Message>Building Xerces-C</Message>
     </PreBuildEvent>
   </ItemDefinitionGroup>
@@ -412,7 +412,7 @@
       mkdir build
       cd build
       cmake -DCMAKE_INSTALL_PREFIX=..\..\..\bin\release -DBUILD_SHARED_LIBS=ON -G "Visual Studio 10 2010 Win64"  ..\
-      cmake --build .</Command>
+      cmake --build . --config Release</Command>
       <Message>Building Xerces-C</Message>
     </PreBuildEvent>
   </ItemDefinitionGroup>
@@ -445,7 +445,7 @@
       mkdir build
       cd build
       cmake -DCMAKE_INSTALL_PREFIX=..\..\..\bin\release -DBUILD_SHARED_LIBS=OFF -G "Visual Studio 10 2010 Win64"  ..\
-      cmake --build .</Command>
+      cmake --build . --config Release</Command>
       <Message>Building Xerces-C</Message>
     </PreBuildEvent>
   </ItemDefinitionGroup>
