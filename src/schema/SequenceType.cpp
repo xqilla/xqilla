@@ -707,6 +707,17 @@ bool SequenceType::ItemType::matchesSchemaElement(const Node::Ptr &toBeTested, c
   const XMLCh* elementName=m_pName->getName();
   SchemaElementDecl *elemDecl=context->getDocumentCache()->getElementDecl(elementNS, elementName);
 
+  if(elemDecl == NULL) {
+    const LocationInfo *location;
+    XMLBuffer msg;
+    msg.set(X("Type {"));
+    msg.append(elementNS);
+    msg.append(X("}"));
+    msg.append(elementName);
+    msg.append(X(" is not defined [err:XQST0036]"));
+    XQThrow3(XPath2ErrorException, X("SequenceType::ItemType::matchesSchemaElement"), msg.getRawBuffer(), location);
+  }
+
   // 1. The name of the candidate node matches the specified ElementName or matches the name of an element in a 
   //    substitution group headed by an element named ElementName.
   ATQNameOrDerived::Ptr name = toBeTested->dmNodeName(context);
